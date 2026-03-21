@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.linode.com/schemas/linode/instance.json",
+  "title": "Linode Instance",
+  "description": "A Linode compute instance representing a virtual machine running on the Akamai Connected Cloud platform. Instances have configurable CPU, memory, storage, and networking resources and can be deployed from distribution images or custom images.",
+  "type": "object",
+  "required": ["id", "label", "region", "type", "status"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier for this Linode instance."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$",
+      "description": "The display label for this Linode instance. Must begin with a letter and may only contain letters, numbers, dashes, and underscores."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region identifier where this Linode instance is deployed, such as us-east or eu-west."
+    },
+    "type": {
+      "type": "string",
+      "description": "The Linode plan type identifier that determines the instance's hardware resources and pricing."
+    },
+    "image": {
+      "type": ["string", "null"],
+      "description": "The image identifier used to deploy this Linode instance, or null if deployed from a backup."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "offline",
+        "booting",
+        "rebooting",
+        "shutting_down",
+        "provisioning",
+        "deleting",
+        "migrating",
+        "rebuilding",
+        "cloning",
+        "restoring",
+        "stopped"
+      ],
+      "description": "The current operational status of the Linode instance."
+    },
+    "ipv4": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "ipv4"
+      },
+      "description": "The IPv4 addresses assigned to this Linode instance."
+    },
+    "ipv6": {
+      "type": ["string", "null"],
+      "description": "The IPv6 SLAAC address for this Linode instance."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this Linode instance was created."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date and time when this Linode instance was last updated."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User-defined tags applied to this Linode instance for organizational purposes."
+    },
+    "hypervisor": {
+      "type": "string",
+      "description": "The virtualization hypervisor this Linode instance runs on."
+    },
+    "watchdog_enabled": {
+      "type": "boolean",
+      "description": "Whether the Lassie watchdog is enabled to automatically restart this instance if it powers off unexpectedly."
+    },
+    "specs": {
+      "$ref": "#/$defs/InstanceSpecs"
+    },
+    "alerts": {
+      "$ref": "#/$defs/InstanceAlerts"
+    },
+    "backups": {
+      "$ref": "#/$defs/BackupInfo"
+    }
+  },
+  "$defs": {
+    "InstanceSpecs": {
+      "type": "object",
+      "description": "The hardware specifications for this Linode instance based on its plan type.",
+      "properties": {
+        "disk": {
+          "type": "integer",
+          "description": "The total disk space in megabytes."
+        },
+        "memory": {
+          "type": "integer",
+          "description": "The total RAM in megabytes."
+        },
+        "vcpus": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The number of virtual CPU cores."
+        },
+        "gpus": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The number of GPUs, if applicable."
+        },
+        "transfer": {
+          "type": "integer",
+          "description": "The monthly network transfer quota in gigabytes."
+        }
+      }
+    },
+    "InstanceAlerts": {
+      "type": "object",
+      "description": "Alert thresholds for monitoring this Linode instance.",
+      "properties": {
+        "cpu": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The CPU usage percentage threshold for alerts."
+        },
+        "io": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The disk IO rate threshold for alerts."
+        },
+        "network_in": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The incoming network traffic threshold in Mb/s for alerts."
+        },
+        "network_out": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The outgoing network traffic threshold in Mb/s for alerts."
+        },
+        "transfer_quota": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "The transfer quota usage percentage threshold for alerts."
+        }
+      }
+    },
+    "BackupInfo": {
+      "type": "object",
+      "description": "Information about the backup service for this Linode instance.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the backup service is enabled for this instance."
+        },
+        "available": {
+          "type": "boolean",
+          "description": "Whether any backups are currently available for restoration."
+        },
+        "schedule": {
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": ["string", "null"],
+              "description": "The day of the week for weekly automatic backups."
+            },
+            "window": {
+              "type": ["string", "null"],
+              "description": "The two-hour UTC window for daily automatic backups."
+            }
+          },
+          "description": "The schedule for automatic backups."
+        }
+      }
+    }
+  }
+}

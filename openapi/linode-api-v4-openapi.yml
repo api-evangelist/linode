@@ -1,0 +1,6108 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4
+  description: >-
+    The Linode API v4 provides programmatic access to the full range of Akamai
+    Connected Cloud (formerly Linode) products and services. It enables developers
+    to create and manage compute instances, deploy Kubernetes clusters, configure
+    NodeBalancers, manage DNS domains, provision Block Storage volumes, control
+    Object Storage buckets, set up firewalls, and administer account settings.
+    The RESTful API uses OAuth and personal access tokens for authentication and
+    returns JSON responses, with support for filtering and sorting across all
+    resource endpoints.
+  version: '4.189.0'
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api
+servers:
+  - url: https://api.linode.com/v4
+    description: Production Server
+tags:
+  - name: Account
+    description: >-
+      Manage your account settings, users, billing information, OAuth clients,
+      service transfers, and payment methods.
+  - name: Databases
+    description: >-
+      Manage Managed Database instances including MySQL and PostgreSQL clusters,
+      backups, credentials, and maintenance windows.
+  - name: Domains
+    description: >-
+      Manage DNS domains and their associated resource records including A, AAAA,
+      CNAME, MX, TXT, SRV, CAA, and NS records.
+  - name: Images
+    description: >-
+      Manage custom images for deploying Linode instances, including creating
+      images from disks, uploading images, and managing image metadata.
+  - name: Linode Instances
+    description: >-
+      Create and manage Linode compute instances, including configuration
+      profiles, disks, backups, networking, migration, resize, and rebuild
+      operations.
+  - name: Linode Kubernetes Engine (LKE)
+    description: >-
+      Deploy and manage Kubernetes clusters, node pools, and cluster
+      configurations through the Linode Kubernetes Engine.
+  - name: Longview
+    description: >-
+      Manage Longview clients and subscriptions for system-level monitoring
+      and metrics collection on Linode instances.
+  - name: Managed
+    description: >-
+      Manage Linode Managed services including monitored contacts, credentials,
+      issues, service monitors, and SSH access settings.
+  - name: Networking
+    description: >-
+      Manage networking resources including IP addresses, IPv6 ranges and pools,
+      firewalls, VLANs, and IP address sharing and assignment.
+  - name: NodeBalancers
+    description: >-
+      Create and manage NodeBalancer load balancers, their configurations, and
+      backend nodes for distributing traffic across Linode instances.
+  - name: Object Storage
+    description: >-
+      Manage Object Storage buckets, access keys, clusters, and endpoints for
+      S3-compatible object storage.
+  - name: Placement Groups
+    description: >-
+      Create and manage placement groups for controlling the physical placement
+      of Linode instances within a data center.
+  - name: Profile
+    description: >-
+      Manage your user profile settings, SSH keys, authorized applications,
+      personal access tokens, and two-factor authentication.
+  - name: Regions
+    description: >-
+      List available data center regions and their capabilities for deploying
+      Linode services.
+  - name: StackScripts
+    description: >-
+      Create and manage StackScripts for automating the deployment and
+      configuration of Linode instances.
+  - name: Support
+    description: >-
+      Create and manage support tickets and view replies for getting help
+      from the Linode support team.
+  - name: Tags
+    description: >-
+      Create and manage tags for organizing and categorizing Linode resources
+      across your account.
+  - name: Volumes
+    description: >-
+      Create and manage Block Storage volumes that can be attached to Linode
+      instances for persistent data storage.
+  - name: VPCs
+    description: >-
+      Create and manage Virtual Private Clouds for isolated network environments
+      and subnets for Linode instances.
+security:
+  - personalAccessToken: []
+  - oauth: []
+paths:
+  /account:
+    get:
+      operationId: getAccount
+      summary: Get account info
+      description: >-
+        Returns the contact and billing information related to your account,
+        including company name, address, phone number, and current balance.
+      tags:
+        - Account
+      responses:
+        '200':
+          description: Account information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    put:
+      operationId: updateAccount
+      summary: Update account info
+      description: >-
+        Updates contact and billing information on your account.
+      tags:
+        - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: Account information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/users:
+    get:
+      operationId: getUsers
+      summary: List users
+      description: >-
+        Returns a paginated list of users on your account, including their
+        usernames, email addresses, and restricted status.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createUser
+      summary: Create a user
+      description: >-
+        Creates a new user on your account. The new user will receive an email
+        to set their password.
+      tags:
+        - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/users/{username}:
+    get:
+      operationId: getUser
+      summary: Get a user
+      description: >-
+        Returns information about a single user on your account.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/usernameParam'
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+    put:
+      operationId: updateUser
+      summary: Update a user
+      description: >-
+        Updates information about a user on your account, including their
+        username, email, and restricted status.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/usernameParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      description: >-
+        Deletes a user from your account. The deleted user will lose access
+        to the account immediately.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/usernameParam'
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+  /account/events:
+    get:
+      operationId: getEvents
+      summary: List events
+      description: >-
+        Returns a paginated list of events on your account, ordered by creation
+        date descending. Events record actions taken on your account such as
+        instance creation, deletion, and configuration changes.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEventList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/events/{eventId}:
+    get:
+      operationId: getEvent
+      summary: Get an event
+      description: >-
+        Returns a single event object by its ID.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/eventIdParam'
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Event not found
+  /account/invoices:
+    get:
+      operationId: getInvoices
+      summary: List invoices
+      description: >-
+        Returns a paginated list of invoices on your account.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Invoices retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvoiceList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/payments:
+    get:
+      operationId: getPayments
+      summary: List payments
+      description: >-
+        Returns a paginated list of payments made on your account.
+      tags:
+        - Account
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPayment
+      summary: Make a payment
+      description: >-
+        Makes a payment on your account using the US Dollar amount provided.
+      tags:
+        - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment made successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/instances:
+    get:
+      operationId: getDatabaseInstances
+      summary: List Managed Databases
+      description: >-
+        Returns a paginated list of all Managed Database instances on your
+        account, including their status, engine type, and region.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed Databases retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/engines:
+    get:
+      operationId: getDatabaseEngines
+      summary: List Managed Database engines
+      description: >-
+        Returns a paginated list of available Managed Database engines and
+        their versions.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Database engines retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseEngineList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/types:
+    get:
+      operationId: getDatabaseTypes
+      summary: List Managed Database types
+      description: >-
+        Returns a paginated list of available Managed Database node types
+        and their associated pricing.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Database types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseTypeList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/{databaseEngine}/{databaseId}:
+    get:
+      operationId: getDatabaseInstance
+      summary: Get a Managed Database
+      description: >-
+        Returns the details for a single Managed Database instance.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/databaseEngineParam'
+        - $ref: '#/components/parameters/databaseIdParam'
+      responses:
+        '200':
+          description: Managed Database retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+    put:
+      operationId: updateDatabaseInstance
+      summary: Update a Managed Database
+      description: >-
+        Updates the configuration for a Managed Database instance.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/databaseEngineParam'
+        - $ref: '#/components/parameters/databaseIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseRequest'
+      responses:
+        '200':
+          description: Managed Database updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+    delete:
+      operationId: deleteDatabaseInstance
+      summary: Delete a Managed Database
+      description: >-
+        Deletes a Managed Database instance. All data stored in the database
+        will be permanently lost.
+      tags:
+        - Databases
+      parameters:
+        - $ref: '#/components/parameters/databaseEngineParam'
+        - $ref: '#/components/parameters/databaseIdParam'
+      responses:
+        '200':
+          description: Managed Database deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+  /domains:
+    get:
+      operationId: getDomains
+      summary: List domains
+      description: >-
+        Returns a paginated list of all domains on your account, including
+        their status, type, and SOA email address.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Domains retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDomainList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createDomain
+      summary: Create a domain
+      description: >-
+        Creates a new domain on your account. The domain can be a master or
+        slave zone type.
+      tags:
+        - Domains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRequest'
+      responses:
+        '200':
+          description: Domain created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /domains/{domainId}:
+    get:
+      operationId: getDomain
+      summary: Get a domain
+      description: >-
+        Returns the details for a single domain on your account.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/domainIdParam'
+      responses:
+        '200':
+          description: Domain retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    put:
+      operationId: updateDomain
+      summary: Update a domain
+      description: >-
+        Updates the configuration for a domain on your account.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/domainIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRequest'
+      responses:
+        '200':
+          description: Domain updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    delete:
+      operationId: deleteDomain
+      summary: Delete a domain
+      description: >-
+        Deletes a domain from your account. All associated DNS records will
+        also be deleted.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/domainIdParam'
+      responses:
+        '200':
+          description: Domain deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+  /domains/{domainId}/records:
+    get:
+      operationId: getDomainRecords
+      summary: List domain records
+      description: >-
+        Returns a paginated list of all DNS records for a given domain.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/domainIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Domain records retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDomainRecordList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    post:
+      operationId: createDomainRecord
+      summary: Create a domain record
+      description: >-
+        Creates a new DNS record for the given domain.
+      tags:
+        - Domains
+      parameters:
+        - $ref: '#/components/parameters/domainIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRecordRequest'
+      responses:
+        '200':
+          description: Domain record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainRecord'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+  /images:
+    get:
+      operationId: getImages
+      summary: List images
+      description: >-
+        Returns a paginated list of images on your account, including both
+        public distribution images and your custom private images.
+      tags:
+        - Images
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Images retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImageList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createImage
+      summary: Create an image
+      description: >-
+        Creates a new custom image from an existing Linode disk. The image can
+        then be used to deploy new Linode instances.
+      tags:
+        - Images
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+      responses:
+        '200':
+          description: Image created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /images/{imageId}:
+    get:
+      operationId: getImage
+      summary: Get an image
+      description: >-
+        Returns the details for a single image.
+      tags:
+        - Images
+      parameters:
+        - $ref: '#/components/parameters/imageIdParam'
+      responses:
+        '200':
+          description: Image retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+    put:
+      operationId: updateImage
+      summary: Update an image
+      description: >-
+        Updates the label and description for a custom image.
+      tags:
+        - Images
+      parameters:
+        - $ref: '#/components/parameters/imageIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageUpdateRequest'
+      responses:
+        '200':
+          description: Image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+    delete:
+      operationId: deleteImage
+      summary: Delete an image
+      description: >-
+        Deletes a custom image. Distribution images cannot be deleted.
+      tags:
+        - Images
+      parameters:
+        - $ref: '#/components/parameters/imageIdParam'
+      responses:
+        '200':
+          description: Image deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+  /linode/instances:
+    get:
+      operationId: getLinodeInstances
+      summary: List Linodes
+      description: >-
+        Returns a paginated list of Linode instances on your account, including
+        their status, region, type, and IP addresses.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Linode instances retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLinodeList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createLinodeInstance
+      summary: Create a Linode
+      description: >-
+        Creates a new Linode instance. Requires a region, type, and either an
+        image or backup to deploy from. Optionally accepts root password,
+        authorized keys, StackScript, and other configuration options.
+      tags:
+        - Linode Instances
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinodeRequest'
+      responses:
+        '200':
+          description: Linode instance created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Linode'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /linode/instances/{linodeId}:
+    get:
+      operationId: getLinodeInstance
+      summary: Get a Linode
+      description: >-
+        Returns the details for a single Linode instance, including its status,
+        region, type, IP addresses, and configuration.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      responses:
+        '200':
+          description: Linode instance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Linode'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+    put:
+      operationId: updateLinodeInstance
+      summary: Update a Linode
+      description: >-
+        Updates a Linode instance, including its label, group, alerts,
+        and watchdog settings.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinodeUpdateRequest'
+      responses:
+        '200':
+          description: Linode instance updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Linode'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+    delete:
+      operationId: deleteLinodeInstance
+      summary: Delete a Linode
+      description: >-
+        Deletes a Linode instance. All disks, backups, and IP addresses
+        associated with the instance will be permanently removed.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      responses:
+        '200':
+          description: Linode instance deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/boot:
+    post:
+      operationId: bootLinodeInstance
+      summary: Boot a Linode
+      description: >-
+        Boots a Linode instance. Optionally specify a configuration profile
+        to boot with.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config_id:
+                  type: integer
+                  description: >-
+                    The ID of the configuration profile to boot with.
+      responses:
+        '200':
+          description: Linode instance booted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/reboot:
+    post:
+      operationId: rebootLinodeInstance
+      summary: Reboot a Linode
+      description: >-
+        Reboots a Linode instance. Optionally specify a configuration profile
+        to boot with after the reboot.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config_id:
+                  type: integer
+                  description: >-
+                    The ID of the configuration profile to boot with.
+      responses:
+        '200':
+          description: Linode instance rebooted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/shutdown:
+    post:
+      operationId: shutdownLinodeInstance
+      summary: Shut down a Linode
+      description: >-
+        Shuts down a running Linode instance. The instance will be placed
+        in an offline state.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      responses:
+        '200':
+          description: Linode instance shut down successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/resize:
+    post:
+      operationId: resizeLinodeInstance
+      summary: Resize a Linode
+      description: >-
+        Resizes a Linode instance to a new plan type. The instance must be
+        powered off or will be automatically shut down during the resize.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                  description: >-
+                    The Linode type ID to resize to.
+                allow_auto_disk_resize:
+                  type: boolean
+                  description: >-
+                    Whether to automatically resize the primary disk.
+                  default: true
+      responses:
+        '200':
+          description: Linode instance resize initiated successfully
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/rebuild:
+    post:
+      operationId: rebuildLinodeInstance
+      summary: Rebuild a Linode
+      description: >-
+        Rebuilds a Linode instance with a new image. All existing disks
+        will be destroyed and a new root disk will be created.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinodeRebuildRequest'
+      responses:
+        '200':
+          description: Linode instance rebuild initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Linode'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/clone:
+    post:
+      operationId: cloneLinodeInstance
+      summary: Clone a Linode
+      description: >-
+        Clones a Linode instance to a new or existing instance. The clone
+        will include the source instance's disks and configuration profiles.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: string
+                  description: >-
+                    The region to clone to.
+                type:
+                  type: string
+                  description: >-
+                    The Linode type for the new clone.
+                label:
+                  type: string
+                  description: >-
+                    The label for the new clone.
+                linode_id:
+                  type: integer
+                  description: >-
+                    An existing Linode ID to clone to.
+      responses:
+        '200':
+          description: Linode instance clone initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Linode'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/backups:
+    get:
+      operationId: getBackups
+      summary: List backups
+      description: >-
+        Returns the available backups for a Linode instance, including
+        automatic daily and weekly snapshots.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      responses:
+        '200':
+          description: Backups retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupResponse'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/disks:
+    get:
+      operationId: getLinodeDisks
+      summary: List disks
+      description: >-
+        Returns a paginated list of disks attached to a Linode instance.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Disks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDiskList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/configs:
+    get:
+      operationId: getLinodeConfigs
+      summary: List configuration profiles
+      description: >-
+        Returns a paginated list of configuration profiles for a Linode
+        instance.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Configuration profiles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConfigList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/instances/{linodeId}/ips:
+    get:
+      operationId: getLinodeIPs
+      summary: Get networking information
+      description: >-
+        Returns networking information for a Linode instance, including
+        its IPv4 and IPv6 addresses.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/linodeIdParam'
+      responses:
+        '200':
+          description: Networking information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinodeIPAddresses'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Linode instance not found
+  /linode/types:
+    get:
+      operationId: getLinodeTypes
+      summary: List types
+      description: >-
+        Returns a paginated list of available Linode instance types, including
+        their resources, pricing, and availability.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Linode types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLinodeTypeList'
+  /linode/kernels:
+    get:
+      operationId: getKernels
+      summary: List kernels
+      description: >-
+        Returns a paginated list of available kernels that can be used with
+        Linode instances.
+      tags:
+        - Linode Instances
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Kernels retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedKernelList'
+  /linode/stackscripts:
+    get:
+      operationId: getStackScripts
+      summary: List StackScripts
+      description: >-
+        Returns a paginated list of StackScripts accessible to your account,
+        including both your own and community StackScripts.
+      tags:
+        - StackScripts
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: StackScripts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStackScriptList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createStackScript
+      summary: Create a StackScript
+      description: >-
+        Creates a new StackScript for automating the deployment and
+        configuration of Linode instances.
+      tags:
+        - StackScripts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StackScriptRequest'
+      responses:
+        '200':
+          description: StackScript created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StackScript'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /linode/stackscripts/{stackscriptId}:
+    get:
+      operationId: getStackScript
+      summary: Get a StackScript
+      description: >-
+        Returns the details for a single StackScript.
+      tags:
+        - StackScripts
+      parameters:
+        - $ref: '#/components/parameters/stackscriptIdParam'
+      responses:
+        '200':
+          description: StackScript retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StackScript'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: StackScript not found
+    put:
+      operationId: updateStackScript
+      summary: Update a StackScript
+      description: >-
+        Updates the properties of a StackScript.
+      tags:
+        - StackScripts
+      parameters:
+        - $ref: '#/components/parameters/stackscriptIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StackScriptRequest'
+      responses:
+        '200':
+          description: StackScript updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StackScript'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: StackScript not found
+    delete:
+      operationId: deleteStackScript
+      summary: Delete a StackScript
+      description: >-
+        Deletes a StackScript from your account.
+      tags:
+        - StackScripts
+      parameters:
+        - $ref: '#/components/parameters/stackscriptIdParam'
+      responses:
+        '200':
+          description: StackScript deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: StackScript not found
+  /lke/clusters:
+    get:
+      operationId: getLKEClusters
+      summary: List Kubernetes clusters
+      description: >-
+        Returns a paginated list of all LKE clusters on your account.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: LKE clusters retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLKEClusterList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createLKECluster
+      summary: Create a Kubernetes cluster
+      description: >-
+        Creates a new LKE cluster with the specified configuration, including
+        the Kubernetes version, region, and node pools.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LKEClusterRequest'
+      responses:
+        '200':
+          description: LKE cluster created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LKECluster'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /lke/clusters/{clusterId}:
+    get:
+      operationId: getLKECluster
+      summary: Get a Kubernetes cluster
+      description: >-
+        Returns the details for a single LKE cluster.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+      responses:
+        '200':
+          description: LKE cluster retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LKECluster'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+    put:
+      operationId: updateLKECluster
+      summary: Update a Kubernetes cluster
+      description: >-
+        Updates the configuration for an LKE cluster.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LKEClusterUpdateRequest'
+      responses:
+        '200':
+          description: LKE cluster updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LKECluster'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+    delete:
+      operationId: deleteLKECluster
+      summary: Delete a Kubernetes cluster
+      description: >-
+        Deletes an LKE cluster and all associated node pools and nodes.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+      responses:
+        '200':
+          description: LKE cluster deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+  /lke/clusters/{clusterId}/pools:
+    get:
+      operationId: getLKENodePools
+      summary: List node pools
+      description: >-
+        Returns a paginated list of node pools for a given LKE cluster.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Node pools retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNodePoolList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+    post:
+      operationId: createLKENodePool
+      summary: Create a node pool
+      description: >-
+        Creates a new node pool for the specified LKE cluster.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodePoolRequest'
+      responses:
+        '200':
+          description: Node pool created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodePool'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+  /lke/clusters/{clusterId}/kubeconfig:
+    get:
+      operationId: getLKEClusterKubeconfig
+      summary: Get kubeconfig
+      description: >-
+        Returns the base64-encoded kubeconfig for the specified LKE cluster,
+        which can be used with kubectl to interact with the cluster.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      parameters:
+        - $ref: '#/components/parameters/clusterIdParam'
+      responses:
+        '200':
+          description: Kubeconfig retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kubeconfig:
+                    type: string
+                    description: >-
+                      The base64-encoded kubeconfig content.
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: LKE cluster not found
+  /lke/versions:
+    get:
+      operationId: getLKEVersions
+      summary: List Kubernetes versions
+      description: >-
+        Returns a list of available Kubernetes versions for LKE clusters.
+      tags:
+        - Linode Kubernetes Engine (LKE)
+      responses:
+        '200':
+          description: Kubernetes versions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KubernetesVersion'
+  /networking/ips:
+    get:
+      operationId: getIPAddresses
+      summary: List IP addresses
+      description: >-
+        Returns a paginated list of IP addresses on your account, including
+        both IPv4 and IPv6 addresses.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: IP addresses retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIPAddressList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /networking/ips/{address}:
+    get:
+      operationId: getIPAddress
+      summary: Get an IP address
+      description: >-
+        Returns information about a single IP address.
+      tags:
+        - Networking
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+          description: >-
+            The IP address to look up.
+      responses:
+        '200':
+          description: IP address retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPAddress'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: IP address not found
+  /networking/firewalls:
+    get:
+      operationId: getFirewalls
+      summary: List firewalls
+      description: >-
+        Returns a paginated list of firewalls on your account.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Firewalls retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFirewallList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createFirewall
+      summary: Create a firewall
+      description: >-
+        Creates a new firewall with the specified rules and device assignments.
+      tags:
+        - Networking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirewallRequest'
+      responses:
+        '200':
+          description: Firewall created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /networking/firewalls/{firewallId}:
+    get:
+      operationId: getFirewall
+      summary: Get a firewall
+      description: >-
+        Returns the details for a single firewall.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/firewallIdParam'
+      responses:
+        '200':
+          description: Firewall retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+    put:
+      operationId: updateFirewall
+      summary: Update a firewall
+      description: >-
+        Updates the label, status, and tags for a firewall.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/firewallIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirewallUpdateRequest'
+      responses:
+        '200':
+          description: Firewall updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+    delete:
+      operationId: deleteFirewall
+      summary: Delete a firewall
+      description: >-
+        Deletes a firewall and removes it from all assigned devices.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/firewallIdParam'
+      responses:
+        '200':
+          description: Firewall deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+  /networking/vlans:
+    get:
+      operationId: getVLANs
+      summary: List VLANs
+      description: >-
+        Returns a paginated list of VLANs on your account.
+      tags:
+        - Networking
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VLANs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVLANList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /nodebalancers:
+    get:
+      operationId: getNodeBalancers
+      summary: List NodeBalancers
+      description: >-
+        Returns a paginated list of NodeBalancers on your account.
+      tags:
+        - NodeBalancers
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: NodeBalancers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNodeBalancerList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createNodeBalancer
+      summary: Create a NodeBalancer
+      description: >-
+        Creates a new NodeBalancer in the specified region.
+      tags:
+        - NodeBalancers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeBalancerRequest'
+      responses:
+        '200':
+          description: NodeBalancer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /nodebalancers/{nodeBalancerId}:
+    get:
+      operationId: getNodeBalancer
+      summary: Get a NodeBalancer
+      description: >-
+        Returns the details for a single NodeBalancer.
+      tags:
+        - NodeBalancers
+      parameters:
+        - $ref: '#/components/parameters/nodeBalancerIdParam'
+      responses:
+        '200':
+          description: NodeBalancer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+    put:
+      operationId: updateNodeBalancer
+      summary: Update a NodeBalancer
+      description: >-
+        Updates the label and other settings for a NodeBalancer.
+      tags:
+        - NodeBalancers
+      parameters:
+        - $ref: '#/components/parameters/nodeBalancerIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeBalancerUpdateRequest'
+      responses:
+        '200':
+          description: NodeBalancer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+    delete:
+      operationId: deleteNodeBalancer
+      summary: Delete a NodeBalancer
+      description: >-
+        Deletes a NodeBalancer and all associated configurations and nodes.
+      tags:
+        - NodeBalancers
+      parameters:
+        - $ref: '#/components/parameters/nodeBalancerIdParam'
+      responses:
+        '200':
+          description: NodeBalancer deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+  /nodebalancers/{nodeBalancerId}/configs:
+    get:
+      operationId: getNodeBalancerConfigs
+      summary: List configs
+      description: >-
+        Returns a paginated list of configurations for a NodeBalancer.
+      tags:
+        - NodeBalancers
+      parameters:
+        - $ref: '#/components/parameters/nodeBalancerIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: NodeBalancer configs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNodeBalancerConfigList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+  /object-storage/buckets:
+    get:
+      operationId: getObjectStorageBuckets
+      summary: List Object Storage buckets
+      description: >-
+        Returns a paginated list of all Object Storage buckets on your
+        account across all clusters.
+      tags:
+        - Object Storage
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Object Storage buckets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedObjectStorageBucketList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /object-storage/buckets/{regionId}/{bucket}:
+    get:
+      operationId: getObjectStorageBucket
+      summary: Get an Object Storage bucket
+      description: >-
+        Returns the details for a single Object Storage bucket.
+      tags:
+        - Object Storage
+      parameters:
+        - $ref: '#/components/parameters/regionIdParam'
+        - $ref: '#/components/parameters/bucketParam'
+      responses:
+        '200':
+          description: Object Storage bucket retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageBucket'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Bucket not found
+    delete:
+      operationId: deleteObjectStorageBucket
+      summary: Delete an Object Storage bucket
+      description: >-
+        Deletes an Object Storage bucket. The bucket must be empty before
+        it can be deleted.
+      tags:
+        - Object Storage
+      parameters:
+        - $ref: '#/components/parameters/regionIdParam'
+        - $ref: '#/components/parameters/bucketParam'
+      responses:
+        '200':
+          description: Object Storage bucket deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Bucket not found
+  /object-storage/keys:
+    get:
+      operationId: getObjectStorageKeys
+      summary: List Object Storage keys
+      description: >-
+        Returns a paginated list of Object Storage keys on your account.
+      tags:
+        - Object Storage
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Object Storage keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedObjectStorageKeyList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createObjectStorageKey
+      summary: Create an Object Storage key
+      description: >-
+        Creates a new Object Storage key pair for accessing buckets. The
+        secret key is only returned once at creation time.
+      tags:
+        - Object Storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectStorageKeyRequest'
+      responses:
+        '200':
+          description: Object Storage key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageKey'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /object-storage/endpoints:
+    get:
+      operationId: getObjectStorageEndpoints
+      summary: List Object Storage endpoints
+      description: >-
+        Returns a list of available Object Storage endpoints and their
+        associated regions.
+      tags:
+        - Object Storage
+      responses:
+        '200':
+          description: Object Storage endpoints retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageEndpointList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /placement/groups:
+    get:
+      operationId: getPlacementGroups
+      summary: List placement groups
+      description: >-
+        Returns a paginated list of placement groups on your account.
+      tags:
+        - Placement Groups
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Placement groups retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlacementGroupList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPlacementGroup
+      summary: Create a placement group
+      description: >-
+        Creates a new placement group in the specified region with the
+        given placement group type.
+      tags:
+        - Placement Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlacementGroupRequest'
+      responses:
+        '200':
+          description: Placement group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlacementGroup'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /profile:
+    get:
+      operationId: getProfile
+      summary: Get your profile
+      description: >-
+        Returns information about the current user, including their username,
+        email address, timezone, and authentication settings.
+      tags:
+        - Profile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    put:
+      operationId: updateProfile
+      summary: Update your profile
+      description: >-
+        Updates information about the current user.
+      tags:
+        - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /profile/tokens:
+    get:
+      operationId: getPersonalAccessTokens
+      summary: List personal access tokens
+      description: >-
+        Returns a paginated list of personal access tokens for the current
+        user.
+      tags:
+        - Profile
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Personal access tokens retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTokenList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPersonalAccessToken
+      summary: Create a personal access token
+      description: >-
+        Creates a new personal access token with the specified scopes and
+        expiry. The token value is only returned once at creation time.
+      tags:
+        - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Personal access token created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /profile/sshkeys:
+    get:
+      operationId: getSSHKeys
+      summary: List SSH keys
+      description: >-
+        Returns a paginated list of SSH keys on the current user's profile.
+      tags:
+        - Profile
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: SSH keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSSHKeyList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createSSHKey
+      summary: Add an SSH key
+      description: >-
+        Adds an SSH key to the current user's profile for use when deploying
+        Linode instances.
+      tags:
+        - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSHKeyRequest'
+      responses:
+        '200':
+          description: SSH key added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SSHKey'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /regions:
+    get:
+      operationId: getRegions
+      summary: List regions
+      description: >-
+        Returns a list of all available regions where Linode services can be
+        deployed, including their capabilities and status.
+      tags:
+        - Regions
+      responses:
+        '200':
+          description: Regions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRegionList'
+  /regions/{regionId}:
+    get:
+      operationId: getRegion
+      summary: Get a region
+      description: >-
+        Returns the details for a single region.
+      tags:
+        - Regions
+      parameters:
+        - $ref: '#/components/parameters/regionIdParam'
+      responses:
+        '200':
+          description: Region retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+        '404':
+          description: Region not found
+  /support/tickets:
+    get:
+      operationId: getSupportTickets
+      summary: List support tickets
+      description: >-
+        Returns a paginated list of support tickets on your account.
+      tags:
+        - Support
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Support tickets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupportTicketList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createSupportTicket
+      summary: Open a support ticket
+      description: >-
+        Opens a new support ticket with the Linode support team.
+      tags:
+        - Support
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportTicketRequest'
+      responses:
+        '200':
+          description: Support ticket created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicket'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /tags:
+    get:
+      operationId: getTags
+      summary: List tags
+      description: >-
+        Returns a paginated list of tags on your account.
+      tags:
+        - Tags
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTagList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createTag
+      summary: Create a tag
+      description: >-
+        Creates a new tag and optionally assigns it to specified resources.
+      tags:
+        - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagRequest'
+      responses:
+        '200':
+          description: Tag created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /tags/{label}:
+    delete:
+      operationId: deleteTag
+      summary: Delete a tag
+      description: >-
+        Deletes a tag from your account. The tag will be removed from all
+        resources it was assigned to.
+      tags:
+        - Tags
+      parameters:
+        - name: label
+          in: path
+          required: true
+          schema:
+            type: string
+          description: >-
+            The label of the tag to delete.
+      responses:
+        '200':
+          description: Tag deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Tag not found
+  /volumes:
+    get:
+      operationId: getVolumes
+      summary: List volumes
+      description: >-
+        Returns a paginated list of Block Storage volumes on your account.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Volumes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVolumeList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createVolume
+      summary: Create a volume
+      description: >-
+        Creates a new Block Storage volume. The volume can be attached to
+        a Linode instance immediately or left unattached.
+      tags:
+        - Volumes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeRequest'
+      responses:
+        '200':
+          description: Volume created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /volumes/{volumeId}:
+    get:
+      operationId: getVolume
+      summary: Get a volume
+      description: >-
+        Returns the details for a single Block Storage volume.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+    put:
+      operationId: updateVolume
+      summary: Update a volume
+      description: >-
+        Updates the label and tags for a Block Storage volume.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/volumeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeUpdateRequest'
+      responses:
+        '200':
+          description: Volume updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+    delete:
+      operationId: deleteVolume
+      summary: Delete a volume
+      description: >-
+        Deletes a Block Storage volume. The volume must be detached from
+        all Linode instances before it can be deleted.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+  /volumes/{volumeId}/attach:
+    post:
+      operationId: attachVolume
+      summary: Attach a volume
+      description: >-
+        Attaches a Block Storage volume to a Linode instance. The volume
+        and instance must be in the same region.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/volumeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - linode_id
+              properties:
+                linode_id:
+                  type: integer
+                  description: >-
+                    The ID of the Linode instance to attach the volume to.
+                config_id:
+                  type: integer
+                  description: >-
+                    The ID of the configuration profile to attach to.
+      responses:
+        '200':
+          description: Volume attached successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+  /volumes/{volumeId}/detach:
+    post:
+      operationId: detachVolume
+      summary: Detach a volume
+      description: >-
+        Detaches a Block Storage volume from a Linode instance.
+      tags:
+        - Volumes
+      parameters:
+        - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume detached successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+  /vpcs:
+    get:
+      operationId: getVPCs
+      summary: List VPCs
+      description: >-
+        Returns a paginated list of VPCs on your account.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VPCs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVPCList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createVPC
+      summary: Create a VPC
+      description: >-
+        Creates a new VPC in the specified region with optional subnets.
+      tags:
+        - VPCs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCRequest'
+      responses:
+        '200':
+          description: VPC created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /vpcs/{vpcId}:
+    get:
+      operationId: getVPC
+      summary: Get a VPC
+      description: >-
+        Returns the details for a single VPC.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/vpcIdParam'
+      responses:
+        '200':
+          description: VPC retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    put:
+      operationId: updateVPC
+      summary: Update a VPC
+      description: >-
+        Updates the label and description for a VPC.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/vpcIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCUpdateRequest'
+      responses:
+        '200':
+          description: VPC updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    delete:
+      operationId: deleteVPC
+      summary: Delete a VPC
+      description: >-
+        Deletes a VPC. The VPC must not have any active subnets with
+        assigned Linode instances.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/vpcIdParam'
+      responses:
+        '200':
+          description: VPC deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+  /vpcs/{vpcId}/subnets:
+    get:
+      operationId: getVPCSubnets
+      summary: List VPC subnets
+      description: >-
+        Returns a paginated list of subnets for a VPC.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/vpcIdParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VPC subnets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubnetList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    post:
+      operationId: createVPCSubnet
+      summary: Create a VPC subnet
+      description: >-
+        Creates a new subnet in the specified VPC.
+      tags:
+        - VPCs
+      parameters:
+        - $ref: '#/components/parameters/vpcIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubnetRequest'
+      responses:
+        '200':
+          description: VPC subnet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subnet'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+  /longview/clients:
+    get:
+      operationId: getLongviewClients
+      summary: List Longview clients
+      description: >-
+        Returns a paginated list of Longview clients on your account.
+      tags:
+        - Longview
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Longview clients retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLongviewClientList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createLongviewClient
+      summary: Create a Longview client
+      description: >-
+        Creates a new Longview client for system monitoring.
+      tags:
+        - Longview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LongviewClientRequest'
+      responses:
+        '200':
+          description: Longview client created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LongviewClient'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /managed/services:
+    get:
+      operationId: getManagedServices
+      summary: List managed services
+      description: >-
+        Returns a paginated list of Managed services being monitored on
+        your account.
+      tags:
+        - Managed
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed services retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedServiceList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createManagedService
+      summary: Create a managed service
+      description: >-
+        Creates a new Managed service monitor.
+      tags:
+        - Managed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagedServiceRequest'
+      responses:
+        '200':
+          description: Managed service created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedService'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /managed/contacts:
+    get:
+      operationId: getManagedContacts
+      summary: List managed contacts
+      description: >-
+        Returns a paginated list of Managed contacts for your account.
+      tags:
+        - Managed
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedContactList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /managed/issues:
+    get:
+      operationId: getManagedIssues
+      summary: List managed issues
+      description: >-
+        Returns a paginated list of recent issues that Managed detected
+        for your services.
+      tags:
+        - Managed
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed issues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedIssueList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: >-
+        A personal access token generated from the Linode Cloud Manager
+        that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: >-
+        OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: >-
+        The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: >-
+        The number of items per page.
+    linodeIdParam:
+      name: linodeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the Linode instance.
+    domainIdParam:
+      name: domainId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the domain.
+    imageIdParam:
+      name: imageId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: >-
+        The ID of the image.
+    volumeIdParam:
+      name: volumeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the volume.
+    clusterIdParam:
+      name: clusterId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the LKE cluster.
+    nodeBalancerIdParam:
+      name: nodeBalancerId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the NodeBalancer.
+    firewallIdParam:
+      name: firewallId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the firewall.
+    vpcIdParam:
+      name: vpcId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the VPC.
+    regionIdParam:
+      name: regionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: >-
+        The ID of the region.
+    bucketParam:
+      name: bucket
+      in: path
+      required: true
+      schema:
+        type: string
+      description: >-
+        The name of the Object Storage bucket.
+    usernameParam:
+      name: username
+      in: path
+      required: true
+      schema:
+        type: string
+      description: >-
+        The username of the user.
+    eventIdParam:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the event.
+    stackscriptIdParam:
+      name: stackscriptId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the StackScript.
+    databaseEngineParam:
+      name: databaseEngine
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+          - mysql
+          - postgresql
+      description: >-
+        The database engine type.
+    databaseIdParam:
+      name: databaseId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: >-
+        The ID of the Managed Database instance.
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: >-
+            The current page number.
+        pages:
+          type: integer
+          description: >-
+            The total number of pages.
+        results:
+          type: integer
+          description: >-
+            The total number of results.
+    Account:
+      type: object
+      properties:
+        company:
+          type: string
+          description: >-
+            The company name associated with this account.
+        email:
+          type: string
+          format: email
+          description: >-
+            The email address associated with this account.
+        first_name:
+          type: string
+          description: >-
+            The first name of the account holder.
+        last_name:
+          type: string
+          description: >-
+            The last name of the account holder.
+        address_1:
+          type: string
+          description: >-
+            The first line of the account's address.
+        address_2:
+          type: string
+          description: >-
+            The second line of the account's address.
+        city:
+          type: string
+          description: >-
+            The city of the account's address.
+        state:
+          type: string
+          description: >-
+            The state or province of the account's address.
+        zip:
+          type: string
+          description: >-
+            The postal code of the account's address.
+        country:
+          type: string
+          description: >-
+            The two-letter ISO 3166-1 country code.
+        phone:
+          type: string
+          description: >-
+            The phone number for the account.
+        balance:
+          type: number
+          format: float
+          description: >-
+            The current account balance in US dollars.
+        active_since:
+          type: string
+          format: date-time
+          description: >-
+            The date and time the account was activated.
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of capabilities enabled on this account.
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: >-
+            The user's username.
+        email:
+          type: string
+          format: email
+          description: >-
+            The user's email address.
+        restricted:
+          type: boolean
+          description: >-
+            Whether the user has restricted access to account resources.
+        ssh_keys:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of SSH key labels associated with the user.
+        tfa_enabled:
+          type: boolean
+          description: >-
+            Whether two-factor authentication is enabled.
+    UserRequest:
+      type: object
+      required:
+        - username
+        - email
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The user's username.
+        email:
+          type: string
+          format: email
+          description: >-
+            The user's email address.
+        restricted:
+          type: boolean
+          description: >-
+            Whether the user should have restricted access.
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of the event.
+        action:
+          type: string
+          description: >-
+            The action that caused this event.
+          enum:
+            - linode_boot
+            - linode_create
+            - linode_delete
+            - linode_reboot
+            - linode_rebuild
+            - linode_resize
+            - linode_shutdown
+            - linode_update
+            - disk_create
+            - disk_delete
+            - disk_resize
+            - domain_create
+            - domain_delete
+            - domain_update
+            - domain_record_create
+            - domain_record_delete
+            - domain_record_update
+            - firewall_create
+            - firewall_delete
+            - firewall_update
+            - lke_cluster_create
+            - lke_cluster_delete
+            - lke_cluster_update
+            - nodebalancer_create
+            - nodebalancer_delete
+            - nodebalancer_update
+            - volume_create
+            - volume_delete
+            - volume_attach
+            - volume_detach
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this event was created.
+        entity:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: >-
+                The ID of the entity related to this event.
+            label:
+              type: string
+              description: >-
+                The label of the entity.
+            type:
+              type: string
+              description: >-
+                The type of entity.
+            url:
+              type: string
+              description: >-
+                The URL of the entity in the API.
+          description: >-
+            The entity that this event is related to.
+        status:
+          type: string
+          enum:
+            - failed
+            - finished
+            - notification
+            - scheduled
+            - started
+          description: >-
+            The current status of the event.
+        username:
+          type: string
+          description: >-
+            The username of the user who initiated this event.
+        percent_complete:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: >-
+            The percentage of completion for the event.
+        seen:
+          type: boolean
+          description: >-
+            Whether the event has been seen by the user.
+        read:
+          type: boolean
+          description: >-
+            Whether the event has been read by the user.
+    Linode:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this Linode instance.
+        label:
+          type: string
+          description: >-
+            The label for this Linode instance.
+        region:
+          type: string
+          description: >-
+            The region where this Linode is located.
+        type:
+          type: string
+          description: >-
+            The Linode type ID of this instance.
+        image:
+          type: string
+          description: >-
+            The image ID used to deploy this Linode.
+        status:
+          type: string
+          enum:
+            - running
+            - offline
+            - booting
+            - rebooting
+            - shutting_down
+            - provisioning
+            - deleting
+            - migrating
+            - rebuilding
+            - cloning
+            - restoring
+            - stopped
+          description: >-
+            The current status of the Linode instance.
+        ipv4:
+          type: array
+          items:
+            type: string
+            format: ipv4
+          description: >-
+            The IPv4 addresses associated with this Linode.
+        ipv6:
+          type: string
+          description: >-
+            The IPv6 SLAAC address for this Linode.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this Linode was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this Linode was last updated.
+        group:
+          type: string
+          description: >-
+            The display group for this Linode.
+          deprecated: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags applied to this Linode for organizational purposes.
+        hypervisor:
+          type: string
+          description: >-
+            The hypervisor this Linode is running on.
+        specs:
+          type: object
+          properties:
+            disk:
+              type: integer
+              description: >-
+                The amount of disk space in MB.
+            memory:
+              type: integer
+              description: >-
+                The amount of RAM in MB.
+            vcpus:
+              type: integer
+              description: >-
+                The number of virtual CPUs.
+            gpus:
+              type: integer
+              description: >-
+                The number of GPUs.
+            transfer:
+              type: integer
+              description: >-
+                The monthly network transfer quota in GB.
+          description: >-
+            The hardware specifications for this Linode type.
+        alerts:
+          type: object
+          properties:
+            cpu:
+              type: integer
+              description: >-
+                CPU usage alert threshold percentage.
+            io:
+              type: integer
+              description: >-
+                Disk IO rate alert threshold.
+            network_in:
+              type: integer
+              description: >-
+                Incoming network traffic alert threshold in Mb/s.
+            network_out:
+              type: integer
+              description: >-
+                Outgoing network traffic alert threshold in Mb/s.
+            transfer_quota:
+              type: integer
+              description: >-
+                Transfer quota usage alert threshold percentage.
+          description: >-
+            Alert thresholds for this Linode instance.
+        backups:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: >-
+                Whether the backup service is enabled.
+            available:
+              type: boolean
+              description: >-
+                Whether any backups are available.
+            schedule:
+              type: object
+              properties:
+                day:
+                  type: string
+                  description: >-
+                    The day of the week for automatic backups.
+                window:
+                  type: string
+                  description: >-
+                    The window for automatic backups.
+          description: >-
+            Information about this Linode's backup service.
+        watchdog_enabled:
+          type: boolean
+          description: >-
+            Whether Lassie the watchdog is enabled to restart
+            this Linode if it crashes.
+    LinodeRequest:
+      type: object
+      required:
+        - region
+        - type
+      properties:
+        region:
+          type: string
+          description: >-
+            The region where the Linode will be created.
+        type:
+          type: string
+          description: >-
+            The Linode type to deploy.
+        image:
+          type: string
+          description: >-
+            The image to deploy with. Required if no backup_id is provided.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          pattern: '^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$'
+          description: >-
+            The label for the new Linode instance.
+        root_pass:
+          type: string
+          description: >-
+            The root password for the new Linode instance.
+        authorized_keys:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of public SSH keys to deploy with.
+        authorized_users:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of usernames whose SSH keys to deploy.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the new Linode.
+        stackscript_id:
+          type: integer
+          description: >-
+            A StackScript ID to deploy with.
+        stackscript_data:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            UDF data for the StackScript.
+        backup_id:
+          type: integer
+          description: >-
+            A backup ID to restore from.
+        backups_enabled:
+          type: boolean
+          description: >-
+            Whether to enable the backup service.
+        private_ip:
+          type: boolean
+          description: >-
+            Whether to assign a private IPv4 address.
+        booted:
+          type: boolean
+          default: true
+          description: >-
+            Whether the new Linode should be booted after creation.
+    LinodeUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          description: >-
+            The label for the Linode instance.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the Linode.
+        watchdog_enabled:
+          type: boolean
+          description: >-
+            Whether to enable Lassie the watchdog.
+        alerts:
+          type: object
+          properties:
+            cpu:
+              type: integer
+            io:
+              type: integer
+            network_in:
+              type: integer
+            network_out:
+              type: integer
+            transfer_quota:
+              type: integer
+    LinodeRebuildRequest:
+      type: object
+      required:
+        - image
+        - root_pass
+      properties:
+        image:
+          type: string
+          description: >-
+            The image to rebuild with.
+        root_pass:
+          type: string
+          description: >-
+            The root password for the rebuilt instance.
+        authorized_keys:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of public SSH keys.
+        authorized_users:
+          type: array
+          items:
+            type: string
+          description: >-
+            A list of usernames whose SSH keys to deploy.
+        stackscript_id:
+          type: integer
+          description: >-
+            A StackScript ID to deploy with.
+        stackscript_data:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            UDF data for the StackScript.
+        booted:
+          type: boolean
+          default: true
+          description: >-
+            Whether to boot after rebuild.
+    LinodeIPAddresses:
+      type: object
+      properties:
+        ipv4:
+          type: object
+          properties:
+            public:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: >-
+                Public IPv4 addresses.
+            private:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: >-
+                Private IPv4 addresses.
+            shared:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: >-
+                Shared IPv4 addresses.
+            reserved:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: >-
+                Reserved IPv4 addresses.
+        ipv6:
+          type: object
+          properties:
+            slaac:
+              $ref: '#/components/schemas/IPv6Address'
+            link_local:
+              $ref: '#/components/schemas/IPv6Address'
+            global:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPv6Range'
+    Domain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this domain.
+        domain:
+          type: string
+          description: >-
+            The domain name.
+        type:
+          type: string
+          enum:
+            - master
+            - slave
+          description: >-
+            Whether this is a master or slave zone.
+        status:
+          type: string
+          enum:
+            - active
+            - disabled
+            - edit_mode
+          description: >-
+            The status of this domain.
+        soa_email:
+          type: string
+          format: email
+          description: >-
+            The SOA email address for this domain.
+        description:
+          type: string
+          description: >-
+            A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this domain.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this domain was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this domain was last updated.
+        ttl_sec:
+          type: integer
+          description: >-
+            The default TTL in seconds.
+        retry_sec:
+          type: integer
+          description: >-
+            The retry interval in seconds.
+        refresh_sec:
+          type: integer
+          description: >-
+            The refresh interval in seconds.
+        expire_sec:
+          type: integer
+          description: >-
+            The expiry time in seconds.
+    DomainRequest:
+      type: object
+      required:
+        - domain
+        - type
+      properties:
+        domain:
+          type: string
+          description: >-
+            The domain name.
+        type:
+          type: string
+          enum:
+            - master
+            - slave
+          description: >-
+            Whether this is a master or slave zone.
+        soa_email:
+          type: string
+          format: email
+          description: >-
+            The SOA email address.
+        description:
+          type: string
+          description: >-
+            A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this domain.
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this domain record.
+        type:
+          type: string
+          enum:
+            - A
+            - AAAA
+            - NS
+            - MX
+            - CNAME
+            - TXT
+            - SRV
+            - PTR
+            - CAA
+          description: >-
+            The type of DNS record.
+        name:
+          type: string
+          description: >-
+            The hostname or FQDN for this record.
+        target:
+          type: string
+          description: >-
+            The target for this record.
+        priority:
+          type: integer
+          description: >-
+            The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: >-
+            The weight for SRV records.
+        port:
+          type: integer
+          description: >-
+            The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: >-
+            The TTL in seconds for this record.
+        tag:
+          type: string
+          description: >-
+            The tag for CAA records.
+    DomainRecordRequest:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - A
+            - AAAA
+            - NS
+            - MX
+            - CNAME
+            - TXT
+            - SRV
+            - PTR
+            - CAA
+          description: >-
+            The type of DNS record.
+        name:
+          type: string
+          description: >-
+            The hostname or FQDN.
+        target:
+          type: string
+          description: >-
+            The target value.
+        priority:
+          type: integer
+          description: >-
+            The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: >-
+            The weight for SRV records.
+        port:
+          type: integer
+          description: >-
+            The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: >-
+            The TTL in seconds.
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            The unique ID of this image.
+        label:
+          type: string
+          description: >-
+            The label of this image.
+        description:
+          type: string
+          description: >-
+            A description of this image.
+        type:
+          type: string
+          enum:
+            - manual
+            - automatic
+          description: >-
+            Whether this is a manual or automatic image.
+        is_public:
+          type: boolean
+          description: >-
+            Whether this image is publicly available.
+        size:
+          type: integer
+          description: >-
+            The size of this image in MB.
+        status:
+          type: string
+          enum:
+            - available
+            - creating
+            - pending_upload
+          description: >-
+            The status of this image.
+        vendor:
+          type: string
+          description: >-
+            The upstream distribution vendor.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this image was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this image was last updated.
+        expiry:
+          type: string
+          format: date-time
+          description: >-
+            When this image expires. Null for distribution images.
+    ImageRequest:
+      type: object
+      required:
+        - disk_id
+      properties:
+        disk_id:
+          type: integer
+          description: >-
+            The ID of the disk to create the image from.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: >-
+            The label for the new image.
+        description:
+          type: string
+          maxLength: 65000
+          description: >-
+            A description for the new image.
+    ImageUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: >-
+            The label for the image.
+        description:
+          type: string
+          maxLength: 65000
+          description: >-
+            A description for the image.
+    Volume:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this volume.
+        label:
+          type: string
+          description: >-
+            The label of this volume.
+        status:
+          type: string
+          enum:
+            - creating
+            - active
+            - resizing
+            - deleting
+          description: >-
+            The current status of this volume.
+        size:
+          type: integer
+          description: >-
+            The size of this volume in GB.
+        region:
+          type: string
+          description: >-
+            The region where this volume is located.
+        linode_id:
+          type: integer
+          description: >-
+            The ID of the Linode this volume is attached to, or null.
+        linode_label:
+          type: string
+          description: >-
+            The label of the Linode this volume is attached to.
+        filesystem_path:
+          type: string
+          description: >-
+            The filesystem path for this volume on the attached Linode.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this volume.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this volume was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this volume was last updated.
+    VolumeRequest:
+      type: object
+      required:
+        - label
+        - size
+        - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: >-
+            The label for the new volume.
+        size:
+          type: integer
+          minimum: 10
+          maximum: 10240
+          description: >-
+            The size of the volume in GB.
+        region:
+          type: string
+          description: >-
+            The region to create the volume in.
+        linode_id:
+          type: integer
+          description: >-
+            A Linode instance to attach the volume to.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the new volume.
+    VolumeUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: >-
+            The new label for the volume.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Updated tags for the volume.
+    LKECluster:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this LKE cluster.
+        label:
+          type: string
+          description: >-
+            The label for this cluster.
+        region:
+          type: string
+          description: >-
+            The region where this cluster is located.
+        k8s_version:
+          type: string
+          description: >-
+            The Kubernetes version for this cluster.
+        status:
+          type: string
+          enum:
+            - ready
+            - not_ready
+          description: >-
+            The current status of the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: >-
+                Whether the control plane is highly available.
+          description: >-
+            Control plane configuration for this cluster.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this cluster was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this cluster was last updated.
+    LKEClusterRequest:
+      type: object
+      required:
+        - label
+        - region
+        - k8s_version
+        - node_pools
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: >-
+            The label for the new cluster.
+        region:
+          type: string
+          description: >-
+            The region for the cluster.
+        k8s_version:
+          type: string
+          description: >-
+            The Kubernetes version for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the cluster.
+        node_pools:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodePoolRequest'
+          description: >-
+            Node pool configurations for the cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: >-
+                Whether to enable high availability for the control plane.
+    LKEClusterUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: >-
+            The label for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the cluster.
+        k8s_version:
+          type: string
+          description: >-
+            The target Kubernetes version.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: >-
+                Whether to enable high availability.
+    NodePool:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this node pool.
+        type:
+          type: string
+          description: >-
+            The Linode type for nodes in this pool.
+        count:
+          type: integer
+          description: >-
+            The number of nodes in this pool.
+        nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: >-
+                  The unique ID of this node.
+              instance_id:
+                type: integer
+                description: >-
+                  The Linode instance ID for this node.
+              status:
+                type: string
+                enum:
+                  - ready
+                  - not_ready
+                description: >-
+                  The status of this node.
+          description: >-
+            The nodes in this pool.
+        autoscaler:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: >-
+                Whether the autoscaler is enabled.
+            min:
+              type: integer
+              description: >-
+                The minimum number of nodes.
+            max:
+              type: integer
+              description: >-
+                The maximum number of nodes.
+          description: >-
+            Autoscaler configuration for this pool.
+    NodePoolRequest:
+      type: object
+      required:
+        - type
+        - count
+      properties:
+        type:
+          type: string
+          description: >-
+            The Linode type for nodes in this pool.
+        count:
+          type: integer
+          minimum: 1
+          description: >-
+            The number of nodes in this pool.
+        autoscaler:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: >-
+                Whether to enable the autoscaler.
+            min:
+              type: integer
+              description: >-
+                The minimum number of nodes.
+            max:
+              type: integer
+              description: >-
+                The maximum number of nodes.
+    KubernetesVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            The Kubernetes version string.
+    NodeBalancer:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this NodeBalancer.
+        label:
+          type: string
+          description: >-
+            The label for this NodeBalancer.
+        region:
+          type: string
+          description: >-
+            The region where this NodeBalancer is located.
+        hostname:
+          type: string
+          description: >-
+            The hostname for this NodeBalancer.
+        ipv4:
+          type: string
+          format: ipv4
+          description: >-
+            The public IPv4 address of this NodeBalancer.
+        ipv6:
+          type: string
+          description: >-
+            The public IPv6 address of this NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: >-
+            Throttle connections per second.
+        transfer:
+          type: object
+          properties:
+            in:
+              type: number
+              description: >-
+                Inbound transfer in MB this month.
+            out:
+              type: number
+              description: >-
+                Outbound transfer in MB this month.
+            total:
+              type: number
+              description: >-
+                Total transfer in MB this month.
+          description: >-
+            Transfer statistics for this NodeBalancer.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this NodeBalancer.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this NodeBalancer was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this NodeBalancer was last updated.
+    NodeBalancerRequest:
+      type: object
+      required:
+        - region
+      properties:
+        region:
+          type: string
+          description: >-
+            The region for the new NodeBalancer.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the new NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: >-
+            Throttle connections per second.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the new NodeBalancer.
+    NodeBalancerUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: >-
+            Throttle connections per second.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the NodeBalancer.
+    Firewall:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this firewall.
+        label:
+          type: string
+          description: >-
+            The label of this firewall.
+        status:
+          type: string
+          enum:
+            - enabled
+            - disabled
+            - deleted
+          description: >-
+            The status of this firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+              description: >-
+                Inbound firewall rules.
+            inbound_policy:
+              type: string
+              enum:
+                - ACCEPT
+                - DROP
+              description: >-
+                The default inbound policy.
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+              description: >-
+                Outbound firewall rules.
+            outbound_policy:
+              type: string
+              enum:
+                - ACCEPT
+                - DROP
+              description: >-
+                The default outbound policy.
+          description: >-
+            The firewall rules.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for this firewall.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this firewall was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this firewall was last updated.
+    FirewallRule:
+      type: object
+      properties:
+        ports:
+          type: string
+          description: >-
+            The ports this rule applies to, such as 22 or 443-445.
+        protocol:
+          type: string
+          enum:
+            - TCP
+            - UDP
+            - ICMP
+            - IPENCAP
+          description: >-
+            The network protocol.
+        addresses:
+          type: object
+          properties:
+            ipv4:
+              type: array
+              items:
+                type: string
+              description: >-
+                IPv4 addresses or CIDRs.
+            ipv6:
+              type: array
+              items:
+                type: string
+              description: >-
+                IPv6 addresses or CIDRs.
+          description: >-
+            The addresses this rule applies to.
+        action:
+          type: string
+          enum:
+            - ACCEPT
+            - DROP
+          description: >-
+            The action for matching traffic.
+        label:
+          type: string
+          description: >-
+            The label for this rule.
+        description:
+          type: string
+          description: >-
+            A description for this rule.
+    FirewallRequest:
+      type: object
+      required:
+        - label
+        - rules
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            inbound_policy:
+              type: string
+              enum:
+                - ACCEPT
+                - DROP
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            outbound_policy:
+              type: string
+              enum:
+                - ACCEPT
+                - DROP
+          description: >-
+            The firewall rules.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the firewall.
+    FirewallUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the firewall.
+        status:
+          type: string
+          enum:
+            - enabled
+            - disabled
+          description: >-
+            The status of the firewall.
+        tags:
+          type: array
+          items:
+            type: string
+          description: >-
+            Tags for the firewall.
+    Database:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this database.
+        label:
+          type: string
+          description: >-
+            The label of this database.
+        engine:
+          type: string
+          description: >-
+            The database engine and version.
+        type:
+          type: string
+          description: >-
+            The Linode type for database nodes.
+        region:
+          type: string
+          description: >-
+            The region where this database is located.
+        status:
+          type: string
+          enum:
+            - provisioning
+            - active
+            - suspending
+            - suspended
+            - resuming
+            - restoring
+            - failed
+            - degraded
+            - updating
+            - backing_up
+          description: >-
+            The current status of this database.
+        cluster_size:
+          type: integer
+          enum:
+            - 1
+            - 3
+          description: >-
+            The number of nodes in the database cluster.
+        hosts:
+          type: object
+          properties:
+            primary:
+              type: string
+              description: >-
+                The primary host for this database.
+            secondary:
+              type: string
+              description: >-
+                The secondary host for this database.
+          description: >-
+            The connection endpoints for this database.
+        port:
+          type: integer
+          description: >-
+            The port for database connections.
+        ssl_connection:
+          type: boolean
+          description: >-
+            Whether SSL is required for connections.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: >-
+            IP addresses or CIDRs allowed to connect.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this database was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this database was last updated.
+    DatabaseRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the database.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: >-
+            IP addresses or CIDRs allowed to connect.
+    IPAddress:
+      type: object
+      properties:
+        address:
+          type: string
+          description: >-
+            The IP address.
+        gateway:
+          type: string
+          description: >-
+            The default gateway.
+        subnet_mask:
+          type: string
+          description: >-
+            The subnet mask.
+        prefix:
+          type: integer
+          description: >-
+            The network prefix length.
+        type:
+          type: string
+          enum:
+            - ipv4
+            - ipv6
+          description: >-
+            The type of IP address.
+        public:
+          type: boolean
+          description: >-
+            Whether this is a public IP address.
+        rdns:
+          type: string
+          description: >-
+            The reverse DNS entry for this address.
+        linode_id:
+          type: integer
+          description: >-
+            The ID of the Linode this IP is assigned to.
+        region:
+          type: string
+          description: >-
+            The region for this IP address.
+    IPv6Address:
+      type: object
+      properties:
+        address:
+          type: string
+          description: >-
+            The IPv6 address.
+        prefix:
+          type: integer
+          description: >-
+            The network prefix length.
+        rdns:
+          type: string
+          description: >-
+            The reverse DNS entry.
+        type:
+          type: string
+          description: >-
+            The type of IPv6 address.
+        region:
+          type: string
+          description: >-
+            The region for this address.
+    IPv6Range:
+      type: object
+      properties:
+        range:
+          type: string
+          description: >-
+            The IPv6 range.
+        prefix:
+          type: integer
+          description: >-
+            The prefix length.
+        region:
+          type: string
+          description: >-
+            The region for this range.
+    VPC:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this VPC.
+        label:
+          type: string
+          description: >-
+            The label for this VPC.
+        description:
+          type: string
+          description: >-
+            A description for this VPC.
+        region:
+          type: string
+          description: >-
+            The region where this VPC is located.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subnet'
+          description: >-
+            The subnets in this VPC.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this VPC was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this VPC was last updated.
+    VPCRequest:
+      type: object
+      required:
+        - label
+        - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The label for the new VPC.
+        description:
+          type: string
+          maxLength: 255
+          description: >-
+            A description for the new VPC.
+        region:
+          type: string
+          description: >-
+            The region for the new VPC.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubnetRequest'
+          description: >-
+            Initial subnets to create.
+    VPCUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The new label for the VPC.
+        description:
+          type: string
+          maxLength: 255
+          description: >-
+            The new description for the VPC.
+    Subnet:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this subnet.
+        label:
+          type: string
+          description: >-
+            The label for this subnet.
+        ipv4:
+          type: string
+          description: >-
+            The IPv4 CIDR range for this subnet.
+        linodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: >-
+                  The Linode ID.
+              interfaces:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    active:
+                      type: boolean
+          description: >-
+            Linodes assigned to this subnet.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this subnet was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this subnet was last updated.
+    SubnetRequest:
+      type: object
+      required:
+        - label
+        - ipv4
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The label for the subnet.
+        ipv4:
+          type: string
+          description: >-
+            The IPv4 CIDR range for the subnet.
+    Region:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            The unique ID of this region.
+        label:
+          type: string
+          description: >-
+            The display name for this region.
+        country:
+          type: string
+          description: >-
+            The two-letter country code for this region.
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: >-
+            The capabilities available in this region.
+        status:
+          type: string
+          enum:
+            - ok
+            - outage
+          description: >-
+            The current operational status.
+        resolvers:
+          type: object
+          properties:
+            ipv4:
+              type: string
+              description: >-
+                Comma-separated IPv4 resolver addresses.
+            ipv6:
+              type: string
+              description: >-
+                Comma-separated IPv6 resolver addresses.
+          description: >-
+            DNS resolvers for this region.
+        site_type:
+          type: string
+          enum:
+            - core
+            - edge
+            - distributed
+          description: >-
+            The type of data center site.
+    ObjectStorageBucket:
+      type: object
+      properties:
+        label:
+          type: string
+          description: >-
+            The name of this bucket.
+        region:
+          type: string
+          description: >-
+            The region where this bucket is located.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this bucket was created.
+        hostname:
+          type: string
+          description: >-
+            The hostname for accessing this bucket.
+        objects:
+          type: integer
+          description: >-
+            The number of objects in this bucket.
+        size:
+          type: integer
+          description: >-
+            The total size of objects in bytes.
+    ObjectStorageKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this key.
+        label:
+          type: string
+          description: >-
+            The label for this key.
+        access_key:
+          type: string
+          description: >-
+            The access key for S3-compatible requests.
+        secret_key:
+          type: string
+          description: >-
+            The secret key. Only returned at creation time.
+        limited:
+          type: boolean
+          description: >-
+            Whether this key has limited bucket access.
+        bucket_access:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: >-
+                  The region of the bucket.
+              bucket_name:
+                type: string
+                description: >-
+                  The name of the bucket.
+              permissions:
+                type: string
+                enum:
+                  - read_only
+                  - read_write
+                description: >-
+                  The permission level.
+          description: >-
+            Specific bucket access permissions for this key.
+    ObjectStorageKeyRequest:
+      type: object
+      required:
+        - label
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: >-
+            The label for the new key.
+        bucket_access:
+          type: array
+          items:
+            type: object
+            required:
+              - region
+              - bucket_name
+              - permissions
+            properties:
+              region:
+                type: string
+              bucket_name:
+                type: string
+              permissions:
+                type: string
+                enum:
+                  - read_only
+                  - read_write
+          description: >-
+            Specific bucket access permissions.
+    ObjectStorageEndpointList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: >-
+                  The region ID.
+              endpoint_type:
+                type: string
+                description: >-
+                  The type of endpoint.
+              s3_endpoint:
+                type: string
+                description: >-
+                  The S3-compatible endpoint URL.
+    PlacementGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this placement group.
+        label:
+          type: string
+          description: >-
+            The label for this placement group.
+        region:
+          type: string
+          description: >-
+            The region for this placement group.
+        placement_group_type:
+          type: string
+          enum:
+            - anti_affinity:local
+          description: >-
+            The placement group type.
+        placement_group_policy:
+          type: string
+          enum:
+            - strict
+            - flexible
+          description: >-
+            The placement group enforcement policy.
+        is_compliant:
+          type: boolean
+          description: >-
+            Whether all members satisfy the placement policy.
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              linode_id:
+                type: integer
+                description: >-
+                  The Linode ID.
+              is_compliant:
+                type: boolean
+                description: >-
+                  Whether this member satisfies the policy.
+          description: >-
+            The members of this placement group.
+    PlacementGroupRequest:
+      type: object
+      required:
+        - label
+        - region
+        - placement_group_type
+        - placement_group_policy
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The label for the placement group.
+        region:
+          type: string
+          description: >-
+            The region for the placement group.
+        placement_group_type:
+          type: string
+          enum:
+            - anti_affinity:local
+          description: >-
+            The placement group type.
+        placement_group_policy:
+          type: string
+          enum:
+            - strict
+            - flexible
+          description: >-
+            The enforcement policy.
+    Profile:
+      type: object
+      properties:
+        username:
+          type: string
+          description: >-
+            The user's username.
+        email:
+          type: string
+          format: email
+          description: >-
+            The user's email address.
+        timezone:
+          type: string
+          description: >-
+            The user's preferred timezone.
+        email_notifications:
+          type: boolean
+          description: >-
+            Whether email notifications are enabled.
+        ip_whitelist_enabled:
+          type: boolean
+          description: >-
+            Whether IP whitelisting is enabled.
+        two_factor_auth:
+          type: boolean
+          description: >-
+            Whether two-factor authentication is enabled.
+        restricted:
+          type: boolean
+          description: >-
+            Whether the user has restricted access.
+        authorized_keys:
+          type: array
+          items:
+            type: string
+          description: >-
+            SSH keys authorized on the profile.
+    Token:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this token.
+        scopes:
+          type: string
+          description: >-
+            The OAuth scopes for this token.
+        label:
+          type: string
+          description: >-
+            The label for this token.
+        token:
+          type: string
+          description: >-
+            The token string. Only returned at creation time.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this token was created.
+        expiry:
+          type: string
+          format: date-time
+          description: >-
+            When this token expires.
+    TokenRequest:
+      type: object
+      required:
+        - scopes
+        - label
+      properties:
+        scopes:
+          type: string
+          description: >-
+            The OAuth scopes for the token.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: >-
+            The label for the token.
+        expiry:
+          type: string
+          format: date-time
+          description: >-
+            When the token should expire.
+    SSHKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this SSH key.
+        label:
+          type: string
+          description: >-
+            The label for this SSH key.
+        ssh_key:
+          type: string
+          description: >-
+            The SSH public key.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this SSH key was added.
+    SSHKeyRequest:
+      type: object
+      required:
+        - label
+        - ssh_key
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The label for the SSH key.
+        ssh_key:
+          type: string
+          description: >-
+            The SSH public key content.
+    StackScript:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this StackScript.
+        username:
+          type: string
+          description: >-
+            The username of the creator.
+        label:
+          type: string
+          description: >-
+            The label for this StackScript.
+        description:
+          type: string
+          description: >-
+            A description of this StackScript.
+        images:
+          type: array
+          items:
+            type: string
+          description: >-
+            Compatible image IDs.
+        script:
+          type: string
+          description: >-
+            The script content.
+        rev_note:
+          type: string
+          description: >-
+            A revision note.
+        is_public:
+          type: boolean
+          description: >-
+            Whether this StackScript is publicly available.
+        deployments_active:
+          type: integer
+          description: >-
+            The number of active deployments.
+        deployments_total:
+          type: integer
+          description: >-
+            The total number of deployments.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this StackScript was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this StackScript was last updated.
+    StackScriptRequest:
+      type: object
+      required:
+        - label
+        - images
+        - script
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 128
+          description: >-
+            The label for the StackScript.
+        description:
+          type: string
+          description: >-
+            A description of the StackScript.
+        images:
+          type: array
+          items:
+            type: string
+          description: >-
+            Compatible image IDs.
+        script:
+          type: string
+          description: >-
+            The script content.
+        rev_note:
+          type: string
+          maxLength: 512
+          description: >-
+            A revision note.
+        is_public:
+          type: boolean
+          description: >-
+            Whether to make the StackScript public.
+    SupportTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this ticket.
+        summary:
+          type: string
+          description: >-
+            The summary of this ticket.
+        description:
+          type: string
+          description: >-
+            The full description of this ticket.
+        status:
+          type: string
+          enum:
+            - closed
+            - new
+            - open
+          description: >-
+            The status of this ticket.
+        opened:
+          type: string
+          format: date-time
+          description: >-
+            When this ticket was opened.
+        closed:
+          type: string
+          format: date-time
+          description: >-
+            When this ticket was closed.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this ticket was last updated.
+        entity:
+          type: object
+          properties:
+            id:
+              type: integer
+            label:
+              type: string
+            type:
+              type: string
+            url:
+              type: string
+          description: >-
+            The entity related to this ticket.
+    SupportTicketRequest:
+      type: object
+      required:
+        - summary
+        - description
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >-
+            The summary for the ticket.
+        description:
+          type: string
+          minLength: 1
+          maxLength: 65000
+          description: >-
+            The full description.
+        linode_id:
+          type: integer
+          description: >-
+            The ID of the related Linode.
+        domain_id:
+          type: integer
+          description: >-
+            The ID of the related domain.
+        nodebalancer_id:
+          type: integer
+          description: >-
+            The ID of the related NodeBalancer.
+        volume_id:
+          type: integer
+          description: >-
+            The ID of the related volume.
+        lke_cluster_id:
+          type: integer
+          description: >-
+            The ID of the related LKE cluster.
+        database_id:
+          type: integer
+          description: >-
+            The ID of the related database.
+    Tag:
+      type: object
+      properties:
+        label:
+          type: string
+          description: >-
+            The tag label.
+    TagRequest:
+      type: object
+      required:
+        - label
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 100
+          description: >-
+            The tag label.
+        linodes:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Linode IDs to tag.
+        domains:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Domain IDs to tag.
+        volumes:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Volume IDs to tag.
+        nodebalancers:
+          type: array
+          items:
+            type: integer
+          description: >-
+            NodeBalancer IDs to tag.
+    LongviewClient:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this Longview client.
+        label:
+          type: string
+          description: >-
+            The label for this client.
+        api_key:
+          type: string
+          description: >-
+            The API key for this Longview client.
+        install_code:
+          type: string
+          description: >-
+            The install code for setting up the agent.
+        apps:
+          type: object
+          description: >-
+            Applications being monitored.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this client was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this client was last updated.
+    LongviewClientRequest:
+      type: object
+      required:
+        - label
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: >-
+            The label for the Longview client.
+    ManagedService:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this managed service.
+        label:
+          type: string
+          description: >-
+            The label for this service.
+        service_type:
+          type: string
+          enum:
+            - url
+          description: >-
+            The type of service monitor.
+        address:
+          type: string
+          description: >-
+            The URL to monitor.
+        timeout:
+          type: integer
+          description: >-
+            Timeout in seconds before considering the service down.
+        body:
+          type: string
+          description: >-
+            A string to look for in the response body.
+        consultation_group:
+          type: string
+          description: >-
+            The group of managed contacts to notify.
+        status:
+          type: string
+          enum:
+            - disabled
+            - ok
+            - pending
+            - problem
+          description: >-
+            The current status of this service.
+        notes:
+          type: string
+          description: >-
+            Notes about this service.
+        region:
+          type: string
+          description: >-
+            The region to monitor from.
+        credentials:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Credential IDs for accessing this service.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this service was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this service was last updated.
+    ManagedServiceRequest:
+      type: object
+      required:
+        - label
+        - service_type
+        - address
+        - timeout
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          description: >-
+            The label for the service.
+        service_type:
+          type: string
+          enum:
+            - url
+          description: >-
+            The type of service monitor.
+        address:
+          type: string
+          description: >-
+            The URL to monitor.
+        timeout:
+          type: integer
+          minimum: 1
+          maximum: 255
+          description: >-
+            Timeout in seconds.
+        body:
+          type: string
+          maxLength: 100
+          description: >-
+            A string to look for in the response body.
+        consultation_group:
+          type: string
+          description: >-
+            The group of managed contacts to notify.
+        notes:
+          type: string
+          description: >-
+            Notes about this service.
+        credentials:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Credential IDs for this service.
+    BackupResponse:
+      type: object
+      properties:
+        automatic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Backup'
+          description: >-
+            Automatic backups.
+        snapshot:
+          type: object
+          properties:
+            current:
+              $ref: '#/components/schemas/Backup'
+            in_progress:
+              $ref: '#/components/schemas/Backup'
+          description: >-
+            Snapshot backups.
+    Backup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this backup.
+        type:
+          type: string
+          enum:
+            - auto
+            - snapshot
+          description: >-
+            The type of backup.
+        status:
+          type: string
+          enum:
+            - paused
+            - pending
+            - running
+            - needsPostProcessing
+            - successful
+            - failed
+            - userAborted
+          description: >-
+            The status of this backup.
+        created:
+          type: string
+          format: date-time
+          description: >-
+            When this backup was created.
+        updated:
+          type: string
+          format: date-time
+          description: >-
+            When this backup was last updated.
+        finished:
+          type: string
+          format: date-time
+          description: >-
+            When this backup finished.
+        label:
+          type: string
+          description: >-
+            The label for snapshot backups.
+        disks:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              size:
+                type: integer
+              filesystem:
+                type: string
+          description: >-
+            Disk information for this backup.
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this invoice.
+        date:
+          type: string
+          format: date-time
+          description: >-
+            The date of this invoice.
+        label:
+          type: string
+          description: >-
+            The label for this invoice.
+        subtotal:
+          type: number
+          description: >-
+            The subtotal amount.
+        tax:
+          type: number
+          description: >-
+            The tax amount.
+        total:
+          type: number
+          description: >-
+            The total amount.
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >-
+            The unique ID of this payment.
+        date:
+          type: string
+          format: date-time
+          description: >-
+            The date this payment was made.
+        usd:
+          type: number
+          description: >-
+            The amount in US dollars.
+    PaymentRequest:
+      type: object
+      required:
+        - usd
+      properties:
+        usd:
+          type: number
+          minimum: 5
+          maximum: 10000
+          description: >-
+            The payment amount in US dollars.
+    PaginatedLinodeList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Linode'
+    PaginatedDomainList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Domain'
+    PaginatedDomainRecordList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/DomainRecord'
+    PaginatedVolumeList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Volume'
+    PaginatedImageList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Image'
+    PaginatedNodeBalancerList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/NodeBalancer'
+    PaginatedNodeBalancerConfigList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  port:
+                    type: integer
+                  protocol:
+                    type: string
+                  algorithm:
+                    type: string
+                  stickiness:
+                    type: string
+                  check:
+                    type: string
+    PaginatedLKEClusterList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/LKECluster'
+    PaginatedNodePoolList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/NodePool'
+    PaginatedFirewallList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Firewall'
+    PaginatedDatabaseList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Database'
+    PaginatedDatabaseEngineList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  engine:
+                    type: string
+                  id:
+                    type: string
+                  version:
+                    type: string
+    PaginatedDatabaseTypeList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  label:
+                    type: string
+                  class:
+                    type: string
+                  vcpus:
+                    type: integer
+                  memory:
+                    type: integer
+                  disk:
+                    type: integer
+    PaginatedObjectStorageBucketList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectStorageBucket'
+    PaginatedObjectStorageKeyList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectStorageKey'
+    PaginatedVPCList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/VPC'
+    PaginatedSubnetList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subnet'
+    PaginatedPlacementGroupList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlacementGroup'
+    PaginatedUserList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+    PaginatedEventList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Event'
+    PaginatedInvoiceList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Invoice'
+    PaginatedPaymentList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+    PaginatedIPAddressList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+    PaginatedVLANList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  label:
+                    type: string
+                  linodes:
+                    type: array
+                    items:
+                      type: integer
+                  region:
+                    type: string
+                  created:
+                    type: string
+                    format: date-time
+    PaginatedLinodeTypeList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  label:
+                    type: string
+                  class:
+                    type: string
+                    enum:
+                      - nanode
+                      - standard
+                      - dedicated
+                      - gpu
+                      - highmem
+                      - premium
+                  disk:
+                    type: integer
+                  memory:
+                    type: integer
+                  vcpus:
+                    type: integer
+                  gpus:
+                    type: integer
+                  transfer:
+                    type: integer
+                  network_out:
+                    type: integer
+                  price:
+                    type: object
+                    properties:
+                      hourly:
+                        type: number
+                      monthly:
+                        type: number
+    PaginatedKernelList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  label:
+                    type: string
+                  version:
+                    type: string
+                  architecture:
+                    type: string
+                    enum:
+                      - x86_64
+                      - i386
+    PaginatedStackScriptList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/StackScript'
+    PaginatedTokenList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Token'
+    PaginatedSSHKeyList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/SSHKey'
+    PaginatedSupportTicketList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/SupportTicket'
+    PaginatedTagList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tag'
+    PaginatedRegionList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Region'
+    PaginatedDiskList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  label:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - ready
+                      - not ready
+                      - deleting
+                  size:
+                    type: integer
+                  filesystem:
+                    type: string
+                    enum:
+                      - raw
+                      - swap
+                      - ext3
+                      - ext4
+                      - initrd
+                  created:
+                    type: string
+                    format: date-time
+                  updated:
+                    type: string
+                    format: date-time
+    PaginatedConfigList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  label:
+                    type: string
+                  kernel:
+                    type: string
+                  run_level:
+                    type: string
+                    enum:
+                      - default
+                      - single
+                      - binbash
+                  virt_mode:
+                    type: string
+                    enum:
+                      - paravirt
+                      - fullvirt
+                  root_device:
+                    type: string
+                  memory_limit:
+                    type: integer
+    PaginatedLongviewClientList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/LongviewClient'
+    PaginatedManagedServiceList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManagedService'
+    PaginatedManagedContactList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  phone:
+                    type: object
+                    properties:
+                      primary:
+                        type: string
+                      secondary:
+                        type: string
+                  group:
+                    type: string
+    PaginatedManagedIssueList:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  created:
+                    type: string
+                    format: date-time
+                  services:
+                    type: array
+                    items:
+                      type: integer
+                  entity:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      label:
+                        type: string
+                      type:
+                        type: string
+                      url:
+                        type: string

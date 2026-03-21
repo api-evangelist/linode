@@ -1,0 +1,263 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "linode": "https://api.linode.com/v4/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+
+    "LinodeInstance": {
+      "@id": "linode:LinodeInstance",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "region": "linode:region",
+        "type": "linode:type",
+        "image": "linode:image",
+        "status": "schema:serverStatus",
+        "ipv4": "linode:ipv4",
+        "ipv6": "linode:ipv6",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        },
+        "hypervisor": "linode:hypervisor",
+        "watchdog_enabled": "linode:watchdogEnabled"
+      }
+    },
+
+    "Domain": {
+      "@id": "linode:Domain",
+      "@context": {
+        "id": "linode:id",
+        "domain": "schema:name",
+        "type": "linode:zoneType",
+        "status": "schema:serverStatus",
+        "soa_email": "schema:email",
+        "description": "schema:description",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "DomainRecord": {
+      "@id": "linode:DomainRecord",
+      "@context": {
+        "id": "linode:id",
+        "type": "linode:recordType",
+        "name": "schema:name",
+        "target": "linode:target",
+        "priority": "linode:priority",
+        "weight": "linode:weight",
+        "port": "linode:port",
+        "ttl_sec": "linode:ttlSec"
+      }
+    },
+
+    "Volume": {
+      "@id": "linode:Volume",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "status": "schema:serverStatus",
+        "size": "schema:contentSize",
+        "region": "linode:region",
+        "linode_id": "linode:linodeId",
+        "filesystem_path": "linode:filesystemPath",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "NodeBalancer": {
+      "@id": "linode:NodeBalancer",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "region": "linode:region",
+        "hostname": "schema:url",
+        "ipv4": "linode:ipv4",
+        "ipv6": "linode:ipv6",
+        "client_conn_throttle": "linode:clientConnThrottle",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "LKECluster": {
+      "@id": "linode:LKECluster",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "region": "linode:region",
+        "k8s_version": "schema:softwareVersion",
+        "status": "schema:serverStatus",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "Firewall": {
+      "@id": "linode:Firewall",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "status": "schema:serverStatus",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "schema:keywords",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "Database": {
+      "@id": "linode:Database",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "engine": "linode:engine",
+        "type": "linode:type",
+        "region": "linode:region",
+        "status": "schema:serverStatus",
+        "cluster_size": "linode:clusterSize",
+        "port": "linode:port",
+        "ssl_connection": "linode:sslConnection",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "VPC": {
+      "@id": "linode:VPC",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "description": "schema:description",
+        "region": "linode:region",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "ObjectStorageBucket": {
+      "@id": "linode:ObjectStorageBucket",
+      "@context": {
+        "label": "schema:name",
+        "region": "linode:region",
+        "hostname": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "objects": "linode:objectCount",
+        "size": "schema:contentSize"
+      }
+    },
+
+    "Region": {
+      "@id": "linode:Region",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "country": "schema:addressCountry",
+        "status": "schema:serverStatus",
+        "capabilities": {
+          "@id": "linode:capabilities",
+          "@container": "@set"
+        },
+        "site_type": "linode:siteType"
+      }
+    },
+
+    "StackScript": {
+      "@id": "linode:StackScript",
+      "@context": {
+        "id": "linode:id",
+        "label": "schema:name",
+        "description": "schema:description",
+        "username": "schema:author",
+        "script": "schema:text",
+        "is_public": "schema:isAccessibleForFree",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "updated": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    }
+  }
+}
