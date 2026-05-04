@@ -1,0 +1,149 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Linode (Akamai Cloud)
+providerId: linode
+created: '2026-05-04'
+modified: '2026-05-04'
+reconciled: true
+tags:
+  - Cloud Compute
+  - Hosting
+  - GPU
+description: Linode (now Akamai Cloud) per-instance per-month pricing.
+sources:
+  - https://www.linode.com/pricing/
+plans:
+  - id: linode-nanode
+    name: Nanode 1 GB
+    type: paid
+    description: $5/month (~$5.47 effective with hourly billing). 1 vCPU / 1 GB / 25 GB.
+    entries:
+      - label: Per month
+        name: monthly
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '5.00'
+        userMultiplied: false
+    elements:
+      - name: Shared CPU
+      - name: 1 vCPU / 1 GB / 25 GB SSD
+      - name: Best for small projects
+  - id: linode-shared-4gb
+    name: Shared CPU 4 GB
+    type: paid
+    description: $20/month. 2 vCPU / 4 GB / 80 GB.
+    entries:
+      - label: Per month
+        name: monthly
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '20.00'
+        userMultiplied: false
+    elements:
+      - name: Shared CPU
+      - name: Standard workloads
+  - id: linode-dedicated-4gb
+    name: Dedicated CPU 4 GB
+    type: paid
+    description: $36/month. 2 dedicated vCPU.
+    entries:
+      - label: Per month
+        name: monthly
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '36.00'
+        userMultiplied: false
+    elements:
+      - name: Dedicated CPU
+      - name: Production workloads
+  - id: linode-high-mem
+    name: High Memory
+    type: paid
+    description: From $60/month. Memory-optimized instances.
+    entries:
+      - label: Per month from
+        name: monthly_from
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '60.00'
+        userMultiplied: false
+    elements:
+      - name: Memory-optimized
+      - name: Best for in-memory DBs
+  - id: linode-gpu
+    name: GPU (NVIDIA)
+    type: enterprise
+    description: From ~$1.50/hour ($1,000+/month) for RTX 4000 / Blackwell GPUs.
+    entries:
+      - label: Per hour from
+        name: hourly_from
+        type: metered
+        metric: hour
+        limit: -1
+        timeFrame: usage
+        geo: global
+        unit: 1
+        price: '1.50'
+        userMultiplied: false
+    elements:
+      - name: NVIDIA Blackwell Server Edition
+      - name: AI/ML training and inference
+      - name: Limited availability
+  - id: linode-managed-services
+    name: Managed Services
+    type: paid
+    description: Backups ($2-$60/mo), NodeBalancer ($10/mo), Object Storage ($5/250 GB), DBaaS variable.
+    entries:
+      - label: Backup add-on
+        name: backup
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: 2.00-60.00
+        userMultiplied: false
+      - label: NodeBalancer
+        name: lb
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '10.00'
+        userMultiplied: false
+      - label: Object Storage 250 GB
+        name: obj_storage
+        type: subscription
+        metric: month
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '5.00'
+        userMultiplied: false
+    elements:
+      - name: Automated backups
+      - name: Load balancing
+      - name: S3-compatible object storage
+      - name: Managed Postgres/MySQL/MongoDB
+      - name: Kubernetes (LKE)
