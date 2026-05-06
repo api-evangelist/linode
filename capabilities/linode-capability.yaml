@@ -1,0 +1,1827 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode)
+    products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure
+    NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls,
+    and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns
+    JSON responses, with support for filtering and sorting across all resource endpoints.
+  tags:
+  - Linode
+  - API
+  created: '2026-05-06'
+  modified: '2026-05-06'
+capability:
+  consumes:
+  - type: http
+    namespace: linode
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 HTTP API.
+    authentication:
+      type: bearer
+      token: '{{LINODE_TOKEN}}'
+    resources:
+    - name: account
+      path: /account
+      operations:
+      - name: getaccount
+        method: GET
+        description: Get account info
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateaccount
+        method: PUT
+        description: Update account info
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-users
+      path: /account/users
+      operations:
+      - name: getusers
+        method: GET
+        description: List users
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createuser
+        method: POST
+        description: Create a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-users-username
+      path: /account/users/{username}
+      operations:
+      - name: getuser
+        method: GET
+        description: Get a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateuser
+        method: PUT
+        description: Update a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deleteuser
+        method: DELETE
+        description: Delete a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-events
+      path: /account/events
+      operations:
+      - name: getevents
+        method: GET
+        description: List events
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-events-eventid
+      path: /account/events/{eventId}
+      operations:
+      - name: getevent
+        method: GET
+        description: Get an event
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-invoices
+      path: /account/invoices
+      operations:
+      - name: getinvoices
+        method: GET
+        description: List invoices
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: account-payments
+      path: /account/payments
+      operations:
+      - name: getpayments
+        method: GET
+        description: List payments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createpayment
+        method: POST
+        description: Make a payment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-instances
+      path: /databases/instances
+      operations:
+      - name: getdatabaseinstances
+        method: GET
+        description: List Managed Databases
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-engines
+      path: /databases/engines
+      operations:
+      - name: getdatabaseengines
+        method: GET
+        description: List Managed Database engines
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-types
+      path: /databases/types
+      operations:
+      - name: getdatabasetypes
+        method: GET
+        description: List Managed Database types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-databaseengine-databaseid
+      path: /databases/{databaseEngine}/{databaseId}
+      operations:
+      - name: getdatabaseinstance
+        method: GET
+        description: Get a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatedatabaseinstance
+        method: PUT
+        description: Update a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletedatabaseinstance
+        method: DELETE
+        description: Delete a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: domains
+      path: /domains
+      operations:
+      - name: getdomains
+        method: GET
+        description: List domains
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createdomain
+        method: POST
+        description: Create a domain
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: domains-domainid
+      path: /domains/{domainId}
+      operations:
+      - name: getdomain
+        method: GET
+        description: Get a domain
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatedomain
+        method: PUT
+        description: Update a domain
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletedomain
+        method: DELETE
+        description: Delete a domain
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: domains-domainid-records
+      path: /domains/{domainId}/records
+      operations:
+      - name: getdomainrecords
+        method: GET
+        description: List domain records
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createdomainrecord
+        method: POST
+        description: Create a domain record
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: images
+      path: /images
+      operations:
+      - name: getimages
+        method: GET
+        description: List images
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createimage
+        method: POST
+        description: Create an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: images-imageid
+      path: /images/{imageId}
+      operations:
+      - name: getimage
+        method: GET
+        description: Get an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateimage
+        method: PUT
+        description: Update an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deleteimage
+        method: DELETE
+        description: Delete an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances
+      path: /linode/instances
+      operations:
+      - name: getlinodeinstances
+        method: GET
+        description: List Linodes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createlinodeinstance
+        method: POST
+        description: Create a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid
+      path: /linode/instances/{linodeId}
+      operations:
+      - name: getlinodeinstance
+        method: GET
+        description: Get a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatelinodeinstance
+        method: PUT
+        description: Update a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletelinodeinstance
+        method: DELETE
+        description: Delete a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-boot
+      path: /linode/instances/{linodeId}/boot
+      operations:
+      - name: bootlinodeinstance
+        method: POST
+        description: Boot a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-reboot
+      path: /linode/instances/{linodeId}/reboot
+      operations:
+      - name: rebootlinodeinstance
+        method: POST
+        description: Reboot a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-shutdown
+      path: /linode/instances/{linodeId}/shutdown
+      operations:
+      - name: shutdownlinodeinstance
+        method: POST
+        description: Shut down a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-resize
+      path: /linode/instances/{linodeId}/resize
+      operations:
+      - name: resizelinodeinstance
+        method: POST
+        description: Resize a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-rebuild
+      path: /linode/instances/{linodeId}/rebuild
+      operations:
+      - name: rebuildlinodeinstance
+        method: POST
+        description: Rebuild a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-clone
+      path: /linode/instances/{linodeId}/clone
+      operations:
+      - name: clonelinodeinstance
+        method: POST
+        description: Clone a Linode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-backups
+      path: /linode/instances/{linodeId}/backups
+      operations:
+      - name: getbackups
+        method: GET
+        description: List backups
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-disks
+      path: /linode/instances/{linodeId}/disks
+      operations:
+      - name: getlinodedisks
+        method: GET
+        description: List disks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-configs
+      path: /linode/instances/{linodeId}/configs
+      operations:
+      - name: getlinodeconfigs
+        method: GET
+        description: List configuration profiles
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-instances-linodeid-ips
+      path: /linode/instances/{linodeId}/ips
+      operations:
+      - name: getlinodeips
+        method: GET
+        description: Get networking information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-types
+      path: /linode/types
+      operations:
+      - name: getlinodetypes
+        method: GET
+        description: List types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-kernels
+      path: /linode/kernels
+      operations:
+      - name: getkernels
+        method: GET
+        description: List kernels
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-stackscripts
+      path: /linode/stackscripts
+      operations:
+      - name: getstackscripts
+        method: GET
+        description: List StackScripts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createstackscript
+        method: POST
+        description: Create a StackScript
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: linode-stackscripts-stackscriptid
+      path: /linode/stackscripts/{stackscriptId}
+      operations:
+      - name: getstackscript
+        method: GET
+        description: Get a StackScript
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatestackscript
+        method: PUT
+        description: Update a StackScript
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletestackscript
+        method: DELETE
+        description: Delete a StackScript
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters
+      path: /lke/clusters
+      operations:
+      - name: getlkeclusters
+        method: GET
+        description: List Kubernetes clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createlkecluster
+        method: POST
+        description: Create a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters-clusterid
+      path: /lke/clusters/{clusterId}
+      operations:
+      - name: getlkecluster
+        method: GET
+        description: Get a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatelkecluster
+        method: PUT
+        description: Update a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletelkecluster
+        method: DELETE
+        description: Delete a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters-clusterid-pools
+      path: /lke/clusters/{clusterId}/pools
+      operations:
+      - name: getlkenodepools
+        method: GET
+        description: List node pools
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createlkenodepool
+        method: POST
+        description: Create a node pool
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters-clusterid-kubeconfig
+      path: /lke/clusters/{clusterId}/kubeconfig
+      operations:
+      - name: getlkeclusterkubeconfig
+        method: GET
+        description: Get kubeconfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    port: 8080
+    namespace: linode-rest
+    description: REST adapter for Linode API v4.
+    resources:
+    - path: /account
+      name: getaccount
+      operations:
+      - method: GET
+        name: getaccount
+        description: Get account info
+        call: linode.getaccount
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account
+      name: updateaccount
+      operations:
+      - method: PUT
+        name: updateaccount
+        description: Update account info
+        call: linode.updateaccount
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/users
+      name: getusers
+      operations:
+      - method: GET
+        name: getusers
+        description: List users
+        call: linode.getusers
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/users
+      name: createuser
+      operations:
+      - method: POST
+        name: createuser
+        description: Create a user
+        call: linode.createuser
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/users/{username}
+      name: getuser
+      operations:
+      - method: GET
+        name: getuser
+        description: Get a user
+        call: linode.getuser
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/users/{username}
+      name: updateuser
+      operations:
+      - method: PUT
+        name: updateuser
+        description: Update a user
+        call: linode.updateuser
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/users/{username}
+      name: deleteuser
+      operations:
+      - method: DELETE
+        name: deleteuser
+        description: Delete a user
+        call: linode.deleteuser
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/events
+      name: getevents
+      operations:
+      - method: GET
+        name: getevents
+        description: List events
+        call: linode.getevents
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/events/{eventId}
+      name: getevent
+      operations:
+      - method: GET
+        name: getevent
+        description: Get an event
+        call: linode.getevent
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/invoices
+      name: getinvoices
+      operations:
+      - method: GET
+        name: getinvoices
+        description: List invoices
+        call: linode.getinvoices
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/payments
+      name: getpayments
+      operations:
+      - method: GET
+        name: getpayments
+        description: List payments
+        call: linode.getpayments
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /account/payments
+      name: createpayment
+      operations:
+      - method: POST
+        name: createpayment
+        description: Make a payment
+        call: linode.createpayment
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/instances
+      name: getdatabaseinstances
+      operations:
+      - method: GET
+        name: getdatabaseinstances
+        description: List Managed Databases
+        call: linode.getdatabaseinstances
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/engines
+      name: getdatabaseengines
+      operations:
+      - method: GET
+        name: getdatabaseengines
+        description: List Managed Database engines
+        call: linode.getdatabaseengines
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/types
+      name: getdatabasetypes
+      operations:
+      - method: GET
+        name: getdatabasetypes
+        description: List Managed Database types
+        call: linode.getdatabasetypes
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/{databaseEngine}/{databaseId}
+      name: getdatabaseinstance
+      operations:
+      - method: GET
+        name: getdatabaseinstance
+        description: Get a Managed Database
+        call: linode.getdatabaseinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/{databaseEngine}/{databaseId}
+      name: updatedatabaseinstance
+      operations:
+      - method: PUT
+        name: updatedatabaseinstance
+        description: Update a Managed Database
+        call: linode.updatedatabaseinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /databases/{databaseEngine}/{databaseId}
+      name: deletedatabaseinstance
+      operations:
+      - method: DELETE
+        name: deletedatabaseinstance
+        description: Delete a Managed Database
+        call: linode.deletedatabaseinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains
+      name: getdomains
+      operations:
+      - method: GET
+        name: getdomains
+        description: List domains
+        call: linode.getdomains
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains
+      name: createdomain
+      operations:
+      - method: POST
+        name: createdomain
+        description: Create a domain
+        call: linode.createdomain
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains/{domainId}
+      name: getdomain
+      operations:
+      - method: GET
+        name: getdomain
+        description: Get a domain
+        call: linode.getdomain
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains/{domainId}
+      name: updatedomain
+      operations:
+      - method: PUT
+        name: updatedomain
+        description: Update a domain
+        call: linode.updatedomain
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains/{domainId}
+      name: deletedomain
+      operations:
+      - method: DELETE
+        name: deletedomain
+        description: Delete a domain
+        call: linode.deletedomain
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains/{domainId}/records
+      name: getdomainrecords
+      operations:
+      - method: GET
+        name: getdomainrecords
+        description: List domain records
+        call: linode.getdomainrecords
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /domains/{domainId}/records
+      name: createdomainrecord
+      operations:
+      - method: POST
+        name: createdomainrecord
+        description: Create a domain record
+        call: linode.createdomainrecord
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /images
+      name: getimages
+      operations:
+      - method: GET
+        name: getimages
+        description: List images
+        call: linode.getimages
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /images
+      name: createimage
+      operations:
+      - method: POST
+        name: createimage
+        description: Create an image
+        call: linode.createimage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /images/{imageId}
+      name: getimage
+      operations:
+      - method: GET
+        name: getimage
+        description: Get an image
+        call: linode.getimage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /images/{imageId}
+      name: updateimage
+      operations:
+      - method: PUT
+        name: updateimage
+        description: Update an image
+        call: linode.updateimage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /images/{imageId}
+      name: deleteimage
+      operations:
+      - method: DELETE
+        name: deleteimage
+        description: Delete an image
+        call: linode.deleteimage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances
+      name: getlinodeinstances
+      operations:
+      - method: GET
+        name: getlinodeinstances
+        description: List Linodes
+        call: linode.getlinodeinstances
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances
+      name: createlinodeinstance
+      operations:
+      - method: POST
+        name: createlinodeinstance
+        description: Create a Linode
+        call: linode.createlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}
+      name: getlinodeinstance
+      operations:
+      - method: GET
+        name: getlinodeinstance
+        description: Get a Linode
+        call: linode.getlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}
+      name: updatelinodeinstance
+      operations:
+      - method: PUT
+        name: updatelinodeinstance
+        description: Update a Linode
+        call: linode.updatelinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}
+      name: deletelinodeinstance
+      operations:
+      - method: DELETE
+        name: deletelinodeinstance
+        description: Delete a Linode
+        call: linode.deletelinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/boot
+      name: bootlinodeinstance
+      operations:
+      - method: POST
+        name: bootlinodeinstance
+        description: Boot a Linode
+        call: linode.bootlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/reboot
+      name: rebootlinodeinstance
+      operations:
+      - method: POST
+        name: rebootlinodeinstance
+        description: Reboot a Linode
+        call: linode.rebootlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/shutdown
+      name: shutdownlinodeinstance
+      operations:
+      - method: POST
+        name: shutdownlinodeinstance
+        description: Shut down a Linode
+        call: linode.shutdownlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/resize
+      name: resizelinodeinstance
+      operations:
+      - method: POST
+        name: resizelinodeinstance
+        description: Resize a Linode
+        call: linode.resizelinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/rebuild
+      name: rebuildlinodeinstance
+      operations:
+      - method: POST
+        name: rebuildlinodeinstance
+        description: Rebuild a Linode
+        call: linode.rebuildlinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/clone
+      name: clonelinodeinstance
+      operations:
+      - method: POST
+        name: clonelinodeinstance
+        description: Clone a Linode
+        call: linode.clonelinodeinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/backups
+      name: getbackups
+      operations:
+      - method: GET
+        name: getbackups
+        description: List backups
+        call: linode.getbackups
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/disks
+      name: getlinodedisks
+      operations:
+      - method: GET
+        name: getlinodedisks
+        description: List disks
+        call: linode.getlinodedisks
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/configs
+      name: getlinodeconfigs
+      operations:
+      - method: GET
+        name: getlinodeconfigs
+        description: List configuration profiles
+        call: linode.getlinodeconfigs
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/instances/{linodeId}/ips
+      name: getlinodeips
+      operations:
+      - method: GET
+        name: getlinodeips
+        description: Get networking information
+        call: linode.getlinodeips
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/types
+      name: getlinodetypes
+      operations:
+      - method: GET
+        name: getlinodetypes
+        description: List types
+        call: linode.getlinodetypes
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/kernels
+      name: getkernels
+      operations:
+      - method: GET
+        name: getkernels
+        description: List kernels
+        call: linode.getkernels
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/stackscripts
+      name: getstackscripts
+      operations:
+      - method: GET
+        name: getstackscripts
+        description: List StackScripts
+        call: linode.getstackscripts
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/stackscripts
+      name: createstackscript
+      operations:
+      - method: POST
+        name: createstackscript
+        description: Create a StackScript
+        call: linode.createstackscript
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/stackscripts/{stackscriptId}
+      name: getstackscript
+      operations:
+      - method: GET
+        name: getstackscript
+        description: Get a StackScript
+        call: linode.getstackscript
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/stackscripts/{stackscriptId}
+      name: updatestackscript
+      operations:
+      - method: PUT
+        name: updatestackscript
+        description: Update a StackScript
+        call: linode.updatestackscript
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /linode/stackscripts/{stackscriptId}
+      name: deletestackscript
+      operations:
+      - method: DELETE
+        name: deletestackscript
+        description: Delete a StackScript
+        call: linode.deletestackscript
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters
+      name: getlkeclusters
+      operations:
+      - method: GET
+        name: getlkeclusters
+        description: List Kubernetes clusters
+        call: linode.getlkeclusters
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters
+      name: createlkecluster
+      operations:
+      - method: POST
+        name: createlkecluster
+        description: Create a Kubernetes cluster
+        call: linode.createlkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}
+      name: getlkecluster
+      operations:
+      - method: GET
+        name: getlkecluster
+        description: Get a Kubernetes cluster
+        call: linode.getlkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}
+      name: updatelkecluster
+      operations:
+      - method: PUT
+        name: updatelkecluster
+        description: Update a Kubernetes cluster
+        call: linode.updatelkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}
+      name: deletelkecluster
+      operations:
+      - method: DELETE
+        name: deletelkecluster
+        description: Delete a Kubernetes cluster
+        call: linode.deletelkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}/pools
+      name: getlkenodepools
+      operations:
+      - method: GET
+        name: getlkenodepools
+        description: List node pools
+        call: linode.getlkenodepools
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}/pools
+      name: createlkenodepool
+      operations:
+      - method: POST
+        name: createlkenodepool
+        description: Create a node pool
+        call: linode.createlkenodepool
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /lke/clusters/{clusterId}/kubeconfig
+      name: getlkeclusterkubeconfig
+      operations:
+      - method: GET
+        name: getlkeclusterkubeconfig
+        description: Get kubeconfig
+        call: linode.getlkeclusterkubeconfig
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    port: 9090
+    namespace: linode-mcp
+    transport: http
+    description: MCP adapter for Linode API v4 for AI agent use.
+    tools:
+    - name: getaccount
+      description: Get account info
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getaccount
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updateaccount
+      description: Update account info
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updateaccount
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getusers
+      description: List users
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getusers
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createuser
+      description: Create a user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createuser
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getuser
+      description: Get a user
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getuser
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updateuser
+      description: Update a user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updateuser
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deleteuser
+      description: Delete a user
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deleteuser
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getevents
+      description: List events
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getevents
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getevent
+      description: Get an event
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getevent
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getinvoices
+      description: List invoices
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getinvoices
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getpayments
+      description: List payments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getpayments
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createpayment
+      description: Make a payment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createpayment
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdatabaseinstances
+      description: List Managed Databases
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdatabaseinstances
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdatabaseengines
+      description: List Managed Database engines
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdatabaseengines
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdatabasetypes
+      description: List Managed Database types
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdatabasetypes
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdatabaseinstance
+      description: Get a Managed Database
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdatabaseinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatedatabaseinstance
+      description: Update a Managed Database
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updatedatabaseinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletedatabaseinstance
+      description: Delete a Managed Database
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deletedatabaseinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdomains
+      description: List domains
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdomains
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createdomain
+      description: Create a domain
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createdomain
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdomain
+      description: Get a domain
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdomain
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatedomain
+      description: Update a domain
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updatedomain
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletedomain
+      description: Delete a domain
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deletedomain
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getdomainrecords
+      description: List domain records
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getdomainrecords
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createdomainrecord
+      description: Create a domain record
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createdomainrecord
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getimages
+      description: List images
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getimages
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createimage
+      description: Create an image
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createimage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getimage
+      description: Get an image
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getimage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updateimage
+      description: Update an image
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updateimage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deleteimage
+      description: Delete an image
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deleteimage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodeinstances
+      description: List Linodes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodeinstances
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createlinodeinstance
+      description: Create a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodeinstance
+      description: Get a Linode
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatelinodeinstance
+      description: Update a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updatelinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletelinodeinstance
+      description: Delete a Linode
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deletelinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: bootlinodeinstance
+      description: Boot a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.bootlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: rebootlinodeinstance
+      description: Reboot a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.rebootlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: shutdownlinodeinstance
+      description: Shut down a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.shutdownlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: resizelinodeinstance
+      description: Resize a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.resizelinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: rebuildlinodeinstance
+      description: Rebuild a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.rebuildlinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: clonelinodeinstance
+      description: Clone a Linode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.clonelinodeinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getbackups
+      description: List backups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getbackups
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodedisks
+      description: List disks
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodedisks
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodeconfigs
+      description: List configuration profiles
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodeconfigs
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodeips
+      description: Get networking information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodeips
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlinodetypes
+      description: List types
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlinodetypes
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getkernels
+      description: List kernels
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getkernels
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getstackscripts
+      description: List StackScripts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getstackscripts
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createstackscript
+      description: Create a StackScript
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createstackscript
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getstackscript
+      description: Get a StackScript
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getstackscript
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatestackscript
+      description: Update a StackScript
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updatestackscript
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletestackscript
+      description: Delete a StackScript
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deletestackscript
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlkeclusters
+      description: List Kubernetes clusters
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlkeclusters
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createlkecluster
+      description: Create a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createlkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlkecluster
+      description: Get a Kubernetes cluster
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: updatelkecluster
+      description: Update a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: linode.updatelkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletelkecluster
+      description: Delete a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: linode.deletelkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlkenodepools
+      description: List node pools
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlkenodepools
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createlkenodepool
+      description: Create a node pool
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: linode.createlkenodepool
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getlkeclusterkubeconfig
+      description: Get kubeconfig
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: linode.getlkeclusterkubeconfig
+      outputParameters:
+      - type: object
+        mapping: $.
+binds:
+- namespace: env
+  keys:
+    LINODE_TOKEN: LINODE_TOKEN
