@@ -1,0 +1,226 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Databases
+  description: 'Linode API v4 — Databases. 6 operations. Lead operation: List Managed Database engines. Self-contained Naftiko
+    capability covering one Linode business surface.'
+  tags:
+  - Linode
+  - Databases
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-databases
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Databases business capability. Self-contained, no shared references.
+    resources:
+    - name: databases-engines
+      path: /databases/engines
+      operations:
+      - name: getdatabaseengines
+        method: GET
+        description: List Managed Database engines
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-instances
+      path: /databases/instances
+      operations:
+      - name: getdatabaseinstances
+        method: GET
+        description: List Managed Databases
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-types
+      path: /databases/types
+      operations:
+      - name: getdatabasetypes
+        method: GET
+        description: List Managed Database types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: databases-databaseEngine-databaseId
+      path: /databases/{databaseEngine}/{databaseId}
+      operations:
+      - name: getdatabaseinstance
+        method: GET
+        description: Get a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatedatabaseinstance
+        method: PUT
+        description: Update a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletedatabaseinstance
+        method: DELETE
+        description: Delete a Managed Database
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-databases-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Databases. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/databases/engines
+      name: databases-engines
+      description: REST surface for databases-engines.
+      operations:
+      - method: GET
+        name: getdatabaseengines
+        description: List Managed Database engines
+        call: api-v4-databases.getdatabaseengines
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/databases/instances
+      name: databases-instances
+      description: REST surface for databases-instances.
+      operations:
+      - method: GET
+        name: getdatabaseinstances
+        description: List Managed Databases
+        call: api-v4-databases.getdatabaseinstances
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/databases/types
+      name: databases-types
+      description: REST surface for databases-types.
+      operations:
+      - method: GET
+        name: getdatabasetypes
+        description: List Managed Database types
+        call: api-v4-databases.getdatabasetypes
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/databases/{databaseengine}/{databaseid}
+      name: databases-databaseengine-databaseid
+      description: REST surface for databases-databaseEngine-databaseId.
+      operations:
+      - method: GET
+        name: getdatabaseinstance
+        description: Get a Managed Database
+        call: api-v4-databases.getdatabaseinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatedatabaseinstance
+        description: Update a Managed Database
+        call: api-v4-databases.updatedatabaseinstance
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletedatabaseinstance
+        description: Delete a Managed Database
+        call: api-v4-databases.deletedatabaseinstance
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-databases-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Databases. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-managed-database-engines
+      description: List Managed Database engines
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-databases.getdatabaseengines
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-managed-databases
+      description: List Managed Databases
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-databases.getdatabaseinstances
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-managed-database-types
+      description: List Managed Database types
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-databases.getdatabasetypes
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-managed-database
+      description: Get a Managed Database
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-databases.getdatabaseinstance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-managed-database
+      description: Update a Managed Database
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-databases.updatedatabaseinstance
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-managed-database
+      description: Delete a Managed Database
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-databases.deletedatabaseinstance
+      outputParameters:
+      - type: object
+        mapping: $.

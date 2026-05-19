@@ -1,0 +1,229 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — NodeBalancers
+  description: 'Linode API v4 — NodeBalancers. 6 operations. Lead operation: List NodeBalancers. Self-contained Naftiko capability
+    covering one Linode business surface.'
+  tags:
+  - Linode
+  - NodeBalancers
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-nodebalancers
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — NodeBalancers business capability. Self-contained, no shared references.
+    resources:
+    - name: nodebalancers
+      path: /nodebalancers
+      operations:
+      - name: getnodebalancers
+        method: GET
+        description: List NodeBalancers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createnodebalancer
+        method: POST
+        description: Create a NodeBalancer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: nodebalancers-nodeBalancerId
+      path: /nodebalancers/{nodeBalancerId}
+      operations:
+      - name: getnodebalancer
+        method: GET
+        description: Get a NodeBalancer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatenodebalancer
+        method: PUT
+        description: Update a NodeBalancer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletenodebalancer
+        method: DELETE
+        description: Delete a NodeBalancer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: nodebalancers-nodeBalancerId-configs
+      path: /nodebalancers/{nodeBalancerId}/configs
+      operations:
+      - name: getnodebalancerconfigs
+        method: GET
+        description: List configs
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-nodebalancers-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — NodeBalancers. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/nodebalancers
+      name: nodebalancers
+      description: REST surface for nodebalancers.
+      operations:
+      - method: GET
+        name: getnodebalancers
+        description: List NodeBalancers
+        call: api-v4-nodebalancers.getnodebalancers
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createnodebalancer
+        description: Create a NodeBalancer
+        call: api-v4-nodebalancers.createnodebalancer
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/nodebalancers/{nodebalancerid}
+      name: nodebalancers-nodebalancerid
+      description: REST surface for nodebalancers-nodeBalancerId.
+      operations:
+      - method: GET
+        name: getnodebalancer
+        description: Get a NodeBalancer
+        call: api-v4-nodebalancers.getnodebalancer
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatenodebalancer
+        description: Update a NodeBalancer
+        call: api-v4-nodebalancers.updatenodebalancer
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletenodebalancer
+        description: Delete a NodeBalancer
+        call: api-v4-nodebalancers.deletenodebalancer
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/nodebalancers/{nodebalancerid}/configs
+      name: nodebalancers-nodebalancerid-configs
+      description: REST surface for nodebalancers-nodeBalancerId-configs.
+      operations:
+      - method: GET
+        name: getnodebalancerconfigs
+        description: List configs
+        call: api-v4-nodebalancers.getnodebalancerconfigs
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-nodebalancers-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — NodeBalancers. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-nodebalancers
+      description: List NodeBalancers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-nodebalancers.getnodebalancers
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-nodebalancer
+      description: Create a NodeBalancer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-nodebalancers.createnodebalancer
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-nodebalancer
+      description: Get a NodeBalancer
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-nodebalancers.getnodebalancer
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-nodebalancer
+      description: Update a NodeBalancer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-nodebalancers.updatenodebalancer
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-nodebalancer
+      description: Delete a NodeBalancer
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-nodebalancers.deletenodebalancer
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-configs
+      description: List configs
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-nodebalancers.getnodebalancerconfigs
+      outputParameters:
+      - type: object
+        mapping: $.

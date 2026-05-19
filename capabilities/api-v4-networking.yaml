@@ -1,0 +1,303 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Networking
+  description: 'Linode API v4 — Networking. 8 operations. Lead operation: List firewalls. Self-contained Naftiko capability
+    covering one Linode business surface.'
+  tags:
+  - Linode
+  - Networking
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-networking
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Networking business capability. Self-contained, no shared references.
+    resources:
+    - name: networking-firewalls
+      path: /networking/firewalls
+      operations:
+      - name: getfirewalls
+        method: GET
+        description: List firewalls
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createfirewall
+        method: POST
+        description: Create a firewall
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: networking-firewalls-firewallId
+      path: /networking/firewalls/{firewallId}
+      operations:
+      - name: getfirewall
+        method: GET
+        description: Get a firewall
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatefirewall
+        method: PUT
+        description: Update a firewall
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletefirewall
+        method: DELETE
+        description: Delete a firewall
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: networking-ips
+      path: /networking/ips
+      operations:
+      - name: getipaddresses
+        method: GET
+        description: List IP addresses
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: networking-ips-address
+      path: /networking/ips/{address}
+      operations:
+      - name: getipaddress
+        method: GET
+        description: Get an IP address
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: address
+          in: path
+          type: string
+          description: The IP address to look up.
+          required: true
+    - name: networking-vlans
+      path: /networking/vlans
+      operations:
+      - name: getvlans
+        method: GET
+        description: List VLANs
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-networking-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Networking. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/networking/firewalls
+      name: networking-firewalls
+      description: REST surface for networking-firewalls.
+      operations:
+      - method: GET
+        name: getfirewalls
+        description: List firewalls
+        call: api-v4-networking.getfirewalls
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createfirewall
+        description: Create a firewall
+        call: api-v4-networking.createfirewall
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/networking/firewalls/{firewallid}
+      name: networking-firewalls-firewallid
+      description: REST surface for networking-firewalls-firewallId.
+      operations:
+      - method: GET
+        name: getfirewall
+        description: Get a firewall
+        call: api-v4-networking.getfirewall
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatefirewall
+        description: Update a firewall
+        call: api-v4-networking.updatefirewall
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletefirewall
+        description: Delete a firewall
+        call: api-v4-networking.deletefirewall
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/networking/ips
+      name: networking-ips
+      description: REST surface for networking-ips.
+      operations:
+      - method: GET
+        name: getipaddresses
+        description: List IP addresses
+        call: api-v4-networking.getipaddresses
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/networking/ips/{address}
+      name: networking-ips-address
+      description: REST surface for networking-ips-address.
+      operations:
+      - method: GET
+        name: getipaddress
+        description: Get an IP address
+        call: api-v4-networking.getipaddress
+        with:
+          address: rest.address
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/networking/vlans
+      name: networking-vlans
+      description: REST surface for networking-vlans.
+      operations:
+      - method: GET
+        name: getvlans
+        description: List VLANs
+        call: api-v4-networking.getvlans
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-networking-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Networking. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-firewalls
+      description: List firewalls
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.getfirewalls
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-firewall
+      description: Create a firewall
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-networking.createfirewall
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-firewall
+      description: Get a firewall
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.getfirewall
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-firewall
+      description: Update a firewall
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.updatefirewall
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-firewall
+      description: Delete a firewall
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-networking.deletefirewall
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-ip-addresses
+      description: List IP addresses
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.getipaddresses
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-ip-address
+      description: Get an IP address
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.getipaddress
+      with:
+        address: tools.address
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-vlans
+      description: List VLANs
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-networking.getvlans
+      outputParameters:
+      - type: object
+        mapping: $.

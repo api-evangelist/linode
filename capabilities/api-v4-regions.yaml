@@ -1,0 +1,102 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Regions
+  description: 'Linode API v4 — Regions. 2 operations. Lead operation: List regions. Self-contained Naftiko capability covering
+    one Linode business surface.'
+  tags:
+  - Linode
+  - Regions
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-regions
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Regions business capability. Self-contained, no shared references.
+    resources:
+    - name: regions
+      path: /regions
+      operations:
+      - name: getregions
+        method: GET
+        description: List regions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: regions-regionId
+      path: /regions/{regionId}
+      operations:
+      - name: getregion
+        method: GET
+        description: Get a region
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-regions-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Regions. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/regions
+      name: regions
+      description: REST surface for regions.
+      operations:
+      - method: GET
+        name: getregions
+        description: List regions
+        call: api-v4-regions.getregions
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/regions/{regionid}
+      name: regions-regionid
+      description: REST surface for regions-regionId.
+      operations:
+      - method: GET
+        name: getregion
+        description: Get a region
+        call: api-v4-regions.getregion
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-regions-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Regions. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-regions
+      description: List regions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-regions.getregions
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-region
+      description: Get a region
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-regions.getregion
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,169 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Managed
+  description: 'Linode API v4 — Managed. 4 operations. Lead operation: List managed contacts. Self-contained Naftiko capability
+    covering one Linode business surface.'
+  tags:
+  - Linode
+  - Managed
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-managed
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Managed business capability. Self-contained, no shared references.
+    resources:
+    - name: managed-contacts
+      path: /managed/contacts
+      operations:
+      - name: getmanagedcontacts
+        method: GET
+        description: List managed contacts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: managed-issues
+      path: /managed/issues
+      operations:
+      - name: getmanagedissues
+        method: GET
+        description: List managed issues
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: managed-services
+      path: /managed/services
+      operations:
+      - name: getmanagedservices
+        method: GET
+        description: List managed services
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createmanagedservice
+        method: POST
+        description: Create a managed service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-managed-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Managed. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/managed/contacts
+      name: managed-contacts
+      description: REST surface for managed-contacts.
+      operations:
+      - method: GET
+        name: getmanagedcontacts
+        description: List managed contacts
+        call: api-v4-managed.getmanagedcontacts
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/managed/issues
+      name: managed-issues
+      description: REST surface for managed-issues.
+      operations:
+      - method: GET
+        name: getmanagedissues
+        description: List managed issues
+        call: api-v4-managed.getmanagedissues
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/managed/services
+      name: managed-services
+      description: REST surface for managed-services.
+      operations:
+      - method: GET
+        name: getmanagedservices
+        description: List managed services
+        call: api-v4-managed.getmanagedservices
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createmanagedservice
+        description: Create a managed service
+        call: api-v4-managed.createmanagedservice
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-managed-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Managed. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-managed-contacts
+      description: List managed contacts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-managed.getmanagedcontacts
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-managed-issues
+      description: List managed issues
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-managed.getmanagedissues
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-managed-services
+      description: List managed services
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-managed.getmanagedservices
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-managed-service
+      description: Create a managed service
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-managed.createmanagedservice
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

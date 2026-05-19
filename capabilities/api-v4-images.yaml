@@ -1,0 +1,197 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Images
+  description: 'Linode API v4 — Images. 5 operations. Lead operation: List images. Self-contained Naftiko capability covering
+    one Linode business surface.'
+  tags:
+  - Linode
+  - Images
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-images
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Images business capability. Self-contained, no shared references.
+    resources:
+    - name: images
+      path: /images
+      operations:
+      - name: getimages
+        method: GET
+        description: List images
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createimage
+        method: POST
+        description: Create an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: images-imageId
+      path: /images/{imageId}
+      operations:
+      - name: getimage
+        method: GET
+        description: Get an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateimage
+        method: PUT
+        description: Update an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteimage
+        method: DELETE
+        description: Delete an image
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-images-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Images. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/images
+      name: images
+      description: REST surface for images.
+      operations:
+      - method: GET
+        name: getimages
+        description: List images
+        call: api-v4-images.getimages
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createimage
+        description: Create an image
+        call: api-v4-images.createimage
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/images/{imageid}
+      name: images-imageid
+      description: REST surface for images-imageId.
+      operations:
+      - method: GET
+        name: getimage
+        description: Get an image
+        call: api-v4-images.getimage
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateimage
+        description: Update an image
+        call: api-v4-images.updateimage
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteimage
+        description: Delete an image
+        call: api-v4-images.deleteimage
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-images-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Images. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-images
+      description: List images
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-images.getimages
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-image
+      description: Create an image
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-images.createimage
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-image
+      description: Get an image
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-images.getimage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-image
+      description: Update an image
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-images.updateimage
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-image
+      description: Delete an image
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-images.deleteimage
+      outputParameters:
+      - type: object
+        mapping: $.

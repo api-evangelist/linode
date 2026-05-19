@@ -1,0 +1,271 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Volumes
+  description: 'Linode API v4 — Volumes. 7 operations. Lead operation: List volumes. Self-contained Naftiko capability covering
+    one Linode business surface.'
+  tags:
+  - Linode
+  - Volumes
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-volumes
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Volumes business capability. Self-contained, no shared references.
+    resources:
+    - name: volumes
+      path: /volumes
+      operations:
+      - name: getvolumes
+        method: GET
+        description: List volumes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createvolume
+        method: POST
+        description: Create a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: volumes-volumeId
+      path: /volumes/{volumeId}
+      operations:
+      - name: getvolume
+        method: GET
+        description: Get a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatevolume
+        method: PUT
+        description: Update a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletevolume
+        method: DELETE
+        description: Delete a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: volumes-volumeId-attach
+      path: /volumes/{volumeId}/attach
+      operations:
+      - name: attachvolume
+        method: POST
+        description: Attach a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: volumes-volumeId-detach
+      path: /volumes/{volumeId}/detach
+      operations:
+      - name: detachvolume
+        method: POST
+        description: Detach a volume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-volumes-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Volumes. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/volumes
+      name: volumes
+      description: REST surface for volumes.
+      operations:
+      - method: GET
+        name: getvolumes
+        description: List volumes
+        call: api-v4-volumes.getvolumes
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createvolume
+        description: Create a volume
+        call: api-v4-volumes.createvolume
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/volumes/{volumeid}
+      name: volumes-volumeid
+      description: REST surface for volumes-volumeId.
+      operations:
+      - method: GET
+        name: getvolume
+        description: Get a volume
+        call: api-v4-volumes.getvolume
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatevolume
+        description: Update a volume
+        call: api-v4-volumes.updatevolume
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletevolume
+        description: Delete a volume
+        call: api-v4-volumes.deletevolume
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/volumes/{volumeid}/attach
+      name: volumes-volumeid-attach
+      description: REST surface for volumes-volumeId-attach.
+      operations:
+      - method: POST
+        name: attachvolume
+        description: Attach a volume
+        call: api-v4-volumes.attachvolume
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/volumes/{volumeid}/detach
+      name: volumes-volumeid-detach
+      description: REST surface for volumes-volumeId-detach.
+      operations:
+      - method: POST
+        name: detachvolume
+        description: Detach a volume
+        call: api-v4-volumes.detachvolume
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-volumes-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Volumes. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-volumes
+      description: List volumes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-volumes.getvolumes
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-volume
+      description: Create a volume
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-volumes.createvolume
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-volume
+      description: Get a volume
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-volumes.getvolume
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-volume
+      description: Update a volume
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-volumes.updatevolume
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-volume
+      description: Delete a volume
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-volumes.deletevolume
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: attach-volume
+      description: Attach a volume
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-volumes.attachvolume
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: detach-volume
+      description: Detach a volume
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-volumes.detachvolume
+      outputParameters:
+      - type: object
+        mapping: $.

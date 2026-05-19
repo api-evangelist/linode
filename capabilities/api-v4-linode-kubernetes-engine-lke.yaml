@@ -1,0 +1,328 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linode API v4 — Linode Kubernetes Engine (LKE)
+  description: 'Linode API v4 — Linode Kubernetes Engine (LKE). 9 operations. Lead operation: List Kubernetes clusters. Self-contained
+    Naftiko capability covering one Linode business surface.'
+  tags:
+  - Linode
+  - Linode Kubernetes Engine (LKE)
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINODE_API_KEY: LINODE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: api-v4-linode-kubernetes-engine-lke
+    baseUri: https://api.linode.com/v4
+    description: Linode API v4 — Linode Kubernetes Engine (LKE) business capability. Self-contained, no shared references.
+    resources:
+    - name: lke-clusters
+      path: /lke/clusters
+      operations:
+      - name: getlkeclusters
+        method: GET
+        description: List Kubernetes clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createlkecluster
+        method: POST
+        description: Create a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: lke-clusters-clusterId
+      path: /lke/clusters/{clusterId}
+      operations:
+      - name: getlkecluster
+        method: GET
+        description: Get a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatelkecluster
+        method: PUT
+        description: Update a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletelkecluster
+        method: DELETE
+        description: Delete a Kubernetes cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters-clusterId-kubeconfig
+      path: /lke/clusters/{clusterId}/kubeconfig
+      operations:
+      - name: getlkeclusterkubeconfig
+        method: GET
+        description: Get kubeconfig
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: lke-clusters-clusterId-pools
+      path: /lke/clusters/{clusterId}/pools
+      operations:
+      - name: getlkenodepools
+        method: GET
+        description: List node pools
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createlkenodepool
+        method: POST
+        description: Create a node pool
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: lke-versions
+      path: /lke/versions
+      operations:
+      - name: getlkeversions
+        method: GET
+        description: List Kubernetes versions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.LINODE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: api-v4-linode-kubernetes-engine-lke-rest
+    port: 8080
+    description: REST adapter for Linode API v4 — Linode Kubernetes Engine (LKE). One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/lke/clusters
+      name: lke-clusters
+      description: REST surface for lke-clusters.
+      operations:
+      - method: GET
+        name: getlkeclusters
+        description: List Kubernetes clusters
+        call: api-v4-linode-kubernetes-engine-lke.getlkeclusters
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createlkecluster
+        description: Create a Kubernetes cluster
+        call: api-v4-linode-kubernetes-engine-lke.createlkecluster
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/lke/clusters/{clusterid}
+      name: lke-clusters-clusterid
+      description: REST surface for lke-clusters-clusterId.
+      operations:
+      - method: GET
+        name: getlkecluster
+        description: Get a Kubernetes cluster
+        call: api-v4-linode-kubernetes-engine-lke.getlkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatelkecluster
+        description: Update a Kubernetes cluster
+        call: api-v4-linode-kubernetes-engine-lke.updatelkecluster
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletelkecluster
+        description: Delete a Kubernetes cluster
+        call: api-v4-linode-kubernetes-engine-lke.deletelkecluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/lke/clusters/{clusterid}/kubeconfig
+      name: lke-clusters-clusterid-kubeconfig
+      description: REST surface for lke-clusters-clusterId-kubeconfig.
+      operations:
+      - method: GET
+        name: getlkeclusterkubeconfig
+        description: Get kubeconfig
+        call: api-v4-linode-kubernetes-engine-lke.getlkeclusterkubeconfig
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/lke/clusters/{clusterid}/pools
+      name: lke-clusters-clusterid-pools
+      description: REST surface for lke-clusters-clusterId-pools.
+      operations:
+      - method: GET
+        name: getlkenodepools
+        description: List node pools
+        call: api-v4-linode-kubernetes-engine-lke.getlkenodepools
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createlkenodepool
+        description: Create a node pool
+        call: api-v4-linode-kubernetes-engine-lke.createlkenodepool
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/lke/versions
+      name: lke-versions
+      description: REST surface for lke-versions.
+      operations:
+      - method: GET
+        name: getlkeversions
+        description: List Kubernetes versions
+        call: api-v4-linode-kubernetes-engine-lke.getlkeversions
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: api-v4-linode-kubernetes-engine-lke-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linode API v4 — Linode Kubernetes Engine (LKE). One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-kubernetes-clusters
+      description: List Kubernetes clusters
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.getlkeclusters
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-kubernetes-cluster
+      description: Create a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-linode-kubernetes-engine-lke.createlkecluster
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-kubernetes-cluster
+      description: Get a Kubernetes cluster
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.getlkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-kubernetes-cluster
+      description: Update a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.updatelkecluster
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-kubernetes-cluster
+      description: Delete a Kubernetes cluster
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.deletelkecluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-kubeconfig
+      description: Get kubeconfig
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.getlkeclusterkubeconfig
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-node-pools
+      description: List node pools
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.getlkenodepools
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-node-pool
+      description: Create a node pool
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: api-v4-linode-kubernetes-engine-lke.createlkenodepool
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-kubernetes-versions
+      description: List Kubernetes versions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: api-v4-linode-kubernetes-engine-lke.getlkeversions
+      outputParameters:
+      - type: object
+        mapping: $.
