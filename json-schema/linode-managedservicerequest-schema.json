@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ManagedServiceRequest",
+  "title": "ManagedServiceRequest",
+  "type": "object",
+  "required": [
+    "label",
+    "service_type",
+    "address",
+    "timeout"
+  ],
+  "properties": {
+    "label": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "description": "The label for the service."
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "url"
+      ],
+      "description": "The type of service monitor."
+    },
+    "address": {
+      "type": "string",
+      "description": "The URL to monitor."
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 255,
+      "description": "Timeout in seconds."
+    },
+    "body": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "A string to look for in the response body."
+    },
+    "consultation_group": {
+      "type": "string",
+      "description": "The group of managed contacts to notify."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about this service."
+    },
+    "credentials": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "description": "Credential IDs for this service."
+    }
+  }
+}

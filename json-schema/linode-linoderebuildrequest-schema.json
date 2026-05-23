@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/LinodeRebuildRequest",
+  "title": "LinodeRebuildRequest",
+  "type": "object",
+  "required": [
+    "image",
+    "root_pass"
+  ],
+  "properties": {
+    "image": {
+      "type": "string",
+      "description": "The image to rebuild with."
+    },
+    "root_pass": {
+      "type": "string",
+      "description": "The root password for the rebuilt instance."
+    },
+    "authorized_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A list of public SSH keys."
+    },
+    "authorized_users": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A list of usernames whose SSH keys to deploy."
+    },
+    "stackscript_id": {
+      "type": "integer",
+      "description": "A StackScript ID to deploy with."
+    },
+    "stackscript_data": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "UDF data for the StackScript."
+    },
+    "booted": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to boot after rebuild."
+    }
+  }
+}

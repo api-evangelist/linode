@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ObjectStorageKey",
+  "title": "ObjectStorageKey",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this key."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for this key."
+    },
+    "access_key": {
+      "type": "string",
+      "description": "The access key for S3-compatible requests."
+    },
+    "secret_key": {
+      "type": "string",
+      "description": "The secret key. Only returned at creation time."
+    },
+    "limited": {
+      "type": "boolean",
+      "description": "Whether this key has limited bucket access."
+    },
+    "bucket_access": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "description": "The region of the bucket."
+          },
+          "bucket_name": {
+            "type": "string",
+            "description": "The name of the bucket."
+          },
+          "permissions": {
+            "type": "string",
+            "enum": [
+              "read_only",
+              "read_write"
+            ],
+            "description": "The permission level."
+          }
+        }
+      },
+      "description": "Specific bucket access permissions for this key."
+    }
+  }
+}

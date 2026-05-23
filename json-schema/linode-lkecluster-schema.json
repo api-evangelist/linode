@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/LKECluster",
+  "title": "LKECluster",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this LKE cluster."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for this cluster."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region where this cluster is located."
+    },
+    "k8s_version": {
+      "type": "string",
+      "description": "The Kubernetes version for this cluster."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "not_ready"
+      ],
+      "description": "The current status of the cluster."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for this cluster."
+    },
+    "control_plane": {
+      "type": "object",
+      "properties": {
+        "high_availability": {
+          "type": "boolean",
+          "description": "Whether the control plane is highly available."
+        }
+      },
+      "description": "Control plane configuration for this cluster."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this cluster was created."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this cluster was last updated."
+    }
+  }
+}

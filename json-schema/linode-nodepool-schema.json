@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/NodePool",
+  "title": "NodePool",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this node pool."
+    },
+    "type": {
+      "type": "string",
+      "description": "The Linode type for nodes in this pool."
+    },
+    "count": {
+      "type": "integer",
+      "description": "The number of nodes in this pool."
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique ID of this node."
+          },
+          "instance_id": {
+            "type": "integer",
+            "description": "The Linode instance ID for this node."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "not_ready"
+            ],
+            "description": "The status of this node."
+          }
+        }
+      },
+      "description": "The nodes in this pool."
+    },
+    "autoscaler": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the autoscaler is enabled."
+        },
+        "min": {
+          "type": "integer",
+          "description": "The minimum number of nodes."
+        },
+        "max": {
+          "type": "integer",
+          "description": "The maximum number of nodes."
+        }
+      },
+      "description": "Autoscaler configuration for this pool."
+    }
+  }
+}

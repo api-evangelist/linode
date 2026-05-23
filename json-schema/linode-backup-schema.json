@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Backup",
+  "title": "Backup",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this backup."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "snapshot"
+      ],
+      "description": "The type of backup."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "paused",
+        "pending",
+        "running",
+        "needsPostProcessing",
+        "successful",
+        "failed",
+        "userAborted"
+      ],
+      "description": "The status of this backup."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this backup was created."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this backup was last updated."
+    },
+    "finished": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this backup finished."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for snapshot backups."
+    },
+    "disks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "filesystem": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Disk information for this backup."
+    }
+  }
+}

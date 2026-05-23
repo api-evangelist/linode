@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ObjectStorageKeyRequest",
+  "title": "ObjectStorageKeyRequest",
+  "type": "object",
+  "required": [
+    "label"
+  ],
+  "properties": {
+    "label": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 50,
+      "description": "The label for the new key."
+    },
+    "bucket_access": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "region",
+          "bucket_name",
+          "permissions"
+        ],
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "bucket_name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "string",
+            "enum": [
+              "read_only",
+              "read_write"
+            ]
+          }
+        }
+      },
+      "description": "Specific bucket access permissions."
+    }
+  }
+}

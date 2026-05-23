@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Firewall",
+  "title": "Firewall",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this firewall."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label of this firewall."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enabled",
+        "disabled",
+        "deleted"
+      ],
+      "description": "The status of this firewall."
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "inbound": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FirewallRule"
+          },
+          "description": "Inbound firewall rules."
+        },
+        "inbound_policy": {
+          "type": "string",
+          "enum": [
+            "ACCEPT",
+            "DROP"
+          ],
+          "description": "The default inbound policy."
+        },
+        "outbound": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FirewallRule"
+          },
+          "description": "Outbound firewall rules."
+        },
+        "outbound_policy": {
+          "type": "string",
+          "enum": [
+            "ACCEPT",
+            "DROP"
+          ],
+          "description": "The default outbound policy."
+        }
+      },
+      "description": "The firewall rules."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for this firewall."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this firewall was created."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this firewall was last updated."
+    }
+  }
+}

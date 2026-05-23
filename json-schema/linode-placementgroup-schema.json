@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/PlacementGroup",
+  "title": "PlacementGroup",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this placement group."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for this placement group."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region for this placement group."
+    },
+    "placement_group_type": {
+      "type": "string",
+      "enum": [
+        "anti_affinity:local"
+      ],
+      "description": "The placement group type."
+    },
+    "placement_group_policy": {
+      "type": "string",
+      "enum": [
+        "strict",
+        "flexible"
+      ],
+      "description": "The placement group enforcement policy."
+    },
+    "is_compliant": {
+      "type": "boolean",
+      "description": "Whether all members satisfy the placement policy."
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "linode_id": {
+            "type": "integer",
+            "description": "The Linode ID."
+          },
+          "is_compliant": {
+            "type": "boolean",
+            "description": "Whether this member satisfies the policy."
+          }
+        }
+      },
+      "description": "The members of this placement group."
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/LKEClusterRequest",
+  "title": "LKEClusterRequest",
+  "type": "object",
+  "required": [
+    "label",
+    "region",
+    "k8s_version",
+    "node_pools"
+  ],
+  "properties": {
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "The label for the new cluster."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region for the cluster."
+    },
+    "k8s_version": {
+      "type": "string",
+      "description": "The Kubernetes version for the cluster."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the cluster."
+    },
+    "node_pools": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/NodePoolRequest"
+      },
+      "description": "Node pool configurations for the cluster."
+    },
+    "control_plane": {
+      "type": "object",
+      "properties": {
+        "high_availability": {
+          "type": "boolean",
+          "description": "Whether to enable high availability for the control plane."
+        }
+      }
+    }
+  }
+}

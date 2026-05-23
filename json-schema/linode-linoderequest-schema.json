@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/LinodeRequest",
+  "title": "LinodeRequest",
+  "type": "object",
+  "required": [
+    "region",
+    "type"
+  ],
+  "properties": {
+    "region": {
+      "type": "string",
+      "description": "The region where the Linode will be created."
+    },
+    "type": {
+      "type": "string",
+      "description": "The Linode type to deploy."
+    },
+    "image": {
+      "type": "string",
+      "description": "The image to deploy with. Required if no backup_id is provided."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$",
+      "description": "The label for the new Linode instance."
+    },
+    "root_pass": {
+      "type": "string",
+      "description": "The root password for the new Linode instance."
+    },
+    "authorized_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A list of public SSH keys to deploy with."
+    },
+    "authorized_users": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A list of usernames whose SSH keys to deploy."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the new Linode."
+    },
+    "stackscript_id": {
+      "type": "integer",
+      "description": "A StackScript ID to deploy with."
+    },
+    "stackscript_data": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "UDF data for the StackScript."
+    },
+    "backup_id": {
+      "type": "integer",
+      "description": "A backup ID to restore from."
+    },
+    "backups_enabled": {
+      "type": "boolean",
+      "description": "Whether to enable the backup service."
+    },
+    "private_ip": {
+      "type": "boolean",
+      "description": "Whether to assign a private IPv4 address."
+    },
+    "booted": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the new Linode should be booted after creation."
+    }
+  }
+}

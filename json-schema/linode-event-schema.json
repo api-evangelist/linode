@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Event",
+  "title": "Event",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of the event."
+    },
+    "action": {
+      "type": "string",
+      "description": "The action that caused this event.",
+      "enum": [
+        "linode_boot",
+        "linode_create",
+        "linode_delete",
+        "linode_reboot",
+        "linode_rebuild",
+        "linode_resize",
+        "linode_shutdown",
+        "linode_update",
+        "disk_create",
+        "disk_delete",
+        "disk_resize",
+        "domain_create",
+        "domain_delete",
+        "domain_update",
+        "domain_record_create",
+        "domain_record_delete",
+        "domain_record_update",
+        "firewall_create",
+        "firewall_delete",
+        "firewall_update",
+        "lke_cluster_create",
+        "lke_cluster_delete",
+        "lke_cluster_update",
+        "nodebalancer_create",
+        "nodebalancer_delete",
+        "nodebalancer_update",
+        "volume_create",
+        "volume_delete",
+        "volume_attach",
+        "volume_detach"
+      ]
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this event was created."
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "The ID of the entity related to this event."
+        },
+        "label": {
+          "type": "string",
+          "description": "The label of the entity."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of entity."
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL of the entity in the API."
+        }
+      },
+      "description": "The entity that this event is related to."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "failed",
+        "finished",
+        "notification",
+        "scheduled",
+        "started"
+      ],
+      "description": "The current status of the event."
+    },
+    "username": {
+      "type": "string",
+      "description": "The username of the user who initiated this event."
+    },
+    "percent_complete": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "The percentage of completion for the event."
+    },
+    "seen": {
+      "type": "boolean",
+      "description": "Whether the event has been seen by the user."
+    },
+    "read": {
+      "type": "boolean",
+      "description": "Whether the event has been read by the user."
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Linode",
+  "title": "Linode",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique ID of this Linode instance."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for this Linode instance."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region where this Linode is located."
+    },
+    "type": {
+      "type": "string",
+      "description": "The Linode type ID of this instance."
+    },
+    "image": {
+      "type": "string",
+      "description": "The image ID used to deploy this Linode."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "offline",
+        "booting",
+        "rebooting",
+        "shutting_down",
+        "provisioning",
+        "deleting",
+        "migrating",
+        "rebuilding",
+        "cloning",
+        "restoring",
+        "stopped"
+      ],
+      "description": "The current status of the Linode instance."
+    },
+    "ipv4": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "ipv4"
+      },
+      "description": "The IPv4 addresses associated with this Linode."
+    },
+    "ipv6": {
+      "type": "string",
+      "description": "The IPv6 SLAAC address for this Linode."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this Linode was created."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this Linode was last updated."
+    },
+    "group": {
+      "type": "string",
+      "description": "The display group for this Linode.",
+      "deprecated": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags applied to this Linode for organizational purposes."
+    },
+    "hypervisor": {
+      "type": "string",
+      "description": "The hypervisor this Linode is running on."
+    },
+    "specs": {
+      "type": "object",
+      "properties": {
+        "disk": {
+          "type": "integer",
+          "description": "The amount of disk space in MB."
+        },
+        "memory": {
+          "type": "integer",
+          "description": "The amount of RAM in MB."
+        },
+        "vcpus": {
+          "type": "integer",
+          "description": "The number of virtual CPUs."
+        },
+        "gpus": {
+          "type": "integer",
+          "description": "The number of GPUs."
+        },
+        "transfer": {
+          "type": "integer",
+          "description": "The monthly network transfer quota in GB."
+        }
+      },
+      "description": "The hardware specifications for this Linode type."
+    },
+    "alerts": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "integer",
+          "description": "CPU usage alert threshold percentage."
+        },
+        "io": {
+          "type": "integer",
+          "description": "Disk IO rate alert threshold."
+        },
+        "network_in": {
+          "type": "integer",
+          "description": "Incoming network traffic alert threshold in Mb/s."
+        },
+        "network_out": {
+          "type": "integer",
+          "description": "Outgoing network traffic alert threshold in Mb/s."
+        },
+        "transfer_quota": {
+          "type": "integer",
+          "description": "Transfer quota usage alert threshold percentage."
+        }
+      },
+      "description": "Alert thresholds for this Linode instance."
+    },
+    "backups": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the backup service is enabled."
+        },
+        "available": {
+          "type": "boolean",
+          "description": "Whether any backups are available."
+        },
+        "schedule": {
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": "string",
+              "description": "The day of the week for automatic backups."
+            },
+            "window": {
+              "type": "string",
+              "description": "The window for automatic backups."
+            }
+          }
+        }
+      },
+      "description": "Information about this Linode's backup service."
+    },
+    "watchdog_enabled": {
+      "type": "boolean",
+      "description": "Whether Lassie the watchdog is enabled to restart this Linode if it crashes."
+    }
+  }
+}

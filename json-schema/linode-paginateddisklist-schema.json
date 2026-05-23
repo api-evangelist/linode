@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/PaginatedDiskList",
+  "title": "PaginatedDiskList",
+  "allOf": [
+    {
+      "$ref": "#/components/schemas/Pagination"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "not ready",
+                  "deleting"
+                ]
+              },
+              "size": {
+                "type": "integer"
+              },
+              "filesystem": {
+                "type": "string",
+                "enum": [
+                  "raw",
+                  "swap",
+                  "ext3",
+                  "ext4",
+                  "initrd"
+                ]
+              },
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

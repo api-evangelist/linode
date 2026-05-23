@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/FirewallRequest",
+  "title": "FirewallRequest",
+  "type": "object",
+  "required": [
+    "label",
+    "rules"
+  ],
+  "properties": {
+    "label": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 32,
+      "description": "The label for the firewall."
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "inbound": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FirewallRule"
+          }
+        },
+        "inbound_policy": {
+          "type": "string",
+          "enum": [
+            "ACCEPT",
+            "DROP"
+          ]
+        },
+        "outbound": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FirewallRule"
+          }
+        },
+        "outbound_policy": {
+          "type": "string",
+          "enum": [
+            "ACCEPT",
+            "DROP"
+          ]
+        }
+      },
+      "description": "The firewall rules."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the firewall."
+    }
+  }
+}

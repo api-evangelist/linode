@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/FirewallRule",
+  "title": "FirewallRule",
+  "type": "object",
+  "properties": {
+    "ports": {
+      "type": "string",
+      "description": "The ports this rule applies to, such as 22 or 443-445."
+    },
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "TCP",
+        "UDP",
+        "ICMP",
+        "IPENCAP"
+      ],
+      "description": "The network protocol."
+    },
+    "addresses": {
+      "type": "object",
+      "properties": {
+        "ipv4": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "IPv4 addresses or CIDRs."
+        },
+        "ipv6": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "IPv6 addresses or CIDRs."
+        }
+      },
+      "description": "The addresses this rule applies to."
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "ACCEPT",
+        "DROP"
+      ],
+      "description": "The action for matching traffic."
+    },
+    "label": {
+      "type": "string",
+      "description": "The label for this rule."
+    },
+    "description": {
+      "type": "string",
+      "description": "A description for this rule."
+    }
+  }
+}
