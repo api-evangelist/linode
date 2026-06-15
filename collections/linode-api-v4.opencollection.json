@@ -1,0 +1,2616 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get account info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account"
+          },
+          "docs": "Returns the contact and billing information related to your account, including company name, address, phone number, and current balance."
+        },
+        {
+          "info": {
+            "name": "Update account info",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/account",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates contact and billing information on your account."
+        },
+        {
+          "info": {
+            "name": "List users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/users",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of users on your account, including their usernames, email addresses, and restricted status."
+        },
+        {
+          "info": {
+            "name": "Create a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/account/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new user on your account. The new user will receive an email to set their password."
+        },
+        {
+          "info": {
+            "name": "Get a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/users/:username",
+            "params": [
+              {
+                "name": "username",
+                "value": "",
+                "type": "path",
+                "description": "The username of the user."
+              }
+            ]
+          },
+          "docs": "Returns information about a single user on your account."
+        },
+        {
+          "info": {
+            "name": "Update a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/account/users/:username",
+            "params": [
+              {
+                "name": "username",
+                "value": "",
+                "type": "path",
+                "description": "The username of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates information about a user on your account, including their username, email, and restricted status."
+        },
+        {
+          "info": {
+            "name": "Delete a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/account/users/:username",
+            "params": [
+              {
+                "name": "username",
+                "value": "",
+                "type": "path",
+                "description": "The username of the user."
+              }
+            ]
+          },
+          "docs": "Deletes a user from your account. The deleted user will lose access to the account immediately."
+        },
+        {
+          "info": {
+            "name": "List events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/events",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of events on your account, ordered by creation date descending. Events record actions taken on your account such as instance creation, deletion, and configuration changes."
+        },
+        {
+          "info": {
+            "name": "Get an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/events/:eventId",
+            "params": [
+              {
+                "name": "eventId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the event."
+              }
+            ]
+          },
+          "docs": "Returns a single event object by its ID."
+        },
+        {
+          "info": {
+            "name": "List invoices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/invoices",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of invoices on your account."
+        },
+        {
+          "info": {
+            "name": "List payments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/account/payments",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of payments made on your account."
+        },
+        {
+          "info": {
+            "name": "Make a payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/account/payments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Makes a payment on your account using the US Dollar amount provided."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Databases",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Managed Databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/databases/instances",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all Managed Database instances on your account, including their status, engine type, and region."
+        },
+        {
+          "info": {
+            "name": "List Managed Database engines",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/databases/engines",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available Managed Database engines and their versions."
+        },
+        {
+          "info": {
+            "name": "List Managed Database types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/databases/types",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available Managed Database node types and their associated pricing."
+        },
+        {
+          "info": {
+            "name": "Get a Managed Database",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/databases/:databaseEngine/:databaseId",
+            "params": [
+              {
+                "name": "databaseEngine",
+                "value": "",
+                "type": "path",
+                "description": "The database engine type."
+              },
+              {
+                "name": "databaseId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Managed Database instance."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Managed Database instance."
+        },
+        {
+          "info": {
+            "name": "Update a Managed Database",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/databases/:databaseEngine/:databaseId",
+            "params": [
+              {
+                "name": "databaseEngine",
+                "value": "",
+                "type": "path",
+                "description": "The database engine type."
+              },
+              {
+                "name": "databaseId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Managed Database instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the configuration for a Managed Database instance."
+        },
+        {
+          "info": {
+            "name": "Delete a Managed Database",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/databases/:databaseEngine/:databaseId",
+            "params": [
+              {
+                "name": "databaseEngine",
+                "value": "",
+                "type": "path",
+                "description": "The database engine type."
+              },
+              {
+                "name": "databaseId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Managed Database instance."
+              }
+            ]
+          },
+          "docs": "Deletes a Managed Database instance. All data stored in the database will be permanently lost."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Domains",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List domains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/domains",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all domains on your account, including their status, type, and SOA email address."
+        },
+        {
+          "info": {
+            "name": "Create a domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/domains",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new domain on your account. The domain can be a master or slave zone type."
+        },
+        {
+          "info": {
+            "name": "Get a domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/domains/:domainId",
+            "params": [
+              {
+                "name": "domainId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the domain."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single domain on your account."
+        },
+        {
+          "info": {
+            "name": "Update a domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/domains/:domainId",
+            "params": [
+              {
+                "name": "domainId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the domain."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the configuration for a domain on your account."
+        },
+        {
+          "info": {
+            "name": "Delete a domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/domains/:domainId",
+            "params": [
+              {
+                "name": "domainId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the domain."
+              }
+            ]
+          },
+          "docs": "Deletes a domain from your account. All associated DNS records will also be deleted."
+        },
+        {
+          "info": {
+            "name": "List domain records",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/domains/:domainId/records",
+            "params": [
+              {
+                "name": "domainId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the domain."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all DNS records for a given domain."
+        },
+        {
+          "info": {
+            "name": "Create a domain record",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/domains/:domainId/records",
+            "params": [
+              {
+                "name": "domainId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the domain."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new DNS record for the given domain."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Images",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List images",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/images",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of images on your account, including both public distribution images and your custom private images."
+        },
+        {
+          "info": {
+            "name": "Create an image",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/images",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new custom image from an existing Linode disk. The image can then be used to deploy new Linode instances."
+        },
+        {
+          "info": {
+            "name": "Get an image",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/images/:imageId",
+            "params": [
+              {
+                "name": "imageId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the image."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single image."
+        },
+        {
+          "info": {
+            "name": "Update an image",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/images/:imageId",
+            "params": [
+              {
+                "name": "imageId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the image."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and description for a custom image."
+        },
+        {
+          "info": {
+            "name": "Delete an image",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/images/:imageId",
+            "params": [
+              {
+                "name": "imageId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the image."
+              }
+            ]
+          },
+          "docs": "Deletes a custom image. Distribution images cannot be deleted."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Linode Instances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Linodes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Linode instances on your account, including their status, region, type, and IP addresses."
+        },
+        {
+          "info": {
+            "name": "Create a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Linode instance. Requires a region, type, and either an image or backup to deploy from. Optionally accepts root password, authorized keys, StackScript, and other configuration options."
+        },
+        {
+          "info": {
+            "name": "Get a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Linode instance, including its status, region, type, IP addresses, and configuration."
+        },
+        {
+          "info": {
+            "name": "Update a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a Linode instance, including its label, group, alerts, and watchdog settings."
+        },
+        {
+          "info": {
+            "name": "Delete a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Deletes a Linode instance. All disks, backups, and IP addresses associated with the instance will be permanently removed."
+        },
+        {
+          "info": {
+            "name": "Boot a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/boot",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Boots a Linode instance. Optionally specify a configuration profile to boot with."
+        },
+        {
+          "info": {
+            "name": "Reboot a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/reboot",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reboots a Linode instance. Optionally specify a configuration profile to boot with after the reboot."
+        },
+        {
+          "info": {
+            "name": "Shut down a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/shutdown",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Shuts down a running Linode instance. The instance will be placed in an offline state."
+        },
+        {
+          "info": {
+            "name": "Resize a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/resize",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Resizes a Linode instance to a new plan type. The instance must be powered off or will be automatically shut down during the resize."
+        },
+        {
+          "info": {
+            "name": "Rebuild a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/rebuild",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Rebuilds a Linode instance with a new image. All existing disks will be destroyed and a new root disk will be created."
+        },
+        {
+          "info": {
+            "name": "Clone a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/clone",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Clones a Linode instance to a new or existing instance. The clone will include the source instance's disks and configuration profiles."
+        },
+        {
+          "info": {
+            "name": "List backups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/backups",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns the available backups for a Linode instance, including automatic daily and weekly snapshots."
+        },
+        {
+          "info": {
+            "name": "List disks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/disks",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of disks attached to a Linode instance."
+        },
+        {
+          "info": {
+            "name": "List configuration profiles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/configs",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of configuration profiles for a Linode instance."
+        },
+        {
+          "info": {
+            "name": "Get networking information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/ips",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns networking information for a Linode instance, including its IPv4 and IPv6 addresses."
+        },
+        {
+          "info": {
+            "name": "List types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/types",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available Linode instance types, including their resources, pricing, and availability."
+        },
+        {
+          "info": {
+            "name": "List kernels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/kernels",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available kernels that can be used with Linode instances."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "StackScripts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List StackScripts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/stackscripts",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of StackScripts accessible to your account, including both your own and community StackScripts."
+        },
+        {
+          "info": {
+            "name": "Create a StackScript",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/stackscripts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new StackScript for automating the deployment and configuration of Linode instances."
+        },
+        {
+          "info": {
+            "name": "Get a StackScript",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/stackscripts/:stackscriptId",
+            "params": [
+              {
+                "name": "stackscriptId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the StackScript."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single StackScript."
+        },
+        {
+          "info": {
+            "name": "Update a StackScript",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/linode/stackscripts/:stackscriptId",
+            "params": [
+              {
+                "name": "stackscriptId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the StackScript."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the properties of a StackScript."
+        },
+        {
+          "info": {
+            "name": "Delete a StackScript",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/linode/stackscripts/:stackscriptId",
+            "params": [
+              {
+                "name": "stackscriptId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the StackScript."
+              }
+            ]
+          },
+          "docs": "Deletes a StackScript from your account."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Linode Kubernetes Engine (LKE)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Kubernetes clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all LKE clusters on your account."
+        },
+        {
+          "info": {
+            "name": "Create a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/lke/clusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new LKE cluster with the specified configuration, including the Kubernetes version, region, and node pools."
+        },
+        {
+          "info": {
+            "name": "Get a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Update a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the configuration for an LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Delete a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Deletes an LKE cluster and all associated node pools and nodes."
+        },
+        {
+          "info": {
+            "name": "List node pools",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/pools",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of node pools for a given LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Create a node pool",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/pools",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new node pool for the specified LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Get kubeconfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/kubeconfig",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Returns the base64-encoded kubeconfig for the specified LKE cluster, which can be used with kubectl to interact with the cluster."
+        },
+        {
+          "info": {
+            "name": "List Kubernetes versions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/versions"
+          },
+          "docs": "Returns a list of available Kubernetes versions for LKE clusters."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Networking",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List IP addresses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/networking/ips",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of IP addresses on your account, including both IPv4 and IPv6 addresses."
+        },
+        {
+          "info": {
+            "name": "Get an IP address",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/networking/ips/:address",
+            "params": [
+              {
+                "name": "address",
+                "value": "",
+                "type": "path",
+                "description": "The IP address to look up."
+              }
+            ]
+          },
+          "docs": "Returns information about a single IP address."
+        },
+        {
+          "info": {
+            "name": "List firewalls",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/networking/firewalls",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of firewalls on your account."
+        },
+        {
+          "info": {
+            "name": "Create a firewall",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/networking/firewalls",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new firewall with the specified rules and device assignments."
+        },
+        {
+          "info": {
+            "name": "Get a firewall",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/networking/firewalls/:firewallId",
+            "params": [
+              {
+                "name": "firewallId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the firewall."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single firewall."
+        },
+        {
+          "info": {
+            "name": "Update a firewall",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/networking/firewalls/:firewallId",
+            "params": [
+              {
+                "name": "firewallId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the firewall."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label, status, and tags for a firewall."
+        },
+        {
+          "info": {
+            "name": "Delete a firewall",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/networking/firewalls/:firewallId",
+            "params": [
+              {
+                "name": "firewallId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the firewall."
+              }
+            ]
+          },
+          "docs": "Deletes a firewall and removes it from all assigned devices."
+        },
+        {
+          "info": {
+            "name": "List VLANs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/networking/vlans",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of VLANs on your account."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "NodeBalancers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List NodeBalancers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/nodebalancers",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of NodeBalancers on your account."
+        },
+        {
+          "info": {
+            "name": "Create a NodeBalancer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/nodebalancers",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new NodeBalancer in the specified region."
+        },
+        {
+          "info": {
+            "name": "Get a NodeBalancer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/nodebalancers/:nodeBalancerId",
+            "params": [
+              {
+                "name": "nodeBalancerId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the NodeBalancer."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single NodeBalancer."
+        },
+        {
+          "info": {
+            "name": "Update a NodeBalancer",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/nodebalancers/:nodeBalancerId",
+            "params": [
+              {
+                "name": "nodeBalancerId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the NodeBalancer."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and other settings for a NodeBalancer."
+        },
+        {
+          "info": {
+            "name": "Delete a NodeBalancer",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/nodebalancers/:nodeBalancerId",
+            "params": [
+              {
+                "name": "nodeBalancerId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the NodeBalancer."
+              }
+            ]
+          },
+          "docs": "Deletes a NodeBalancer and all associated configurations and nodes."
+        },
+        {
+          "info": {
+            "name": "List configs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/nodebalancers/:nodeBalancerId/configs",
+            "params": [
+              {
+                "name": "nodeBalancerId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the NodeBalancer."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of configurations for a NodeBalancer."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Object Storage",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Object Storage buckets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/buckets",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all Object Storage buckets on your account across all clusters."
+        },
+        {
+          "info": {
+            "name": "Get an Object Storage bucket",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/buckets/:regionId/:bucket",
+            "params": [
+              {
+                "name": "regionId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the region."
+              },
+              {
+                "name": "bucket",
+                "value": "",
+                "type": "path",
+                "description": "The name of the Object Storage bucket."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Object Storage bucket."
+        },
+        {
+          "info": {
+            "name": "Delete an Object Storage bucket",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/object-storage/buckets/:regionId/:bucket",
+            "params": [
+              {
+                "name": "regionId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the region."
+              },
+              {
+                "name": "bucket",
+                "value": "",
+                "type": "path",
+                "description": "The name of the Object Storage bucket."
+              }
+            ]
+          },
+          "docs": "Deletes an Object Storage bucket. The bucket must be empty before it can be deleted."
+        },
+        {
+          "info": {
+            "name": "List Object Storage keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/keys",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Object Storage keys on your account."
+        },
+        {
+          "info": {
+            "name": "Create an Object Storage key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/object-storage/keys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Object Storage key pair for accessing buckets. The secret key is only returned once at creation time."
+        },
+        {
+          "info": {
+            "name": "List Object Storage endpoints",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/endpoints"
+          },
+          "docs": "Returns a list of available Object Storage endpoints and their associated regions."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Placement Groups",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List placement groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/placement/groups",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of placement groups on your account."
+        },
+        {
+          "info": {
+            "name": "Create a placement group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/placement/groups",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new placement group in the specified region with the given placement group type."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Profile",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get your profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile"
+          },
+          "docs": "Returns information about the current user, including their username, email address, timezone, and authentication settings."
+        },
+        {
+          "info": {
+            "name": "Update your profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/profile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates information about the current user."
+        },
+        {
+          "info": {
+            "name": "List personal access tokens",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile/tokens",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of personal access tokens for the current user."
+        },
+        {
+          "info": {
+            "name": "Create a personal access token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/profile/tokens",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new personal access token with the specified scopes and expiry. The token value is only returned once at creation time."
+        },
+        {
+          "info": {
+            "name": "List SSH keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile/sshkeys",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of SSH keys on the current user's profile."
+        },
+        {
+          "info": {
+            "name": "Add an SSH key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/profile/sshkeys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds an SSH key to the current user's profile for use when deploying Linode instances."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Regions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List regions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/regions"
+          },
+          "docs": "Returns a list of all available regions where Linode services can be deployed, including their capabilities and status."
+        },
+        {
+          "info": {
+            "name": "Get a region",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/regions/:regionId",
+            "params": [
+              {
+                "name": "regionId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the region."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single region."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Support",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List support tickets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/support/tickets",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of support tickets on your account."
+        },
+        {
+          "info": {
+            "name": "Open a support ticket",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/support/tickets",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Opens a new support ticket with the Linode support team."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Default",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/tags",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of tags on your account."
+        },
+        {
+          "info": {
+            "name": "Create a tag",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/tags",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new tag and optionally assigns it to specified resources."
+        },
+        {
+          "info": {
+            "name": "Delete a tag",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/tags/:label",
+            "params": [
+              {
+                "name": "label",
+                "value": "",
+                "type": "path",
+                "description": "The label of the tag to delete."
+              }
+            ]
+          },
+          "docs": "Deletes a tag from your account. The tag will be removed from all resources it was assigned to."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Volumes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List volumes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/volumes",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Block Storage volumes on your account."
+        },
+        {
+          "info": {
+            "name": "Create a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Block Storage volume. The volume can be attached to a Linode instance immediately or left unattached."
+        },
+        {
+          "info": {
+            "name": "Get a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Block Storage volume."
+        },
+        {
+          "info": {
+            "name": "Update a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and tags for a Block Storage volume."
+        },
+        {
+          "info": {
+            "name": "Delete a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Deletes a Block Storage volume. The volume must be detached from all Linode instances before it can be deleted."
+        },
+        {
+          "info": {
+            "name": "Attach a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes/:volumeId/attach",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Attaches a Block Storage volume to a Linode instance. The volume and instance must be in the same region."
+        },
+        {
+          "info": {
+            "name": "Detach a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes/:volumeId/detach",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Detaches a Block Storage volume from a Linode instance."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "VPCs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List VPCs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of VPCs on your account."
+        },
+        {
+          "info": {
+            "name": "Create a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/vpcs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new VPC in the specified region with optional subnets."
+        },
+        {
+          "info": {
+            "name": "Get a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single VPC."
+        },
+        {
+          "info": {
+            "name": "Update a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and description for a VPC."
+        },
+        {
+          "info": {
+            "name": "Delete a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ]
+          },
+          "docs": "Deletes a VPC. The VPC must not have any active subnets with assigned Linode instances."
+        },
+        {
+          "info": {
+            "name": "List VPC subnets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId/subnets",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of subnets for a VPC."
+        },
+        {
+          "info": {
+            "name": "Create a VPC subnet",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId/subnets",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new subnet in the specified VPC."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Longview",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Longview clients",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/longview/clients",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Longview clients on your account."
+        },
+        {
+          "info": {
+            "name": "Create a Longview client",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/longview/clients",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Longview client for system monitoring."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Managed",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List managed services",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/managed/services",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Managed services being monitored on your account."
+        },
+        {
+          "info": {
+            "name": "Create a managed service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/managed/services",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Managed service monitor."
+        },
+        {
+          "info": {
+            "name": "List managed contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/managed/contacts",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Managed contacts for your account."
+        },
+        {
+          "info": {
+            "name": "List managed issues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/managed/issues",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of recent issues that Managed detected for your services."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
