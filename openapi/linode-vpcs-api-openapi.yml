@@ -1,0 +1,388 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account VPCs API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: VPCs
+  description: Create and manage Virtual Private Clouds for isolated network environments and subnets for Linode instances.
+paths:
+  /vpcs:
+    get:
+      operationId: getVPCs
+      summary: List VPCs
+      description: Returns a paginated list of VPCs on your account.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VPCs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVPCList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createVPC
+      summary: Create a VPC
+      description: Creates a new VPC in the specified region with optional subnets.
+      tags:
+      - VPCs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCRequest'
+      responses:
+        '200':
+          description: VPC created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /vpcs/{vpcId}:
+    get:
+      operationId: getVPC
+      summary: Get a VPC
+      description: Returns the details for a single VPC.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/vpcIdParam'
+      responses:
+        '200':
+          description: VPC retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    put:
+      operationId: updateVPC
+      summary: Update a VPC
+      description: Updates the label and description for a VPC.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/vpcIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCUpdateRequest'
+      responses:
+        '200':
+          description: VPC updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPC'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    delete:
+      operationId: deleteVPC
+      summary: Delete a VPC
+      description: Deletes a VPC. The VPC must not have any active subnets with assigned Linode instances.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/vpcIdParam'
+      responses:
+        '200':
+          description: VPC deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+  /vpcs/{vpcId}/subnets:
+    get:
+      operationId: getVPCSubnets
+      summary: List VPC subnets
+      description: Returns a paginated list of subnets for a VPC.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/vpcIdParam'
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VPC subnets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubnetList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+    post:
+      operationId: createVPCSubnet
+      summary: Create a VPC subnet
+      description: Creates a new subnet in the specified VPC.
+      tags:
+      - VPCs
+      parameters:
+      - $ref: '#/components/parameters/vpcIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubnetRequest'
+      responses:
+        '200':
+          description: VPC subnet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subnet'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: VPC not found
+components:
+  parameters:
+    vpcIdParam:
+      name: vpcId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the VPC.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  schemas:
+    PaginatedSubnetList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Subnet'
+    VPCRequest:
+      type: object
+      required:
+      - label
+      - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the new VPC.
+        description:
+          type: string
+          maxLength: 255
+          description: A description for the new VPC.
+        region:
+          type: string
+          description: The region for the new VPC.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubnetRequest'
+          description: Initial subnets to create.
+    SubnetRequest:
+      type: object
+      required:
+      - label
+      - ipv4
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the subnet.
+        ipv4:
+          type: string
+          description: The IPv4 CIDR range for the subnet.
+    VPC:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this VPC.
+        label:
+          type: string
+          description: The label for this VPC.
+        description:
+          type: string
+          description: A description for this VPC.
+        region:
+          type: string
+          description: The region where this VPC is located.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subnet'
+          description: The subnets in this VPC.
+        created:
+          type: string
+          format: date-time
+          description: When this VPC was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this VPC was last updated.
+    VPCUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The new label for the VPC.
+        description:
+          type: string
+          maxLength: 255
+          description: The new description for the VPC.
+    PaginatedVPCList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/VPC'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    Subnet:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this subnet.
+        label:
+          type: string
+          description: The label for this subnet.
+        ipv4:
+          type: string
+          description: The IPv4 CIDR range for this subnet.
+        linodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The Linode ID.
+              interfaces:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    active:
+                      type: boolean
+          description: Linodes assigned to this subnet.
+        created:
+          type: string
+          format: date-time
+          description: When this subnet was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this subnet was last updated.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

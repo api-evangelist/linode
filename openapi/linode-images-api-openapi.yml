@@ -1,0 +1,290 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Images API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Images
+  description: Manage custom images for deploying Linode instances, including creating images from disks, uploading images, and managing image metadata.
+paths:
+  /images:
+    get:
+      operationId: getImages
+      summary: List images
+      description: Returns a paginated list of images on your account, including both public distribution images and your custom private images.
+      tags:
+      - Images
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Images retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImageList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createImage
+      summary: Create an image
+      description: Creates a new custom image from an existing Linode disk. The image can then be used to deploy new Linode instances.
+      tags:
+      - Images
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+      responses:
+        '200':
+          description: Image created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /images/{imageId}:
+    get:
+      operationId: getImage
+      summary: Get an image
+      description: Returns the details for a single image.
+      tags:
+      - Images
+      parameters:
+      - $ref: '#/components/parameters/imageIdParam'
+      responses:
+        '200':
+          description: Image retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+    put:
+      operationId: updateImage
+      summary: Update an image
+      description: Updates the label and description for a custom image.
+      tags:
+      - Images
+      parameters:
+      - $ref: '#/components/parameters/imageIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageUpdateRequest'
+      responses:
+        '200':
+          description: Image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+    delete:
+      operationId: deleteImage
+      summary: Delete an image
+      description: Deletes a custom image. Distribution images cannot be deleted.
+      tags:
+      - Images
+      parameters:
+      - $ref: '#/components/parameters/imageIdParam'
+      responses:
+        '200':
+          description: Image deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Image not found
+components:
+  parameters:
+    imageIdParam:
+      name: imageId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the image.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  schemas:
+    PaginatedImageList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Image'
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of this image.
+        label:
+          type: string
+          description: The label of this image.
+        description:
+          type: string
+          description: A description of this image.
+        type:
+          type: string
+          enum:
+          - manual
+          - automatic
+          description: Whether this is a manual or automatic image.
+        is_public:
+          type: boolean
+          description: Whether this image is publicly available.
+        size:
+          type: integer
+          description: The size of this image in MB.
+        status:
+          type: string
+          enum:
+          - available
+          - creating
+          - pending_upload
+          description: The status of this image.
+        vendor:
+          type: string
+          description: The upstream distribution vendor.
+        created:
+          type: string
+          format: date-time
+          description: When this image was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this image was last updated.
+        expiry:
+          type: string
+          format: date-time
+          description: When this image expires. Null for distribution images.
+    ImageRequest:
+      type: object
+      required:
+      - disk_id
+      properties:
+        disk_id:
+          type: integer
+          description: The ID of the disk to create the image from.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the new image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the new image.
+    ImageUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the image.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

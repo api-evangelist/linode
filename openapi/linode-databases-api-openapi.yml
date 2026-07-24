@@ -1,0 +1,361 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Databases API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Databases
+  description: Manage Managed Database instances including MySQL and PostgreSQL clusters, backups, credentials, and maintenance windows.
+paths:
+  /databases/instances:
+    get:
+      operationId: getDatabaseInstances
+      summary: List Managed Databases
+      description: Returns a paginated list of all Managed Database instances on your account, including their status, engine type, and region.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed Databases retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/engines:
+    get:
+      operationId: getDatabaseEngines
+      summary: List Managed Database engines
+      description: Returns a paginated list of available Managed Database engines and their versions.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Database engines retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseEngineList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/types:
+    get:
+      operationId: getDatabaseTypes
+      summary: List Managed Database types
+      description: Returns a paginated list of available Managed Database node types and their associated pricing.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Database types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatabaseTypeList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /databases/{databaseEngine}/{databaseId}:
+    get:
+      operationId: getDatabaseInstance
+      summary: Get a Managed Database
+      description: Returns the details for a single Managed Database instance.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/databaseEngineParam'
+      - $ref: '#/components/parameters/databaseIdParam'
+      responses:
+        '200':
+          description: Managed Database retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+    put:
+      operationId: updateDatabaseInstance
+      summary: Update a Managed Database
+      description: Updates the configuration for a Managed Database instance.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/databaseEngineParam'
+      - $ref: '#/components/parameters/databaseIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseRequest'
+      responses:
+        '200':
+          description: Managed Database updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+    delete:
+      operationId: deleteDatabaseInstance
+      summary: Delete a Managed Database
+      description: Deletes a Managed Database instance. All data stored in the database will be permanently lost.
+      tags:
+      - Databases
+      parameters:
+      - $ref: '#/components/parameters/databaseEngineParam'
+      - $ref: '#/components/parameters/databaseIdParam'
+      responses:
+        '200':
+          description: Managed Database deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Database not found
+components:
+  parameters:
+    databaseIdParam:
+      name: databaseId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the Managed Database instance.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    databaseEngineParam:
+      name: databaseEngine
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - mysql
+        - postgresql
+      description: The database engine type.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  schemas:
+    PaginatedDatabaseList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Database'
+    PaginatedDatabaseTypeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+                class:
+                  type: string
+                vcpus:
+                  type: integer
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+    DatabaseRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the database.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: IP addresses or CIDRs allowed to connect.
+    PaginatedDatabaseEngineList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                engine:
+                  type: string
+                id:
+                  type: string
+                version:
+                  type: string
+    Database:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this database.
+        label:
+          type: string
+          description: The label of this database.
+        engine:
+          type: string
+          description: The database engine and version.
+        type:
+          type: string
+          description: The Linode type for database nodes.
+        region:
+          type: string
+          description: The region where this database is located.
+        status:
+          type: string
+          enum:
+          - provisioning
+          - active
+          - suspending
+          - suspended
+          - resuming
+          - restoring
+          - failed
+          - degraded
+          - updating
+          - backing_up
+          description: The current status of this database.
+        cluster_size:
+          type: integer
+          enum:
+          - 1
+          - 3
+          description: The number of nodes in the database cluster.
+        hosts:
+          type: object
+          properties:
+            primary:
+              type: string
+              description: The primary host for this database.
+            secondary:
+              type: string
+              description: The secondary host for this database.
+          description: The connection endpoints for this database.
+        port:
+          type: integer
+          description: The port for database connections.
+        ssl_connection:
+          type: boolean
+          description: Whether SSL is required for connections.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: IP addresses or CIDRs allowed to connect.
+        created:
+          type: string
+          format: date-time
+          description: When this database was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this database was last updated.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

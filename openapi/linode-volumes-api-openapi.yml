@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Volumes API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Volumes
+  description: Create and manage Block Storage volumes that can be attached to Linode instances for persistent data storage.
+paths:
+  /volumes:
+    get:
+      operationId: getVolumes
+      summary: List volumes
+      description: Returns a paginated list of Block Storage volumes on your account.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Volumes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVolumeList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createVolume
+      summary: Create a volume
+      description: Creates a new Block Storage volume. The volume can be attached to a Linode instance immediately or left unattached.
+      tags:
+      - Volumes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeRequest'
+      responses:
+        '200':
+          description: Volume created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /volumes/{volumeId}:
+    get:
+      operationId: getVolume
+      summary: Get a volume
+      description: Returns the details for a single Block Storage volume.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+    put:
+      operationId: updateVolume
+      summary: Update a volume
+      description: Updates the label and tags for a Block Storage volume.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/volumeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeUpdateRequest'
+      responses:
+        '200':
+          description: Volume updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+    delete:
+      operationId: deleteVolume
+      summary: Delete a volume
+      description: Deletes a Block Storage volume. The volume must be detached from all Linode instances before it can be deleted.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+  /volumes/{volumeId}/attach:
+    post:
+      operationId: attachVolume
+      summary: Attach a volume
+      description: Attaches a Block Storage volume to a Linode instance. The volume and instance must be in the same region.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/volumeIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - linode_id
+              properties:
+                linode_id:
+                  type: integer
+                  description: The ID of the Linode instance to attach the volume to.
+                config_id:
+                  type: integer
+                  description: The ID of the configuration profile to attach to.
+      responses:
+        '200':
+          description: Volume attached successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+  /volumes/{volumeId}/detach:
+    post:
+      operationId: detachVolume
+      summary: Detach a volume
+      description: Detaches a Block Storage volume from a Linode instance.
+      tags:
+      - Volumes
+      parameters:
+      - $ref: '#/components/parameters/volumeIdParam'
+      responses:
+        '200':
+          description: Volume detached successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Volume not found
+components:
+  schemas:
+    PaginatedVolumeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Volume'
+    VolumeRequest:
+      type: object
+      required:
+      - label
+      - size
+      - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the new volume.
+        size:
+          type: integer
+          minimum: 10
+          maximum: 10240
+          description: The size of the volume in GB.
+        region:
+          type: string
+          description: The region to create the volume in.
+        linode_id:
+          type: integer
+          description: A Linode instance to attach the volume to.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new volume.
+    Volume:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this volume.
+        label:
+          type: string
+          description: The label of this volume.
+        status:
+          type: string
+          enum:
+          - creating
+          - active
+          - resizing
+          - deleting
+          description: The current status of this volume.
+        size:
+          type: integer
+          description: The size of this volume in GB.
+        region:
+          type: string
+          description: The region where this volume is located.
+        linode_id:
+          type: integer
+          description: The ID of the Linode this volume is attached to, or null.
+        linode_label:
+          type: string
+          description: The label of the Linode this volume is attached to.
+        filesystem_path:
+          type: string
+          description: The filesystem path for this volume on the attached Linode.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this volume.
+        created:
+          type: string
+          format: date-time
+          description: When this volume was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this volume was last updated.
+    VolumeUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The new label for the volume.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Updated tags for the volume.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    volumeIdParam:
+      name: volumeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the volume.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

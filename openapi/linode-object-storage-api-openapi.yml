@@ -1,0 +1,345 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Object Storage API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Object Storage
+  description: Manage Object Storage buckets, access keys, clusters, and endpoints for S3-compatible object storage.
+paths:
+  /object-storage/buckets:
+    get:
+      operationId: getObjectStorageBuckets
+      summary: List Object Storage buckets
+      description: Returns a paginated list of all Object Storage buckets on your account across all clusters.
+      tags:
+      - Object Storage
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Object Storage buckets retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedObjectStorageBucketList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /object-storage/buckets/{regionId}/{bucket}:
+    get:
+      operationId: getObjectStorageBucket
+      summary: Get an Object Storage bucket
+      description: Returns the details for a single Object Storage bucket.
+      tags:
+      - Object Storage
+      parameters:
+      - $ref: '#/components/parameters/regionIdParam'
+      - $ref: '#/components/parameters/bucketParam'
+      responses:
+        '200':
+          description: Object Storage bucket retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageBucket'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Bucket not found
+    delete:
+      operationId: deleteObjectStorageBucket
+      summary: Delete an Object Storage bucket
+      description: Deletes an Object Storage bucket. The bucket must be empty before it can be deleted.
+      tags:
+      - Object Storage
+      parameters:
+      - $ref: '#/components/parameters/regionIdParam'
+      - $ref: '#/components/parameters/bucketParam'
+      responses:
+        '200':
+          description: Object Storage bucket deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Bucket not found
+  /object-storage/keys:
+    get:
+      operationId: getObjectStorageKeys
+      summary: List Object Storage keys
+      description: Returns a paginated list of Object Storage keys on your account.
+      tags:
+      - Object Storage
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Object Storage keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedObjectStorageKeyList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createObjectStorageKey
+      summary: Create an Object Storage key
+      description: Creates a new Object Storage key pair for accessing buckets. The secret key is only returned once at creation time.
+      tags:
+      - Object Storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectStorageKeyRequest'
+      responses:
+        '200':
+          description: Object Storage key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageKey'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /object-storage/endpoints:
+    get:
+      operationId: getObjectStorageEndpoints
+      summary: List Object Storage endpoints
+      description: Returns a list of available Object Storage endpoints and their associated regions.
+      tags:
+      - Object Storage
+      responses:
+        '200':
+          description: Object Storage endpoints retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectStorageEndpointList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  parameters:
+    regionIdParam:
+      name: regionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the region.
+    bucketParam:
+      name: bucket
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The name of the Object Storage bucket.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  schemas:
+    ObjectStorageKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this key.
+        label:
+          type: string
+          description: The label for this key.
+        access_key:
+          type: string
+          description: The access key for S3-compatible requests.
+        secret_key:
+          type: string
+          description: The secret key. Only returned at creation time.
+        limited:
+          type: boolean
+          description: Whether this key has limited bucket access.
+        bucket_access:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: The region of the bucket.
+              bucket_name:
+                type: string
+                description: The name of the bucket.
+              permissions:
+                type: string
+                enum:
+                - read_only
+                - read_write
+                description: The permission level.
+          description: Specific bucket access permissions for this key.
+    ObjectStorageEndpointList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: The region ID.
+              endpoint_type:
+                type: string
+                description: The type of endpoint.
+              s3_endpoint:
+                type: string
+                description: The S3-compatible endpoint URL.
+    ObjectStorageKeyRequest:
+      type: object
+      required:
+      - label
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: The label for the new key.
+        bucket_access:
+          type: array
+          items:
+            type: object
+            required:
+            - region
+            - bucket_name
+            - permissions
+            properties:
+              region:
+                type: string
+              bucket_name:
+                type: string
+              permissions:
+                type: string
+                enum:
+                - read_only
+                - read_write
+          description: Specific bucket access permissions.
+    PaginatedObjectStorageBucketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageBucket'
+    PaginatedObjectStorageKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageKey'
+    ObjectStorageBucket:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The name of this bucket.
+        region:
+          type: string
+          description: The region where this bucket is located.
+        created:
+          type: string
+          format: date-time
+          description: When this bucket was created.
+        hostname:
+          type: string
+          description: The hostname for accessing this bucket.
+        objects:
+          type: integer
+          description: The number of objects in this bucket.
+        size:
+          type: integer
+          description: The total size of objects in bytes.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

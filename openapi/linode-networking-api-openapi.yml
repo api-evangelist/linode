@@ -1,0 +1,493 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Networking API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Networking
+  description: Manage networking resources including IP addresses, IPv6 ranges and pools, firewalls, VLANs, and IP address sharing and assignment.
+paths:
+  /networking/ips:
+    get:
+      operationId: getIPAddresses
+      summary: List IP addresses
+      description: Returns a paginated list of IP addresses on your account, including both IPv4 and IPv6 addresses.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: IP addresses retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIPAddressList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /networking/ips/{address}:
+    get:
+      operationId: getIPAddress
+      summary: Get an IP address
+      description: Returns information about a single IP address.
+      tags:
+      - Networking
+      parameters:
+      - name: address
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The IP address to look up.
+      responses:
+        '200':
+          description: IP address retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPAddress'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: IP address not found
+  /networking/firewalls:
+    get:
+      operationId: getFirewalls
+      summary: List firewalls
+      description: Returns a paginated list of firewalls on your account.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Firewalls retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFirewallList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createFirewall
+      summary: Create a firewall
+      description: Creates a new firewall with the specified rules and device assignments.
+      tags:
+      - Networking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirewallRequest'
+      responses:
+        '200':
+          description: Firewall created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /networking/firewalls/{firewallId}:
+    get:
+      operationId: getFirewall
+      summary: Get a firewall
+      description: Returns the details for a single firewall.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/firewallIdParam'
+      responses:
+        '200':
+          description: Firewall retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+    put:
+      operationId: updateFirewall
+      summary: Update a firewall
+      description: Updates the label, status, and tags for a firewall.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/firewallIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirewallUpdateRequest'
+      responses:
+        '200':
+          description: Firewall updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+    delete:
+      operationId: deleteFirewall
+      summary: Delete a firewall
+      description: Deletes a firewall and removes it from all assigned devices.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/firewallIdParam'
+      responses:
+        '200':
+          description: Firewall deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Firewall not found
+  /networking/vlans:
+    get:
+      operationId: getVLANs
+      summary: List VLANs
+      description: Returns a paginated list of VLANs on your account.
+      tags:
+      - Networking
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: VLANs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVLANList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  schemas:
+    IPAddress:
+      type: object
+      properties:
+        address:
+          type: string
+          description: The IP address.
+        gateway:
+          type: string
+          description: The default gateway.
+        subnet_mask:
+          type: string
+          description: The subnet mask.
+        prefix:
+          type: integer
+          description: The network prefix length.
+        type:
+          type: string
+          enum:
+          - ipv4
+          - ipv6
+          description: The type of IP address.
+        public:
+          type: boolean
+          description: Whether this is a public IP address.
+        rdns:
+          type: string
+          description: The reverse DNS entry for this address.
+        linode_id:
+          type: integer
+          description: The ID of the Linode this IP is assigned to.
+        region:
+          type: string
+          description: The region for this IP address.
+    PaginatedIPAddressList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/IPAddress'
+    Firewall:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this firewall.
+        label:
+          type: string
+          description: The label of this firewall.
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          - deleted
+          description: The status of this firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+              description: Inbound firewall rules.
+            inbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+              description: The default inbound policy.
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+              description: Outbound firewall rules.
+            outbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+              description: The default outbound policy.
+          description: The firewall rules.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this firewall.
+        created:
+          type: string
+          format: date-time
+          description: When this firewall was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this firewall was last updated.
+    FirewallUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          description: The status of the firewall.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
+    FirewallRule:
+      type: object
+      properties:
+        ports:
+          type: string
+          description: The ports this rule applies to, such as 22 or 443-445.
+        protocol:
+          type: string
+          enum:
+          - TCP
+          - UDP
+          - ICMP
+          - IPENCAP
+          description: The network protocol.
+        addresses:
+          type: object
+          properties:
+            ipv4:
+              type: array
+              items:
+                type: string
+              description: IPv4 addresses or CIDRs.
+            ipv6:
+              type: array
+              items:
+                type: string
+              description: IPv6 addresses or CIDRs.
+          description: The addresses this rule applies to.
+        action:
+          type: string
+          enum:
+          - ACCEPT
+          - DROP
+          description: The action for matching traffic.
+        label:
+          type: string
+          description: The label for this rule.
+        description:
+          type: string
+          description: A description for this rule.
+    PaginatedFirewallList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Firewall'
+    PaginatedVLANList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                label:
+                  type: string
+                linodes:
+                  type: array
+                  items:
+                    type: integer
+                region:
+                  type: string
+                created:
+                  type: string
+                  format: date-time
+    FirewallRequest:
+      type: object
+      required:
+      - label
+      - rules
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            inbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            outbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+          description: The firewall rules.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    firewallIdParam:
+      name: firewallId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the firewall.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

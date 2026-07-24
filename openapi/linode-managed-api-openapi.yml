@@ -1,0 +1,334 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Managed API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Managed
+  description: Manage Linode Managed services including monitored contacts, credentials, issues, service monitors, and SSH access settings.
+paths:
+  /managed/services:
+    get:
+      operationId: getManagedServices
+      summary: List managed services
+      description: Returns a paginated list of Managed services being monitored on your account.
+      tags:
+      - Managed
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed services retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedServiceList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createManagedService
+      summary: Create a managed service
+      description: Creates a new Managed service monitor.
+      tags:
+      - Managed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagedServiceRequest'
+      responses:
+        '200':
+          description: Managed service created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedService'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /managed/contacts:
+    get:
+      operationId: getManagedContacts
+      summary: List managed contacts
+      description: Returns a paginated list of Managed contacts for your account.
+      tags:
+      - Managed
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedContactList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /managed/issues:
+    get:
+      operationId: getManagedIssues
+      summary: List managed issues
+      description: Returns a paginated list of recent issues that Managed detected for your services.
+      tags:
+      - Managed
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Managed issues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedManagedIssueList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  schemas:
+    PaginatedManagedIssueList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                created:
+                  type: string
+                  format: date-time
+                services:
+                  type: array
+                  items:
+                    type: integer
+                entity:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    label:
+                      type: string
+                    type:
+                      type: string
+                    url:
+                      type: string
+    ManagedService:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this managed service.
+        label:
+          type: string
+          description: The label for this service.
+        service_type:
+          type: string
+          enum:
+          - url
+          description: The type of service monitor.
+        address:
+          type: string
+          description: The URL to monitor.
+        timeout:
+          type: integer
+          description: Timeout in seconds before considering the service down.
+        body:
+          type: string
+          description: A string to look for in the response body.
+        consultation_group:
+          type: string
+          description: The group of managed contacts to notify.
+        status:
+          type: string
+          enum:
+          - disabled
+          - ok
+          - pending
+          - problem
+          description: The current status of this service.
+        notes:
+          type: string
+          description: Notes about this service.
+        region:
+          type: string
+          description: The region to monitor from.
+        credentials:
+          type: array
+          items:
+            type: integer
+          description: Credential IDs for accessing this service.
+        created:
+          type: string
+          format: date-time
+          description: When this service was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this service was last updated.
+    ManagedServiceRequest:
+      type: object
+      required:
+      - label
+      - service_type
+      - address
+      - timeout
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          description: The label for the service.
+        service_type:
+          type: string
+          enum:
+          - url
+          description: The type of service monitor.
+        address:
+          type: string
+          description: The URL to monitor.
+        timeout:
+          type: integer
+          minimum: 1
+          maximum: 255
+          description: Timeout in seconds.
+        body:
+          type: string
+          maxLength: 100
+          description: A string to look for in the response body.
+        consultation_group:
+          type: string
+          description: The group of managed contacts to notify.
+        notes:
+          type: string
+          description: Notes about this service.
+        credentials:
+          type: array
+          items:
+            type: integer
+          description: Credential IDs for this service.
+    PaginatedManagedServiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ManagedService'
+    PaginatedManagedContactList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: object
+                  properties:
+                    primary:
+                      type: string
+                    secondary:
+                      type: string
+                group:
+                  type: string
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

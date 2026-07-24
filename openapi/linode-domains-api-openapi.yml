@@ -1,0 +1,430 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Domains API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Domains
+  description: Manage DNS domains and their associated resource records including A, AAAA, CNAME, MX, TXT, SRV, CAA, and NS records.
+paths:
+  /domains:
+    get:
+      operationId: getDomains
+      summary: List domains
+      description: Returns a paginated list of all domains on your account, including their status, type, and SOA email address.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Domains retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDomainList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createDomain
+      summary: Create a domain
+      description: Creates a new domain on your account. The domain can be a master or slave zone type.
+      tags:
+      - Domains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRequest'
+      responses:
+        '200':
+          description: Domain created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /domains/{domainId}:
+    get:
+      operationId: getDomain
+      summary: Get a domain
+      description: Returns the details for a single domain on your account.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/domainIdParam'
+      responses:
+        '200':
+          description: Domain retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    put:
+      operationId: updateDomain
+      summary: Update a domain
+      description: Updates the configuration for a domain on your account.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/domainIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRequest'
+      responses:
+        '200':
+          description: Domain updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    delete:
+      operationId: deleteDomain
+      summary: Delete a domain
+      description: Deletes a domain from your account. All associated DNS records will also be deleted.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/domainIdParam'
+      responses:
+        '200':
+          description: Domain deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+  /domains/{domainId}/records:
+    get:
+      operationId: getDomainRecords
+      summary: List domain records
+      description: Returns a paginated list of all DNS records for a given domain.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/domainIdParam'
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Domain records retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDomainRecordList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+    post:
+      operationId: createDomainRecord
+      summary: Create a domain record
+      description: Creates a new DNS record for the given domain.
+      tags:
+      - Domains
+      parameters:
+      - $ref: '#/components/parameters/domainIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomainRecordRequest'
+      responses:
+        '200':
+          description: Domain record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainRecord'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Domain not found
+components:
+  schemas:
+    Domain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this domain.
+        domain:
+          type: string
+          description: The domain name.
+        type:
+          type: string
+          enum:
+          - master
+          - slave
+          description: Whether this is a master or slave zone.
+        status:
+          type: string
+          enum:
+          - active
+          - disabled
+          - edit_mode
+          description: The status of this domain.
+        soa_email:
+          type: string
+          format: email
+          description: The SOA email address for this domain.
+        description:
+          type: string
+          description: A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this domain.
+        created:
+          type: string
+          format: date-time
+          description: When this domain was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this domain was last updated.
+        ttl_sec:
+          type: integer
+          description: The default TTL in seconds.
+        retry_sec:
+          type: integer
+          description: The retry interval in seconds.
+        refresh_sec:
+          type: integer
+          description: The refresh interval in seconds.
+        expire_sec:
+          type: integer
+          description: The expiry time in seconds.
+    PaginatedDomainRecordList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/DomainRecord'
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this domain record.
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN for this record.
+        target:
+          type: string
+          description: The target for this record.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds for this record.
+        tag:
+          type: string
+          description: The tag for CAA records.
+    DomainRequest:
+      type: object
+      required:
+      - domain
+      - type
+      properties:
+        domain:
+          type: string
+          description: The domain name.
+        type:
+          type: string
+          enum:
+          - master
+          - slave
+          description: Whether this is a master or slave zone.
+        soa_email:
+          type: string
+          format: email
+          description: The SOA email address.
+        description:
+          type: string
+          description: A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this domain.
+    DomainRecordRequest:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN.
+        target:
+          type: string
+          description: The target value.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds.
+    PaginatedDomainList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Domain'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    domainIdParam:
+      name: domainId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the domain.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

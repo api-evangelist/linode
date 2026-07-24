@@ -1,0 +1,605 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Account
+  description: Manage your account settings, users, billing information, OAuth clients, service transfers, and payment methods.
+paths:
+  /account:
+    get:
+      operationId: getAccount
+      summary: Get account info
+      description: Returns the contact and billing information related to your account, including company name, address, phone number, and current balance.
+      tags:
+      - Account
+      responses:
+        '200':
+          description: Account information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    put:
+      operationId: updateAccount
+      summary: Update account info
+      description: Updates contact and billing information on your account.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: Account information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/users:
+    get:
+      operationId: getUsers
+      summary: List users
+      description: Returns a paginated list of users on your account, including their usernames, email addresses, and restricted status.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createUser
+      summary: Create a user
+      description: Creates a new user on your account. The new user will receive an email to set their password.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/users/{username}:
+    get:
+      operationId: getUser
+      summary: Get a user
+      description: Returns information about a single user on your account.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/usernameParam'
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+    put:
+      operationId: updateUser
+      summary: Update a user
+      description: Updates information about a user on your account, including their username, email, and restricted status.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/usernameParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      description: Deletes a user from your account. The deleted user will lose access to the account immediately.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/usernameParam'
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: User not found
+  /account/events:
+    get:
+      operationId: getEvents
+      summary: List events
+      description: Returns a paginated list of events on your account, ordered by creation date descending. Events record actions taken on your account such as instance creation, deletion, and configuration changes.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEventList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/events/{eventId}:
+    get:
+      operationId: getEvent
+      summary: Get an event
+      description: Returns a single event object by its ID.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/eventIdParam'
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: Event not found
+  /account/invoices:
+    get:
+      operationId: getInvoices
+      summary: List invoices
+      description: Returns a paginated list of invoices on your account.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Invoices retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvoiceList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /account/payments:
+    get:
+      operationId: getPayments
+      summary: List payments
+      description: Returns a paginated list of payments made on your account.
+      tags:
+      - Account
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPayment
+      summary: Make a payment
+      description: Makes a payment on your account using the US Dollar amount provided.
+      tags:
+      - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment made successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user has restricted access to account resources.
+        ssh_keys:
+          type: array
+          items:
+            type: string
+          description: A list of SSH key labels associated with the user.
+        tfa_enabled:
+          type: boolean
+          description: Whether two-factor authentication is enabled.
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this payment.
+        date:
+          type: string
+          format: date-time
+          description: The date this payment was made.
+        usd:
+          type: number
+          description: The amount in US dollars.
+    PaginatedUserList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the event.
+        action:
+          type: string
+          description: The action that caused this event.
+          enum:
+          - linode_boot
+          - linode_create
+          - linode_delete
+          - linode_reboot
+          - linode_rebuild
+          - linode_resize
+          - linode_shutdown
+          - linode_update
+          - disk_create
+          - disk_delete
+          - disk_resize
+          - domain_create
+          - domain_delete
+          - domain_update
+          - domain_record_create
+          - domain_record_delete
+          - domain_record_update
+          - firewall_create
+          - firewall_delete
+          - firewall_update
+          - lke_cluster_create
+          - lke_cluster_delete
+          - lke_cluster_update
+          - nodebalancer_create
+          - nodebalancer_delete
+          - nodebalancer_update
+          - volume_create
+          - volume_delete
+          - volume_attach
+          - volume_detach
+        created:
+          type: string
+          format: date-time
+          description: When this event was created.
+        entity:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The ID of the entity related to this event.
+            label:
+              type: string
+              description: The label of the entity.
+            type:
+              type: string
+              description: The type of entity.
+            url:
+              type: string
+              description: The URL of the entity in the API.
+          description: The entity that this event is related to.
+        status:
+          type: string
+          enum:
+          - failed
+          - finished
+          - notification
+          - scheduled
+          - started
+          description: The current status of the event.
+        username:
+          type: string
+          description: The username of the user who initiated this event.
+        percent_complete:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: The percentage of completion for the event.
+        seen:
+          type: boolean
+          description: Whether the event has been seen by the user.
+        read:
+          type: boolean
+          description: Whether the event has been read by the user.
+    PaginatedInvoiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Invoice'
+    PaginatedPaymentList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Payment'
+    PaymentRequest:
+      type: object
+      required:
+      - usd
+      properties:
+        usd:
+          type: number
+          minimum: 5
+          maximum: 10000
+          description: The payment amount in US dollars.
+    UserRequest:
+      type: object
+      required:
+      - username
+      - email
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user should have restricted access.
+    Account:
+      type: object
+      properties:
+        company:
+          type: string
+          description: The company name associated with this account.
+        email:
+          type: string
+          format: email
+          description: The email address associated with this account.
+        first_name:
+          type: string
+          description: The first name of the account holder.
+        last_name:
+          type: string
+          description: The last name of the account holder.
+        address_1:
+          type: string
+          description: The first line of the account's address.
+        address_2:
+          type: string
+          description: The second line of the account's address.
+        city:
+          type: string
+          description: The city of the account's address.
+        state:
+          type: string
+          description: The state or province of the account's address.
+        zip:
+          type: string
+          description: The postal code of the account's address.
+        country:
+          type: string
+          description: The two-letter ISO 3166-1 country code.
+        phone:
+          type: string
+          description: The phone number for the account.
+        balance:
+          type: number
+          format: float
+          description: The current account balance in US dollars.
+        active_since:
+          type: string
+          format: date-time
+          description: The date and time the account was activated.
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: A list of capabilities enabled on this account.
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this invoice.
+        date:
+          type: string
+          format: date-time
+          description: The date of this invoice.
+        label:
+          type: string
+          description: The label for this invoice.
+        subtotal:
+          type: number
+          description: The subtotal amount.
+        tax:
+          type: number
+          description: The tax amount.
+        total:
+          type: number
+          description: The total amount.
+    PaginatedEventList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Event'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    eventIdParam:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the event.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    usernameParam:
+      name: username
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The username of the user.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

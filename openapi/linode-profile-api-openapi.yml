@@ -1,0 +1,337 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Profile API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Profile
+  description: Manage your user profile settings, SSH keys, authorized applications, personal access tokens, and two-factor authentication.
+paths:
+  /profile:
+    get:
+      operationId: getProfile
+      summary: Get your profile
+      description: Returns information about the current user, including their username, email address, timezone, and authentication settings.
+      tags:
+      - Profile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    put:
+      operationId: updateProfile
+      summary: Update your profile
+      description: Updates information about the current user.
+      tags:
+      - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /profile/tokens:
+    get:
+      operationId: getPersonalAccessTokens
+      summary: List personal access tokens
+      description: Returns a paginated list of personal access tokens for the current user.
+      tags:
+      - Profile
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Personal access tokens retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTokenList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPersonalAccessToken
+      summary: Create a personal access token
+      description: Creates a new personal access token with the specified scopes and expiry. The token value is only returned once at creation time.
+      tags:
+      - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Personal access token created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+  /profile/sshkeys:
+    get:
+      operationId: getSSHKeys
+      summary: List SSH keys
+      description: Returns a paginated list of SSH keys on the current user's profile.
+      tags:
+      - Profile
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: SSH keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSSHKeyList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createSSHKey
+      summary: Add an SSH key
+      description: Adds an SSH key to the current user's profile for use when deploying Linode instances.
+      tags:
+      - Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSHKeyRequest'
+      responses:
+        '200':
+          description: SSH key added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SSHKey'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  schemas:
+    Token:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this token.
+        scopes:
+          type: string
+          description: The OAuth scopes for this token.
+        label:
+          type: string
+          description: The label for this token.
+        token:
+          type: string
+          description: The token string. Only returned at creation time.
+        created:
+          type: string
+          format: date-time
+          description: When this token was created.
+        expiry:
+          type: string
+          format: date-time
+          description: When this token expires.
+    SSHKeyRequest:
+      type: object
+      required:
+      - label
+      - ssh_key
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key content.
+    PaginatedTokenList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Token'
+    SSHKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this SSH key.
+        label:
+          type: string
+          description: The label for this SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key.
+        created:
+          type: string
+          format: date-time
+          description: When this SSH key was added.
+    TokenRequest:
+      type: object
+      required:
+      - scopes
+      - label
+      properties:
+        scopes:
+          type: string
+          description: The OAuth scopes for the token.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: The label for the token.
+        expiry:
+          type: string
+          format: date-time
+          description: When the token should expire.
+    PaginatedSSHKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/SSHKey'
+    Profile:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        timezone:
+          type: string
+          description: The user's preferred timezone.
+        email_notifications:
+          type: boolean
+          description: Whether email notifications are enabled.
+        ip_whitelist_enabled:
+          type: boolean
+          description: Whether IP whitelisting is enabled.
+        two_factor_auth:
+          type: boolean
+          description: Whether two-factor authentication is enabled.
+        restricted:
+          type: boolean
+          description: Whether the user has restricted access.
+        authorized_keys:
+          type: array
+          items:
+            type: string
+          description: SSH keys authorized on the profile.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api

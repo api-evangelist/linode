@@ -1,0 +1,211 @@
+openapi: 3.1.0
+info:
+  title: Linode API v4 Account Placement Groups API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  version: 4.189.0
+  contact:
+    name: Linode Support
+    url: https://www.linode.com/support/
+  termsOfService: https://www.linode.com/legal-tos/
+servers:
+- url: https://api.linode.com/v4
+  description: Production Server
+security:
+- personalAccessToken: []
+- oauth: []
+tags:
+- name: Placement Groups
+  description: Create and manage placement groups for controlling the physical placement of Linode instances within a data center.
+paths:
+  /placement/groups:
+    get:
+      operationId: getPlacementGroups
+      summary: List placement groups
+      description: Returns a paginated list of placement groups on your account.
+      tags:
+      - Placement Groups
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Placement groups retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlacementGroupList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+    post:
+      operationId: createPlacementGroup
+      summary: Create a placement group
+      description: Creates a new placement group in the specified region with the given placement group type.
+      tags:
+      - Placement Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlacementGroupRequest'
+      responses:
+        '200':
+          description: Placement group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlacementGroup'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+components:
+  schemas:
+    PlacementGroupRequest:
+      type: object
+      required:
+      - label
+      - region
+      - placement_group_type
+      - placement_group_policy
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the placement group.
+        region:
+          type: string
+          description: The region for the placement group.
+        placement_group_type:
+          type: string
+          enum:
+          - anti_affinity:local
+          description: The placement group type.
+        placement_group_policy:
+          type: string
+          enum:
+          - strict
+          - flexible
+          description: The enforcement policy.
+    PaginatedPlacementGroupList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/PlacementGroup'
+    PlacementGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this placement group.
+        label:
+          type: string
+          description: The label for this placement group.
+        region:
+          type: string
+          description: The region for this placement group.
+        placement_group_type:
+          type: string
+          enum:
+          - anti_affinity:local
+          description: The placement group type.
+        placement_group_policy:
+          type: string
+          enum:
+          - strict
+          - flexible
+          description: The placement group enforcement policy.
+        is_compliant:
+          type: boolean
+          description: Whether all members satisfy the placement policy.
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              linode_id:
+                type: integer
+                description: The Linode ID.
+              is_compliant:
+                type: boolean
+                description: Whether this member satisfies the policy.
+          description: The members of this placement group.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+  securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
+    oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          tokenUrl: https://login.linode.com/oauth/token
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
+externalDocs:
+  description: Linode API v4 Documentation
+  url: https://techdocs.akamai.com/linode-api/reference/api
