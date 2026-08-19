@@ -1,0 +1,167 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account Volumes API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Volumes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List volumes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/volumes",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Block Storage volumes on your account."
+        },
+        {
+          "info": {
+            "name": "Create a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Block Storage volume. The volume can be attached to a Linode instance immediately or left unattached."
+        },
+        {
+          "info": {
+            "name": "Get a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Block Storage volume."
+        },
+        {
+          "info": {
+            "name": "Update a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and tags for a Block Storage volume."
+        },
+        {
+          "info": {
+            "name": "Delete a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/volumes/:volumeId",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Deletes a Block Storage volume. The volume must be detached from all Linode instances before it can be deleted."
+        },
+        {
+          "info": {
+            "name": "Attach a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes/:volumeId/attach",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Attaches a Block Storage volume to a Linode instance. The volume and instance must be in the same region."
+        },
+        {
+          "info": {
+            "name": "Detach a volume",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/volumes/:volumeId/detach",
+            "params": [
+              {
+                "name": "volumeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the volume."
+              }
+            ]
+          },
+          "docs": "Detaches a Block Storage volume from a Linode instance."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,130 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account Profile API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Profile",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get your profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile"
+          },
+          "docs": "Returns information about the current user, including their username, email address, timezone, and authentication settings."
+        },
+        {
+          "info": {
+            "name": "Update your profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/profile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates information about the current user."
+        },
+        {
+          "info": {
+            "name": "List personal access tokens",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile/tokens",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of personal access tokens for the current user."
+        },
+        {
+          "info": {
+            "name": "Create a personal access token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/profile/tokens",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new personal access token with the specified scopes and expiry. The token value is only returned once at creation time."
+        },
+        {
+          "info": {
+            "name": "List SSH keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/profile/sshkeys",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of SSH keys on the current user's profile."
+        },
+        {
+          "info": {
+            "name": "Add an SSH key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/profile/sshkeys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds an SSH key to the current user's profile for use when deploying Linode instances."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

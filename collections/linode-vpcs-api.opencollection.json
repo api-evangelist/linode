@@ -1,0 +1,179 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account VPCs API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "VPCs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List VPCs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of VPCs on your account."
+        },
+        {
+          "info": {
+            "name": "Create a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/vpcs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new VPC in the specified region with optional subnets."
+        },
+        {
+          "info": {
+            "name": "Get a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single VPC."
+        },
+        {
+          "info": {
+            "name": "Update a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the label and description for a VPC."
+        },
+        {
+          "info": {
+            "name": "Delete a VPC",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ]
+          },
+          "docs": "Deletes a VPC. The VPC must not have any active subnets with assigned Linode instances."
+        },
+        {
+          "info": {
+            "name": "List VPC subnets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId/subnets",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of subnets for a VPC."
+        },
+        {
+          "info": {
+            "name": "Create a VPC subnet",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/vpcs/:vpcId/subnets",
+            "params": [
+              {
+                "name": "vpcId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the VPC."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new subnet in the specified VPC."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

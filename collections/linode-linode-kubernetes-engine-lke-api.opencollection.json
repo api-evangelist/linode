@@ -1,0 +1,209 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account Linode Kubernetes Engine (LKE) API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Linode Kubernetes Engine (LKE)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Kubernetes clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all LKE clusters on your account."
+        },
+        {
+          "info": {
+            "name": "Create a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/lke/clusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new LKE cluster with the specified configuration, including the Kubernetes version, region, and node pools."
+        },
+        {
+          "info": {
+            "name": "Get a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Update a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the configuration for an LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Delete a Kubernetes cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Deletes an LKE cluster and all associated node pools and nodes."
+        },
+        {
+          "info": {
+            "name": "List node pools",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/pools",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of node pools for a given LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Create a node pool",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/pools",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new node pool for the specified LKE cluster."
+        },
+        {
+          "info": {
+            "name": "Get kubeconfig",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/clusters/:clusterId/kubeconfig",
+            "params": [
+              {
+                "name": "clusterId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the LKE cluster."
+              }
+            ]
+          },
+          "docs": "Returns the base64-encoded kubeconfig for the specified LKE cluster, which can be used with kubectl to interact with the cluster."
+        },
+        {
+          "info": {
+            "name": "List Kubernetes versions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/lke/versions"
+          },
+          "docs": "Returns a list of available Kubernetes versions for LKE clusters."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

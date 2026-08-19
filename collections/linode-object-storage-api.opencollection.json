@@ -1,0 +1,150 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account Object Storage API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Object Storage",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Object Storage buckets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/buckets",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of all Object Storage buckets on your account across all clusters."
+        },
+        {
+          "info": {
+            "name": "Get an Object Storage bucket",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/buckets/:regionId/:bucket",
+            "params": [
+              {
+                "name": "regionId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the region."
+              },
+              {
+                "name": "bucket",
+                "value": "",
+                "type": "path",
+                "description": "The name of the Object Storage bucket."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Object Storage bucket."
+        },
+        {
+          "info": {
+            "name": "Delete an Object Storage bucket",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/object-storage/buckets/:regionId/:bucket",
+            "params": [
+              {
+                "name": "regionId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the region."
+              },
+              {
+                "name": "bucket",
+                "value": "",
+                "type": "path",
+                "description": "The name of the Object Storage bucket."
+              }
+            ]
+          },
+          "docs": "Deletes an Object Storage bucket. The bucket must be empty before it can be deleted."
+        },
+        {
+          "info": {
+            "name": "List Object Storage keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/keys",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Object Storage keys on your account."
+        },
+        {
+          "info": {
+            "name": "Create an Object Storage key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/object-storage/keys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Object Storage key pair for accessing buckets. The secret key is only returned once at creation time."
+        },
+        {
+          "info": {
+            "name": "List Object Storage endpoints",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/object-storage/endpoints"
+          },
+          "docs": "Returns a list of available Object Storage endpoints and their associated regions."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,409 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Linode API v4 Account Linode Instances API",
+    "version": "4.189.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Linode Instances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Linodes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of Linode instances on your account, including their status, region, type, and IP addresses."
+        },
+        {
+          "info": {
+            "name": "Create a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Linode instance. Requires a region, type, and either an image or backup to deploy from. Optionally accepts root password, authorized keys, StackScript, and other configuration options."
+        },
+        {
+          "info": {
+            "name": "Get a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns the details for a single Linode instance, including its status, region, type, IP addresses, and configuration."
+        },
+        {
+          "info": {
+            "name": "Update a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a Linode instance, including its label, group, alerts, and watchdog settings."
+        },
+        {
+          "info": {
+            "name": "Delete a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Deletes a Linode instance. All disks, backups, and IP addresses associated with the instance will be permanently removed."
+        },
+        {
+          "info": {
+            "name": "Boot a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/boot",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Boots a Linode instance. Optionally specify a configuration profile to boot with."
+        },
+        {
+          "info": {
+            "name": "Reboot a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/reboot",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Reboots a Linode instance. Optionally specify a configuration profile to boot with after the reboot."
+        },
+        {
+          "info": {
+            "name": "Shut down a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/shutdown",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Shuts down a running Linode instance. The instance will be placed in an offline state."
+        },
+        {
+          "info": {
+            "name": "Resize a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/resize",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Resizes a Linode instance to a new plan type. The instance must be powered off or will be automatically shut down during the resize."
+        },
+        {
+          "info": {
+            "name": "Rebuild a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/rebuild",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Rebuilds a Linode instance with a new image. All existing disks will be destroyed and a new root disk will be created."
+        },
+        {
+          "info": {
+            "name": "Clone a Linode",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/clone",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Clones a Linode instance to a new or existing instance. The clone will include the source instance's disks and configuration profiles."
+        },
+        {
+          "info": {
+            "name": "List backups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/backups",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns the available backups for a Linode instance, including automatic daily and weekly snapshots."
+        },
+        {
+          "info": {
+            "name": "List disks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/disks",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of disks attached to a Linode instance."
+        },
+        {
+          "info": {
+            "name": "List configuration profiles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/configs",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of configuration profiles for a Linode instance."
+        },
+        {
+          "info": {
+            "name": "Get networking information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/instances/:linodeId/ips",
+            "params": [
+              {
+                "name": "linodeId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Linode instance."
+              }
+            ]
+          },
+          "docs": "Returns networking information for a Linode instance, including its IPv4 and IPv6 addresses."
+        },
+        {
+          "info": {
+            "name": "List types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/types",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available Linode instance types, including their resources, pricing, and availability."
+        },
+        {
+          "info": {
+            "name": "List kernels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.linode.com/v4/linode/kernels",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "The page number to return."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "The number of items per page."
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of available kernels that can be used with Linode instances."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

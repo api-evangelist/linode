@@ -1,0 +1,389 @@
+{
+  "item": [
+    {
+      "id": "4189b0fe-5072-4a03-958b-84dd55c38c44",
+      "name": "Placement Groups",
+      "description": {
+        "content": "Create and manage placement groups for controlling the physical placement of Linode instances within a data center.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4dea061e-ead7-41cc-9be5-ba3ea2db723e",
+          "name": "List placement groups",
+          "request": {
+            "name": "List placement groups",
+            "description": {
+              "content": "Returns a paginated list of placement groups on your account.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "placement",
+                "groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "The page number to return."
+                },
+                {
+                  "disabled": false,
+                  "key": "page_size",
+                  "value": "100",
+                  "description": "The number of items per page."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "311f609b-4f0f-400e-8f9b-7ad6fd461fa1",
+              "name": "Placement groups retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "placement",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"page\": 9565,\n  \"pages\": 2087,\n  \"results\": 8352,\n  \"data\": [\n    {\n      \"id\": 5851,\n      \"label\": \"string\",\n      \"region\": \"string\",\n      \"placement_group_type\": \"anti_affinity:local\",\n      \"placement_group_policy\": \"flexible\",\n      \"is_compliant\": true,\n      \"members\": [\n        {\n          \"linode_id\": 507,\n          \"is_compliant\": true\n        },\n        {\n          \"linode_id\": 7710,\n          \"is_compliant\": false\n        }\n      ]\n    },\n    {\n      \"id\": 3265,\n      \"label\": \"string\",\n      \"region\": \"string\",\n      \"placement_group_type\": \"anti_affinity:local\",\n      \"placement_group_policy\": \"strict\",\n      \"is_compliant\": false,\n      \"members\": [\n        {\n          \"linode_id\": 9328,\n          \"is_compliant\": true\n        },\n        {\n          \"linode_id\": 8574,\n          \"is_compliant\": true\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "66d0d4c7-c637-4690-b135-39ac438c1f37",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "placement",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "46461e6f-7688-44ee-86bc-597cbc8e204a",
+          "name": "Create a placement group",
+          "request": {
+            "name": "Create a placement group",
+            "description": {
+              "content": "Creates a new placement group in the specified region with the given placement group type.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "placement",
+                "groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"placement_group_type\": \"<string>\",\n  \"placement_group_policy\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a7c1fc96-d9c7-4a3e-a977-b5d23673cbc1",
+              "name": "Placement group created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "placement",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"placement_group_type\": \"<string>\",\n  \"placement_group_policy\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 5837,\n  \"label\": \"string\",\n  \"region\": \"string\",\n  \"placement_group_type\": \"anti_affinity:local\",\n  \"placement_group_policy\": \"strict\",\n  \"is_compliant\": true,\n  \"members\": [\n    {\n      \"linode_id\": 841,\n      \"is_compliant\": true\n    },\n    {\n      \"linode_id\": 5595,\n      \"is_compliant\": true\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4c845986-aae7-43d2-8cc6-5a92419f1760",
+              "name": "Bad request - invalid parameters",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "placement",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"placement_group_type\": \"<string>\",\n  \"placement_group_policy\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b65b476e-028b-4f94-b3b0-c6ff3221c545",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "placement",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"placement_group_type\": \"<string>\",\n  \"placement_group_policy\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.linode.com/v4",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "6d14776f-3714-407f-835e-464417f85bbe",
+    "name": "Linode API v4 Account Placement Groups API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.\n\nContact Support:\n Name: Linode Support",
+      "type": "text/plain"
+    }
+  }
+}

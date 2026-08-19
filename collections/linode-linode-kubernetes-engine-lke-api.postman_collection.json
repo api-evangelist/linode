@@ -1,0 +1,1876 @@
+{
+  "item": [
+    {
+      "id": "87cdd805-6efb-43f7-911c-849b617ea86a",
+      "name": "Linode Kubernetes Engine (LKE)",
+      "description": {
+        "content": "Deploy and manage Kubernetes clusters, node pools, and cluster configurations through the Linode Kubernetes Engine.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4c8644cc-0f33-4cac-af6a-50a708d3d930",
+          "name": "List Kubernetes clusters",
+          "request": {
+            "name": "List Kubernetes clusters",
+            "description": {
+              "content": "Returns a paginated list of all LKE clusters on your account.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "The page number to return."
+                },
+                {
+                  "disabled": false,
+                  "key": "page_size",
+                  "value": "100",
+                  "description": "The number of items per page."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "fd9efa04-54fc-4130-a596-08233e69d489",
+              "name": "LKE clusters retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"page\": 8513,\n  \"pages\": 2736,\n  \"results\": 9035,\n  \"data\": [\n    {\n      \"id\": 6071,\n      \"label\": \"string\",\n      \"region\": \"string\",\n      \"k8s_version\": \"string\",\n      \"status\": \"not_ready\",\n      \"tags\": [\n        \"string\",\n        \"string\"\n      ],\n      \"control_plane\": {\n        \"high_availability\": false\n      },\n      \"created\": \"1990-02-06T12:17:47.428Z\",\n      \"updated\": \"1998-02-10T10:09:23.261Z\"\n    },\n    {\n      \"id\": 9944,\n      \"label\": \"string\",\n      \"region\": \"string\",\n      \"k8s_version\": \"string\",\n      \"status\": \"not_ready\",\n      \"tags\": [\n        \"string\",\n        \"string\"\n      ],\n      \"control_plane\": {\n        \"high_availability\": false\n      },\n      \"created\": \"2008-04-10T16:49:47.213Z\",\n      \"updated\": \"2009-12-23T14:33:16.560Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "adebe973-8447-4943-99f2-2b8eb76ac81e",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d8e1e51e-fba6-4408-9949-17587620e58c",
+          "name": "Create a Kubernetes cluster",
+          "request": {
+            "name": "Create a Kubernetes cluster",
+            "description": {
+              "content": "Creates a new LKE cluster with the specified configuration, including the Kubernetes version, region, and node pools.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"k8s_version\": \"<string>\",\n  \"node_pools\": [\n    {\n      \"type\": \"<string>\",\n      \"count\": \"<integer>\",\n      \"autoscaler\": {\n        \"enabled\": \"<boolean>\",\n        \"min\": \"<integer>\",\n        \"max\": \"<integer>\"\n      }\n    },\n    {\n      \"type\": \"<string>\",\n      \"count\": \"<integer>\",\n      \"autoscaler\": {\n        \"enabled\": \"<boolean>\",\n        \"min\": \"<integer>\",\n        \"max\": \"<integer>\"\n      }\n    }\n  ],\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "032dd734-53de-4754-b05b-e9ee60a013fa",
+              "name": "LKE cluster created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"k8s_version\": \"<string>\",\n  \"node_pools\": [\n    {\n      \"type\": \"string\",\n      \"count\": 8012,\n      \"autoscaler\": {\n        \"enabled\": false,\n        \"min\": 7957,\n        \"max\": 2092\n      }\n    },\n    {\n      \"type\": \"string\",\n      \"count\": 8393,\n      \"autoscaler\": {\n        \"enabled\": true,\n        \"min\": 3104,\n        \"max\": 11\n      }\n    }\n  ],\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2274,\n  \"label\": \"string\",\n  \"region\": \"string\",\n  \"k8s_version\": \"string\",\n  \"status\": \"not_ready\",\n  \"tags\": [\n    \"string\",\n    \"string\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": true\n  },\n  \"created\": \"1972-02-05T20:18:29.529Z\",\n  \"updated\": \"1989-09-23T19:23:03.576Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "47e09950-72a7-4d13-9228-4ebfbe6aada5",
+              "name": "Bad request - invalid parameters",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"k8s_version\": \"<string>\",\n  \"node_pools\": [\n    {\n      \"type\": \"string\",\n      \"count\": 8012,\n      \"autoscaler\": {\n        \"enabled\": false,\n        \"min\": 7957,\n        \"max\": 2092\n      }\n    },\n    {\n      \"type\": \"string\",\n      \"count\": 8393,\n      \"autoscaler\": {\n        \"enabled\": true,\n        \"min\": 3104,\n        \"max\": 11\n      }\n    }\n  ],\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ae90bebb-e302-436f-ae50-b6be8fb152e1",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"region\": \"<string>\",\n  \"k8s_version\": \"<string>\",\n  \"node_pools\": [\n    {\n      \"type\": \"string\",\n      \"count\": 8012,\n      \"autoscaler\": {\n        \"enabled\": false,\n        \"min\": 7957,\n        \"max\": 2092\n      }\n    },\n    {\n      \"type\": \"string\",\n      \"count\": 8393,\n      \"autoscaler\": {\n        \"enabled\": true,\n        \"min\": 3104,\n        \"max\": 11\n      }\n    }\n  ],\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "aa81252c-1bff-4a0e-8030-a5a4945f055f",
+          "name": "Get a Kubernetes cluster",
+          "request": {
+            "name": "Get a Kubernetes cluster",
+            "description": {
+              "content": "Returns the details for a single LKE cluster.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d0359815-2860-4aa8-b08e-babceced3ba3",
+              "name": "LKE cluster retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2274,\n  \"label\": \"string\",\n  \"region\": \"string\",\n  \"k8s_version\": \"string\",\n  \"status\": \"not_ready\",\n  \"tags\": [\n    \"string\",\n    \"string\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": true\n  },\n  \"created\": \"1972-02-05T20:18:29.529Z\",\n  \"updated\": \"1989-09-23T19:23:03.576Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4a6636d5-a6ed-4f58-af2f-fe78095bf49f",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "88ddfc74-87eb-443f-b493-1309a3ee58b1",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6ac66824-7332-4d0f-9c2e-94ce1b26b521",
+          "name": "Update a Kubernetes cluster",
+          "request": {
+            "name": "Update a Kubernetes cluster",
+            "description": {
+              "content": "Updates the configuration for an LKE cluster.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"k8s_version\": \"<string>\",\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d40db002-92e0-4363-ab96-f8b8e2e2bb0c",
+              "name": "LKE cluster updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"k8s_version\": \"<string>\",\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2274,\n  \"label\": \"string\",\n  \"region\": \"string\",\n  \"k8s_version\": \"string\",\n  \"status\": \"not_ready\",\n  \"tags\": [\n    \"string\",\n    \"string\"\n  ],\n  \"control_plane\": {\n    \"high_availability\": true\n  },\n  \"created\": \"1972-02-05T20:18:29.529Z\",\n  \"updated\": \"1989-09-23T19:23:03.576Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cb4aea71-5a77-43ca-a38d-b60906e79729",
+              "name": "Bad request - invalid parameters",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"k8s_version\": \"<string>\",\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c8652270-9d28-4b15-8a93-60185d075e5d",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"k8s_version\": \"<string>\",\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "02becd6e-b176-4d36-8ef7-228a69232154",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"k8s_version\": \"<string>\",\n  \"control_plane\": {\n    \"high_availability\": \"<boolean>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d6849bbc-7398-44e1-bb62-a6a744e133be",
+          "name": "Delete a Kubernetes cluster",
+          "request": {
+            "name": "Delete a Kubernetes cluster",
+            "description": {
+              "content": "Deletes an LKE cluster and all associated node pools and nodes.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9752db70-750b-41f9-9ca0-362193760e80",
+              "name": "LKE cluster deleted successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "399a3c17-0f2f-484d-affc-10cabaac9d51",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5d24bbff-94e0-4b2c-bdbb-a5a79d73e752",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5d8f6541-0913-4f2f-8c06-bf97cc794c30",
+          "name": "List node pools",
+          "request": {
+            "name": "List node pools",
+            "description": {
+              "content": "Returns a paginated list of node pools for a given LKE cluster.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId",
+                "pools"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "The page number to return."
+                },
+                {
+                  "disabled": false,
+                  "key": "page_size",
+                  "value": "100",
+                  "description": "The number of items per page."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f252b468-ce96-4fdc-9bb4-627c58d01668",
+              "name": "Node pools retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"page\": 9863,\n  \"pages\": 8952,\n  \"results\": 849,\n  \"data\": [\n    {\n      \"id\": 2669,\n      \"type\": \"string\",\n      \"count\": 7104,\n      \"nodes\": [\n        {\n          \"id\": \"string\",\n          \"instance_id\": 8608,\n          \"status\": \"ready\"\n        },\n        {\n          \"id\": \"string\",\n          \"instance_id\": 5810,\n          \"status\": \"not_ready\"\n        }\n      ],\n      \"autoscaler\": {\n        \"enabled\": false,\n        \"min\": 6197,\n        \"max\": 7759\n      }\n    },\n    {\n      \"id\": 4838,\n      \"type\": \"string\",\n      \"count\": 9715,\n      \"nodes\": [\n        {\n          \"id\": \"string\",\n          \"instance_id\": 3619,\n          \"status\": \"not_ready\"\n        },\n        {\n          \"id\": \"string\",\n          \"instance_id\": 4837,\n          \"status\": \"not_ready\"\n        }\n      ],\n      \"autoscaler\": {\n        \"enabled\": true,\n        \"min\": 5077,\n        \"max\": 1599\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ba3fb2d9-2429-4702-9847-c3b0ab7abf51",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a6181b00-cab9-43c7-8f5e-afb947ae85f8",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d3ebbf1d-eb22-4541-b61e-a298702da272",
+          "name": "Create a node pool",
+          "request": {
+            "name": "Create a node pool",
+            "description": {
+              "content": "Creates a new node pool for the specified LKE cluster.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId",
+                "pools"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"<string>\",\n  \"count\": \"<integer>\",\n  \"autoscaler\": {\n    \"enabled\": \"<boolean>\",\n    \"min\": \"<integer>\",\n    \"max\": \"<integer>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a3521121-bb27-4fed-b112-691b0b650827",
+              "name": "Node pool created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"<string>\",\n  \"count\": \"<integer>\",\n  \"autoscaler\": {\n    \"enabled\": \"<boolean>\",\n    \"min\": \"<integer>\",\n    \"max\": \"<integer>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 7495,\n  \"type\": \"string\",\n  \"count\": 6601,\n  \"nodes\": [\n    {\n      \"id\": \"string\",\n      \"instance_id\": 8544,\n      \"status\": \"not_ready\"\n    },\n    {\n      \"id\": \"string\",\n      \"instance_id\": 7923,\n      \"status\": \"ready\"\n    }\n  ],\n  \"autoscaler\": {\n    \"enabled\": false,\n    \"min\": 5458,\n    \"max\": 1128\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cc629805-3110-45b6-b218-6ad4c10a985c",
+              "name": "Bad request - invalid parameters",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"<string>\",\n  \"count\": \"<integer>\",\n  \"autoscaler\": {\n    \"enabled\": \"<boolean>\",\n    \"min\": \"<integer>\",\n    \"max\": \"<integer>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1d727705-9e78-4d43-a435-9660e421cd2c",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"<string>\",\n  \"count\": \"<integer>\",\n  \"autoscaler\": {\n    \"enabled\": \"<boolean>\",\n    \"min\": \"<integer>\",\n    \"max\": \"<integer>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "23044b8e-7771-47be-9843-82962b09a779",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "pools"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"<string>\",\n  \"count\": \"<integer>\",\n  \"autoscaler\": {\n    \"enabled\": \"<boolean>\",\n    \"min\": \"<integer>\",\n    \"max\": \"<integer>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5e9026b5-09e6-457d-94a0-ba2926eea848",
+          "name": "Get kubeconfig",
+          "request": {
+            "name": "Get kubeconfig",
+            "description": {
+              "content": "Returns the base64-encoded kubeconfig for the specified LKE cluster, which can be used with kubectl to interact with the cluster.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "clusters",
+                ":clusterId",
+                "kubeconfig"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "clusterId",
+                  "description": "(Required) The ID of the LKE cluster."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a12bb2b0-0a5c-4d0d-80ef-6306984a52fe",
+              "name": "Kubeconfig retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "kubeconfig"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"kubeconfig\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "686afbc1-f0dc-441d-ab2b-cafecc25269e",
+              "name": "Unauthorized - invalid or missing authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "kubeconfig"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "be87e365-8d85-42dc-9164-f8e3fb0185b5",
+              "name": "LKE cluster not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "clusters",
+                    ":clusterId",
+                    "kubeconfig"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "clusterId",
+                      "description": "(Required) The ID of the LKE cluster."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1a407760-adfb-4bf3-9a23-33cb9762e538",
+          "name": "List Kubernetes versions",
+          "request": {
+            "name": "List Kubernetes versions",
+            "description": {
+              "content": "Returns a list of available Kubernetes versions for LKE clusters.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "lke",
+                "versions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "b6226f68-280d-4322-b90e-0633a12fab72",
+              "name": "Kubernetes versions retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "lke",
+                    "versions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"string\"\n    },\n    {\n      \"id\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.linode.com/v4",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "1a041127-2b77-438a-a520-1ead200631b3",
+    "name": "Linode API v4 Account Linode Kubernetes Engine (LKE) API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.\n\nContact Support:\n Name: Linode Support",
+      "type": "text/plain"
+    }
+  }
+}
