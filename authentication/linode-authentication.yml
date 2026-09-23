@@ -1,6 +1,6 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/linode-api-v4-openapi.yml
+generated: '2026-09-17'
+method: searched
+source: https://techdocs.akamai.com/linode-api/reference/get-started
 summary:
   types:
   - http
@@ -11,10 +11,11 @@ schemes:
 - name: personalAccessToken
   type: http
   scheme: bearer
-  description: A personal access token generated from the Linode Cloud Manager that grants access
-    to the API based on the token's scopes.
+  description: A personal access token generated from the Linode Cloud Manager that grants access to the API based
+    on the token's scopes.
   sources:
-  - openapi/linode-api-v4-openapi.yml
+  - openapi/_original/linode-api-v4-official-openapi.json
+  - https://techdocs.akamai.com/linode-api/reference/get-started
 - name: oauth
   type: oauth2
   flows:
@@ -24,4 +25,33 @@ schemes:
     scopes: 28
   description: OAuth 2.0 authentication for third-party applications.
   sources:
-  - openapi/linode-api-v4-openapi.yml
+  - openapi/_original/linode-api-v4-official-openapi.json
+  - https://techdocs.akamai.com/linode-api/reference/get-started
+docs: https://techdocs.akamai.com/linode-api/reference/get-started
+derived_from: openapi/_original/linode-api-v4-official-openapi.json (components.securitySchemes)
+note: 'Two credential models, both bearer tokens on the Authorization header. Personal access tokens are created
+  in Cloud Manager (or via post-personal-access-token) with a fixed expiry chosen at creation that cannot be changed
+  afterwards, and a per-category read/write access level that also cannot be changed afterwards. OAuth 2.0 authorization
+  code (RFC 6749) is for third-party applications: login.linode.com is the authorization server, api.linode.com
+  the resource server, access tokens live two hours, and only the private (confidential) client flow issues a refresh
+  token - the public client flow requires the user to log in again. Since Identity and Access reached GA on 2026-03-31,
+  OAuth scope is layered over an RBAC permission model, so an operation can fail on the permission even when the
+  scope is present; each operation reference page names both. Some catalog operations (regions, plan types, pricing)
+  need no credential at all.'
+token_ttl:
+  oauth_access_token: 2 hours
+  oauth_refresh_token: issued only to private/confidential clients
+  personal_access_token: fixed expiry chosen at creation, not extendable
+authorization_model:
+  style: RBAC (Identity and Access in Akamai Cloud) layered under OAuth scopes
+  ga_date: '2026-03-31'
+  docs: https://techdocs.akamai.com/cloud-computing/docs/identity-and-access-cm
+scopes_artifact: scopes/linode-scopes.yml
+unauthenticated_surface:
+  available: true
+  examples:
+  - /v4/regions
+  - /v4/linode/types
+  - /v4/volumes/types
+  - /v4/network-transfer/prices
+  note: 'Verified live on 2026-09-17: these return 200 with no Authorization header.'

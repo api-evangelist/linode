@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Linode API v4 Account Profile API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  title: Linode API v4 Profile API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -142,6 +142,20 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
+    SSHKeyRequest:
+      type: object
+      required:
+      - label
+      - ssh_key
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key content.
     Token:
       type: object
       properties:
@@ -165,45 +179,6 @@ components:
           type: string
           format: date-time
           description: When this token expires.
-    SSHKeyRequest:
-      type: object
-      required:
-      - label
-      - ssh_key
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 64
-          description: The label for the SSH key.
-        ssh_key:
-          type: string
-          description: The SSH public key content.
-    PaginatedTokenList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Token'
-    SSHKey:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this SSH key.
-        label:
-          type: string
-          description: The label for this SSH key.
-        ssh_key:
-          type: string
-          description: The SSH public key.
-        created:
-          type: string
-          format: date-time
-          description: When this SSH key was added.
     TokenRequest:
       type: object
       required:
@@ -222,15 +197,34 @@ components:
           type: string
           format: date-time
           description: When the token should expire.
-    PaginatedSSHKeyList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/SSHKey'
+    SSHKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this SSH key.
+        label:
+          type: string
+          description: The label for this SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key.
+        created:
+          type: string
+          format: date-time
+          description: When this SSH key was added.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     Profile:
       type: object
       properties:
@@ -261,18 +255,24 @@ components:
           items:
             type: string
           description: SSH keys authorized on the profile.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
+    PaginatedTokenList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Token'
+    PaginatedSSHKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/SSHKey'
   parameters:
     pageParam:
       name: page

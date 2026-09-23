@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Linode API v4 Account Databases API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  title: Linode API v4 Databases API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -141,21 +141,6 @@ paths:
           description: Database not found
 components:
   parameters:
-    databaseIdParam:
-      name: databaseId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the Managed Database instance.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     databaseEngineParam:
       name: databaseEngine
       in: path
@@ -166,6 +151,21 @@ components:
         - mysql
         - postgresql
       description: The database engine type.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    databaseIdParam:
+      name: databaseId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the Managed Database instance.
     pageSizeParam:
       name: page_size
       in: query
@@ -176,15 +176,6 @@ components:
         default: 100
       description: The number of items per page.
   schemas:
-    PaginatedDatabaseList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Database'
     PaginatedDatabaseTypeList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -207,35 +198,6 @@ components:
                   type: integer
                 disk:
                   type: integer
-    DatabaseRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the database.
-        allow_list:
-          type: array
-          items:
-            type: string
-          description: IP addresses or CIDRs allowed to connect.
-    PaginatedDatabaseEngineList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                engine:
-                  type: string
-                id:
-                  type: string
-                version:
-                  type: string
     Database:
       type: object
       properties:
@@ -315,6 +277,44 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedDatabaseList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Database'
+    PaginatedDatabaseEngineList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                engine:
+                  type: string
+                id:
+                  type: string
+                version:
+                  type: string
+    DatabaseRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the database.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: IP addresses or CIDRs allowed to connect.
   securitySchemes:
     personalAccessToken:
       type: http

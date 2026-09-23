@@ -1,0 +1,79 @@
+generated: '2026-09-17'
+method: probed
+source: live GET of /.well-known/* on every host in apis.yml, the OpenAPI servers[] host and the docs host
+provider: Linode (Akamai Cloud)
+providerId: linode
+note: 'Linode''s developer documentation is served from techdocs.akamai.com since the Akamai acquisition; the Linode-scoped
+  RFC 9727 api-catalog lives at techdocs.akamai.com/linode-api/.well-known/api-catalog and indexes 62 Linode OpenAPI
+  documents. www.linode.com answers every /.well-known/ path with an Akamai bot-manager 403 from this network; an
+  independent fetch confirmed a real security.txt is served there (Contact: security@akamai.com, HackerOne programs
+  for Akamai CDN and Akamai Connected Cloud / Linode), so the 403 is our crawler being turned away, not an absent
+  document. No verbatim body could be captured, so no SecurityTxt pointer is claimed on it.'
+hosts:
+- host: techdocs.akamai.com
+  documents:
+  - path: /.well-known/api-catalog
+    status: 200
+    file: linode-techdocs-api-catalog.json
+    content_type: application/linkset+json
+    note: Akamai-wide RFC 9727 linkset, 117 anchors; includes the linode-api anchor.
+  - path: /linode-api/.well-known/api-catalog
+    status: 200
+    file: linode-api-catalog.json
+    content_type: application/linkset+json
+    note: Linode-scoped RFC 9727 linkset, 62 service-desc entries pointing at first-party OpenAPI JSON.
+  - path: /.well-known/security.txt
+    status: 200
+    note: 200 but an HTML SPA shell from the ReadMe catch-all route, not a security.txt. Treated as a miss.
+  - path: /.well-known/agent-card.json
+    status: 200
+    note: 200 but the same HTML SPA shell. Not an AgentCard. Treated as a miss.
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+- host: api.linode.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    note: The API host 301s every /.well-known/* path to https://api.linode.com/v4/, which returns the API's own
+      JSON 404 envelope. Recorded as the final status after following the redirect; the same holds for every row
+      below.
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: login.linode.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 404
+    note: Linode's authorization server implements RFC 6749 authorization-code only; it publishes no OIDC discovery
+      document. The 404 body is the Cloud Manager HTML shell.
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+- host: www.linode.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    note: Akamai bot-manager challenge on every request from this network, browser User-Agent and full Sec-Fetch
+      header set included. An independent client fetched the same URL successfully and it carries real disclosure
+      content, so the document exists and our probe is the thing that was blocked.
+  - path: /.well-known/api-catalog
+    status: 403
+    note: Same bot-manager 403.
+  - path: /.well-known/agent-card.json
+    status: 403
+    note: Same bot-manager 403.
+- host: www.akamai.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    note: Akamai edge Access Denied. Parent-brand host, probed because Linode's security.txt names security@akamai.com.

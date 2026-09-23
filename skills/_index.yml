@@ -1,0 +1,37 @@
+generated: '2026-09-17'
+method: generated
+source: openapi/ (refined first-party Linode API v4 specs) plus https://techdocs.akamai.com/linode-api/reference
+provider: Linode (Akamai Cloud)
+providerId: linode
+note: >-
+  Four packaged Agent Skills for the marquee flows on Akamai Cloud (Linode). Every operationId below
+  is grepped from the OpenAPI in this repository, never invented. Each skill leads with the two facts
+  an agent most needs and this API does not signal at call time: there is no idempotency key on any
+  write, and most deletions have no reversal. Akamai publishes no skills or AGENTS.md of its own; a
+  search of the linode GitHub org and the documentation found none, so these are ours.
+skills:
+  - name: linode-estimate-cost-before-provisioning
+    file: linode-estimate-cost-before-provisioning.md
+    api: linode:linode-regions-api
+    summary: Price a stack from the unauthenticated price-book endpoints before spending anything.
+    write_surface: false
+  - name: linode-deploy-compute-instance
+    file: linode-deploy-compute-instance.md
+    api: linode:linode-linode-instances-api
+    summary: Deploy, verify, resize and retire a compute instance.
+    write_surface: true
+  - name: linode-provision-lke-cluster
+    file: linode-provision-lke-cluster.md
+    api: linode:linode-linode-kubernetes-engine-lke-api
+    summary: Stand up an LKE cluster, add a node pool, fetch the kubeconfig, tear it down.
+    write_surface: true
+  - name: linode-manage-dns-zone
+    file: linode-manage-dns-zone.md
+    api: linode:linode-domains-api
+    summary: Create a DNS zone and manage its records.
+    write_surface: true
+cross_reference:
+  conventions: conventions/linode-conventions.yml
+  errors: errors/linode-problem-types.yml
+  rate_limits: rate-limits/linode-rate-limits.yml
+  mcp: mcp/linode-mcp.yml

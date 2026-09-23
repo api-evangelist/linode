@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Linode API v4 Account NodeBalancers API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  title: Linode API v4 Node Balancers API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -144,55 +144,7 @@ paths:
         '404':
           description: NodeBalancer not found
 components:
-  parameters:
-    nodeBalancerIdParam:
-      name: nodeBalancerId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the NodeBalancer.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   schemas:
-    NodeBalancerRequest:
-      type: object
-      required:
-      - region
-      properties:
-        region:
-          type: string
-          description: The region for the new NodeBalancer.
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the new NodeBalancer.
-        client_conn_throttle:
-          type: integer
-          minimum: 0
-          maximum: 20
-          description: Throttle connections per second.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the new NodeBalancer.
     NodeBalancer:
       type: object
       properties:
@@ -246,6 +198,27 @@ components:
           type: string
           format: date-time
           description: When this NodeBalancer was last updated.
+    PaginatedNodeBalancerList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/NodeBalancer'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     PaginatedNodeBalancerConfigList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -268,6 +241,29 @@ components:
                   type: string
                 check:
                   type: string
+    NodeBalancerRequest:
+      type: object
+      required:
+      - region
+      properties:
+        region:
+          type: string
+          description: The region for the new NodeBalancer.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the new NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: Throttle connections per second.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new NodeBalancer.
     NodeBalancerUpdateRequest:
       type: object
       properties:
@@ -286,27 +282,31 @@ components:
           items:
             type: string
           description: Tags for the NodeBalancer.
-    PaginatedNodeBalancerList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/NodeBalancer'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    nodeBalancerIdParam:
+      name: nodeBalancerId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the NodeBalancer.
   securitySchemes:
     personalAccessToken:
       type: http

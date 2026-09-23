@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Linode API v4 Account Domains API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  title: Linode API v4 Domains API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -172,6 +172,64 @@ paths:
           description: Domain not found
 components:
   schemas:
+    PaginatedDomainList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Domain'
+    PaginatedDomainRecordList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/DomainRecord'
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this domain record.
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN for this record.
+        target:
+          type: string
+          description: The target for this record.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds for this record.
+        tag:
+          type: string
+          description: The tag for CAA records.
     Domain:
       type: object
       properties:
@@ -226,55 +284,6 @@ components:
         expire_sec:
           type: integer
           description: The expiry time in seconds.
-    PaginatedDomainRecordList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/DomainRecord'
-    DomainRecord:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this domain record.
-        type:
-          type: string
-          enum:
-          - A
-          - AAAA
-          - NS
-          - MX
-          - CNAME
-          - TXT
-          - SRV
-          - PTR
-          - CAA
-          description: The type of DNS record.
-        name:
-          type: string
-          description: The hostname or FQDN for this record.
-        target:
-          type: string
-          description: The target for this record.
-        priority:
-          type: integer
-          description: The priority for MX and SRV records.
-        weight:
-          type: integer
-          description: The weight for SRV records.
-        port:
-          type: integer
-          description: The port for SRV records.
-        ttl_sec:
-          type: integer
-          description: The TTL in seconds for this record.
-        tag:
-          type: string
-          description: The tag for CAA records.
     DomainRequest:
       type: object
       required:
@@ -302,6 +311,18 @@ components:
           items:
             type: string
           description: Tags for this domain.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     DomainRecordRequest:
       type: object
       required:
@@ -338,27 +359,6 @@ components:
         ttl_sec:
           type: integer
           description: The TTL in seconds.
-    PaginatedDomainList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Domain'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
   parameters:
     pageParam:
       name: page
@@ -368,13 +368,6 @@ components:
         minimum: 1
         default: 1
       description: The page number to return.
-    domainIdParam:
-      name: domainId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the domain.
     pageSizeParam:
       name: page_size
       in: query
@@ -384,6 +377,13 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    domainIdParam:
+      name: domainId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the domain.
   securitySchemes:
     personalAccessToken:
       type: http

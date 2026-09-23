@@ -3,35 +3,126 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: Linode (Akamai Cloud)
 providerId: linode
-created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-reconciled: true
+generated: '2026-09-17'
+method: searched
+modified: '2026-09-17'
+source: https://techdocs.akamai.com/linode-api/reference/rate-limits
+docs: https://techdocs.akamai.com/linode-api/reference/rate-limits
+note: 'Replaces a 2026-05-04 generated artifact that recorded an 800-requests-per-2-minutes default. Akamai''s published
+  rate-limit page (page updatedAt 2026-09-15) states a different and more granular model: 200/min for paginated
+  GET collections, 1600/min for everything else, plus per-operation limits. The old figure is not in the provider''s
+  documentation.'
 tags:
-  - Rate Limiting
-  - Cloud Compute
-description: Linode API v4 rate limits per token.
+- Rate Limiting
+- Cloud Compute
+description: Published Linode API v4 rate limits, applied per user by OAuth token, or by IP address for public operations.
 sources:
-  - https://www.linode.com/pricing/
-  - https://www.linode.com/docs/api/
+- https://techdocs.akamai.com/linode-api/reference/rate-limits
 headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: X-RateLimit-Reset
   retryAfter: Retry-After
+  note: Akamai states some or all of these headers may be present depending on the operation; X-RateLimit-Reset
+    is documented as absent on POST /monitor/services/{service_type}/metrics.
 responseCodes:
   throttled: 429
 limits:
-  - name: API v4 (default)
-    scope: user
-    metric: requests_per_2min
-    limit: 800
-    timeFrame: 2 minutes
-  - name: Linode create / boot / shutdown
-    scope: user
-    metric: requests_per_minute
-    limit: 25
-    timeFrame: minute
-  - name: Object Storage S3 API
-    scope: bucket
-    metric: requests_per_second
-    limit: high (S3 spec)
+- name: Paginated GET collections (default)
+  scope: user
+  metric: requests_per_minute
+  limit: 200
+  timeFrame: 1 minute
+  note: Applies to GET operations returning paginated data collections unless a specific limit below overrides it.
+- name: All other operations (default)
+  scope: user
+  metric: requests_per_minute
+  limit: 1600
+  timeFrame: 1 minute
+- name: Create a Linode
+  scope: user
+  metric: requests_per_15s
+  limit: 20
+  timeFrame: 15 seconds
+  operations:
+  - post-linode-instance
+- name: List images
+  scope: user
+  metric: requests_per_minute
+  limit: 20
+  timeFrame: 1 minute
+  operations:
+  - get-images
+- name: List StackScripts
+  scope: user
+  metric: requests_per_minute
+  limit: 60
+  timeFrame: 1 minute
+  operations:
+  - get-stack-scripts
+- name: Statistics operations
+  scope: user
+  metric: requests_per_minute
+  limit: 50
+  timeFrame: 1 minute
+  operations:
+  - get-linode-stats
+  - get-linode-stats-by-year-month
+  - get-node-balancer-stats
+  - get-managed-stats
+- name: Create a volume
+  scope: user
+  metric: requests_per_minute
+  limit: 100
+  timeFrame: 1 minute
+  operations:
+  - post-volume
+- name: Accept a service transfer
+  scope: user
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: 1 minute
+  operations:
+  - post-accept-service-transfer
+- name: Open a support ticket
+  scope: user
+  metric: requests_per_minute
+  limit: 2
+  timeFrame: 1 minute
+  operations:
+  - post-ticket
+- name: Cloud Pulse metrics catalog (GET)
+  scope: user
+  metric: requests_per_minute
+  limit: 100
+  timeFrame: 1 minute
+  operations:
+  - get-dashboards-all
+  - get-dashboards-by-id
+  - get-monitor-services
+  - get-monitor-services-for-service-type
+  - get-dashboards
+  - get-monitor-information
+- name: Read an entity's metrics
+  scope: account
+  metric: requests_per_minute
+  limit: 300
+  timeFrame: 1 minute
+  operations:
+  - post-read-metric
+  note: Per account, per service type, shared across all users on the account.
+- name: Object Storage key and bucket writes
+  scope: user
+  metric: requests_per_minute
+  limit: 60
+  burst: 5
+  timeFrame: 1 minute
+  concurrency: 2
+  operations:
+  - post-object-storage-keys
+  - put-object-storage-key
+  - delete-object-storage-key
+  - post-object-storage-bucket
+  note: 60/min and 5/second, with a concurrency limit of 2. All other Object Storage operations have a concurrency
+    limit of 1.
+limit_count: 12

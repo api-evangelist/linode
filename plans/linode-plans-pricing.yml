@@ -3,150 +3,141 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
 provider: Linode (Akamai Cloud)
 providerId: linode
-created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-reconciled: true
+generated: '2026-09-17'
+method: probed
+modified: '2026-09-17'
+source: https://api.linode.com/v4/linode/types
+docs: https://www.linode.com/pricing/
+note: Read from Linode's own unauthenticated plan catalog endpoint on 2026-09-17, which returned 75 plan types across
+  seven classes with hourly and monthly prices, per-region price overrides and a backups addon price on every type.
+  This replaces a 2026-05-04 generated artifact transcribed from the pricing page. www.linode.com/pricing/ answers
+  our crawler with an Akamai bot-manager 403, so the machine-readable catalog is the only source that could be verified
+  here — which is the stronger one anyway. The GPU class returns a $0 base price on the public catalog; no figure
+  is invented for it.
 tags:
-  - Cloud Compute
-  - Hosting
-  - GPU
-description: Linode (now Akamai Cloud) per-instance per-month pricing.
+- Cloud Compute
+- Hosting
+- GPU
+- Pricing API
+description: Akamai Cloud (Linode) compute plan classes and prices, read from the public plan catalog endpoint.
 sources:
-  - https://www.linode.com/pricing/
+- https://api.linode.com/v4/linode/types
+- https://www.linode.com/pricing/
+machine_readable_pricing:
+  available: true
+  endpoints:
+  - url: https://api.linode.com/v4/linode/types
+    auth: none
+    status: 200
+    note: Compute plan catalog, 75 types.
+  - url: https://api.linode.com/v4/volumes/types
+    auth: none
+    note: Block Storage pricing.
+  - url: https://api.linode.com/v4/nodebalancers/types
+    auth: none
+    note: NodeBalancer pricing.
+  - url: https://api.linode.com/v4/lke/types
+    auth: none
+    note: LKE control-plane tiers.
+  - url: https://api.linode.com/v4/object-storage/types
+    auth: none
+    note: Object Storage pricing.
+  - url: https://api.linode.com/v4/network-transfer/prices
+    auth: none
+    note: Network transfer overage pricing.
+  - url: https://api.linode.com/v4/databases/types
+    auth: none
+    note: Managed Database plan pricing.
+  note: Linode publishes its price book as an unauthenticated API, which is why its own MCP server can cost a stack
+    without a token.
+addons:
+- name: Backups
+  note: Priced per plan type on each entry's addons.backups; $2.00/mo on the Nanode 1GB, with per-region overrides.
+plan_count: 7
+plan_type_count: 75
 plans:
-  - id: linode-nanode
-    name: Nanode 1 GB
-    type: paid
-    description: $5/month (~$5.47 effective with hourly billing). 1 vCPU / 1 GB / 25 GB.
-    entries:
-      - label: Per month
-        name: monthly
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '5.00'
-        userMultiplied: false
-    elements:
-      - name: Shared CPU
-      - name: 1 vCPU / 1 GB / 25 GB SSD
-      - name: Best for small projects
-  - id: linode-shared-4gb
-    name: Shared CPU 4 GB
-    type: paid
-    description: $20/month. 2 vCPU / 4 GB / 80 GB.
-    entries:
-      - label: Per month
-        name: monthly
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '20.00'
-        userMultiplied: false
-    elements:
-      - name: Shared CPU
-      - name: Standard workloads
-  - id: linode-dedicated-4gb
-    name: Dedicated CPU 4 GB
-    type: paid
-    description: $36/month. 2 dedicated vCPU.
-    entries:
-      - label: Per month
-        name: monthly
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '36.00'
-        userMultiplied: false
-    elements:
-      - name: Dedicated CPU
-      - name: Production workloads
-  - id: linode-high-mem
-    name: High Memory
-    type: paid
-    description: From $60/month. Memory-optimized instances.
-    entries:
-      - label: Per month from
-        name: monthly_from
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '60.00'
-        userMultiplied: false
-    elements:
-      - name: Memory-optimized
-      - name: Best for in-memory DBs
-  - id: linode-gpu
-    name: GPU (NVIDIA)
-    type: enterprise
-    description: From ~$1.50/hour ($1,000+/month) for RTX 4000 / Blackwell GPUs.
-    entries:
-      - label: Per hour from
-        name: hourly_from
-        type: metered
-        metric: hour
-        limit: -1
-        timeFrame: usage
-        geo: global
-        unit: 1
-        price: '1.50'
-        userMultiplied: false
-    elements:
-      - name: NVIDIA Blackwell Server Edition
-      - name: AI/ML training and inference
-      - name: Limited availability
-  - id: linode-managed-services
-    name: Managed Services
-    type: paid
-    description: Backups ($2-$60/mo), NodeBalancer ($10/mo), Object Storage ($5/250 GB), DBaaS variable.
-    entries:
-      - label: Backup add-on
-        name: backup
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: 2.00-60.00
-        userMultiplied: false
-      - label: NodeBalancer
-        name: lb
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '10.00'
-        userMultiplied: false
-      - label: Object Storage 250 GB
-        name: obj_storage
-        type: subscription
-        metric: month
-        limit: -1
-        timeFrame: month
-        geo: global
-        unit: 1
-        price: '5.00'
-        userMultiplied: false
-    elements:
-      - name: Automated backups
-      - name: Load balancing
-      - name: S3-compatible object storage
-      - name: Managed Postgres/MySQL/MongoDB
-      - name: Kubernetes (LKE)
+- id: linode-nanode
+  name: Shared CPU — Nanode
+  type: paid
+  plan_class: nanode
+  plan_type_count: 1
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: Nanode 1GB — $5.0/mo ($0.0075/hr), 1 vCPU / 1024MB / 25600MB disk / 1000GB transfer
+  - label: Highest plan
+    value: Nanode 1GB — $5.0/mo ($0.0075/hr), 1 vCPU / 1024MB / 25600MB disk / 1000GB transfer
+- id: linode-standard
+  name: Shared CPU — Linode
+  type: paid
+  plan_class: standard
+  plan_type_count: 9
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: Linode 2GB — $12.0/mo ($0.018/hr), 1 vCPU / 2048MB / 51200MB disk / 2000GB transfer
+  - label: Highest plan
+    value: Linode 192GB — $1152.0/mo ($1.728/hr), 32 vCPU / 196608MB / 3932160MB disk / 20000GB transfer
+- id: linode-highmem
+  name: High Memory
+  type: paid
+  plan_class: highmem
+  plan_type_count: 5
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: Linode 24GB — $60.0/mo ($0.09/hr), 2 vCPU / 24576MB / 20480MB disk / 5000GB transfer
+  - label: Highest plan
+    value: Linode 300GB — $960.0/mo ($1.44/hr), 16 vCPU / 307200MB / 348160MB disk / 9000GB transfer
+- id: linode-dedicated
+  name: Dedicated CPU
+  type: paid
+  plan_class: dedicated
+  plan_type_count: 33
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: Dedicated 4GB — $36.0/mo ($0.054/hr), 2 vCPU / 4096MB / 81920MB disk / 4000GB transfer
+  - label: Highest plan
+    value: G7 Dedicated 256x56 — $2765.0/mo ($4.1475/hr), 56 vCPU / 262144MB / 5120000MB disk / 11000GB transfer
+- id: linode-gpu
+  name: GPU
+  type: paid
+  plan_class: gpu
+  plan_type_count: 13
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Pricing
+    value: Every plan in this class returns a $0 base price on the public catalog endpoint; pricing is region-override
+      or contract driven.
+  note: The public /v4/linode/types catalog returns 0 for the base monthly price of this class; region_prices and
+    account entitlements carry the real figure, so no price is asserted here.
+- id: linode-premium
+  name: Premium CPU
+  type: paid
+  plan_class: premium
+  plan_type_count: 8
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: Premium 4GB — $43.0/mo ($0.0645/hr), 2 vCPU / 4096MB / 81920MB disk / 4000GB transfer
+  - label: Highest plan
+    value: Premium 256GB — $2765.0/mo ($4.1475/hr), 56 vCPU / 262144MB / 5120000MB disk / 11000GB transfer
+- id: linode-accelerated
+  name: Accelerated (NETINT VPU)
+  type: paid
+  plan_class: accelerated
+  plan_type_count: 6
+  billing_period: hourly, capped at the monthly rate
+  currency: USD
+  entries:
+  - label: Lowest plan
+    value: NETINT Quadra T1U x1 Small — $280.0/mo ($0.42/hr), 8 vCPU / 16384MB / 204800MB disk / 0GB transfer
+  - label: Highest plan
+    value: NETINT Quadra T1U x8 Large — $2816.0/mo ($4.224/hr), 96 vCPU / 196608MB / 307200MB disk / 0GB transfer

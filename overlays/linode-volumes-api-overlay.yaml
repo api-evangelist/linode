@@ -1,0 +1,63 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Linode API v4 Volumes API
+  version: '2026-09-17'
+extends: ../openapi/linode-volumes-api-openapi.yml
+x-provenance:
+  generated: '2026-09-17'
+  method: generated
+  source: https://techdocs.akamai.com/linode-api/reference/rate-limits, https://techdocs.akamai.com/linode-api/reference/pagination,
+    https://techdocs.akamai.com/linode-api/reference/errors, https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting
+  note: Captures cross-cutting runtime semantics Akamai documents in prose but does not express in the contract.
+    Never mutates the harvested spec.
+actions:
+- target: $.info
+  update:
+    x-api-evangelist:
+      profile: https://apis.io/providers/linode/
+      enriched: '2026-09-17'
+      contract-source: 'https://github.com/linode/linode-api-openapi (Akamai: Linode API 4.229.1)'
+    x-error-envelope:
+      format: vendor-json
+      shape:
+        errors:
+        - field: string (optional)
+          reason: string
+      rfc9457: false
+      docs: https://techdocs.akamai.com/linode-api/reference/errors
+    x-pagination:
+      style: page-number
+      params:
+      - page
+      - page_size
+      response:
+      - data
+      - page
+      - pages
+      - results
+      page_size_default: 100
+      page_size_min: 25
+      page_size_max: 500
+      docs: https://techdocs.akamai.com/linode-api/reference/pagination
+    x-filtering:
+      style: X-Filter request header carrying a JSON filter document
+      docs: https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting
+    x-rate-limit:
+      default_paginated_get: 200 requests per minute
+      default_other: 1600 requests per minute
+      status: 429
+      headers:
+      - X-RateLimit-Limit
+      - X-RateLimit-Remaining
+      - X-RateLimit-Reset
+      - Retry-After
+      docs: https://techdocs.akamai.com/linode-api/reference/rate-limits
+    x-idempotency:
+      supported: false
+      note: No Idempotency-Key header exists anywhere in the Linode API; a retried write repeats the effect.
+- target: $.paths['/volumes'].post
+  update:
+    x-rate-limit:
+      limit: 100 requests per minute
+      docs: https://techdocs.akamai.com/linode-api/reference/rate-limits
+      note: Operation-specific limit published by Akamai, overriding the default.

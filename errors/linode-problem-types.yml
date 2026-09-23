@@ -1,0 +1,70 @@
+generated: '2026-09-17'
+method: searched
+source: https://techdocs.akamai.com/linode-api/reference/errors
+docs: https://techdocs.akamai.com/linode-api/reference/errors
+derived_from: openapi/_original/linode-api-v4-official-openapi.json
+provider: Linode (Akamai Cloud)
+providerId: linode
+format: vendor-json
+rfc9457: false
+note: 'Linode does not use RFC 9457 problem+json. Every error response is a JSON object with a single top-level
+  `errors` array; each element carries a human-readable `reason` and, when the fault is tied to a submitted field,
+  a `field` naming it. The `field` key is omitted when no field applies. There are no machine-readable error type
+  URIs or stable error codes in the contract, which is the single largest gap in this API''s error surface for an
+  agent: a caller must match on prose.'
+envelope:
+  shape:
+    errors:
+    - field: string (optional)
+      reason: string
+  example_observed:
+    errors:
+    - reason: Not found
+  example_source: live GET https://api.linode.com/v4/openapi.json -> 404
+  example_observed_auth:
+    errors:
+    - reason: Invalid Token
+  example_auth_source: live GET https://api.linode.com/v4/account with no credentials -> 401
+status_codes:
+- status: 400
+  operation_count: 3
+- status: 404
+  operation_count: 3
+- status: 409
+  operation_count: 1
+- status: 504
+  operation_count: 1
+problem_types:
+- status: 400
+  title: Request error
+  format: vendor-json
+  remediation: Read each errors[].reason; when errors[].field is present, correct that field in the request body
+    and retry.
+- status: 401
+  title: Invalid Token
+  format: vendor-json
+  remediation: Present a valid personal access token or OAuth bearer token in the Authorization header. Tokens carry
+    a fixed expiry set at creation and cannot be extended.
+- status: 403
+  title: Forbidden
+  format: vendor-json
+  remediation: The token is valid but lacks the scope, or the user lacks the Identity and Access permission, for
+    this operation. Each operation's reference page lists its required permission and OAuth scope.
+- status: 404
+  title: Not found
+  format: vendor-json
+  remediation: The entity does not exist or is not visible to this token. Linode returns 404 rather than 403 for
+    entities outside the account.
+- status: 429
+  title: Rate limit exceeded
+  format: vendor-json
+  remediation: Wait for the window named by Retry-After (seconds) or X-RateLimit-Reset (UTC epoch seconds). See
+    rate-limits/linode-rate-limits.yml for the per-operation limits.
+- status: 500
+  title: Server error
+  format: vendor-json
+  remediation: Retry with backoff. Linode logs errors and asks that repeat failures be reported through a support
+    ticket with reproducible steps.
+cross_reference:
+  conventions: conventions/linode-conventions.yml
+  rate_limits: rate-limits/linode-rate-limits.yml

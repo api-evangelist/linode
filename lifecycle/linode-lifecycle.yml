@@ -1,0 +1,108 @@
+generated: '2026-09-17'
+method: searched
+source: https://techdocs.akamai.com/linode-api/changelog, https://techdocs.akamai.com/linode-api/reference/api,
+  https://status.linode.com, https://github.com/linode/linode-api-openapi
+provider: Linode (Akamai Cloud)
+providerId: linode
+versioning:
+  scheme: path-prefix major version plus an incrementing semantic release number in info.version
+  current_major: v4
+  current_version: 4.229.1
+  base_url: https://api.linode.com/v4
+  note: Every path in the first-party spec is templated as /{apiVersion}/... with apiVersion defaulting to v4; the
+    live base is https://api.linode.com/v4. The minor release number (4.229.1) moves several times a month and is
+    visible only in the spec's info.version — it is not negotiable by header or path, so a caller cannot pin one.
+status_page:
+  url: https://status.linode.com/
+  api: https://status.linode.com/api/v2/status.json
+  platform: Atlassian Statuspage
+  status: 200
+  machine_readable: true
+  note: Statuspage's v2 JSON API answers unauthenticated, so an agent can read incident state directly.
+changelog:
+  url: https://techdocs.akamai.com/linode-api/changelog
+  artifact: changelog/linode-changelog.yml
+deprecation:
+  policy_url: null
+  headers:
+    sunset: false
+    deprecation: false
+  mechanism: 'deprecated: true on the operation in the OpenAPI, plus a changelog entry'
+  operation_count: 16
+  note: 'Linode marks retiring operations with OpenAPI''s `deprecated: true` — 16 of 539 operations carry it — but
+    the API emits neither RFC 8594 Sunset nor Deprecation response headers, and Akamai publishes no dated deprecation
+    policy for the Linode API. An agent therefore learns that an operation is going away only by re-reading the
+    contract, never at call time, and never with a retirement date.'
+  operations:
+  - operationId: get-child-accounts
+    method: GET
+    path: /{apiVersion}/account/child-accounts
+  - operationId: get-child-account
+    method: GET
+    path: /{apiVersion}/account/child-accounts/{euuId}
+  - operationId: post-child-account-token
+    method: POST
+    path: /{apiVersion}/account/child-accounts/{euuId}/token
+  - operationId: post-credit-card
+    method: POST
+    path: /{apiVersion}/account/credit-card
+  - operationId: post-entity-transfer
+    method: POST
+    path: /{apiVersion}/account/entity-transfers
+  - operationId: get-entity-transfers
+    method: GET
+    path: /{apiVersion}/account/entity-transfers
+  - operationId: get-entity-transfer
+    method: GET
+    path: /{apiVersion}/account/entity-transfers/{token}
+  - operationId: delete-entity-transfer
+    method: DELETE
+    path: /{apiVersion}/account/entity-transfers/{token}
+  - operationId: post-accept-entity-transfer
+    method: POST
+    path: /{apiVersion}/account/entity-transfers/{token}/accept
+  - operationId: post-pay-pal-payment
+    method: POST
+    path: /{apiVersion}/account/payments/paypal
+  - operationId: post-execute-pay-pal-payment
+    method: POST
+    path: /{apiVersion}/account/payments/paypal/execute
+  - operationId: get-user-grants
+    method: GET
+    path: /{apiVersion}/account/users/{username}/grants
+  - operationId: put-user-grants
+    method: PUT
+    path: /{apiVersion}/account/users/{username}/grants
+  - operationId: get-lke-cluster-dashboard
+    method: GET
+    path: /{apiVersion}/lke/clusters/{clusterId}/dashboard
+  - operationId: get-object-storage-clusters
+    method: GET
+    path: /{apiVersion}/object-storage/clusters
+  - operationId: get-object-storage-cluster
+    method: GET
+    path: /{apiVersion}/object-storage/clusters/{clusterId}
+sla:
+  published: null
+  note: No API-specific SLA was found on the Linode API documentation. Akamai publishes service-level commitments
+    under its own legal pages, which answer this network with a bot-manager 403 and so could not be verified here.
+contract_distribution:
+  current: https://github.com/linode/linode-api-openapi
+  current_version: 4.229.1
+  current_paths: 358
+  finding: The API reference page's own 'Download the Linode OpenAPI specification' link points at raw.githubusercontent.com/linode/linode-api-docs
+    (branch `development`), a repository GitHub reports as ARCHIVED since 2026-06-08. That link still returns 200
+    and valid JSON, but it serves Linode API 4.215.0 with 308 paths, while the live distribution repository linode/linode-api-openapi
+    serves 4.229.1 with 358 paths and was pushed on 2026-09-17. Anyone following the documented download link gets
+    a spec that is 50 paths short and three months stale, with nothing on either page saying so.
+  evidence:
+  - url: https://raw.githubusercontent.com/linode/linode-api-docs/refs/heads/development/openapi.json
+    status: 200
+    version: 4.215.0
+    paths: 308
+    repo_archived: true
+  - url: https://raw.githubusercontent.com/linode/linode-api-openapi/main/openapi.json
+    status: 200
+    version: 4.229.1
+    paths: 358
+    repo_archived: false

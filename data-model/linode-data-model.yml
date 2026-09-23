@@ -1,0 +1,632 @@
+generated: '2026-09-17'
+method: derived
+source: 'openapi/_original/linode-api-v4-official-openapi.json (Akamai: Linode API 4.229.1, 358 paths, 539 operations)'
+provider: Linode (Akamai Cloud)
+providerId: linode
+note: Derived mechanically, and deliberately conservatively. An entity is a collection path that the contract also
+  addresses by id (so /linode/instances is an entity and /linode/instances/{linodeId}/boot is not); has_many/belongs_to
+  edges come from nesting one id-addressable collection inside another's id; and a `*_id` property only produces
+  an edge when the name resolves to a collection that actually exists in the contract. Payment-instrument and tax
+  identifiers are excluded by name — they are external references, not entities in this API.
+id_scheme:
+  style: integer surrogate keys
+  prefixed: false
+  note: Linode identifiers are bare integers (linodeId, volumeId, clusterId, domainId). Nothing in an id says what
+    it refers to, so an agent holding `12345` cannot tell an instance from a volume without the path it came from.
+    There is no id-prefix table to record.
+  exceptions:
+  - Object Storage buckets and keys are addressed by region plus name, not an integer.
+  - Service and entity transfers are addressed by an opaque token.
+  - Managed Database instances are addressed by engine plus integer id.
+schema_count: 79
+entity_count: 88
+entities:
+- entity: /account/availability
+  id_param: regionId
+  methods:
+  - GET
+- entity: /account/betas
+  id_param: betaId
+  methods:
+  - GET
+  - POST
+- entity: /account/child-accounts
+  id_param: euuId
+  methods:
+  - GET
+- entity: /account/entity-transfers
+  id_param: token
+  methods:
+  - GET
+  - POST
+- entity: /account/events
+  id_param: eventId
+  methods:
+  - GET
+- entity: /account/invoices
+  id_param: invoiceId
+  methods:
+  - GET
+- entity: /account/logins
+  id_param: loginId
+  methods:
+  - GET
+- entity: /account/oauth-clients
+  id_param: clientId
+  methods:
+  - GET
+  - POST
+- entity: /account/payment-methods
+  id_param: paymentMethodId
+  methods:
+  - GET
+  - POST
+- entity: /account/payments
+  id_param: paymentId
+  methods:
+  - GET
+  - POST
+- entity: /account/service-transfers
+  id_param: token
+  methods:
+  - GET
+  - POST
+- entity: /account/users
+  id_param: username
+  methods:
+  - GET
+  - POST
+- entity: /betas
+  id_param: betaId
+  methods:
+  - GET
+- entity: /databases/engines
+  id_param: engineId
+  methods:
+  - GET
+- entity: /databases/mysql/instances
+  id_param: mysqlInstanceId
+  methods:
+  - GET
+  - POST
+- entity: /databases/postgresql/instances
+  id_param: postgresqlInstanceId
+  methods:
+  - GET
+  - POST
+- entity: /databases/postgresql/instances/{postgresqlInstanceId}/connection-pools
+  id_param: poolName
+  methods:
+  - GET
+  - POST
+- entity: /databases/types
+  id_param: typeId
+  methods:
+  - GET
+- entity: /databases/valkey/instances
+  id_param: valkeyInstanceId
+  methods:
+  - GET
+  - POST
+- entity: /domains
+  id_param: domainId
+  methods:
+  - GET
+  - POST
+- entity: /domains/{domainId}/records
+  id_param: recordId
+  methods:
+  - GET
+  - POST
+- entity: /iam/delegation/profile/child-accounts
+  id_param: euuid
+  methods:
+  - GET
+- entity: /iam/idp-configs
+  id_param: idpConfigId
+  methods:
+  - GET
+  - POST
+- entity: /iam/idp-configs/{idpConfigId}/certificates
+  id_param: certificateId
+  methods:
+  - GET
+  - POST
+- entity: /images
+  id_param: imageId
+  methods:
+  - GET
+  - POST
+- entity: /images/sharegroups
+  id_param: sharegroupId
+  methods:
+  - GET
+  - POST
+- entity: /images/sharegroups/tokens
+  id_param: tokenUuid
+  methods:
+  - GET
+  - POST
+- entity: /images/sharegroups/{sharegroupId}/images
+  id_param: imageId
+  methods:
+  - GET
+  - POST
+- entity: /images/sharegroups/{sharegroupId}/members
+  id_param: tokenUuid
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances
+  id_param: linodeId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/backups
+  id_param: backupId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/configs
+  id_param: configId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/configs/{configId}/interfaces
+  id_param: interfaceId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/disks
+  id_param: diskId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/interfaces
+  id_param: interfaceId
+  methods:
+  - GET
+  - POST
+- entity: /linode/instances/{linodeId}/ips
+  id_param: address
+  methods:
+  - GET
+  - POST
+- entity: /linode/kernels
+  id_param: kernelId
+  methods:
+  - GET
+- entity: /linode/quotas
+  id_param: linode-quotaId
+  methods: []
+- entity: /linode/stackscripts
+  id_param: stackscriptId
+  methods:
+  - GET
+  - POST
+- entity: /linode/types
+  id_param: typeId
+  methods:
+  - GET
+- entity: /lke/clusters
+  id_param: clusterId
+  methods:
+  - GET
+  - POST
+- entity: /lke/clusters/{clusterId}/pools
+  id_param: poolId
+  methods:
+  - GET
+  - POST
+- entity: /lke/quotas
+  id_param: lke-quotaId
+  methods: []
+- entity: /lke/tiers/{tier}/versions
+  id_param: version
+  methods:
+  - GET
+- entity: /lke/versions
+  id_param: version
+  methods:
+  - GET
+- entity: /locks
+  id_param: resourceLockId
+  methods:
+  - GET
+  - POST
+- entity: /longview/clients
+  id_param: clientId
+  methods:
+  - GET
+  - POST
+- entity: /longview/subscriptions
+  id_param: subscriptionId
+  methods:
+  - GET
+- entity: /managed/contacts
+  id_param: contactId
+  methods:
+  - GET
+  - POST
+- entity: /managed/credentials
+  id_param: credentialId
+  methods:
+  - GET
+  - POST
+- entity: /managed/issues
+  id_param: issueId
+  methods:
+  - GET
+- entity: /managed/linode-settings
+  id_param: linodeId
+  methods:
+  - GET
+- entity: /managed/services
+  id_param: serviceId
+  methods:
+  - GET
+  - POST
+- entity: /monitor/alert-channels
+  id_param: channelId
+  methods:
+  - GET
+  - POST
+- entity: /monitor/dashboards
+  id_param: dashboardId
+  methods:
+  - GET
+- entity: /monitor/services
+  id_param: serviceType
+  methods:
+  - GET
+- entity: /monitor/services/{serviceType}/alert-definitions
+  id_param: alertId
+  methods:
+  - GET
+  - POST
+- entity: /monitor/streams
+  id_param: streamId
+  methods:
+  - GET
+  - POST
+- entity: /monitor/streams/destinations
+  id_param: destinationId
+  methods:
+  - GET
+  - POST
+- entity: /networking/firewalls
+  id_param: firewallId
+  methods:
+  - GET
+  - POST
+- entity: /networking/firewalls/rulesets
+  id_param: ruleSetId
+  methods:
+  - GET
+  - POST
+- entity: /networking/firewalls/templates
+  id_param: slug
+  methods:
+  - GET
+- entity: /networking/firewalls/{firewallId}/devices
+  id_param: deviceId
+  methods:
+  - GET
+  - POST
+- entity: /networking/ips
+  id_param: address
+  methods:
+  - GET
+  - POST
+- entity: /networking/ipv6/ranges
+  id_param: range
+  methods:
+  - GET
+  - POST
+- entity: /networking/prefixlists
+  id_param: prefixListId
+  methods:
+  - GET
+- entity: /networking/reserved/ips
+  id_param: address
+  methods:
+  - GET
+  - POST
+- entity: /nodebalancers
+  id_param: nodeBalancerId
+  methods:
+  - GET
+  - POST
+- entity: /nodebalancers/{nodeBalancerId}/configs
+  id_param: configId
+  methods:
+  - GET
+  - POST
+- entity: /nodebalancers/{nodeBalancerId}/configs/{configId}/nodes
+  id_param: nodeId
+  methods:
+  - GET
+  - POST
+- entity: /nodebalancers/{nodeBalancerId}/vpcs
+  id_param: nodeBalancerVpcConfigId
+  methods:
+  - GET
+- entity: /object-storage/buckets
+  id_param: regionId
+  methods:
+  - GET
+  - POST
+- entity: /object-storage/clusters
+  id_param: clusterId
+  methods:
+  - GET
+- entity: /object-storage/global-quotas
+  id_param: objGlobalQuotaId
+  methods:
+  - GET
+- entity: /object-storage/keys
+  id_param: keyId
+  methods:
+  - GET
+  - POST
+- entity: /object-storage/quotas
+  id_param: objQuotaId
+  methods:
+  - GET
+- entity: /placement/groups
+  id_param: groupId
+  methods:
+  - GET
+  - POST
+- entity: /profile/apps
+  id_param: appId
+  methods:
+  - GET
+- entity: /profile/devices
+  id_param: deviceId
+  methods:
+  - GET
+- entity: /profile/logins
+  id_param: loginId
+  methods:
+  - GET
+- entity: /profile/sshkeys
+  id_param: sshKeyId
+  methods:
+  - GET
+  - POST
+- entity: /profile/tokens
+  id_param: tokenId
+  methods:
+  - GET
+  - POST
+- entity: /regions
+  id_param: regionId
+  methods:
+  - GET
+- entity: /support/tickets
+  id_param: ticketId
+  methods:
+  - GET
+  - POST
+- entity: /tags
+  id_param: tagLabel
+  methods:
+  - GET
+  - POST
+- entity: /volumes
+  id_param: volumeId
+  methods:
+  - GET
+  - POST
+- entity: /vpcs
+  id_param: vpcId
+  methods:
+  - GET
+  - POST
+- entity: /vpcs/{vpcId}/subnets
+  id_param: vpcSubnetId
+  methods:
+  - GET
+  - POST
+relationships:
+- from: /databases/postgresql/instances
+  to: /databases/postgresql/instances/{postgresqlInstanceId}/connection-pools
+  kind: has_many
+  via: /databases/postgresql/instances/{postgresqlInstanceId}/connection-pools
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /databases/postgresql/instances/{postgresqlInstanceId}/connection-pools
+  to: /databases/postgresql/instances
+  kind: belongs_to
+  via: path parameter postgresqlInstanceId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /domains
+  to: /domains/{domainId}/records
+  kind: has_many
+  via: /domains/{domainId}/records
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /domains/{domainId}/records
+  to: /domains
+  kind: belongs_to
+  via: path parameter domainId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /iam/idp-configs
+  to: /iam/idp-configs/{idpConfigId}/certificates
+  kind: has_many
+  via: /iam/idp-configs/{idpConfigId}/certificates
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /iam/idp-configs/{idpConfigId}/certificates
+  to: /iam/idp-configs
+  kind: belongs_to
+  via: path parameter idpConfigId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /images/sharegroups
+  to: /images/sharegroups/{sharegroupId}/images
+  kind: has_many
+  via: /images/sharegroups/{sharegroupId}/images
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /images/sharegroups/{sharegroupId}/images
+  to: /images/sharegroups
+  kind: belongs_to
+  via: path parameter sharegroupId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /images/sharegroups
+  to: /images/sharegroups/{sharegroupId}/members
+  kind: has_many
+  via: /images/sharegroups/{sharegroupId}/members
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /images/sharegroups/{sharegroupId}/members
+  to: /images/sharegroups
+  kind: belongs_to
+  via: path parameter sharegroupId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances
+  to: /linode/instances/{linodeId}/backups
+  kind: has_many
+  via: /linode/instances/{linodeId}/backups
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/backups
+  to: /linode/instances
+  kind: belongs_to
+  via: path parameter linodeId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances
+  to: /linode/instances/{linodeId}/configs
+  kind: has_many
+  via: /linode/instances/{linodeId}/configs
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/configs
+  to: /linode/instances
+  kind: belongs_to
+  via: path parameter linodeId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/configs
+  to: /linode/instances/{linodeId}/configs/{configId}/interfaces
+  kind: has_many
+  via: /linode/instances/{linodeId}/configs/{configId}/interfaces
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/configs/{configId}/interfaces
+  to: /linode/instances/{linodeId}/configs
+  kind: belongs_to
+  via: path parameter configId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances
+  to: /linode/instances/{linodeId}/disks
+  kind: has_many
+  via: /linode/instances/{linodeId}/disks
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/disks
+  to: /linode/instances
+  kind: belongs_to
+  via: path parameter linodeId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances
+  to: /linode/instances/{linodeId}/interfaces
+  kind: has_many
+  via: /linode/instances/{linodeId}/interfaces
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/interfaces
+  to: /linode/instances
+  kind: belongs_to
+  via: path parameter linodeId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances
+  to: /linode/instances/{linodeId}/ips
+  kind: has_many
+  via: /linode/instances/{linodeId}/ips
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /linode/instances/{linodeId}/ips
+  to: /linode/instances
+  kind: belongs_to
+  via: path parameter linodeId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /lke/clusters
+  to: /lke/clusters/{clusterId}/pools
+  kind: has_many
+  via: /lke/clusters/{clusterId}/pools
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /lke/clusters/{clusterId}/pools
+  to: /lke/clusters
+  kind: belongs_to
+  via: path parameter clusterId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /monitor/services
+  to: /monitor/services/{serviceType}/alert-definitions
+  kind: has_many
+  via: /monitor/services/{serviceType}/alert-definitions
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /monitor/services/{serviceType}/alert-definitions
+  to: /monitor/services
+  kind: belongs_to
+  via: path parameter serviceType
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /networking/firewalls
+  to: /networking/firewalls/{firewallId}/devices
+  kind: has_many
+  via: /networking/firewalls/{firewallId}/devices
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /networking/firewalls/{firewallId}/devices
+  to: /networking/firewalls
+  kind: belongs_to
+  via: path parameter firewallId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers
+  to: /nodebalancers/{nodeBalancerId}/configs
+  kind: has_many
+  via: /nodebalancers/{nodeBalancerId}/configs
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers/{nodeBalancerId}/configs
+  to: /nodebalancers
+  kind: belongs_to
+  via: path parameter nodeBalancerId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers/{nodeBalancerId}/configs
+  to: /nodebalancers/{nodeBalancerId}/configs/{configId}/nodes
+  kind: has_many
+  via: /nodebalancers/{nodeBalancerId}/configs/{configId}/nodes
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers/{nodeBalancerId}/configs/{configId}/nodes
+  to: /nodebalancers/{nodeBalancerId}/configs
+  kind: belongs_to
+  via: path parameter configId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers
+  to: /nodebalancers/{nodeBalancerId}/vpcs
+  kind: has_many
+  via: /nodebalancers/{nodeBalancerId}/vpcs
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /nodebalancers/{nodeBalancerId}/vpcs
+  to: /nodebalancers
+  kind: belongs_to
+  via: path parameter nodeBalancerId
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /vpcs
+  to: /vpcs/{vpcId}/subnets
+  kind: has_many
+  via: /vpcs/{vpcId}/subnets
+  evidence: nested id-addressable collection in the OpenAPI
+- from: /vpcs/{vpcId}/subnets
+  to: /vpcs
+  kind: belongs_to
+  via: path parameter vpcId
+  evidence: nested id-addressable collection in the OpenAPI
+reference_fields:
+- schema: added-post-pay-pal-payment-200
+  field: payment_id
+  references: /account/payments
+  kind: belongs_to
+  type: string
+  evidence: id-reference field on a component schema
+- schema: added-post-payment
+  field: payment_method_id
+  references: /account/payment-methods
+  kind: belongs_to
+  type: integer
+  evidence: id-reference field on a component schema
+- schema: paypal-execute
+  field: payment_id
+  references: /account/payments
+  kind: belongs_to
+  type: string
+  evidence: id-reference field on a component schema
+relationship_count: 39

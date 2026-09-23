@@ -1,0 +1,139 @@
+generated: '2026-09-17'
+method: searched
+source: https://techdocs.akamai.com/linode-api/reference/get-started, https://techdocs.akamai.com/linode-api/reference/pagination,
+  https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting, https://techdocs.akamai.com/linode-api/reference/errors,
+  https://techdocs.akamai.com/linode-api/reference/rate-limits
+docs: https://techdocs.akamai.com/linode-api/reference/get-started
+provider: Linode (Akamai Cloud)
+providerId: linode
+authentication:
+  styles:
+  - Bearer personal access token
+  - OAuth 2.0 authorization code (RFC 6749)
+  header: 'Authorization: Bearer <token>'
+  authorization_server: https://login.linode.com
+  resource_server: https://api.linode.com
+  authorization_model: RBAC via Identity and Access in Akamai Cloud, layered under the OAuth scope model
+  note: Each operation's reference page carries a Permissions and scopes block naming both the IAM permission and
+    the OAuth scope required. Some catalog operations (regions, plan types, pricing) are public and need no credential.
+  artifact: authentication/linode-authentication.yml
+  scopes_artifact: scopes/linode-scopes.yml
+idempotency:
+  coverage: none
+  mechanism: null
+  header: null
+  note: 'No idempotency mechanism exists. The string ''idempoten'' does not appear anywhere in the first-party OpenAPI
+    (4.229.1, 539 operations, 271 of them writes), and the documentation describes none. A retried POST /linode/instances
+    creates a second billable instance. This is the most consequential agent-readiness gap in this API: every write
+    is a real, charged infrastructure action with no replay protection.'
+dry_run:
+  coverage: partial
+  scope:
+  - post-upgrade-linode-interfaces
+  note: 'Exactly one operation offers a rehearsal: POST /linode/instances/{linodeId}/upgrade-interfaces accepts
+    a dry_run boolean in its request body and returns the interface configuration that would result. No other write
+    operation in the API has a dry-run, preview or validate mode.'
+reversibility:
+  grade: verified
+  note: Reversal exists but is narrow, and it is not an undo of the API call — it is a restore of the data the call
+    destroyed, and only for customers who pay for Backups.
+  surfaces:
+  - write: post-rebuild-linode-instance / delete-linode-instance / disk deletion
+    reversal: post-restore-backup
+    window: Automated backups are retained no longer than 14 days (daily under 24h, weekly under 7 days, biweekly
+      8-14 days); manual snapshots have no age limit.
+    docs: https://techdocs.akamai.com/cloud-computing/docs/backup-service
+    conditions: Requires the paid Backups service to be enabled on the instance beforehand. Backups cannot be restored
+      across regions, and the target instance cannot be the subject of a running backup.
+    grade: verified
+  - write: post-enable-backups
+    reversal: post-cancel-backups
+    window: null
+    docs: https://techdocs.akamai.com/linode-api/reference/post-cancel-backups
+    conditions: Cancelling Backups deletes the stored backups immediately; the cancellation itself is not reversible.
+    grade: documented
+  - write: post-object-storage-bucket / post-object-storage-keys
+    reversal: post-cancel-object-storage
+    window: null
+    docs: https://techdocs.akamai.com/linode-api/reference/post-cancel-object-storage
+    grade: documented
+  - write: post-attach-volume
+    reversal: post-detach-volume
+    window: null
+    docs: https://techdocs.akamai.com/linode-api/reference/post-detach-volume
+    grade: documented
+  - write: post-service-transfer
+    reversal: delete-service-transfer
+    window: A pending service transfer can be cancelled until the recipient accepts it.
+    docs: https://techdocs.akamai.com/linode-api/reference/delete-service-transfer
+    grade: verified
+  - write: post-linode-instance
+    reversal: null
+    window: null
+    note: 'Instance creation has no reversal operation. Deleting the instance stops the billing but does not undo
+      the creation, and deletion itself is permanent: there is no restore-deleted-instance operation and no grace
+      period documented.'
+    grade: none
+  - write: delete-domain / delete-domain-record
+    reversal: null
+    window: null
+    note: DNS deletions are immediate and permanent. No zone recycle bin, no restore operation, no stated window.
+    grade: none
+pagination:
+  style: page-number
+  request_params:
+  - page
+  - page_size
+  response_fields:
+  - data
+  - page
+  - pages
+  - results
+  defaults:
+    page: 1
+    page_size: 100
+  bounds:
+    page_size_min: 25
+    page_size_max: 500
+  docs: https://techdocs.akamai.com/linode-api/reference/pagination
+  note: Pages start at 1. A page value above 2^64/page_size returns the last possible page rather than an error.
+filtering:
+  style: X-Filter header carrying a JSON filter document
+  docs: https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting
+  note: Linode does not filter with query-string operators. Collections are filtered and sorted by sending a JSON
+    structure in the X-Filter request header; supported fields are listed per operation.
+field_expansion:
+  supported: false
+  note: No expand/fields/sparse-fieldset parameter is published.
+metadata:
+  supported: true
+  mechanism: tags[] on most entity types, plus the in-instance Metadata Service (169.254.169.254) for cloud-init
+    style user data.
+request_id_tracing:
+  supported: false
+  note: No request-id or correlation-id response header is documented. An agent debugging a failure has no identifier
+    to quote in a support ticket beyond the timestamp.
+versioning:
+  style: URL path major version (/v4)
+  artifact: lifecycle/linode-lifecycle.yml
+error_envelope:
+  format: vendor-json
+  shape:
+    errors:
+    - field: string (optional)
+      reason: string
+  rfc9457: false
+  artifact: errors/linode-problem-types.yml
+rate_limit_signaling:
+  headers:
+  - X-RateLimit-Limit
+  - X-RateLimit-Remaining
+  - X-RateLimit-Reset
+  - Retry-After
+  status: 429
+  artifact: rate-limits/linode-rate-limits.yml
+cross_reference:
+  errors: errors/linode-problem-types.yml
+  lifecycle: lifecycle/linode-lifecycle.yml
+  authentication: authentication/linode-authentication.yml
+  rate_limits: rate-limits/linode-rate-limits.yml

@@ -1,0 +1,261 @@
+generated: '2026-09-17'
+method: derived
+source: 'mcp/linode-mcp.yml (tool list read from the akamai-cloud-mcp README) bound against openapi/_original/linode-api-v4-official-openapi.json
+  (Akamai: Linode API 4.229.1)'
+provider: Linode (Akamai Cloud)
+providerId: linode
+note: The live MCP tools/list could not be introspected because the server is stdio-only and needs a Linode personal
+  access token, so tools were mapped from the provider's published tool table by name and semantics against the
+  first-party OpenAPI. Confidence is recorded per row accordingly.
+surfaces:
+  openapi: openapi/_original/linode-api-v4-official-openapi.json
+  openapi_source: https://github.com/linode/linode-api-openapi/blob/main/openapi.json
+  mcp: stdio only — uvx akamai-cloud-mcp; no vendor-hosted endpoint
+  graphql: null
+  gated:
+  - mcp (requires a local run plus a Linode personal access token)
+crosswalk:
+- tool: linode_list_regions
+  category: regions
+  rest:
+  - get-regions
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_region_availability
+  category: regions
+  rest:
+  - get-region-availability
+  - get-regions-availability
+  binding: composite
+  confidence: high
+- tool: linode_list_instance_types
+  category: regions
+  rest:
+  - get-linode-types
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_pricing
+  category: pricing
+  rest:
+  - get-linode-types
+  - get-volume-types
+  - get-node-balancer-types
+  - get-network-transfer-prices
+  - get-lke-types
+  - get-object-storage-types
+  binding: composite
+  confidence: high
+- tool: linode_find_gpu_availability
+  category: pricing
+  rest:
+  - get-linode-types
+  - get-regions-availability
+  binding: composite
+  confidence: high
+- tool: linode_list_instances
+  category: compute
+  rest:
+  - get-linode-instances
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_instance
+  category: compute
+  rest:
+  - get-linode-instance
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_volumes
+  category: compute
+  rest:
+  - get-volumes
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_lke_clusters
+  category: lke
+  rest:
+  - get-lke-clusters
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_lke_cluster
+  category: lke
+  rest:
+  - get-lke-cluster
+  - get-lke-cluster-pools
+  - get-lke-cluster-api-endpoints
+  binding: composite
+  confidence: high
+- tool: linode_list_kubernetes_versions
+  category: lke
+  rest:
+  - get-lke-versions
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_object_storage_buckets
+  category: object_storage
+  rest:
+  - get-object-storage-buckets
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_object_storage_bucket
+  category: object_storage
+  rest:
+  - get-object-storage-bucket
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_object_storage_endpoints
+  category: object_storage
+  rest:
+  - get-object-storage-endpoints
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_object_storage_transfer
+  category: object_storage
+  rest:
+  - get-object-storage-transfer
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_object_storage_quotas
+  category: object_storage
+  rest:
+  - get-object-storage-quotas
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_firewalls
+  category: networking
+  rest:
+  - get-firewalls
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_firewall
+  category: networking
+  rest:
+  - get-firewall
+  - get-firewall-rules
+  binding: composite
+  confidence: high
+- tool: linode_list_ips
+  category: networking
+  rest:
+  - get-ips
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_vlans
+  category: networking
+  rest:
+  - get-vlans
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_vpcs
+  category: networking
+  rest:
+  - get-vpcs
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_vpc
+  category: networking
+  rest:
+  - get-vpc
+  - get-vpc-subnets
+  binding: composite
+  confidence: high
+- tool: linode_list_nodebalancers
+  category: networking
+  rest:
+  - get-node-balancers
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_account
+  category: account
+  rest:
+  - get-account
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_account_transfer
+  category: account
+  rest:
+  - get-transfer
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_invoices
+  category: account
+  rest:
+  - get-invoices
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_events
+  category: account
+  rest:
+  - get-events
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_account_limits
+  category: account
+  rest:
+  - get-account-settings
+  - get-object-storage-quotas
+  - get-transfer
+  binding: composite
+  confidence: high
+- tool: linode_list_domains
+  category: dns
+  rest:
+  - get-domains
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_domain
+  category: dns
+  rest:
+  - get-domain
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_domain_records
+  category: dns
+  rest:
+  - get-domain-records
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_databases
+  category: databases
+  rest:
+  - get-databases-instances
+  binding: one-to-one
+  confidence: high
+- tool: linode_get_database
+  category: databases
+  rest:
+  - get-databases-mysql-instance
+  - get-databases-postgre-sql-instance
+  binding: composite
+  confidence: high
+- tool: linode_list_database_engines
+  category: databases
+  rest:
+  - get-databases-engines
+  binding: one-to-one
+  confidence: high
+- tool: linode_list_database_types
+  category: databases
+  rest:
+  - get-databases-types
+  binding: one-to-one
+  confidence: high
+mcp_only:
+- tool: linode_estimate_cost
+  reason: Composed/derived tool with no single backing REST operation — linode_estimate_cost synthesises pricing
+    across several catalogs; linode_api_get is a generic read-only passthrough over any Linode API v4 GET path.
+- tool: linode_api_get
+  reason: Composed/derived tool with no single backing REST operation — linode_estimate_cost synthesises pricing
+    across several catalogs; linode_api_get is a generic read-only passthrough over any Linode API v4 GET path.
+rest_only:
+  count: 495
+  note: 'Every one of the 271 write operations in the Linode API v4 is rest_only by design: the MCP server is read-only
+    by construction and refuses non-GET requests at runtime. A further 224 GET operations have no curated tool and
+    are reachable only through the linode_api_get escape hatch.'
+coverage:
+  mcp_tools: 37
+  tools_bound_to_rest: 35
+  tools_without_rest: 2
+  rest_operations_total: 539
+  rest_get_operations: 268
+  rest_write_operations: 271
+  rest_operations_mapped: 44

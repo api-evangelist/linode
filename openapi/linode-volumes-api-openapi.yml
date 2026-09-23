@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Linode API v4 Account Volumes API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
+  title: Linode API v4 Volumes API
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -176,43 +176,6 @@ paths:
           description: Volume not found
 components:
   schemas:
-    PaginatedVolumeList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Volume'
-    VolumeRequest:
-      type: object
-      required:
-      - label
-      - size
-      - region
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the new volume.
-        size:
-          type: integer
-          minimum: 10
-          maximum: 10240
-          description: The size of the volume in GB.
-        region:
-          type: string
-          description: The region to create the volume in.
-        linode_id:
-          type: integer
-          description: A Linode instance to attach the volume to.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the new volume.
     Volume:
       type: object
       properties:
@@ -283,6 +246,43 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedVolumeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Volume'
+    VolumeRequest:
+      type: object
+      required:
+      - label
+      - size
+      - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the new volume.
+        size:
+          type: integer
+          minimum: 10
+          maximum: 10240
+          description: The size of the volume in GB.
+        region:
+          type: string
+          description: The region to create the volume in.
+        linode_id:
+          type: integer
+          description: A Linode instance to attach the volume to.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new volume.
   parameters:
     pageParam:
       name: page
@@ -292,6 +292,13 @@ components:
         minimum: 1
         default: 1
       description: The page number to return.
+    volumeIdParam:
+      name: volumeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the volume.
     pageSizeParam:
       name: page_size
       in: query
@@ -301,13 +308,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    volumeIdParam:
-      name: volumeId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the volume.
   securitySchemes:
     personalAccessToken:
       type: http
