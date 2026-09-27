@@ -1,0 +1,868 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Invoices API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Review invoice and billing data for services on your account.
+  name: Invoices
+paths:
+  /{apiVersion}/account/invoices:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/invoices.yaml
+      path-info: /{apiVersion}/account/invoices
+    x-linode-cli-command: account
+    get:
+      description: 'Returns a paginated list of invoices against your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_billing_invoices`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account invoices-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-invoices
+      operationId: get-invoices
+      parameters:
+      - content:
+          application/json:
+            schema:
+              description: Specifies the `X-Filter` header JSON object's filtering and sort criteria.
+              oneOf:
+              - additionalProperties:
+                  type: string
+                description: Specify the name of the data field and the accompanying value.
+                example:
+                  region: us-east
+                title: Simple filter
+                type: object
+                x-akamai:
+                  file-path: schemas/x-filter-criteria.yaml
+              - example:
+                  +or:
+                  - region: us-east
+                  - label: linode123
+                properties:
+                  +and:
+                    description: All conditions need to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +contains:
+                    description: The provided string needs to be in the value.
+                    type: string
+                  +gt:
+                    description: The value needs to be greater than the provided number.
+                    type: number
+                  +gte:
+                    description: The value needs to be greater than or equal to the provided number.
+                    type: number
+                  +lt:
+                    description: The value needs to be less than the provided number.
+                    type: number
+                  +lte:
+                    description: The value needs to be less than or equal to the provided number.
+                    type: number
+                  +neq:
+                    description: The provided string is left out of the results.
+                    type: string
+                  +or:
+                    description: At least one condition needs to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +order:
+                    default: asc
+                    description: Sort in ascending (`asc`) or descending (`desc`) order. This defaults to `asc`. Requires `+order_by`.
+                    enum:
+                    - asc
+                    - desc
+                    type: string
+                  +order_by:
+                    description: Order results based on the provided attribute. The attribute needs to be filterable.
+                    type: string
+                title: Filter and sort criteria
+                type: object
+              x-akamai:
+                file-path: schemas/x-filter.yaml
+        description: Specifies a JSON object to filter down the results. See [Filtering and sorting](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) for details.
+        example: '{{X-Filter}}'
+        in: header
+        name: X-Filter
+        required: false
+        x-akamai:
+          file-path: parameters/x-filter-header.yaml
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - billing_source: linode
+                  date: '2018-01-01T00:01:01'
+                  id: 123
+                  label: Invoice
+                  subtotal: 120.25
+                  tax: 12.25
+                  tax_summary:
+                  - name: PA STATE TAX
+                    tax: 12.25
+                  total: 132.5
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Account Invoice object.
+                      properties:
+                        billing_source:
+                          description: __Filterable__, __Read-only__ The source of service charges for this invoice. A value of `akamai` indicates an invoice generated according to the terms of an agreement between the customer and Akamai. A value of `linode` indicates an invoice was generated according to the default terms, prices, and discounts.
+                          enum:
+                          - akamai
+                          - linode
+                          example: linode
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3.5
+                          x-linode-filterable: true
+                        date:
+                          description: __Filterable__, __Read-only__ When this Invoice was generated.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        id:
+                          description: __Read-only__ The Invoice's unique ID.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Filterable__, __Read-only__ The Invoice's display label.
+                          example: Invoice
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        subtotal:
+                          description: __Read-only__ The amount of the Invoice before taxes in US Dollars.
+                          example: 120.25
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 4
+                        tax:
+                          description: __Read-only__ The amount of tax levied on the Invoice in US Dollars.
+                          example: 12.25
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 5
+                        tax_summary:
+                          description: __Read-only__ The amount of tax broken down into subtotals by source.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              name:
+                                description: The source of this tax subtotal.
+                                example: PA STATE TAX
+                                type: string
+                              tax:
+                                description: The amount of tax subtotal attributable to this source.
+                                example: 12.25
+                                type: number
+                            type: object
+                          readOnly: true
+                          type: array
+                        total:
+                          description: __Filterable__, __Read-only__ The amount of the Invoice after taxes in US Dollars.
+                          example: 132.5
+                          readOnly: true
+                          type: number
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/invoice.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-invoices-200.yaml
+          description: Returns a paginated list of Invoice objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List invoices
+      tags:
+      - Invoices
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account invoices-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: invoices-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_billing_invoices
+  /{apiVersion}/account/invoices/{invoiceId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Invoice.
+      example: '{{invoiceId}}'
+      in: path
+      name: invoiceId
+      required: true
+      schema:
+        example: 387
+        type: integer
+      x-akamai:
+        file-path: parameters/invoice-id-path.yaml
+    x-akamai:
+      file-path: paths/invoice.yaml
+      path-info: /{apiVersion}/account/invoices/{invoiceId}
+    x-linode-cli-command: account
+    get:
+      description: 'Returns a single Invoice object.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_billing_invoice`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account invoice-view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-invoice
+      operationId: get-invoice
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                billing_source: linode
+                date: '2018-01-01T00:01:01'
+                id: 123
+                label: Invoice
+                subtotal: 120.25
+                tax: 12.25
+                tax_summary:
+                - name: PA STATE TAX
+                  tax: 12.25
+                total: 132.5
+              schema:
+                additionalProperties: false
+                description: Account Invoice object.
+                properties:
+                  billing_source:
+                    description: __Filterable__, __Read-only__ The source of service charges for this invoice. A value of `akamai` indicates an invoice generated according to the terms of an agreement between the customer and Akamai. A value of `linode` indicates an invoice was generated according to the default terms, prices, and discounts.
+                    enum:
+                    - akamai
+                    - linode
+                    example: linode
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3.5
+                    x-linode-filterable: true
+                  date:
+                    description: __Filterable__, __Read-only__ When this Invoice was generated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ The Invoice's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__, __Read-only__ The Invoice's display label.
+                    example: Invoice
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  subtotal:
+                    description: __Read-only__ The amount of the Invoice before taxes in US Dollars.
+                    example: 120.25
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  tax:
+                    description: __Read-only__ The amount of tax levied on the Invoice in US Dollars.
+                    example: 12.25
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 5
+                  tax_summary:
+                    description: __Read-only__ The amount of tax broken down into subtotals by source.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        name:
+                          description: The source of this tax subtotal.
+                          example: PA STATE TAX
+                          type: string
+                        tax:
+                          description: The amount of tax subtotal attributable to this source.
+                          example: 12.25
+                          type: number
+                      type: object
+                    readOnly: true
+                    type: array
+                  total:
+                    description: __Filterable__, __Read-only__ The amount of the Invoice after taxes in US Dollars.
+                    example: 132.5
+                    readOnly: true
+                    type: number
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/invoice.yaml
+          description: An Invoice object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get an invoice
+      tags:
+      - Invoices
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account invoice-view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: invoice-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_billing_invoice
+  /{apiVersion}/account/invoices/{invoiceId}/items:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Invoice.
+      example: '{{invoiceId}}'
+      in: path
+      name: invoiceId
+      required: true
+      schema:
+        example: 387
+        type: integer
+      x-akamai:
+        file-path: parameters/invoice-id-path.yaml
+    x-akamai:
+      file-path: paths/invoice-items.yaml
+      path-info: /{apiVersion}/account/invoices/{invoiceId}/items
+    x-linode-cli-command: account
+    get:
+      description: 'Returns a paginated list of Invoice items.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_invoice_items`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account invoice-items 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-invoice-items
+      operationId: get-invoice-items
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - amount: 20.2
+                  from: '2018-01-01T00:01:01'
+                  label: Linode 123
+                  quantity: 4
+                  region: us-west
+                  tax: 1.25
+                  to: '2018-01-31T11:59:59'
+                  total: 21.45
+                  type: hourly
+                  unit_price: 5.05
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: An InvoiceItem object.
+                      properties:
+                        amount:
+                          description: __Read-only__ The price, in US dollars, of the Invoice Item. Equal to the unit price multiplied by quantity.
+                          example: 20.2
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 4
+                        from:
+                          description: __Read-only__ The date the Invoice Item started, based on month.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 2
+                        label:
+                          description: __Read-only__ The Invoice Item's display label.
+                          example: Linode 123
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        quantity:
+                          description: __Read-only__ The quantity of this Item for the specified Invoice.
+                          example: 4
+                          readOnly: true
+                          type: integer
+                        region:
+                          description: '__Read-only__ The ID of the applicable Region associated with this Invoice Item.
+
+
+                            `null` if there is no applicable Region.'
+                          example: us-west
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 7
+                        tax:
+                          description: __Read-only__ The amount of tax levied on this Item in US Dollars.
+                          example: 1.25
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 5
+                        to:
+                          description: __Read-only__ The date the Invoice Item ended, based on month.
+                          example: '2018-01-31T11:59:59'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 3
+                        total:
+                          description: __Read-only__ The price of this Item after taxes in US Dollars.
+                          example: 21.45
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 6
+                        type:
+                          description: __Read-only__ The type of service, ether `hourly` or `misc`.
+                          enum:
+                          - hourly
+                          - misc
+                          example: hourly
+                          readOnly: true
+                          type: string
+                        unit_price:
+                          description: __Read-only__ The monthly service fee in US Dollars for this Item.
+                          example: 5.05
+                          readOnly: true
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/invoice-item.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-invoice-items-200.yaml
+          description: A paginated list of InvoiceItem objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List invoice items
+      tags:
+      - Invoices
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account invoice-items 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: invoice-items
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_invoice_items
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,15 +1,20 @@
 name: Linode
 aid: linode
 deliveryModel:
-  model: unknown
-  open_source: false
-  commercial: false
+  model: saas
+  license_evidence:
+    not_product:
+    - linode/linode-api-openapi
+  open_source: unknown
+  commercial: true
   callable_host: true
-  label: Delivery model not determined — needs a product licence on record
+  label: Hosted service · you call their endpoint
   confidence: low
   source:
   - openapi
-  generated: '2026-08-28'
+  - pricing
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 specificationVersion: '0.23'
 accessModel:
@@ -41,10 +46,11 @@ apis:
   properties:
   - url: https://techdocs.akamai.com/cloud-computing/docs/cli
     type: Documentation
-  description: The Linode CLI is a command-line interface that wraps the Linode API v4, allowing developers and
-    system administrators to manage Akamai Connected Cloud resources directly from the terminal. It supports all
-    API operations including creating and managing compute instances, configuring networking, deploying Kubernetes
-    clusters, and managing storage.
+  description: >-
+    The Linode CLI is a command-line interface that wraps the Linode API v4, allowing developers and system
+    administrators to manage Akamai Connected Cloud resources directly from the terminal. It supports
+    all API operations including creating and managing compute instances, configuring networking, deploying
+    Kubernetes clusters, and managing storage.
 - aid: linode:python-sdk
   name: Linode Python SDK
   tags:
@@ -57,11 +63,12 @@ apis:
   properties:
   - url: https://linode-api4.readthedocs.io/en/latest/
     type: Documentation
-  description: The Linode Python SDK (linode_api4) is the official Python client library for interacting with the
-    Linode API v4. It provides a Pythonic interface for managing all Akamai Connected Cloud resources including
-    compute instances, domains, NodeBalancers, volumes, Kubernetes clusters, and account settings. The SDK supports
-    both synchronous operations and includes helper methods for common workflows like deploying instances from StackScripts,
-    managing SSH keys, and configuring networking resources.
+  description: >-
+    The Linode Python SDK (linode_api4) is the official Python client library for interacting with the
+    Linode API v4. It provides a Pythonic interface for managing all Akamai Connected Cloud resources
+    including compute instances, domains, NodeBalancers, volumes, Kubernetes clusters, and account settings.
+    The SDK supports both synchronous operations and includes helper methods for common workflows like
+    deploying instances from StackScripts, managing SSH keys, and configuring networking resources.
 - aid: linode:go-sdk
   name: Linode Go SDK
   tags:
@@ -74,11 +81,12 @@ apis:
   properties:
   - url: https://pkg.go.dev/github.com/linode/linodego
     type: Documentation
-  description: The Linode Go SDK (linodego) is the official Go client library for the Linode API v4. It provides
-    idiomatic Go interfaces for managing Akamai Connected Cloud infrastructure programmatically, including compute
-    instances, Kubernetes clusters, networking configurations, storage volumes, and DNS domains. The library is
-    used internally by the Linode Terraform Provider and Linode CLI, and supports context-based request cancellation,
-    pagination helpers, and retry logic for robust API interactions.
+  description: >-
+    The Linode Go SDK (linodego) is the official Go client library for the Linode API v4. It provides
+    idiomatic Go interfaces for managing Akamai Connected Cloud infrastructure programmatically, including
+    compute instances, Kubernetes clusters, networking configurations, storage volumes, and DNS domains.
+    The library is used internally by the Linode Terraform Provider and Linode CLI, and supports context-based
+    request cancellation, pagination helpers, and retry logic for robust API interactions.
 - aid: linode:terraform-provider
   name: Linode Terraform Provider
   tags:
@@ -92,13 +100,15 @@ apis:
   properties:
   - url: https://techdocs.akamai.com/terraform/docs/overview
     type: Documentation
-  description: The Linode Terraform Provider enables infrastructure-as-code management of Akamai Connected Cloud
-    resources using HashiCorp Terraform. It supports provisioning and managing compute instances, Kubernetes clusters,
-    NodeBalancers, firewalls, DNS domains, Block Storage volumes, Object Storage buckets, VPCs, and other cloud
-    resources through declarative configuration files.
+  description: >-
+    The Linode Terraform Provider enables infrastructure-as-code management of Akamai Connected Cloud
+    resources using HashiCorp Terraform. It supports provisioning and managing compute instances, Kubernetes
+    clusters, NodeBalancers, firewalls, DNS domains, Block Storage volumes, Object Storage buckets, VPCs,
+    and other cloud resources through declarative configuration files.
 - aid: linode:linode-account-api
   name: linode Account API
-  description: Manage your account settings, users, billing information, OAuth clients, service transfers, and payment
+  description: >-
+    Manage your account settings, users, billing information, OAuth clients, service transfers, and payment
     methods.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -113,8 +123,9 @@ apis:
     url: overlays/linode-account-api-overlay.yaml
 - aid: linode:linode-databases-api
   name: linode Databases API
-  description: Manage Managed Database instances including MySQL and PostgreSQL clusters, backups, credentials,
-    and maintenance windows.
+  description: >-
+    Manage Managed Database instances including MySQL and PostgreSQL clusters, backups, credentials, and
+    maintenance windows.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -130,8 +141,9 @@ apis:
     url: overlays/linode-databases-api-overlay.yaml
 - aid: linode:linode-domains-api
   name: linode Domains API
-  description: Manage DNS domains and their associated resource records including A, AAAA, CNAME, MX, TXT, SRV,
-    CAA, and NS records.
+  description: >-
+    Manage DNS domains and their associated resource records including A, AAAA, CNAME, MX, TXT, SRV, CAA,
+    and NS records.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -145,7 +157,8 @@ apis:
     url: overlays/linode-domains-api-overlay.yaml
 - aid: linode:linode-images-api
   name: linode Images API
-  description: Manage custom images for deploying Linode instances, including creating images from disks, uploading
+  description: >-
+    Manage custom images for deploying Linode instances, including creating images from disks, uploading
     images, and managing image metadata.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -162,7 +175,8 @@ apis:
     url: overlays/linode-images-api-overlay.yaml
 - aid: linode:linode-linode-instances-api
   name: linode Instances API
-  description: Create and manage Linode compute instances, including configuration profiles, disks, backups, networking,
+  description: >-
+    Create and manage Linode compute instances, including configuration profiles, disks, backups, networking,
     migration, resize, and rebuild operations.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -177,8 +191,9 @@ apis:
     url: overlays/linode-linode-instances-api-overlay.yaml
 - aid: linode:linode-linode-kubernetes-engine-lke-api
   name: linode Kubernetes Engine (LKE) API
-  description: Deploy and manage Kubernetes clusters, node pools, and cluster configurations through the Linode
-    Kubernetes Engine.
+  description: >-
+    Deploy and manage Kubernetes clusters, node pools, and cluster configurations through the Linode Kubernetes
+    Engine.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -192,7 +207,8 @@ apis:
     url: overlays/linode-linode-kubernetes-engine-lke-api-overlay.yaml
 - aid: linode:linode-longview-api
   name: linode Longview API
-  description: Manage Longview clients and subscriptions for system-level monitoring and metrics collection on Linode
+  description: >-
+    Manage Longview clients and subscriptions for system-level monitoring and metrics collection on Linode
     instances.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -207,7 +223,8 @@ apis:
     url: overlays/linode-longview-api-overlay.yaml
 - aid: linode:linode-managed-api
   name: linode Managed API
-  description: Manage Linode Managed services including monitored contacts, credentials, issues, service monitors,
+  description: >-
+    Manage Linode Managed services including monitored contacts, credentials, issues, service monitors,
     and SSH access settings.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -222,8 +239,9 @@ apis:
     url: overlays/linode-managed-api-overlay.yaml
 - aid: linode:linode-networking-api
   name: linode Networking API
-  description: Manage networking resources including IP addresses, IPv6 ranges and pools, firewalls, VLANs, and
-    IP address sharing and assignment.
+  description: >-
+    Manage networking resources including IP addresses, IPv6 ranges and pools, firewalls, VLANs, and IP
+    address sharing and assignment.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -237,7 +255,8 @@ apis:
     url: overlays/linode-networking-api-overlay.yaml
 - aid: linode:linode-nodebalancers-api
   name: linode NodeBalancers API
-  description: Create and manage NodeBalancer load balancers, their configurations, and backend nodes for distributing
+  description: >-
+    Create and manage NodeBalancer load balancers, their configurations, and backend nodes for distributing
     traffic across Linode instances.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -252,7 +271,8 @@ apis:
     url: overlays/linode-nodebalancers-api-overlay.yaml
 - aid: linode:linode-object-storage-api
   name: linode Object Storage API
-  description: Manage Object Storage buckets, access keys, clusters, and endpoints for S3-compatible object storage.
+  description: >-
+    Manage Object Storage buckets, access keys, clusters, and endpoints for S3-compatible object storage.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -266,7 +286,8 @@ apis:
     url: overlays/linode-object-storage-api-overlay.yaml
 - aid: linode:linode-placement-groups-api
   name: linode Placement Groups API
-  description: Create and manage placement groups for controlling the physical placement of Linode instances within
+  description: >-
+    Create and manage placement groups for controlling the physical placement of Linode instances within
     a data center.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -281,7 +302,8 @@ apis:
     url: overlays/linode-placement-groups-api-overlay.yaml
 - aid: linode:linode-profile-api
   name: linode Profile API
-  description: Manage your user profile settings, SSH keys, authorized applications, personal access tokens, and
+  description: >-
+    Manage your user profile settings, SSH keys, authorized applications, personal access tokens, and
     two-factor authentication.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -312,7 +334,8 @@ apis:
     url: overlays/linode-regions-api-overlay.yaml
 - aid: linode:linode-stackscripts-api
   name: linode StackScripts API
-  description: Create and manage StackScripts for automating the deployment and configuration of Linode instances.
+  description: >-
+    Create and manage StackScripts for automating the deployment and configuration of Linode instances.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -326,7 +349,8 @@ apis:
     url: overlays/linode-stackscripts-api-overlay.yaml
 - aid: linode:linode-support-api
   name: linode Support API
-  description: Create and manage support tickets and view replies for getting help from the Linode support team.
+  description: >-
+    Create and manage support tickets and view replies for getting help from the Linode support team.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
   tags:
@@ -354,7 +378,8 @@ apis:
     url: overlays/linode-tags-api-overlay.yaml
 - aid: linode:linode-volumes-api
   name: linode Volumes API
-  description: Create and manage Block Storage volumes that can be attached to Linode instances for persistent data
+  description: >-
+    Create and manage Block Storage volumes that can be attached to Linode instances for persistent data
     storage.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -369,7 +394,8 @@ apis:
     url: overlays/linode-volumes-api-overlay.yaml
 - aid: linode:linode-vpcs-api
   name: linode VPCs API
-  description: Create and manage Virtual Private Clouds for isolated network environments and subnets for Linode
+  description: >-
+    Create and manage Virtual Private Clouds for isolated network environments and subnets for Linode
     instances.
   humanURL: https://techdocs.akamai.com/linode-api/reference/api
   baseURL: https://api.linode.com/v4
@@ -384,6 +410,1187 @@ apis:
     url: https://techdocs.akamai.com/linode-api/reference/api
   - type: Overlay
     url: overlays/linode-vpcs-api-overlay.yaml
+- aid: linode:linode-access-keys-api
+  name: Linode Access keys API
+  description: >-
+    Object Storage keys are used to authenticate access to your Object Storage buckets. Use these operations
+    to create, view, update, and revoke these keys.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Access keys
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-access-keys-api-openapi.yml
+- aid: linode:linode-account-agreements-api
+  name: Linode Account agreements API
+  description: >-
+    Use these operations to review and manage any agreements you need to acknowledge to use the API's
+    services.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Account agreements
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-account-agreements-api-openapi.yml
+- aid: linode:linode-account-availability-api
+  name: Linode Account availability API
+  description: Use these operations to review the services available for use with your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Account availability
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-account-availability-api-openapi.yml
+- aid: linode:linode-account-logins-api
+  name: Linode Account logins API
+  description: Use these operations to review successful login data.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Account logins
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-account-logins-api-openapi.yml
+- aid: linode:linode-account-settings-api
+  name: Linode Account settings API
+  description: >-
+    Account settings applies to various services available on your account, including Backups, Linode
+    Interfaces, a Longview subscription, Maintenance Policy, our Managed service, Network Helper, and
+    Object Storage. Use these operations to review the services available and update some of them on your
+    account. Talk to your Akamai account team for full details.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Account settings
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-account-settings-api-openapi.yml
+- aid: linode:linode-account-transfer-api
+  name: Linode Account transfer API
+  description: Used to manage transfer objects that show your network utilization.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Account transfer
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-account-transfer-api-openapi.yml
+- aid: linode:linode-alerts-api
+  name: Linode Alerts API
+  description: >-
+    Akamai Cloud Pulse lets you configure alerts to monitor key metrics and events in real time and automatically
+    trigger notifications or actions when predefined thresholds or conditions are met.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Alerts
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-alerts-api-openapi.yml
+- aid: linode:linode-attachments-api
+  name: Linode Attachments API
+  description: >-
+    Mange any attachments you may need to include with your support tickets, such as log entry files and
+    screenshot images.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-attachments-api-openapi.yml
+- aid: linode:linode-buckets-api
+  name: Linode Buckets API
+  description: >-
+    Buckets are the primary containers within Object Storage. Each bucket stores your files (objects)
+    and lets you access or share those files. Use these operations to create and manage buckets, as well
+    as the objects in them.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Buckets
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-buckets-api-openapi.yml
+- aid: linode:linode-child-accounts-api
+  name: Linode Child accounts API
+  description: >-
+    Child accounts let you, as an Akamai partner (a parent account holder), switch between and manage
+    your end customers' accounts (child accounts). Talk to your account team about [setting up a parent-child
+    account relationship](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners).
+    Once in place, you can use these operations to review your child accounts and create tokens for your
+    use as a parent, on a child account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Child accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-child-accounts-api-openapi.yml
+- aid: linode:linode-configuration-profile-interfaces-api
+  name: Linode Configuration profile interfaces API
+  description: >-
+    Use these operations to upgrade and manage a legacy configuration profile on your Linode to include
+    networking interfaces.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Configuration profile interfaces
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-configuration-profile-interfaces-api-openapi.yml
+- aid: linode:linode-configuration-profiles-api
+  name: Linode Configuration profiles API
+  description: >-
+    A configuration profile establishes the disk layout, kernel installation, and other specifics for
+    a Linode. This is the legacy method used to define a Linode's makeup, and it does not include networking
+    interfaces. Use the Configuration profile interfaces operations to update an existing Linode to include
+    interfaces options. Or, create a new Linode and use the Linode interfaces operations to include network
+    interfaces.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Configuration profiles
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-configuration-profiles-api-openapi.yml
+- aid: linode:linode-configurations-api
+  name: Linode Configurations API
+  description: The Configurations API from Linode — 3 operation(s) for configurations.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Configurations
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-configurations-api-openapi.yml
+- aid: linode:linode-control-plane-acl-api
+  name: Linode Control Plane ACL API
+  description: >-
+    View and manage access control lists (ACLs) for the control planes on your LKE clusters. Control Plane
+    ACLs allow you to restrict access to your cluster's control plane to specific IP addresses or ranges.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Control Plane ACL
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-control-plane-acl-api-openapi.yml
+- aid: linode:linode-delegation-for-parent-and-child-accounts-api
+  name: Linode Delegation for parent and child accounts API
+  description: >-
+    Use these operations to manage delegations for [parent and child accounts](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners).
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Delegation for parent and child accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-delegation-for-parent-and-child-accounts-api-openapi.yml
+- aid: linode:linode-devices-api
+  name: Linode Devices API
+  description: The Devices API from Linode — 2 operation(s) for devices.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Devices
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-devices-api-openapi.yml
+- aid: linode:linode-domain-records-api
+  name: Linode Domain records API
+  description: Use these operations to create and manage domain records on your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Domain records
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-domain-records-api-openapi.yml
+- aid: linode:linode-domain-zone-files-api
+  name: Linode Domain zone files API
+  description: These operations involve viewing specifics for a domain zone file.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Domain zone files
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-domain-zone-files-api-openapi.yml
+- aid: linode:linode-endpoints-api
+  name: Linode Endpoints API
+  description: >-
+    An endpoint is the S3-compatible URL to an Object Storage bucket. Use these operations to review details
+    about your endpoints.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Endpoints
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-endpoints-api-openapi.yml
+- aid: linode:linode-entity-transfers-api
+  name: Linode Entity transfers API
+  description: >-
+    These legacy operations are available to review and manage the transfer of one entity to another.
+    These operations have been deprecated. Use the Service transfers category operations instead.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Entity transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-entity-transfers-api-openapi.yml
+- aid: linode:linode-events-api
+  name: Linode Events API
+  description: >-
+    An event represents an action you've taken on your account, over the last 90 days. Use these operations
+    to review your current events.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-events-api-openapi.yml
+- aid: linode:linode-firewall-settings-api
+  name: Linode Firewall settings API
+  description: The Firewall settings API from Linode — 1 operation(s) for firewall settings.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Firewall settings
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-firewall-settings-api-openapi.yml
+- aid: linode:linode-firewalls-api
+  name: Linode Firewalls API
+  description: The Firewalls API from Linode — 6 operation(s) for firewalls.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Firewalls
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-firewalls-api-openapi.yml
+- aid: linode:linode-general-api
+  name: Linode General API
+  description: >-
+    Object Storage is Akamai cloud computing's S3-compatible data storage service. Use these operations
+    to review and manage your Object Storage service.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - General
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-general-api-openapi.yml
+- aid: linode:linode-grants-api
+  name: Linode Grants API
+  description: View the grants (permissions) available to your user account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Grants
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-grants-api-openapi.yml
+- aid: linode:linode-identity-management-api
+  name: Linode Identity Management API
+  description: Use these operations to manage access to entities and roles on your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Identity Management
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-identity-management-api-openapi.yml
+- aid: linode:linode-idp-configuration-api
+  name: Linode IDP configuration API
+  description: >-
+    Use the Identity Management IDP Configuration endpoints to configure SAML-based Single Sign-On (SSO)
+    for your account. You can create and manage an external identity provider (IDP) configuration, control
+    which users are required to authenticate through SSO, and manage the public certificates used to verify
+    SAML assertions. These endpoints are in Beta and available from the `v4beta` URL.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - IDP configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-idp-configuration-api-openapi.yml
+- aid: linode:linode-image-sharing-api
+  name: Linode Image sharing API
+  description: >-
+    Use these operations to create and mange groups of users that can access your stored images.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Image sharing
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-image-sharing-api-openapi.yml
+- aid: linode:linode-invoices-api
+  name: Linode Invoices API
+  description: Review invoice and billing data for services on your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Invoices
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-invoices-api-openapi.yml
+- aid: linode:linode-ip-addresses-api
+  name: Linode IP addresses API
+  description: >-
+    Use the IP addresses endpoints to view Virtual Private Cloud (VPC):
+
+    - IP addresses
+
+    - default address ranges
+
+    - forbidden CIDR blocks for your environment
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - IP addresses
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-ip-addresses-api-openapi.yml
+- aid: linode:linode-ipv4-addresses-api
+  name: Linode IPv4 addresses API
+  description: The IPv4 addresses API from Linode — 2 operation(s) for ipv4 addresses.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - IPv4 addresses
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-ipv4-addresses-api-openapi.yml
+- aid: linode:linode-ipv6-pools-api
+  name: Linode IPv6 pools API
+  description: The IPv6 pools API from Linode — 1 operation(s) for ipv6 pools.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - IPv6 pools
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-ipv6-pools-api-openapi.yml
+- aid: linode:linode-ipv6-ranges-api
+  name: Linode IPv6 ranges API
+  description: The IPv6 ranges API from Linode — 2 operation(s) for ipv6 ranges.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - IPv6 ranges
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-ipv6-ranges-api-openapi.yml
+- aid: linode:linode-kubeconfigs-api
+  name: Linode Kubeconfigs API
+  description: >-
+    View or regenerate the kubeconfig files for your LKE clusters, which authenticate and configure access
+    to your Kubernetes clusters.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Kubeconfigs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-kubeconfigs-api-openapi.yml
+- aid: linode:linode-legacy-clusters-api
+  name: Linode Legacy clusters API
+  description: >-
+    Clusters refer to the legacy methodology Object Storage used, before moving Object Storage to our
+    actual data centers (regions). These operations have been deprecated and only apply if you're still
+    using this legacy format.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Legacy clusters
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-legacy-clusters-api-openapi.yml
+- aid: linode:linode-linode-disk-backups-api
+  name: Linode Linode disk backups API
+  description: >-
+    The Backups service lets you enable automatic backups of the disks on your Linodes. Use these operations
+    to manage your backups.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode disk backups
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-disk-backups-api-openapi.yml
+- aid: linode:linode-linode-disks-api
+  name: Linode Linode disks API
+  description: Use these operations to manage the individual disks on your Linode.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode disks
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-disks-api-openapi.yml
+- aid: linode:linode-linode-firewalls-api
+  name: Linode Linode firewalls API
+  description: Use these operations to manage the firewalls applied to your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode firewalls
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-firewalls-api-openapi.yml
+- aid: linode:linode-linode-interfaces-api
+  name: Linode Linode interfaces API
+  description: >-
+    A Linode interface lets you set up networking on your Linode. A Linode interface links to the Linode,
+    rather than to a legacy configuration profile. Use these operations to manage the Linode interfaces
+    on your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode interfaces
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-interfaces-api-openapi.yml
+- aid: linode:linode-linode-ip-addresses-api
+  name: Linode Linode IP addresses API
+  description: Use these operations to view and manage the IP addresses assigned to your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode IP addresses
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-ip-addresses-api-openapi.yml
+- aid: linode:linode-linode-kernels-api
+  name: Linode Linode kernels API
+  description: Use these operations to review information for the Linux kernels on your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode kernels
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-kernels-api-openapi.yml
+- aid: linode:linode-linode-nodebalancers-api
+  name: Linode Linode NodeBalancers API
+  description: >-
+    A NodeBalancer is a managed load balancer that intelligently distributes incoming requests to multiple
+    backend Linodes, so that there's no single point of failure. Use these operations to review the NodeBalancers
+    assigned to your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode NodeBalancers
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-nodebalancers-api-openapi.yml
+- aid: linode:linode-linode-statistics-api
+  name: Linode Linode statistics API
+  description: Use these operations to review various statistics for your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode statistics
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-statistics-api-openapi.yml
+- aid: linode:linode-linode-types-api
+  name: Linode Linode types API
+  description: >-
+    Use these operations to get information about Linode plan types, including pricing information, hardware
+    resources, and network transfer allotment.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode types
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-types-api-openapi.yml
+- aid: linode:linode-linode-volumes-api
+  name: Linode Linode volumes API
+  description: >-
+    The Block Storage service lets you add storage drives, called volumes to your Linodes. This lets you
+    store more data without resizing your Linode to a larger plan. Use these operations to review the
+    Block Storage volumes assigned to your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Linode volumes
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-linode-volumes-api-openapi.yml
+- aid: linode:linode-lke-api-endpoints-api
+  name: Linode LKE API endpoints API
+  description: View the API endpoints for your LKE clusters.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE API endpoints
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-api-endpoints-api-openapi.yml
+- aid: linode:linode-lke-cluster-dashboard-api
+  name: Linode LKE cluster dashboard API
+  description: >-
+    View the Kubernetes Dashboard URLs for your LKE clusters, which provides a web-based user interface
+    for managing and monitoring each Kubernetes cluster.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE cluster dashboard
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-cluster-dashboard-api-openapi.yml
+- aid: linode:linode-lke-clusters-api
+  name: Linode LKE clusters API
+  description: Create and manage Kubernetes clusters on LKE (Linode Kubernetes Engine).
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE clusters
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-clusters-api-openapi.yml
+- aid: linode:linode-lke-node-pools-api
+  name: Linode LKE node pools API
+  description: >-
+    Create, manage, and configure node pools within your LKE clusters. Node pools allow you to group nodes
+    with similar configurations and manage them collectively.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE node pools
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-node-pools-api-openapi.yml
+- aid: linode:linode-lke-nodes-api
+  name: Linode LKE nodes API
+  description: >-
+    View, recycle, and delete nodes within your LKE clusters. Nodes are the worker machines in your Kubernetes
+    cluster that run your containerized applications.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE nodes
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-nodes-api-openapi.yml
+- aid: linode:linode-lke-service-tokens-api
+  name: Linode LKE service tokens API
+  description: >-
+    Regenerate service account tokens for your LKE clusters, which are used by the cluster's control plane
+    components and Linode CSI drivers to authenticate with the Kubernetes API server.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE service tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-service-tokens-api-openapi.yml
+- aid: linode:linode-lke-types-api
+  name: Linode LKE types API
+  description: >-
+    View the LKE tiers (types) available for your Kubernetes clusters. The cluster tier determines the
+    control plane configuration and features available for your cluster.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE types
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-types-api-openapi.yml
+- aid: linode:linode-lke-versions-api
+  name: Linode LKE versions API
+  description: View the Kubernetes versions available for deployment on your LKE clusters.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - LKE versions
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-lke-versions-api-openapi.yml
+- aid: linode:linode-logs-api
+  name: Linode Logs API
+  description: >-
+    Akamai Cloud Pulse lets you capture log data across multiple Akamai Cloud services and deliver it
+    to the destination of your choice. These logs can help you improve operational efficiency, enhance
+    security, ensure compliance, and reduce the overhead of managing your Akamai Cloud services.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Logs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-logs-api-openapi.yml
+- aid: linode:linode-longview-clients-api
+  name: Linode Longview clients API
+  description: >-
+    Create an manage Longview Clients to monitor the performance and health of your Linode instances and
+    other servers.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Longview clients
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-longview-clients-api-openapi.yml
+- aid: linode:linode-longview-plans-api
+  name: Linode Longview plans API
+  description: Get details on your current Longview plan subscription and, if needed, update your plan.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Longview plans
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-longview-plans-api-openapi.yml
+- aid: linode:linode-longview-subscriptions-api
+  name: Linode Longview subscriptions API
+  description: >-
+    Get publicly-accessible information about the Longview plans available on Akamai Cloud, including
+    the number of supported clients.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Longview subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-longview-subscriptions-api-openapi.yml
+- aid: linode:linode-longview-types-api
+  name: Linode Longview types API
+  description: >-
+    Get publicly-accessible information about the Longview plans available on Akamai Cloud, including
+    network transfer and region-specific pricing.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Longview types
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-longview-types-api-openapi.yml
+- aid: linode:linode-maintenance-policies-api
+  name: Linode Maintenance policies API
+  description: Use these operations to view maintenance policies that are available for your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Maintenance policies
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-maintenance-policies-api-openapi.yml
+- aid: linode:linode-maintenances-api
+  name: Linode Maintenances API
+  description: Review details on scheduled maintenance for your Akamai Cloud Computing services.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Maintenances
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-maintenances-api-openapi.yml
+- aid: linode:linode-manage-beta-programs-api
+  name: Linode Manage Beta programs API
+  description: >-
+    Use these operations to view information about available beta programs and sign up to participate
+    in them.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Manage Beta programs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-manage-beta-programs-api-openapi.yml
+- aid: linode:linode-managed-contacts-api
+  name: Linode Managed contacts API
+  description: >-
+    Create and manage contacts associated with Linode Managed, who can be notified about issues with your
+    managed Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-contacts-api-openapi.yml
+- aid: linode:linode-managed-credentials-api
+  name: Linode Managed credentials API
+  description: >-
+    Create and manage credentials used by Linode Managed to access your Linodes for support and maintenance.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed credentials
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-credentials-api-openapi.yml
+- aid: linode:linode-managed-issues-api
+  name: Linode Managed issues API
+  description: View details about issues detected on your managed Linodes and their resolution status.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed issues
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-issues-api-openapi.yml
+- aid: linode:linode-managed-linode-settings-api
+  name: Linode Managed Linode settings API
+  description: View and update settings related to Linode Managed for each of your Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed Linode settings
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-linode-settings-api-openapi.yml
+- aid: linode:linode-managed-service-monitors-api
+  name: Linode Managed service monitors API
+  description: >-
+    Create and configure the service monitors that are used to check the health of your managed Linodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed service monitors
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-service-monitors-api-openapi.yml
+- aid: linode:linode-managed-ssh-keys-api
+  name: Linode Managed SSH keys API
+  description: View the unique SSH public key assigned to your Linode Managed account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed SSH keys
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-ssh-keys-api-openapi.yml
+- aid: linode:linode-managed-statistics-api
+  name: Linode Managed statistics API
+  description: >-
+    View key metrics for your managed Linodes, including CPU usage, disk I/O, and network transfer.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Managed statistics
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-managed-statistics-api-openapi.yml
+- aid: linode:linode-metrics-api
+  name: Linode Metrics API
+  description: >-
+    Akamai Cloud Pulse automatically collects and stores performance metrics for your cloud services.
+    You can view them through dashboards and inspect them at the entity level. Metrics data provides insights
+    into the health, behavior, and performance of your cloud resources.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-metrics-api-openapi.yml
+- aid: linode:linode-mysql-api
+  name: Linode My SQL API
+  description: >-
+    Managed Databases is Akamai's fully-managed, high-performance database service. Use these operations
+    to create and manage clusters for MySQL engine databases.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - MySQL
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-mysql-api-openapi.yml
+- aid: linode:linode-network-transfer-prices-api
+  name: Linode Network transfer prices API
+  description: Review network transfer pricing information.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Network transfer prices
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-network-transfer-prices-api-openapi.yml
+- aid: linode:linode-nodebalancer-types-api
+  name: Linode NodeBalancer types API
+  description: The NodeBalancer types API from Linode — 1 operation(s) for nodebalancer types.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - NodeBalancer types
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-nodebalancer-types-api-openapi.yml
+- aid: linode:linode-nodes-api
+  name: Linode Nodes API
+  description: The Nodes API from Linode — 2 operation(s) for nodes.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Nodes
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-nodes-api-openapi.yml
+- aid: linode:linode-notifications-api
+  name: Linode Notifications API
+  description: >-
+    Review notifications that represent important, often time-sensitive details about your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-notifications-api-openapi.yml
+- aid: linode:linode-oauth-apps-api
+  name: Linode OAuth apps API
+  description: >-
+    View authorized apps that have been granted access to your account. You can also revoke access for
+    any authorized app.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - OAuth apps
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-oauth-apps-api-openapi.yml
+- aid: linode:linode-oauth-clients-api
+  name: Linode OAuth clients API
+  description: >-
+    Use an OAuth client to allow users (using their Akamai Cloud Computing account) to log in to your
+    own application, and optionally grant your application some amount of access to their Akamai Cloud
+    Computing services.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - OAuth clients
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-oauth-clients-api-openapi.yml
+- aid: linode:linode-oauth-preferences-api
+  name: Linode OAuth preferences API
+  description: View and update user preferences tied to OAuth clients.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - OAuth preferences
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-oauth-preferences-api-openapi.yml
+- aid: linode:linode-partner-referrals-api
+  name: Linode Partner referrals API
+  description: >-
+    The Marketplace offers the Partner referrals program. This is a new space for Akamai qualified partners
+    to offer their products to Cloud Manager customers.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Partner referrals
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-partner-referrals-api-openapi.yml
+- aid: linode:linode-payment-methods-api
+  name: Linode Payment methods API
+  description: >-
+    Use these operations to review and manage the payment method you've set up to pay your invoices.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Payment methods
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-payment-methods-api-openapi.yml
+- aid: linode:linode-payments-api
+  name: Linode Payments API
+  description: Use these operations to view current payment due information and make a payment.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-payments-api-openapi.yml
+- aid: linode:linode-personal-access-tokens-api
+  name: Linode Personal access tokens API
+  description: >-
+    Manage personal access tokens for your user account. Personal access tokens can be used for authentication
+    with the Linode API.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Personal access tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-personal-access-tokens-api-openapi.yml
+- aid: linode:linode-phone-number-api
+  name: Linode Phone number API
+  description: >-
+    Operations to verify and delete the phone number associated with your user account, which is used
+    to send SMS messages as a form of two-factor authentication (2FA).
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Phone number
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-phone-number-api-openapi.yml
+- aid: linode:linode-postgresql-api
+  name: Linode Postgre SQL API
+  description: >-
+    Managed Databases is Akamai's fully-managed, high-performance database service. Use these operations
+    to create and manage clusters for PostgreSQL engine databases.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - PostgreSQL
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-postgresql-api-openapi.yml
+- aid: linode:linode-prefix-lists-api
+  name: Linode Prefix Lists API
+  description: The Prefix Lists API from Linode — 3 operation(s) for prefix lists.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Prefix Lists
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-prefix-lists-api-openapi.yml
+- aid: linode:linode-profile-logins-api
+  name: Linode Profile logins API
+  description: View a history of successful logins to your Linode account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Profile logins
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-profile-logins-api-openapi.yml
+- aid: linode:linode-promo-credits-api
+  name: Linode Promo credits API
+  description: >-
+    Use these operations to manage any promotional codes you've been granted for special offers.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Promo credits
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-promo-credits-api-openapi.yml
+- aid: linode:linode-quotas-api
+  name: Linode Quotas API
+  description: >-
+    Quotas are limits related to your resource usage in Object Storage. Use these operations to review
+    and manage your Object Storage quotas.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Quotas
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-quotas-api-openapi.yml
+- aid: linode:linode-replies-api
+  name: Linode Replies API
+  description: >-
+    Use these operations to create and view replies to correspondence for your support tickets.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Replies
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-replies-api-openapi.yml
+- aid: linode:linode-reserved-ips-api
+  name: Linode Reserved IPs API
+  description: The Reserved IPs API from Linode — 3 operation(s) for reserved ips.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Reserved IPs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-reserved-ips-api-openapi.yml
+- aid: linode:linode-resource-locks-api
+  name: Linode Resource locks API
+  description: >-
+    Add and manage locks on your Akamai Cloud resources to prevent you from inadvertently deleting them.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Resource locks
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-resource-locks-api-openapi.yml
+- aid: linode:linode-review-beta-programs-api
+  name: Linode Review Beta programs API
+  description: >-
+    Use these operations to view information about available beta programs. You can sign up to participate
+    in one of these programs using the [Enroll in a Beta program](https://techdocs.akamai.com/linode-api/reference/post-beta-program)
+    operation, that's available with the **Administration** operations.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Review Beta programs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-review-beta-programs-api-openapi.yml
+- aid: linode:linode-security-questions-api
+  name: Linode Security questions API
+  description: >-
+    View and configure security questions for your user account. Security questions can be used to help
+    verify your identity when contacting Akamai Support.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Security questions
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-security-questions-api-openapi.yml
+- aid: linode:linode-service-transfers-api
+  name: Linode Service transfers API
+  description: >-
+    Use these operations to manage transfer requests for specific Akamai Cloud Computing services. For
+    example, you could request a service transfer to move a Linode from one region to another. Service
+    transfers have replaced  Entity transfers, which have been deprecated.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Service transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-service-transfers-api-openapi.yml
+- aid: linode:linode-ssh-keys-api
+  name: Linode SSH keys API
+  description: >-
+    Manage SSH keys for your user account. When creating a Linode, you can choose to have one or more
+    SSH keys automatically added to the new Linode for secure access.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - SSH keys
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-ssh-keys-api-openapi.yml
+- aid: linode:linode-support-tickets-api
+  name: Linode Support tickets API
+  description: >-
+    Use these operations to open, view, and close support tickets, when you need assistance from Akamai.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Support tickets
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-support-tickets-api-openapi.yml
+- aid: linode:linode-templates-api
+  name: Linode Templates API
+  description: The Templates API from Linode — 2 operation(s) for templates.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-templates-api-openapi.yml
+- aid: linode:linode-trusted-devices-api
+  name: Linode Trusted devices API
+  description: >-
+    View details about trusted devices associated with your user account. If needed, you can revoke a
+    trusted device so any future login attempts from that device will go through the full authentication
+    process.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Trusted devices
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-trusted-devices-api-openapi.yml
+- aid: linode:linode-two-factor-authentication-2fa-api
+  name: Linode Two-factor authentication (2FA) API
+  description: >-
+    The Two-factor authentication (2FA) API from Linode — 4 operation(s) for two-factor authentication
+    (2fa).
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Two-factor authentication (2FA)
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-two-factor-authentication-2fa-api-openapi.yml
+- aid: linode:linode-users-api
+  name: Linode Users API
+  description: >-
+    Users are individuals on your account that you set up to perform specific tasks. Use these operations
+    to view and manage users, including giving them various levels of access to the services on your account.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-users-api-openapi.yml
+- aid: linode:linode-valkey-api
+  name: Linode Valkey API
+  description: >-
+    Managed Databases is Akamai's fully-managed, high-performance database service. Use these operations
+    to create and manage clusters for Valkey engine databases.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Valkey
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-valkey-api-openapi.yml
+- aid: linode:linode-vlans-api
+  name: Linode VLANs API
+  description: The VLANs API from Linode — 2 operation(s) for vlans.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - VLANs
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-vlans-api-openapi.yml
+- aid: linode:linode-volume-types-api
+  name: Linode Volume types API
+  description: >-
+    Use these operations to review the available Block Storage volume types, including pricing.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Volume types
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-volume-types-api-openapi.yml
+- aid: linode:linode-vpc-subnets-api
+  name: Linode VPC subnets API
+  description: >-
+    Use the VPC subnet endpoints to view, create, and manage Virtual Private Cloud (VPC) subnet resources.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - VPC subnets
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-vpc-subnets-api-openapi.yml
+- aid: linode:linode-rulesets-api
+  name: Linode Rulesets API
+  description: The Rulesets API from Linode — 2 operation(s) for rulesets.
+  humanURL: https://techdocs.akamai.com/cloud-computing/docs/cli
+  baseURL: https://api.linode.com/v4
+  tags:
+  - Rulesets
+  properties:
+  - type: OpenAPI
+    url: openapi/linode-rulesets-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/linode-agentic-access.yml

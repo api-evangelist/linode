@@ -1,0 +1,297 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Partner referrals API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: The Marketplace offers the Partner referrals program. This is a new space for Akamai qualified partners to offer their products to Cloud Manager customers.
+  name: Partner referrals
+paths:
+  /{apiVersion}/marketplace:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    x-akamai:
+      file-path: paths/marketplace-contacts.yaml
+      path-info: /{apiVersion}/marketplace/contact
+    x-linode-cli-command: marketplace
+    post:
+      description: '__Beta__ Allows you as an Akamai customer to use our Marketplace application to request access to a third-party product offered by one of our qualified partners. Once the request is received, Akamai reaches out on your behalf for this access. Once approved, the qualified partner will contact you with details on accessing the product.
+
+
+        > 📘
+
+        >
+
+        > For available product information, access Cloud Manager, select **COMPUTE** > **Partner Referrals (BETA)** and review the product cards. Store the value listed in the partner logo as your `partner_name` and the full name of the product, listed below the logo, as your `product_name`.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli marketplace contacts-create \
+
+        --product_name DBaaS \
+
+        --partner_name Akamai \
+
+        --name "John Doe" \
+
+        --email "john.doe@example.org" \
+
+        --country_code US \
+
+        --phone_country_code +1 \
+
+        --phone 555 555 1234 \
+
+        --tc_consent_given true
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-marketplace-contact
+      operationId: post-marketplace-contact
+      requestBody:
+        content:
+          application/json:
+            example:
+              account_executive_email: mikesales@akamai.com
+              additional_emails:
+              - johndoe@acmeinc.com
+              - johndoe@alternate-mail.com
+              comments: This is to access a trial of the Database Accelerator X service offered by PartnerX to test with our MySQL database.
+              company_name: Acme, Inc.
+              country_code: US
+              email: tyamada@acmeinc.com
+              name: John Doe
+              partner_name: PartnerX
+              phone: 555 555 1234
+              phone_country_code: '+1'
+              product_name: Database Accelerator X
+              tc_consent_given: true
+            schema:
+              additionalProperties: false
+              properties:
+                account_executive_email:
+                  description: The email address for the Akamai account executive who manages the customer making the request. Leave this out or set it to `null` if it's not necessary.
+                  example: '{{account_executive_email}}'
+                  type:
+                  - string
+                  - 'null'
+                additional_emails:
+                  description: Optional email addresses for the customer making the request. You can include up to two.
+                  example:
+                  - jdoe@acmeinc.com.com
+                  - johndoe@alternate-mail.com
+                  items:
+                    format: email
+                    type: string
+                  maxItems: 2
+                  type: array
+                comments:
+                  description: Any additional information the customer wants to provide with the request for `product_name`. Leave this out or set it to `null` if it's not necessary.
+                  example: '{{comments}}'
+                  maxLength: 500
+                  type:
+                  - string
+                  - 'null'
+                company_name:
+                  description: The name of the company where the requesting customer works.  Leave this out or set it to `null` if it's not necessary.
+                  example: '{{company_name}}'
+                  type:
+                  - string
+                  - 'null'
+                country_code:
+                  description: The two-letter [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) code for the country where the requesting customer resides.
+                  example: '{{country_code}}'
+                email:
+                  description: A contact email address for the person set as `name`.
+                  example: '{{email}}'
+                  format: email
+                  type: string
+                name:
+                  description: The name of the customer requesting `product_name`.
+                  example: '{{name}}'
+                  type: string
+                partner_name:
+                  description: The name of the Akamai-qualified partner that owns the `product_name` in the request.
+                  example: '{{partner_name}}'
+                  type: string
+                phone:
+                  description: A valid phone number for the person set as `name`. This field only supports numbers and spaces.
+                  example: '{{phone}}'
+                  format: phone
+                  type: string
+                phone_country_code:
+                  description: The unique [prefix code](https://countrycode.org/) assigned to the country for the `phone`. Preface this value with a `+`.
+                  example: '{{phone_country_code}}'
+                  type: string
+                product_name:
+                  description: The name of the desired Marketplace product.
+                  example: '{{product_name}}'
+                  type: string
+                tc_consent_given:
+                  description: 'If you consent to Akamai sharing your information with the selected third-party provider (`partner_name`), for the purposes of getting you access to the selected `product_name`. After we''ve shared your information with `partner_name`, it will be subject to deletion by Akamai. The `partner_name` will process the information as described in accordance with their privacy policy.
+
+
+                    See the [Akamai Privacy Trust Center](https://www.akamai.com/legal/compliance/privacy-trust-center) for more information.'
+                  example: '{{tc_consent_given}}'
+                  type: boolean
+              required:
+              - product_name
+              - partner_name
+              - phone
+              - name
+              - email
+              - country_code
+              - phone_country_code
+              - tc_consent_given
+              type: object
+              x-akamai:
+                file-path: schemas/post-marketplace-contact.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Marketplace contact creation successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Create a Marketplace third-party referral
+      tags:
+      - Partner referrals
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: "linode-cli marketplace contacts-create \\\n  --product_name DBaaS \\\n  --partner_name Akamai \\\n  --name \"John Doe\" \\\n  --email \"john.doe@example.org\" \\\n  --country_code US \\\n  --phone_country_code +1 \\\n  --phone 555 555 1234 \\\n  --tc_consent_given true"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: contacts-create
+      x-linode-grant: unrestricted only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,0 +1,2964 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode General API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Object Storage is Akamai cloud computing's S3-compatible data storage service. Use these operations to review and manage your Object Storage service.
+  name: General
+paths:
+  /{apiVersion}/databases/engines:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/engines.yaml
+      path-info: /{apiVersion}/databases/engines
+    x-linode-cli-command: databases
+    get:
+      description: 'Display all available Managed Databases engine types and versions. Use an engine''s `id` to create a new Managed Databases instance.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `database_viewer`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli databases engines
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-engines
+      operationId: get-databases-engines
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - engine: mysql
+                  id: mysql/8.0.26
+                  version: 8.0.26
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: Managed Database engine object.
+                      properties:
+                        engine:
+                          description: __Filterable__ The Managed Database engine type.
+                          example: mysql
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        id:
+                          description: The Managed Database engine ID in engine/version format.
+                          example: mysql/8.0.26
+                          type: string
+                          x-linode-cli-display: 1
+                        version:
+                          description: __Filterable__ The Managed Database engine version.
+                          example: 8.0.26
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/database-engine.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-databases-engines-200.yaml
+          description: Returns a paginated list of all available Managed Databases engines and versions.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List Managed Databases engines
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases engines
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: engines
+      x-linode-iam:
+      - roles:
+        - database_viewer
+  /{apiVersion}/databases/engines/{engineId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Database engine. To get this value, run the [List Managed Databases engines](https://techdocs.akamai.com/linode-api/reference/get-databases-engines) operation.
+      example: '{{engineId}}'
+      in: path
+      name: engineId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/engine-id-path.yaml
+    x-akamai:
+      file-path: paths/engine.yaml
+      path-info: /{apiVersion}/databases/engines/{engineId}
+    x-linode-cli-command: databases
+    get:
+      description: 'Display information for a single Managed Databases engine type and version. Run the List Managed Databases engines operation and store the `id` for the applicable database engine.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `database_viewer`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli databases engine-view
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-engine
+      operationId: get-databases-engine
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                engine: mysql
+                id: mysql/8.0.26
+                version: 8.0.26
+              schema:
+                additionalProperties: false
+                description: Managed Database engine object.
+                properties:
+                  engine:
+                    description: __Filterable__ The Managed Database engine type.
+                    example: mysql
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  id:
+                    description: The Managed Database engine ID in engine/version format.
+                    example: mysql/8.0.26
+                    type: string
+                    x-linode-cli-display: 1
+                  version:
+                    description: __Filterable__ The Managed Database engine version.
+                    example: 8.0.26
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/database-engine.yaml
+          description: Returns information for a single Managed Databases engine type and version.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: Get a Managed Databases engine
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases engine-view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: engine-view
+      x-linode-iam:
+      - roles:
+        - database_viewer
+  /{apiVersion}/databases/instances:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/database-instances.yaml
+      path-info: /{apiVersion}/databases/instances
+    x-linode-cli-command: databases
+    get:
+      description: 'Display information for all Managed Databases accessible to your user, regardless of engine type.
+
+
+        > 👍
+
+        >
+
+        > For more detailed information, you can list Managed Databases, based on the `engine`, MySQL, PostgreSQL, or Valkey.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `database_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `databases:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli databases list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-instances
+      operationId: get-databases-instances
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - allow_list:
+                  - 192.0.2.202/24
+                  - 192.0.2.14/24
+                  available_restore_times: null
+                  cluster_size: 3
+                  created: '2022-01-01T00:01:01'
+                  encrypted: true
+                  engine: mysql
+                  fork:
+                    restore_time: '2024-10-14T19:55:12'
+                    source: 176881
+                  hosts:
+                    endpoints:
+                    - address: lin-123-456-mysql-mysql-primary.servers.linodedb.net
+                      port: 3306
+                      public_access: true
+                      role: primary
+                    - address: lin-123-456-mysql-primary-private.servers.linodedb.net
+                      port: 3306
+                      public_access: false
+                      role: standby
+                    - address: lin-123-456-mysql-standby-public.servers.linodedb.net
+                      port: 3306
+                      public_access: true
+                      role: standby
+                    primary: lin-123-456-mysql-mysql-primary.servers.linodedb.net
+                    standby: lin-123-456-mysql-primary-private.servers.linodedb.net
+                  id: 123
+                  instance_uri: /v4/databases/mysql/instances/123
+                  label: example-db
+                  members:
+                    45.56.110.70: primary
+                    45.79.159.239: failover
+                    69.164.209.80: failover
+                  oldest_restore_time: '2024-10-03T20:48:05'
+                  platform: rdbms-default
+                  port: 3306
+                  private_network: null
+                  region: us-east
+                  status: active
+                  total_disk_size_gb: 15
+                  type: g6-dedicated-2
+                  updated: '2022-01-01T00:01:01'
+                  updates:
+                    day_of_week: 1
+                    duration: 4
+                    frequency: weekly
+                    hour_of_day: 0
+                    pending: []
+                  used_disk_size_gb: 2
+                  version: 8.0.26
+                - allow_list:
+                  - 192.0.2.122/24
+                  - 192.0.2.133/24
+                  available_restore_times: null
+                  cluster_size: 3
+                  created: '2022-01-01T00:01:01'
+                  encrypted: true
+                  engine: postgresql
+                  engine_config:
+                    pg:
+                      autovacuum_analyze_scale_factor: 1
+                      autovacuum_analyze_threshold: 2147483647
+                      autovacuum_max_workers: 20
+                      autovacuum_naptime: 86400
+                      autovacuum_vacuum_cost_delay: 100
+                      autovacuum_vacuum_cost_limit: 10000
+                      autovacuum_vacuum_scale_factor: 1
+                      autovacuum_vacuum_threshold: 2147483647
+                      bgwriter_delay: 200
+                      bgwriter_flush_after: 512
+                      bgwriter_lru_maxpages: 100
+                      bgwriter_lru_multiplier: 2.5
+                      deadlock_timeout: 1000
+                      default_toast_compression: lz4
+                      idle_in_transaction_session_timeout: 604800000
+                      jit: true
+                      max_files_per_process: 1024
+                      max_locks_per_transaction: 1024
+                      max_logical_replication_workers: 64
+                      max_parallel_workers: 96
+                      max_parallel_workers_per_gather: 96
+                      max_pred_locks_per_transaction: 5120
+                      max_replication_slots: 64
+                      max_slot_wal_keep_size: 1000000
+                      max_stack_depth: 2097152
+                      max_standby_archive_delay: 1
+                      max_standby_streaming_delay: 10
+                      max_wal_senders: 20
+                      max_worker_processes: 96
+                      password_encryption: scram-sha-256
+                      pg_partman_bgw.interval: 3600
+                      pg_partman_bgw.role: myrolename
+                      pg_stat_monitor.pgsm_enable_query_plan: true
+                      pg_stat_monitor.pgsm_max_buckets: 10
+                      pg_stat_statements.track: all
+                      temp_file_limit: 5000000
+                      timezone: Europe/Helsinki
+                      track_activity_query_size: 1024
+                      track_commit_timestamp: 'off'
+                      track_functions: all
+                      track_io_timing: 'off'
+                      wal_sender_timeout: 60000
+                      wal_writer_delay: 200
+                    pg_stat_monitor_enable: false
+                    pglookout:
+                      max_failover_replication_time_lag: 10
+                    shared_buffers_percentage: 41.5
+                    synchronous_replication: quorum
+                    work_mem: 4
+                  fork:
+                    restore_time: '2024-10-14T19:55:12'
+                    source: 176881
+                  hosts:
+                    endpoints:
+                    - address: lin-123-456-pgsql-primary.servers.linodedb.net
+                      port: 3306
+                      public_access: true
+                      role: primary
+                    - address: lin-123-456-pgsql-standby.servers.linodedb.net
+                      port: 3306
+                      public_access: true
+                      role: standby
+                    primary: lin-0000-000-pgsql-primary.servers.linodedb.net
+                    standby: lin-0000-000-pgsql-standby.servers.linodedb.net
+                  id: 123
+                  label: example-db
+                  members:
+                    45.56.110.70: primary
+                    45.79.159.239: failover
+                    69.164.209.80: failover
+                  oldest_restore_time: '2024-10-03T20:48:05'
+                  platform: rdbms-default
+                  port: 3306
+                  private_network:
+                    public_access: false
+                    subnet_id: 456
+                    vpc_id: 123
+                  region: us-east
+                  ssl_connection: true
+                  status: active
+                  total_disk_size_gb: 15
+                  type: g6-dedicated-2
+                  updated: '2022-01-01T00:01:01'
+                  updates:
+                    day_of_week: 1
+                    duration: 4
+                    frequency: weekly
+                    hour_of_day: 0
+                    pending: []
+                  used_disk_size_gb: 2
+                  version: '13.2'
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: A general Managed Database instance object containing properties that are identical for all database types.
+                      properties:
+                        allow_list:
+                          description: 'Controls access to the Managed Database.
+
+
+                            - Individually included IP addresses or CIDR ranges can access the Managed Database while all other sources are blocked.
+
+
+                            - A standalone value of `0.0.0.0/0` allows all IP addresses access to the Managed Database.
+
+
+                            - An empty array (`[]`) blocks all public and private connections to the Managed Database.'
+                          example:
+                          - 203.0.113.1/32
+                          - 192.0.1.0/24
+                          items:
+                            format: ipv4/prefix_length
+                            pattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$
+                            type: string
+                          minItems: 0
+                          type: array
+                        available_restore_times:
+                          description: Possible times you can create a fork from for a Valkey database. For MySQL or PostgreSQL databases, this is `null`.
+                          items:
+                            example: '2024-10-03T20:48:05'
+                            type: string
+                          type:
+                          - array
+                          - 'null'
+                        cluster_size:
+                          default: 1
+                          description: 'The number of Linode instance nodes deployed to the Managed Database, from `1` to `3`. Consider these points when setting a `cluster_size`:
+
+
+                            - Choose `3` nodes to create a high availability cluster that consists of one `primary` node and two `standby` nodes.
+
+
+                            - A `2` node cluster is only available with a dedicated plan. It consists of one `primary` node and one `standby` node.'
+                          enum:
+                          - 1
+                          - 2
+                          - 3
+                          example: 3
+                          type: integer
+                          x-linode-cli-display: 5
+                        created:
+                          description: __Read-only__ When this Managed Database was created.
+                          example: '2022-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                        encrypted:
+                          default: true
+                          description: __Read-only__ Whether the Managed Databases is encrypted. Currently the only possible value is `true`.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                        engine:
+                          description: __Filterable__, __Read-only__ The Managed Database engine type, either `mysql` or `postgresql`.
+                          enum:
+                          - mysql
+                          - postgresql
+                          - valkey
+                          example: mysql
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                        engine_config:
+                          additionalProperties: false
+                          description: Managed PostgreSQL Database request object.
+                          oneOf:
+                          - additionalProperties: false
+                            description: 'Advanced parameters you can apply to a MySQL Managed Database, via our partner [Aiven''s specification](https://aiven.io/docs/products/mysql/reference/advanced-params). Only include the objects for parameters you want to set in your database. Omit objects for parameters you don''t want to define or change.
+
+
+                              > 📘
+
+                              >
+
+                              > Aiven may offer additional parameters in their specification, or accept different values and ranges. Currently, only the parameters and settings covered here are supported for use in a MySQL Managed Database. You can also run the [List MySQL Managed Database advanced parameters](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-config) operation to see an up-to-date list.'
+                            properties:
+                              binlog_retention_period:
+                                description: The minimum amount of time in seconds to keep `binlog` entries before deletion. This may be extended for services that require `binlog` entries for longer than the default, for example if using the MySQL Debezium Kafka connector.
+                                example: 600
+                                maximum: 9007199254740991
+                                minimum: 600
+                                type: integer
+                              mysql:
+                                additionalProperties: false
+                                description: MySQL-specific advanced configuration parameters.
+                                properties:
+                                  connect_timeout:
+                                    description: The number of seconds that the `mysqld` server waits for a connect packet before responding with bad handshake.
+                                    example: 10
+                                    maximum: 3600
+                                    minimum: 2
+                                    type: integer
+                                  default_time_zone:
+                                    description: Default server time zone as an offset from UTC (from -12:00 to +12:00), a time zone name, or `SYSTEM` to use the MySQL server default.
+                                    example: +03:00
+                                    maxLength: 100
+                                    minLength: 2
+                                    pattern: ^([-+][\d:]*|[\w/]*)$
+                                    type: string
+                                  group_concat_max_len:
+                                    description: The maximum permitted result length in bytes for the `GROUP_CONCAT()` function.
+                                    example: 1024
+                                    maximum: 18446744073709552000
+                                    minimum: 4
+                                    type: integer
+                                  information_schema_stats_expiry:
+                                    description: The time, in seconds, before cached statistics expire.
+                                    example: 86400
+                                    maximum: 31536000
+                                    minimum: 900
+                                    type: integer
+                                  innodb_change_buffer_max_size:
+                                    default: 25
+                                    description: Maximum size for the InnoDB change buffer, as a percentage of the total size of the buffer pool.
+                                    example: 30
+                                    maximum: 50
+                                    minimum: 0
+                                    type: integer
+                                  innodb_flush_neighbors:
+                                    default: 1
+                                    description: 'Specifies whether flushing a page from the InnoDB buffer pool also flushes other dirty pages in the same extent: `0` - dirty pages in the same extent are not flushed, `1` - flush contiguous dirty pages in the same extent, `2` - flush dirty pages in the same extent.'
+                                    example: 0
+                                    maximum: 2
+                                    minimum: 0
+                                    type: integer
+                                  innodb_ft_min_token_size:
+                                    description: Minimum length of words that are stored in an InnoDB `-1FULLTEXT` index. Changing this parameter will lead to a restart of the MySQL service.
+                                    example: 3
+                                    maximum: 16
+                                    minimum: 0
+                                    type: integer
+                                  innodb_ft_server_stopword_table:
+                                    description: This option is used to specify your own InnoDB `FULLTEXT` index `stopword` list for all InnoDB tables. Set to `null` for no value.
+                                    example: db_name/table_name
+                                    maxLength: 1024
+                                    pattern: ^.+/.+$
+                                    type:
+                                    - string
+                                    - 'null'
+                                  innodb_lock_wait_timeout:
+                                    default: 120
+                                    description: The length of time in seconds an InnoDB transaction waits for a row lock before giving up.
+                                    example: 50
+                                    maximum: 3600
+                                    minimum: 1
+                                    type: integer
+                                  innodb_log_buffer_size:
+                                    description: The size in bytes of the buffer that InnoDB uses to write to the log files on disk.
+                                    example: 16777216
+                                    maximum: 4294967295
+                                    minimum: 1048576
+                                    type: integer
+                                  innodb_online_alter_log_max_size:
+                                    description: The upper limit in bytes on the size of the temporary log files used during online DDL operations for InnoDB tables.
+                                    example: 134217728
+                                    maximum: 1099511627776
+                                    minimum: 65536
+                                    type: integer
+                                  innodb_read_io_threads:
+                                    default: 4
+                                    description: The number of I/O threads for read operations in InnoDB. Changing this parameter will lead to a restart of the MySQL service.
+                                    example: 10
+                                    maximum: 64
+                                    minimum: 1
+                                    type: integer
+                                  innodb_rollback_on_timeout:
+                                    description: When enabled a transaction timeout causes InnoDB to abort and roll back the entire transaction. Changing this parameter will lead to a restart of the MySQL service.
+                                    example: true
+                                    type: boolean
+                                  innodb_thread_concurrency:
+                                    default: 0
+                                    description: Defines the maximum number of threads permitted inside of InnoDB. The default is `0` which indicates infinite concurrency, or no limit.
+                                    example: 10
+                                    maximum: 1000
+                                    minimum: 0
+                                    type: integer
+                                  innodb_write_io_threads:
+                                    default: 4
+                                    description: The number of I/O threads for write operations in InnoDB. Changing this parameter will lead to a restart of the MySQL service.
+                                    example: 10
+                                    maximum: 64
+                                    minimum: 1
+                                    type: integer
+                                  interactive_timeout:
+                                    description: The number of seconds the server waits for activity on an interactive connection before closing it.
+                                    example: 3600
+                                    maximum: 604800
+                                    minimum: 30
+                                    type: integer
+                                  internal_tmp_mem_storage_engine:
+                                    description: The storage engine for in-memory internal temporary tables, either `TempTable` or `MEMORY`.
+                                    enum:
+                                    - TempTable
+                                    - MEMORY
+                                    example: TempTable
+                                    type: string
+                                  max_allowed_packet:
+                                    default: 7108864
+                                    description: Size of the largest message in bytes that can be received by the server.
+                                    example: 67108864
+                                    maximum: 1073741824
+                                    minimum: 102400
+                                    type: integer
+                                  max_heap_table_size:
+                                    default: 16777216
+                                    description: Limits the size of internal in-memory tables. Also set `tmp_table_size`.
+                                    example: 24777216
+                                    maximum: 1073741824
+                                    minimum: 1048576
+                                    type: integer
+                                  net_buffer_length:
+                                    default: 16384
+                                    description: Start sizes of connection buffer and result buffer. Changing this parameter will lead to a restart of the MySQL service.
+                                    example: 16384
+                                    maximum: 1048576
+                                    minimum: 1024
+                                    type: integer
+                                  net_read_timeout:
+                                    description: The number of seconds to wait for more data from a connection before aborting the read.
+                                    example: 30
+                                    maximum: 3600
+                                    minimum: 1
+                                    type: integer
+                                  net_write_timeout:
+                                    description: The number of seconds to wait for a block to be written to a connection before aborting the write.
+                                    example: 30
+                                    maximum: 3600
+                                    minimum: 1
+                                    type: integer
+                                  sort_buffer_size:
+                                    default: 262144
+                                    description: Sort buffer size in bytes for ORDER BY optimization.
+                                    example: 262244
+                                    maximum: 1073741824
+                                    minimum: 32768
+                                    type: integer
+                                  sql_mode:
+                                    default: ANSI,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES
+                                    description: Global SQL mode. Set to empty to use MySQL server defaults. When creating a new service and not setting this field, Akamai defaults to SQL mode which is strict, SQL standard compliant.
+                                    example: ANSI,TRADITIONAL
+                                    maxLength: 1024
+                                    pattern: ^[A-Z_]*(,[A-Z_]+)*$
+                                    type: string
+                                  sql_require_primary_key:
+                                    default: true
+                                    description: Require primary key to be defined for new tables or old tables modified with `ALTER TABLE` and fail if missing. You should always have primary keys because various functionality may break if any large table is missing them.
+                                    example: true
+                                    type: boolean
+                                  tmp_table_size:
+                                    default: 16777216
+                                    description: Limits the size of internal in-memory tables. This also requires a `max_heap_table_size`.
+                                    example: 24777216
+                                    maximum: 1073741824
+                                    minimum: 1048576
+                                    type: integer
+                                  wait_timeout:
+                                    description: The number of seconds the server waits for activity on a non-interactive connection before closing it.
+                                    example: 28800
+                                    maximum: 2147483
+                                    minimum: 1
+                                    type: integer
+                                type: object
+                            title: MySQL engine config
+                            type: object
+                            x-akamai:
+                              file-path: schemas/database-mysql-engine-config.yaml
+                          - additionalProperties: false
+                            description: 'Advanced parameters you can apply to a PostgreSQL Managed Database, via our partner [Aiven''s specification](https://aiven.io/docs/products/postgresql/reference/advanced-params). Only include the objects for parameters you want to set in your database. Omit objects for parameters you don''t want to define or change.
+
+
+                              > 📘
+
+                              >
+
+                              > Aiven may offer additional parameters in their specification. Currently, only those listed here are supported for use in a PostgreSQL Managed Database. You can also run the [List PostgreSQL Managed Database advanced parameters](https://techdocs.akamai.com/linode-api/reference/get-databases-postgresql-config) operation to see an up-to-date list.'
+                            properties:
+                              pg:
+                                additionalProperties: false
+                                description: PostgreSQL-specific advanced configuration parameters.
+                                properties:
+                                  autovacuum_analyze_scale_factor:
+                                    default: 0.2
+                                    description: Specifies a fraction of the table size to add to `autovacuum_analyze_threshold` when deciding whether to trigger an `ANALYZE`.
+                                    example: 1
+                                    maximum: 1
+                                    minimum: 0
+                                    type: number
+                                  autovacuum_analyze_threshold:
+                                    default: 50
+                                    description: Specifies the minimum number of inserted, updated, or deleted tuples needed to trigger an `ANALYZE` in any one table.
+                                    example: 2147483647
+                                    maximum: 2147483647
+                                    minimum: 0
+                                    type: integer
+                                  autovacuum_max_workers:
+                                    default: 3
+                                    description: Specifies the maximum number of `autovacuum` processes, other than the `autovacuum` launcher, that may be running at any one time. This parameter can only be set at server start.
+                                    example: 20
+                                    maximum: 20
+                                    minimum: 1
+                                    type: integer
+                                  autovacuum_naptime:
+                                    default: 60
+                                    description: Specifies the minimum delay between `autovacuum` runs on any given database. The delay is measured in seconds.
+                                    example: 86400
+                                    maximum: 86400
+                                    minimum: 1
+                                    type: integer
+                                  autovacuum_vacuum_cost_delay:
+                                    default: 20
+                                    description: Specifies the cost delay value that will be used in automatic `VACUUM` operations. If `-1` is specified, the regular `vacuum_cost_delay` value will be used.
+                                    example: 100
+                                    maximum: 100
+                                    minimum: -1
+                                    type: integer
+                                  autovacuum_vacuum_cost_limit:
+                                    default: -1
+                                    description: Specifies the cost limit value that will be used in automatic `VACUUM` operations. The default of `-1` applies the regular `vacuum_cost_limit` value.
+                                    example: 10000
+                                    maximum: 10000
+                                    minimum: -1
+                                    type: integer
+                                  autovacuum_vacuum_scale_factor:
+                                    default: 0.2
+                                    description: Specifies a fraction of the table size to add to `autovacuum_vacuum_threshold` when deciding whether to trigger a `VACUUM`.
+                                    example: 1
+                                    maximum: 1
+                                    minimum: 0
+                                    type: number
+                                  autovacuum_vacuum_threshold:
+                                    default: 50
+                                    description: Specifies the minimum number of updated or deleted tuples needed to trigger a `VACUUM` in any one table.
+                                    example: 2147483647
+                                    maximum: 2147483647
+                                    minimum: 0
+                                    type: integer
+                                  bgwriter_delay:
+                                    default: 200
+                                    description: Specifies the delay between activity rounds for the background writer in milliseconds.
+                                    example: 200
+                                    maximum: 10000
+                                    minimum: 20
+                                    type: integer
+                                  bgwriter_flush_after:
+                                    default: 512
+                                    description: Whenever more than `bgwriter_flush_after` bytes have been written by the background writer, attempt to force the OS to issue these writes to the underlying storage. Specified in kilobytes. A setting of `0` disables forced writeback.
+                                    example: 512
+                                    maximum: 2048
+                                    minimum: 0
+                                    type: integer
+                                  bgwriter_lru_maxpages:
+                                    default: 100
+                                    description: In each round, no more than this many buffers will be written by the background writer. Setting this to `0` disables background writing.
+                                    example: 100
+                                    maximum: 1073741823
+                                    minimum: 0
+                                    type: integer
+                                  bgwriter_lru_multiplier:
+                                    default: 2.5
+                                    description: The average recent need for new buffers is multiplied by bgwriter_lru_multiplier to arrive at an estimate of the number that will be needed during the next round, (up to `bgwriter_lru_maxpages`). `1.0` represents a `\u201cjust` in `time\u201d` policy of writing exactly the number of buffers predicted to be needed. Larger values provide some cushion against spikes in demand, while smaller values intentionally leave writes to be done by server processes.
+                                    example: 2.5
+                                    maximum: 10
+                                    minimum: 0
+                                    type: number
+                                  deadlock_timeout:
+                                    description: This is the amount of time, in milliseconds, to wait on a lock before checking to see if there is a deadlock condition.
+                                    example: 1000
+                                    maximum: 1800000
+                                    minimum: 500
+                                    type: integer
+                                  default_toast_compression:
+                                    default: lz4
+                                    description: Specifies the default TOAST compression method for values of compressible columns, either `lz4` or `pglz`.
+                                    enum:
+                                    - lz4
+                                    - pglz
+                                    example: lz4
+                                    type: string
+                                  idle_in_transaction_session_timeout:
+                                    description: Time out sessions with open transactions after this number of milliseconds.
+                                    example: 604800000
+                                    maximum: 604800000
+                                    minimum: 0
+                                    type: integer
+                                  jit:
+                                    description: Controls system-wide use of Just-in-Time Compilation (JIT).
+                                    example: true
+                                    type: boolean
+                                  max_files_per_process:
+                                    description: PostgreSQL maximum number of files that can be open per process.
+                                    example: 1024
+                                    maximum: 4096
+                                    minimum: 1000
+                                    type: integer
+                                  max_locks_per_transaction:
+                                    description: PostgreSQL maximum locks per transaction.
+                                    example: 1024
+                                    maximum: 6400
+                                    minimum: 64
+                                    type: integer
+                                  max_logical_replication_workers:
+                                    description: PostgreSQL maximum logical replication workers, taken from the pool of `max_parallel_workers`.
+                                    example: 64
+                                    maximum: 64
+                                    minimum: 4
+                                    type: integer
+                                  max_parallel_workers:
+                                    description: Sets the maximum number of workers that the system can support for parallel queries.
+                                    example: 96
+                                    maximum: 96
+                                    minimum: 0
+                                    type: integer
+                                  max_parallel_workers_per_gather:
+                                    description: Sets the maximum number of workers that can be started by a single Gather or Gather Merge node.
+                                    example: 96
+                                    maximum: 96
+                                    minimum: 0
+                                    type: integer
+                                  max_pred_locks_per_transaction:
+                                    description: PostgreSQL maximum predicate locks per transaction.
+                                    example: 5120
+                                    maximum: 5120
+                                    minimum: 64
+                                    type: integer
+                                  max_replication_slots:
+                                    description: PostgreSQL maximum replication slots.
+                                    example: 64
+                                    maximum: 64
+                                    minimum: 8
+                                    type: integer
+                                  max_slot_wal_keep_size:
+                                    default: -1
+                                    description: PostgreSQL maximum write ahead log (WAL) size in MB, reserved for replication slots. A value of `-1` which indicates unlimited. The `wal_keep_size` minimum write ahead log (WAL) size setting takes precedence over this.
+                                    example: 1000000
+                                    maximum: 2147483647
+                                    minimum: -1
+                                    type: integer
+                                  max_stack_depth:
+                                    description: Maximum depth of the stack in bytes.
+                                    example: 2097152
+                                    maximum: 6291456
+                                    minimum: 2097152
+                                    type: integer
+                                  max_standby_archive_delay:
+                                    description: Maximum standby archive delay in milliseconds.
+                                    example: 1
+                                    maximum: 43200000
+                                    minimum: 1
+                                    type: integer
+                                  max_standby_streaming_delay:
+                                    description: Maximum standby streaming delay in milliseconds.
+                                    example: 10
+                                    maximum: 43200000
+                                    minimum: 1
+                                    type: integer
+                                  max_wal_senders:
+                                    description: PostgreSQL maximum write ahead log (WAL) senders.
+                                    example: 20
+                                    maximum: 64
+                                    minimum: 20
+                                    type: integer
+                                  max_worker_processes:
+                                    description: Maximum number of background processes that the system can support.
+                                    example: 96
+                                    maximum: 96
+                                    minimum: 8
+                                    type: integer
+                                  password_encryption:
+                                    default: scram-sha-256
+                                    description: Chooses the algorithm for encrypting passwords, either `scram-sha-256` or `md5`.
+                                    enum:
+                                    - scram-sha-256
+                                    - md5
+                                    example: scram-sha-256
+                                    type: string
+                                  pg_partman_bgw.interval:
+                                    description: Sets the time interval to run `pg_partman` scheduled tasks.
+                                    example: 3600
+                                    maximum: 604800
+                                    minimum: 3600
+                                    type: integer
+                                  pg_partman_bgw.role:
+                                    description: Controls which role to use for `pg_partman` scheduled background tasks.
+                                    example: myrolename
+                                    type: string
+                                  pg_stat_monitor.pgsm_enable_query_plan:
+                                    description: Enables query plan monitoring.
+                                    example: true
+                                    type: boolean
+                                  pg_stat_monitor.pgsm_max_buckets:
+                                    description: Sets the maximum number of buckets.
+                                    example: 10
+                                    maximum: 10
+                                    minimum: 1
+                                    type: integer
+                                  pg_stat_statements.track:
+                                    default: top
+                                    description: Controls which statements are counted. Specify `top` to track top-level statements that are issued directly by clients, `all` to also track nested statements, such as those invoked within functions, or `none` to disable statement statistics collection.
+                                    enum:
+                                    - all
+                                    - top
+                                    - none
+                                    example: all
+                                    type: string
+                                  synchronous_replication:
+                                    description: Used to enable synchronous replication per Aiven's [specification](https://aiven.io/docs/products/alloydbomni/reference/advanced-params#synchronous_replication). This is only supported for PostgreSQL Managed Database clusters with three nodes.
+                                    enum:
+                                    - quorum
+                                    - 'off'
+                                    example: quorum
+                                    type: string
+                                  temp_file_limit:
+                                    description: PostgreSQL temporary file limit in KB. Set to `-1` for unlimited.
+                                    example: 5000000
+                                    maximum: 2147483647
+                                    minimum: -1
+                                    type: integer
+                                  timezone:
+                                    description: PostgreSQL service time zone.
+                                    example: Europe/Helsinki
+                                    maxLength: 64
+                                    pattern: ^[\w/]*$
+                                    type: string
+                                  track_activity_query_size:
+                                    description: Specifies the number of bytes reserved to track the currently executing command for each active session.
+                                    example: 1024
+                                    maximum: 10240
+                                    minimum: 1024
+                                    type: integer
+                                  track_commit_timestamp:
+                                    description: Whether to record the commit time of transactions, either `on` or `off`.
+                                    enum:
+                                    - 'on'
+                                    - 'off'
+                                    example: 'on'
+                                    type: string
+                                  track_functions:
+                                    default: none
+                                    description: Enables tracking of function call counts and time used. Specify `pl` to track only procedural-language functions, `all` to also track SQL and C language functions, or `none` to disable function statistics tracking.
+                                    enum:
+                                    - all
+                                    - pl
+                                    - none
+                                    example: all
+                                    type: string
+                                  track_io_timing:
+                                    default: 'off'
+                                    description: Whether to time database I/O calls, either `on` or `off`. It's `off` by default because it repeatedly queries the operating system for the current time, which may cause significant overhead on some platforms.
+                                    enum:
+                                    - 'on'
+                                    - 'off'
+                                    example: 'off'
+                                    type: string
+                                  wal_sender_timeout:
+                                    description: Terminate replication connections that are inactive for longer than this amount of time, in milliseconds. Setting this value to `0` disables the timeout.
+                                    example: 60000
+                                    maximum: 60000
+                                    minimum: 0
+                                    type: integer
+                                  wal_writer_delay:
+                                    default: 200
+                                    description: Write ahead log (WAL) flush interval in milliseconds. A value lower than 200 milliseconds may negatively impact performance.
+                                    example: 200
+                                    maximum: 200
+                                    minimum: 10
+                                    type: integer
+                                type: object
+                              pg_stat_monitor_enable:
+                                default: false
+                                description: Enable the `pg_stat_monitor` extension. When this extension is enabled, PostgreSQL restarts the cluster it's in. Additionally, `pg_stat_statements` results for utility commands are unreliable.
+                                example: false
+                                type: boolean
+                              pglookout:
+                                additionalProperties: false
+                                description: Parameter used to apply PGLookout settings.
+                                properties:
+                                  max_failover_replication_time_lag:
+                                    default: 60
+                                    description: Number of seconds of primary unavailability before triggering database failover to standby.
+                                    example: 10
+                                    maximum: 999999
+                                    minimum: 10
+                                    type: integer
+                                type: object
+                              shared_buffers_percentage:
+                                description: Percentage of total RAM that the database server uses for shared memory buffers. Valid range is 20-60 (float), which corresponds to 20% - 60%. This setting adjusts the `shared_buffers` configuration value.
+                                example: 41.5
+                                maximum: 60
+                                minimum: 20
+                                type: number
+                              synchronous_replication:
+                                description: Used to enable synchronous replication per Aiven's [specification](https://aiven.io/docs/products/alloydbomni/reference/advanced-params#synchronous_replication). This is only supported for PostgreSQL Managed Database clusters with three nodes.
+                                enum:
+                                - quorum
+                                - 'off'
+                                example: quorum
+                                type: string
+                              work_mem:
+                                description: Sets the maximum amount of memory in MB to be used by a query operation, such as a sort or hash table, before writing to temporary disk files. Default is 1MB + 0.075% of total RAM, up to 32 MB.
+                                example: 4
+                                maximum: 4
+                                minimum: 1
+                                type: integer
+                            title: PostgreSQL engine config
+                            type: object
+                            x-akamai:
+                              file-path: schemas/database-postgresql-engine-config.yaml
+                          - additionalProperties: false
+                            description: 'Advanced parameters applied to a Valkey Managed Database, via our partner [Aiven''s specification](https://aiven.io/docs/products/valkey/reference/advanced-params). Only include the objects for parameters you want to set in your database. Omit objects for parameters you don''t want to define or change.
+
+
+                              > 📘
+
+                              >
+
+                              > Aiven may offer additional parameters in their specification. Currently, only those listed here are supported for use in a Valkey Managed Database. You can also run the [Get Valkey Managed Database advanced parameters](https://techdocs.akamai.com/linode-api/reference/get-databases-valkey-config) operation to see an up-to-date list.'
+                            properties:
+                              backup_hour:
+                                description: The hour of day (in UTC) when the backup for the service starts. New backups only start if the previous backup has already completed.
+                                maximum: 23
+                                minimum: 0
+                                type: integer
+                              backup_minute:
+                                description: The minute of an hour when backup for the service is started. New backup is only started if previous backup has already completed.
+                                maximum: 23
+                                minimum: 0
+                                type:
+                                - integer
+                                - 'null'
+                              frequent_snapshots:
+                                description: When enabled, Valkey creates frequent local RDB snapshots. When disabled, Valkey only takes RDB snapshots when a backup is created, based on the backup schedule. This setting is ignored when `valkey_persistence` is set to off.
+                                type: boolean
+                              valkey_acl_channels_default:
+                                description: Default ACL for pub/sub channels used when a Valkey user is created. Determines default pub/sub channels' ACL for new users if ACL is not supplied. When this option is not defined, all_channels is assumed to keep backward compatibility. This option doesn't affect Valkey configuration acl-pubsub-default.
+                                type: string
+                              valkey_active_expire_effort:
+                                default: 1
+                                description: Active expire effort. Valkey reclaims expired keys both when accessed and in the background. The background process scans for expired keys to free memory. Increasing the active-expire-effort setting uses more CPU to reclaim expired keys faster, reducing memory usage but potentially increasing latency.
+                                maximum: 10
+                                minimum: 1
+                                type: integer
+                              valkey_activedefrag:
+                                default: false
+                                description: Enables active memory defragmentation. When enabled, Valkey relocates objects off sparsely-used memory pages to reduce fragmentation and return memory to the operating system. Defragmentation runs on the main thread and consumes CPU, so it may increase latency under load.
+                                example: false
+                                type: boolean
+                              valkey_lfu_decay_time:
+                                default: 1
+                                description: LFU maxmemory-policy counter decay time in minutes.
+                                maximum: 120
+                                minimum: 1
+                                type: integer
+                              valkey_lfu_log_factor:
+                                default: 10
+                                description: Counter logarithm factor for volatile-lfu and allkeys-lfu maxmemory-policies.
+                                maximum: 100
+                                type: integer
+                              valkey_maxmemory_policy:
+                                default: noeviction
+                                description: Valkey maxmemory-policy.
+                                type:
+                                - string
+                                - 'null'
+                              valkey_number_of_databases:
+                                description: Set number of Valkey databases. Changing this will cause a restart of the Valkey service.
+                                maximum: 128
+                                minimum: 1
+                                type: integer
+                              valkey_persistence:
+                                default: rdb
+                                description: '- If set to `rdb`, Valkey generates periodic snapshots at least according to the backup schedule (either every twelve hours with an initial time chosen by the system or every 24 hours based on `backup_hour` and `backup_minute`, if set). Combined with the `frequent_snapshots` parameter set to `true`, Valkey generates snapshots every ten minutes if data has changed, which limits data loss in case nodes have to restart for any reason.
+
+
+                                  - If set to `off`, Valkey never takes snapshots. This means no backups and no possibility of restoring the cluster. Service restarts are guaranteed to lose data. The benefit is avoiding the performance penalty creating a snapshot entails.
+
+
+                                  > 📘
+
+                                  >
+
+                                  >`valkey_persistence` can''t be set `off`, if `backup_hour` or `backup_minute` are configured. When set to `off`, you can''t configure the maintentace window when [Updating a Valkey Managed Database](https://techdocs.akamai.com/linode-api/reference/put-databases-valkey-instance).'
+                                enum:
+                                - 'off'
+                                - rdb
+                                type: string
+                              valkey_pubsub_client_output_buffer_limit:
+                                description: Set output buffer limit for pub / sub clients in MB. The value is the hard limit, the soft limit is 1/4 of the hard limit. When setting the limit, be mindful of the available memory in the selected service plan.
+                                maximum: 262144
+                                minimum: 32
+                                type: integer
+                              valkey_timeout:
+                                default: 300
+                                description: Valkey idle connection timeout in seconds.
+                                maximum: 2073600
+                                type: integer
+                            title: Valkey engine config
+                            type: object
+                            x-akamai:
+                              file-path: schemas/database-valkey-engine-config.yaml
+                          type: object
+                        fork:
+                          additionalProperties: false
+                          description: Details on the database that was the target of the fork. This only exists if the database was restored by creating a fork from another database.
+                          properties:
+                            restore_time:
+                              description: The database timestamp from which it was restored. This is _not_ when the fork was created.
+                              example: '2024-10-14T19:55:12'
+                              type: string
+                            source:
+                              description: The unique identifier for the database that was forked from.
+                              example: 176881
+                              type: integer
+                          type: object
+                        hosts:
+                          additionalProperties: false
+                          description: __Read-only__ The primary hostname and standby read-only hostname for the Managed Database. The API assigns these hostnames after it successfully creates the Managed Database.
+                          properties:
+                            endpoints:
+                              description: __Read-only__ A structured inventory of all connection points for a Managed Database instance.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  address:
+                                    description: The DNS hostname that resolves to either the `primary` or `standby` host, based on this object's `role`.
+                                    example: lin-123-456-mysql-mysql-primary.servers.linodedb.net
+                                    type: string
+                                  port:
+                                    description: The port number used for the connection.
+                                    example: 3306
+                                    type: integer
+                                  public_access:
+                                    description: Whether `public_access` has been enabled for the connection point.
+                                    example: false
+                                    type: boolean
+                                  role:
+                                    description: Whether the endpoint connects to the `primary` or `standby` hostname, as defined in `hosts`.
+                                    enum:
+                                    - primary
+                                    - standby
+                                    example: primary
+                                    type: string
+                                type: object
+                              readOnly: true
+                              type: array
+                            primary:
+                              description: 'The primary hostname for the Managed Database.
+
+
+                                > 📘
+
+                                >
+
+                                > - If you''ve configured the Managed Database to use a Virtual Private Cloud (VPC) via the `private_network` object ([MySQL](https://techdocs.akamai.com/linode-api/reference/post-databases-mysql-instances) / [PostgreSQL](https://techdocs.akamai.com/linode-api/reference/post-databases-postgre-sql-instances)), this hostname resolves to a private IPv4 address within that VPC subnet''s address range.
+
+                                >
+
+                                > - With `public_access` enabled in a `private_network`, a public version of this hostname is also available. Resolving this hostname returns publicly routable IPv4 and IPv6 addresses.'
+                              example: lin-123-456-mysql-mysql-primary.servers.linodedb.net
+                              format: hostname
+                              type:
+                              - string
+                              - 'null'
+                            standby:
+                              description: 'A DNS name that resolves to the IP addresses assigned to the Managed Database''s read-only standby hosts. You can use this hostname to configure applications that only need to view data in the database, in an effort to limit the load on the `primary`.
+
+
+                                > 📘
+
+                                >
+
+                                > - This only applies to Managed Databases with a `cluster_size` of `2` or `3`.
+
+                                >
+
+                                > - This DNS name is publicly visible and accessible. Connections to it are over the public internet unless the Managed Database is inside a VPC.
+
+                                >
+
+                                > - Network traffic to this DNS name is billable unless the client connects over IPv6 from the same `region`.
+
+                                >
+
+                                > - If you''ve configured the Managed Database to use a VPC via the `private_network` object ([MySQL](https://techdocs.akamai.com/linode-api/reference/post-databases-mysql-instances) / [PostgreSQL](https://techdocs.akamai.com/linode-api/reference/post-databases-postgre-sql-instances)), this hostname resolves to one or more private IPv4 addresses within that VPC subnet''s address range.
+
+                                >
+
+                                > - With `public_access` enabled in a `private_network`, a public version of this hostname is also available. Resolving this hostname returns publicly routable IPv4 and IPv6 addresses.'
+                              example: lin-123-456-mysql-primary-private.servers.linodedb.net
+                              type:
+                              - string
+                              - 'null'
+                          readOnly: true
+                          type: object
+                        id:
+                          description: __Read-only__ A unique ID that can be used to identify and reference the Managed Database.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        instance_uri:
+                          description: __Read-only__ Append this to `https://api.linode.com` to run commands for the Managed Database.
+                          example: /v4/databases/mysql/instances/123
+                          readOnly: true
+                          type: string
+                        label:
+                          description: __Filterable__ A name used to identify the Managed Database. This needs to be unique per Managed Database `engine` type. For example, you could use `database_1`, `database_2`, and `database_3` for three unique MySQL Managed Databases. You can also use these same names for three unique PostgreSQL Managed Databases. However, you can't repeat any of these names for either engine type.
+                          example: example-db
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        members:
+                          additionalProperties:
+                            enum:
+                            - primary
+                            - failover
+                            type: string
+                          description: __Read-only__ A mapping between IP addresses and strings designating them as `primary` or `failover`.
+                          example:
+                            45.56.110.70: primary
+                            45.79.159.239: failover
+                          readOnly: true
+                          type: object
+                        oldest_restore_time:
+                          description: __Read-only__ The oldest time to which a MySQL or PostgreSQL database can be restored. For Valkey databases, this is `null`.
+                          example: '2024-10-03T20:48:05'
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        platform:
+                          description: __Filterable__, __Read-only__ The back-end platform for relational databases used by the service, either `rdbms-legacy` or `rdbms-default`.
+                          enum:
+                          - rdbms-legacy
+                          - rdbms-default
+                          example: rdbms-default
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 8
+                          x-linode-filterable: true
+                        port:
+                          description: __Read-only__ The access port for this Managed Database.
+                          example: 3306
+                          readOnly: true
+                          type: integer
+                        private_network:
+                          additionalProperties: false
+                          description: Restricts access on a Managed Database to a specific Virtual Private Cloud (VPC) configured for the cluster. Displayed as `null` if no VPC is configured.
+                          properties:
+                            public_access:
+                              default: false
+                              description: 'Set to `true` allows clients outside of the VPC to connect to the database using a public IP address.
+
+
+                                > 📘
+
+                                >
+
+                                > If your Managed Database is also configured using an `allow_list`, only IP addresses set in it can access that database, even if this object is set to `true`.'
+                              example: true
+                              type: boolean
+                            subnet_id:
+                              description: The VPC's `subnet_id` used to control access to the database.
+                              example: 456
+                              type: integer
+                            vpc_id:
+                              description: The unique identifier of the VPC you want to use to enable private access to the Managed Database.
+                              example: 123
+                              type: integer
+                          type:
+                          - object
+                          - 'null'
+                        region:
+                          description: __Filterable__ The unique identifier for the [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the Managed Database lives.
+                          example: us-east
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        ssl_connection:
+                          description: __Read-only__ Currently required to be `true`. Whether to require SSL credentials to establish a connection to the Managed Database. Run the [Get managed MySQL database credentials](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-credentials) operation for access information.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                        status:
+                          description: '__Filterable__, __Read-only__ The operating status of the Managed Database, which can be one of the following: `provisioning`, `active`, `suspending`, `suspended`, `resuming`, `updating`, or `resizing`.'
+                          enum:
+                          - provisioning
+                          - active
+                          - suspending
+                          - suspended
+                          - resuming
+                          - updating
+                          - resizing
+                          example: active
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-color:
+                            active: green
+                            default_: white
+                            provisioning: yellow
+                            restoring: yellow
+                            resuming: yellow
+                            updating: yellow
+                          x-linode-cli-display: 100
+                          x-linode-filterable: true
+                        total_disk_size_gb:
+                          description: __Read-only__ The total disk size of the database, in GB.
+                          example: 15
+                          readOnly: true
+                          type: integer
+                        type:
+                          description: __Filterable__ The `id` of the Linode Instance type used by the Managed Database for its nodes.
+                          example: g6-dedicated-2
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When this Managed Database was last updated.
+                          example: '2022-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                        updates:
+                          additionalProperties: false
+                          description: Configuration settings for automated patch update maintenance for the Managed Database.
+                          properties:
+                            day_of_week:
+                              description: The numeric reference for the day of the week to perform maintenance. `1` is Monday, `2` is Tuesday, through to `7` which is Sunday.
+                              example: 1
+                              maximum: 7
+                              minimum: 1
+                              type: integer
+                            duration:
+                              default: 4
+                              description: The maximum maintenance window time in hours. Currently can only be `4`.
+                              example: 4
+                              type: integer
+                            frequency:
+                              default: weekly
+                              description: How frequently maintenance occurs. Currently can only be `weekly`.
+                              enum:
+                              - weekly
+                              example: weekly
+                              type: string
+                            hour_of_day:
+                              description: The hour to begin maintenance based in UTC time.
+                              example: 0
+                              maximum: 23
+                              minimum: 0
+                              type: integer
+                            pending:
+                              description: __Read-only__ An array of pending updates.
+                              example: []
+                              items:
+                                additionalProperties: false
+                                description: A planned maintenance update.
+                                properties:
+                                  deadline:
+                                    description: The time when a mandatory update needs to be applied.
+                                    example: '2024-10-14T19:55:12'
+                                    type:
+                                    - string
+                                    - 'null'
+                                  description:
+                                    description: A description of the update.
+                                    example: TimescaleDB version 2.17.1 is available.
+                                    type: string
+                                  planned_for:
+                                    description: The time when a maintenance update will be applied.
+                                    example: '2024-10-14T19:55:12'
+                                    type:
+                                    - string
+                                    - 'null'
+                                type: object
+                              minItems: 0
+                              readOnly: true
+                              type: array
+                          type: object
+                        used_disk_size_gb:
+                          description: __Read-only__ The amount of space currently in use in the database, in GB. This is `null` for Valkey
+                          example: 2
+                          readOnly: true
+                          type:
+                          - integer
+                          - 'null'
+                        version:
+                          description: __Filterable__ The Managed Database engine version.
+                          example: 8.0.26
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 7
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/database.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-databases-instances-200.yaml
+          description: Returns a paginated list of all accessible Managed Databases on your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - databases:read_only
+      summary: List Managed Databases
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - database_viewer
+  /{apiVersion}/databases/types:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/database-types.yaml
+      path-info: /{apiVersion}/databases/types
+    x-linode-cli-command: databases
+    get:
+      description: 'Display all Managed Databases node types. The type and number of nodes determine the resources and price of a Managed Databases instance. Each database can have one node type. With a high availability database, all nodes are deployed according to the chosen type.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `database_viewer`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli databases types
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-types
+      operationId: get-databases-types
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - class: dedicated
+                  disk: 25600
+                  engines:
+                    mysql:
+                    - price:
+                        hourly: 0.03
+                        monthly: 20
+                      quantity: 1
+                    postgresql:
+                    - price:
+                        hourly: 0.03
+                        monthly: 20
+                      quantity: 1
+                    valkey:
+                    - overrides:
+                        disk: 0
+                      price:
+                        hourly: 0.03
+                        monthly: 20
+                      quantity: 1
+                  id: g6-dedicated-1
+                  label: DBaaS - Dedicated 80GB
+                  memory: 1024
+                  vcpus: 1
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: Managed Database plan type object.
+                      properties:
+                        class:
+                          description: 'The Linode class category. This can be [dedicated](https://techdocs.akamai.com/cloud-computing/docs/dedicated-cpu-compute-instances), [shared](https://techdocs.akamai.com/cloud-computing/docs/shared-cpu-compute-instances), or [premium](https://techdocs.akamai.com/cloud-computing/docs/premium-compute-instances).
+
+
+                            > 📘
+
+                            >
+
+                            > Premium plan Linodes are available in limited regions.'
+                          enum:
+                          - dedicated
+                          - shared
+                          - premium
+                          - nanode
+                          - standard
+                          example: dedicated
+                          type: string
+                        disk:
+                          description: The amount of disk space set aside for Databases of this plan type. The value is represented in megabytes.
+                          example: 25600
+                          type: integer
+                          x-linode-cli-display: 4
+                        engines:
+                          additionalProperties: false
+                          description: Information for the supported third-party databases that can be used with Managed Databases.
+                          properties:
+                            mysql:
+                              description: Pricing details for MySQL Managed Databases.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  overrides:
+                                    additionalProperties: false
+                                    description: The amount of disk space set aside for Valkey databases of this plan type.
+                                    properties:
+                                      disk:
+                                        description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                        example: 0
+                                        type: integer
+                                    type: object
+                                  price:
+                                    additionalProperties: false
+                                    description: Cost in US dollars, broken down into hourly and monthly charges.
+                                    properties:
+                                      hourly:
+                                        description: Cost (in US dollars) per hour for this subscription tier.
+                                        example: 0.03
+                                        type: number
+                                      monthly:
+                                        description: Maximum cost (in US dollars) per month for this subscription tier.
+                                        example: 20
+                                        type: number
+                                    type: object
+                                  quantity:
+                                    description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                                    enum:
+                                    - 1
+                                    - 2
+                                    - 3
+                                    example: 1
+                                    type: integer
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/database-type-engine.yaml
+                              type: array
+                            postgresql:
+                              description: Pricing details for PostgreSQL Managed Databases.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  overrides:
+                                    additionalProperties: false
+                                    description: The amount of disk space set aside for Valkey databases of this plan type.
+                                    properties:
+                                      disk:
+                                        description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                        example: 0
+                                        type: integer
+                                    type: object
+                                  price:
+                                    additionalProperties: false
+                                    description: Cost in US dollars, broken down into hourly and monthly charges.
+                                    properties:
+                                      hourly:
+                                        description: Cost (in US dollars) per hour for this subscription tier.
+                                        example: 0.03
+                                        type: number
+                                      monthly:
+                                        description: Maximum cost (in US dollars) per month for this subscription tier.
+                                        example: 20
+                                        type: number
+                                    type: object
+                                  quantity:
+                                    description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                                    enum:
+                                    - 1
+                                    - 2
+                                    - 3
+                                    example: 1
+                                    type: integer
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/database-type-engine.yaml
+                              type: array
+                            valkey:
+                              description: Pricing details for Valkey Managed Databases.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  overrides:
+                                    additionalProperties: false
+                                    description: The amount of disk space set aside for Valkey databases of this plan type.
+                                    properties:
+                                      disk:
+                                        description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                        example: 0
+                                        type: integer
+                                    type: object
+                                  price:
+                                    additionalProperties: false
+                                    description: Cost in US dollars, broken down into hourly and monthly charges.
+                                    properties:
+                                      hourly:
+                                        description: Cost (in US dollars) per hour for this subscription tier.
+                                        example: 0.03
+                                        type: number
+                                      monthly:
+                                        description: Maximum cost (in US dollars) per month for this subscription tier.
+                                        example: 20
+                                        type: number
+                                    type: object
+                                  quantity:
+                                    description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                                    enum:
+                                    - 1
+                                    - 2
+                                    - 3
+                                    example: 1
+                                    type: integer
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/database-type-engine.yaml
+                              type: array
+                          type: object
+                        id:
+                          description: __Read-only__ The ID representing the Managed Database node plan type.
+                          example: g6-nanode-1
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Read-only__ A human-readable string that describes each plan type. For display purposes only.
+                          example: DBaaS - Nanode 1GB
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 2
+                        memory:
+                          description: The amount of RAM allocated to Database created of this plan type. The value is represented in megabytes.
+                          example: 1024
+                          type: integer
+                          x-linode-cli-display: 3
+                        vcpus:
+                          description: The number of CPUs allocated to databases of this plan type.
+                          example: 1
+                          type: integer
+                          x-linode-cli-display: 5
+                      type: object
+                      x-akamai:
+                        file-path: schemas/database-type.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-databases-types-200.yaml
+              x-linode-cli-nested-list: engines.mysql, engines.postgresql
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  _split:
+                    x-linode-cli-display: 2.5
+                  engines:
+                    additionalProperties: false
+                    properties:
+                      price:
+                        additionalProperties: false
+                        properties:
+                          hourly:
+                            x-linode-cli-display: 4
+                          monthly:
+                            x-linode-cli-display: 5
+                        type: object
+                      quantity:
+                        x-linode-cli-display: 3
+                    type: object
+                  id:
+                    x-linode-cli-display: 1
+                  label:
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type-cli.yaml
+          description: Returns a paginated list of all Managed Databases types.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List Managed Databases types
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases types
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: types
+      x-linode-iam:
+      - roles:
+        - database_viewer
+  /{apiVersion}/databases/types/{typeId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Database type.
+      example: '{{typeId}}'
+      in: path
+      name: typeId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/database-node-type-id.yaml
+    x-akamai:
+      file-path: paths/database-type.yaml
+      path-info: /{apiVersion}/databases/types/{typeId}
+    x-linode-cli-command: databases
+    get:
+      description: 'Display the details of a single Managed Databases node type. The type and number of nodes determine the resources and price of a Managed Databases instance. Run the List Managed Databases type operation and store the `id` for the applicable database node type.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `database_viewer`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli databases type-view
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-type
+      operationId: get-databases-type
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                class: dedicated
+                disk: 25600
+                engines:
+                  mysql:
+                  - price:
+                      hourly: 0.03
+                      monthly: 20
+                    quantity: 1
+                  postgresql:
+                  - price:
+                      hourly: 0.03
+                      monthly: 20
+                    quantity: 1
+                  valkey:
+                  - overrides:
+                      disk: 0
+                    price:
+                      hourly: 0.1603
+                      monthly: 117
+                    quantity: 1
+                id: g6-dedicated-1
+                label: DBaaS - Dedicated 80GB
+                memory: 1024
+                vcpus: 1
+              schema:
+                additionalProperties: false
+                description: Managed Database plan type object.
+                properties:
+                  class:
+                    description: 'The Linode class category. This can be [dedicated](https://techdocs.akamai.com/cloud-computing/docs/dedicated-cpu-compute-instances), [shared](https://techdocs.akamai.com/cloud-computing/docs/shared-cpu-compute-instances), or [premium](https://techdocs.akamai.com/cloud-computing/docs/premium-compute-instances).
+
+
+                      > 📘
+
+                      >
+
+                      > Premium plan Linodes are available in limited regions.'
+                    enum:
+                    - dedicated
+                    - shared
+                    - premium
+                    - nanode
+                    - standard
+                    example: dedicated
+                    type: string
+                  disk:
+                    description: The amount of disk space set aside for Databases of this plan type. The value is represented in megabytes.
+                    example: 25600
+                    type: integer
+                    x-linode-cli-display: 4
+                  engines:
+                    additionalProperties: false
+                    description: Information for the supported third-party databases that can be used with Managed Databases.
+                    properties:
+                      mysql:
+                        description: Pricing details for MySQL Managed Databases.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            overrides:
+                              additionalProperties: false
+                              description: The amount of disk space set aside for Valkey databases of this plan type.
+                              properties:
+                                disk:
+                                  description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                  example: 0
+                                  type: integer
+                              type: object
+                            price:
+                              additionalProperties: false
+                              description: Cost in US dollars, broken down into hourly and monthly charges.
+                              properties:
+                                hourly:
+                                  description: Cost (in US dollars) per hour for this subscription tier.
+                                  example: 0.03
+                                  type: number
+                                monthly:
+                                  description: Maximum cost (in US dollars) per month for this subscription tier.
+                                  example: 20
+                                  type: number
+                              type: object
+                            quantity:
+                              description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                              enum:
+                              - 1
+                              - 2
+                              - 3
+                              example: 1
+                              type: integer
+                          type: object
+                          x-akamai:
+                            file-path: schemas/database-type-engine.yaml
+                        type: array
+                      postgresql:
+                        description: Pricing details for PostgreSQL Managed Databases.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            overrides:
+                              additionalProperties: false
+                              description: The amount of disk space set aside for Valkey databases of this plan type.
+                              properties:
+                                disk:
+                                  description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                  example: 0
+                                  type: integer
+                              type: object
+                            price:
+                              additionalProperties: false
+                              description: Cost in US dollars, broken down into hourly and monthly charges.
+                              properties:
+                                hourly:
+                                  description: Cost (in US dollars) per hour for this subscription tier.
+                                  example: 0.03
+                                  type: number
+                                monthly:
+                                  description: Maximum cost (in US dollars) per month for this subscription tier.
+                                  example: 20
+                                  type: number
+                              type: object
+                            quantity:
+                              description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                              enum:
+                              - 1
+                              - 2
+                              - 3
+                              example: 1
+                              type: integer
+                          type: object
+                          x-akamai:
+                            file-path: schemas/database-type-engine.yaml
+                        type: array
+                      valkey:
+                        description: Pricing details for Valkey Managed Databases.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            overrides:
+                              additionalProperties: false
+                              description: The amount of disk space set aside for Valkey databases of this plan type.
+                              properties:
+                                disk:
+                                  description: The amount of disk space set aside for Valkey database of this plan type. It overrides the plan's `disc` value.
+                                  example: 0
+                                  type: integer
+                              type: object
+                            price:
+                              additionalProperties: false
+                              description: Cost in US dollars, broken down into hourly and monthly charges.
+                              properties:
+                                hourly:
+                                  description: Cost (in US dollars) per hour for this subscription tier.
+                                  example: 0.03
+                                  type: number
+                                monthly:
+                                  description: Maximum cost (in US dollars) per month for this subscription tier.
+                                  example: 20
+                                  type: number
+                              type: object
+                            quantity:
+                              description: The number of nodes for the Managed Database cluster for this subscription tier, either `1`, `2`, or `3`.
+                              enum:
+                              - 1
+                              - 2
+                              - 3
+                              example: 1
+                              type: integer
+                          type: object
+                          x-akamai:
+                            file-path: schemas/database-type-engine.yaml
+                        type: array
+                    type: object
+                  id:
+                    description: __Read-only__ The ID representing the Managed Database node plan type.
+                    example: g6-nanode-1
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Read-only__ A human-readable string that describes each plan type. For display purposes only.
+                    example: DBaaS - Nanode 1GB
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  memory:
+                    description: The amount of RAM allocated to Database created of this plan type. The value is represented in megabytes.
+                    example: 1024
+                    type: integer
+                    x-linode-cli-display: 3
+                  vcpus:
+                    description: The number of CPUs allocated to databases of this plan type.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type.yaml
+              x-linode-cli-nested-list: engines.mysql, engines.postgresql
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  _split:
+                    x-linode-cli-display: 2.5
+                  engines:
+                    additionalProperties: false
+                    properties:
+                      price:
+                        additionalProperties: false
+                        properties:
+                          hourly:
+                            x-linode-cli-display: 4
+                          monthly:
+                            x-linode-cli-display: 5
+                        type: object
+                      quantity:
+                        x-linode-cli-display: 3
+                    type: object
+                  id:
+                    x-linode-cli-display: 1
+                  label:
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type-cli.yaml
+          description: Returns a single Managed Databases type.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: Get a Managed Databases type
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases type-view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: type-view
+      x-linode-iam:
+      - roles:
+        - database_viewer
+  /{apiVersion}/object-storage/cancel:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-cancel.yaml
+      path-info: /{apiVersion}/object-storage/cancel
+    x-linode-cli-command: object-storage
+    post:
+      description: 'Cancel Object Storage on an Account.
+
+
+        > 🚧
+
+        >
+
+        > This removes all buckets and their contents from your Account. This data is irretrievable once removed.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage cancel
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-cancel-object-storage
+      operationId: post-cancel-object-storage
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Object Storage cancellation successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_write
+      summary: Cancel Object Storage
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage cancel
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: cancel
+  /{apiVersion}/object-storage/transfer:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-transfer.yaml
+      path-info: /{apiVersion}/object-storage/transfer
+    x-linode-cli-command: object-storage
+    get:
+      description: 'The amount of outbound data transfer used by your account''s Object Storage buckets. Object Storage adds 1 terabyte of outbound data transfer to your data transfer pool. See the Pricing guide for details on Object Storage transfer quotas.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage transfer-view
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-transfer
+      operationId: get-object-storage-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                region_transfers: []
+                used: 12956600198
+              schema:
+                additionalProperties: false
+                properties:
+                  region_transfers:
+                    items:
+                      additionalProperties: false
+                      properties:
+                        billable:
+                          description: __Read-only__ The amount of your transfer pool that is billable this billing cycle for this Region.
+                          example: 0
+                          readOnly: true
+                          type: integer
+                        id:
+                          description: The Region ID for this network utilization data.
+                          example: us-east
+                          type: string
+                        quota:
+                          description: __Read-only__ The amount of network usage allowed this billing cycle for this Region.
+                          example: 5010
+                          readOnly: true
+                          type: integer
+                        used:
+                          description: __Read-only__ The amount of network usage you have used this billing cycle for this Region.
+                          example: 1
+                          readOnly: true
+                          type: integer
+                      type:
+                      - object
+                      - 'null'
+                    type: array
+                  used:
+                    description: __Read-only__ The amount of outbound data transfer used by your account's Object Storage buckets, in bytes, for the current month's billing cycle.
+                    example: 12956600198
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/get-object-storage-transfer-200.yaml
+          description: Returns the amount of outbound data transfer used by your account's Object Storage buckets.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get Object Storage transfer data
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: linode-cli object-storage transfer-view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - transfer-view
+      - get-object-storage-transfer
+  /{apiVersion}/object-storage/types:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-types.yaml
+      path-info: /{apiVersion}/object-storage/types
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns Object Storage types and prices, including any region-specific rates.
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage types
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-types
+      operationId: get-object-storage-types
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: objectstorage
+                  label: Object Storage
+                  price:
+                    hourly: 0.0075
+                    monthly: 5
+                  region_prices:
+                  - hourly: 0.0075
+                    id: id-cgk
+                    monthly: 5
+                  - hourly: 0.0075
+                    id: br-gru
+                    monthly: 5
+                  transfer: 1000
+                - id: objectstorage-overage
+                  label: Object Storage Overage
+                  price:
+                    hourly: 0.02
+                    monthly: null
+                  region_prices:
+                  - hourly: 0.024
+                    id: id-cgk
+                    monthly: null
+                  - hourly: 0.028
+                    id: br-gru
+                    monthly: null
+                  transfer: 0
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: The Object Storage types.
+                    items:
+                      additionalProperties: false
+                      description: Returns collection of Object Storage types and prices, including any region-specific rates.
+                      properties:
+                        id:
+                          description: __Read-only__ The ID representing the Object Storage type.
+                          example: objectstorage
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Filterable__, __Read-only__ The Object Storage type label is for display purposes only.
+                          example: Object Storage
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        price:
+                          additionalProperties: false
+                          description: '__Read-only__ The default cost of this Object Storage type. Prices are in US dollars, broken down into hourly and monthly charges.
+
+
+                            Certain regions have different prices from the default. For region-specific prices, see `region_prices`.'
+                          properties:
+                            hourly:
+                              description: __Filterable__ Cost (in US dollars) per hour.
+                              example: 0.0015
+                              type: number
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 3
+                              x-linode-filterable: true
+                            monthly:
+                              description: __Filterable__ Cost per month, in US dollars.
+                              example: 0.1
+                              type:
+                              - number
+                              - 'null'
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 4
+                              x-linode-filterable: true
+                          readOnly: true
+                          type: object
+                        region_prices:
+                          items:
+                            additionalProperties: false
+                            properties:
+                              hourly:
+                                description: Cost per hour for this region, in US dollars.
+                                example: 0.00018
+                                type: number
+                                x-linode-cli-display: 6
+                              id:
+                                description: The Region ID for these prices.
+                                example: us-east
+                                type: string
+                                x-linode-cli-display: 5
+                              monthly:
+                                description: Cost per month for this region, in US dollars.
+                                example: 0.12
+                                type:
+                                - number
+                                - 'null'
+                                x-linode-cli-display: 7
+                            type: object
+                          type: array
+                        transfer:
+                          description: __Filterable__, __Read-only__ The monthly outbound transfer amount, in MB.
+                          example: 0
+                          minimum: 0
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 8
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/object-storage-type.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-object-storage-types-200.yaml
+          description: A collection of Object Storage types.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List Object Storage types
+      tags:
+      - General
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage types
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: types
+      x-linode-redoc-load-ids: true
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

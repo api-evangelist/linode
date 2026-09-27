@@ -1,22 +1,1218 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Account API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Account API
+  version: '1.0'
+  description: 'Operations tagged Account across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Account
-  description: Manage your account settings, users, billing information, OAuth clients, service transfers, and payment methods.
+- description: Use account operations to review and update details about your Akamai Connected Cloud account, including billing information, promotions, and your specific information.
+  name: Account
 paths:
+  /{apiVersion}/account:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/account.yaml
+      path-info: /{apiVersion}/account
+    x-linode-cli-command: account
+    get:
+      description: 'Returns the contact and billing information related to your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_account`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account view
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-account
+      operationId: get-account
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                active_promotions:
+                - credit_monthly_cap: '10.00'
+                  credit_remaining: '50.00'
+                  description: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                  expire_dt: '2018-01-31T23:59:59'
+                  image_url: https://linode.com/10_a_month_promotion.svg
+                  service_type: all
+                  summary: $10 off your Linode a month!
+                  this_month_credit_remaining: '10.00'
+                active_since: '2018-01-01T00:01:01'
+                address_1: 123 Main Street
+                address_2: Suite A
+                balance: 200
+                balance_uninvoiced: 145
+                billing_source: akamai
+                capabilities:
+                - Linodes
+                - NodeBalancers
+                - Block Storage
+                - Object Storage
+                - Placement Groups
+                - Block Storage Encryption
+                - Cloud Firewall Rule Set
+                - VPC Dual Stack
+                - VPC IPv6 Stack
+                - VPC IPv6 Large Prefixes
+                - Custom VPC IPv4 Ranges
+                - GPUDirect RDMA
+                city: Philadelphia
+                company: Linode LLC
+                country: US
+                credit_card:
+                  expiry: 11/2022
+                  last_four: 1111
+                email: mrossi@linode.com
+                euuid: E1AF5EEC-526F-487D-B317EBEB34C87D71
+                first_name: John
+                last_name: Smith
+                phone: 215-555-1212
+                state: PA
+                tax_id: ATU99999999
+                zip: 19102-1234
+              schema:
+                additionalProperties: false
+                description: Account object.
+                properties:
+                  active_promotions:
+                    items:
+                      additionalProperties: false
+                      description: 'Promotions generally offer a set amount of credit that can be used toward your Linode services, and the promotion expires after a specified date. As well, a monthly cap on the promotional offer is set.
+
+
+                        Simply put, a promotion offers a certain amount of credit  month, until either the expiration date is passed, or until the total promotional credit is used, whichever comes first.'
+                      properties:
+                        credit_monthly_cap:
+                          description: The amount available to spend per month.
+                          example: '10.00'
+                          type: string
+                          x-linode-cli-display: 5
+                        credit_remaining:
+                          description: The total amount of credit left for this promotion.
+                          example: '50.00'
+                          type: string
+                          x-linode-cli-display: 3
+                        description:
+                          description: A detailed description of this promotion.
+                          example: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                          type: string
+                        expire_dt:
+                          description: When this promotion's credits expire.
+                          example: '2018-01-31T23:59:59'
+                          type: string
+                          x-linode-cli-display: 2
+                        image_url:
+                          description: The location of an image for this promotion.
+                          example: https://linode.com/10_a_month_promotion.svg
+                          type: string
+                        service_type:
+                          description: The service to which this promotion applies, either a specific service or `all` for any service. Specific services include `linode`, `longview`, `nodebalancer`, `objectstorage`, `blockstorage`, `backup`, `db_mysql`, `ip_v4`, `linode_disk`, `linode_memory`, `managed`, `placement_group`, and `transfer_tx`.
+                          enum:
+                          - all
+                          - backup
+                          - blockstorage
+                          - db_mysql
+                          - ip_v4
+                          - linode
+                          - linode_disk
+                          - linode_memory
+                          - longview
+                          - managed
+                          - nodebalancer
+                          - objectstorage
+                          - placement_group
+                          - transfer_tx
+                          example: all
+                          type: string
+                          x-linode-cli-display: 1
+                        summary:
+                          description: Short details of this promotion.
+                          example: $10 off your Linode a month!
+                          type: string
+                          x-linode-cli-display: 10
+                        this_month_credit_remaining:
+                          description: The amount of credit left for this month for this promotion.
+                          example: '10.00'
+                          type: string
+                          x-linode-cli-display: 4
+                      type: object
+                      x-akamai:
+                        file-path: schemas/promotion.yaml
+                    readOnly: true
+                    type: array
+                  active_since:
+                    description: __Read-only__ The date and time the account was activated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  address_1:
+                    description: The first line of this account's billing address.
+                    example: 123 Main Street
+                    maxLength: 64
+                    type: string
+                  address_2:
+                    description: The second line of this account's billing address.
+                    example: Suite A
+                    maxLength: 64
+                    type: string
+                  balance:
+                    description: __Read-only__ This account's balance, in US dollars.
+                    example: 200
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  balance_uninvoiced:
+                    description: __Read-only__ This account's current estimated invoice in US dollars. This is not your final invoice balance. Transfer charges are not included in the estimate.
+                    example: 145
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  billing_source:
+                    description: __Read-only__ The source of service charges for this account. Accounts that are associated with Akamai-specific customers return a value of `akamai`. All other accounts return a value of `linode`.
+                    enum:
+                    - akamai
+                    - linode
+                    example: akamai
+                    readOnly: true
+                    type: string
+                  capabilities:
+                    description: __Read-only__ The Akamai Cloud Computing services your account supports.
+                    example:
+                    - Linodes
+                    - NodeBalancers
+                    - Block Storage
+                    - Object Storage
+                    - Placement Groups
+                    - Block Storage Encryption
+                    - Cloud Firewall Rule Set
+                    - Custom VPC IPv4 Ranges
+                    - GPUDirect RDMA
+                    - VPC Dual Stack
+                    - VPC IPv6 Stack
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                  city:
+                    description: The city for this account's `address`.
+                    example: Philadelphia
+                    maxLength: 24
+                    type: string
+                  company:
+                    description: The company name assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: Linode LLC
+                    maxLength: 128
+                    type: string
+                  country:
+                    description: The two-letter ISO 3166 country code for this account's `address`.
+                    example: US
+                    type: string
+                  credit_card:
+                    additionalProperties: false
+                    description: __Read-only__ The credit card information assigned to this account.
+                    properties:
+                      expiry:
+                        description: The expiration month and year of the `credit_card`.
+                        example: 11/2022
+                        type:
+                        - string
+                        - 'null'
+                      last_four:
+                        description: The last four digits of the `credit_card` assigned to this account.
+                        example: 1111
+                        type:
+                        - string
+                        - 'null'
+                    readOnly: true
+                    type: object
+                  email:
+                    description: The email address of the person assigned to this account.
+                    example: john.smith@linode.com
+                    maxLength: 128
+                    type: string
+                    x-linode-cli-display: 3
+                  euuid:
+                    description: __Read-only__ An external unique identifier for this account.
+                    example: E1AF5EEC-526F-487D-B317EBEB34C87D71
+                    readOnly: true
+                    type: string
+                  first_name:
+                    description: The first name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: John
+                    maxLength: 50
+                    type: string
+                    x-linode-cli-display: 1
+                  last_name:
+                    description: The last name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: Smith
+                    maxLength: 50
+                    type: string
+                    x-linode-cli-display: 2
+                  phone:
+                    description: The phone number assigned to this account.
+                    example: 215-555-1212
+                    maxLength: 32
+                    type: string
+                  state:
+                    description: 'The state or province for the `address` set for your account, if applicable.
+
+
+                      - If the `address` is in the United States (US) or Canada (CA), this is the two-letter ISO 3166 code for the state or province.
+
+
+                      - If it''s a US military `address`, this is the abbreviation for that territory. This includes `AA` for Armed Forces Americas (excluding Canada), `AE` for Armed Forces Africa, Europe, Middle East, and Canada, or `AP` for Armed Forces Pacific.
+
+
+                      - If outside the US or CA, this is the province associated with the account''s `address`.'
+                    example: PA
+                    maxLength: 24
+                    type: string
+                  tax_id:
+                    description: 'The tax identification number (TIN) assigned to this account, used for tax calculations. A TIN is set by the national authorities in your `country`, based on your `address_1`, and it may be named differently between countries. Set to an empty string (`""`) if a TIN doesn''t apply or for countries that don''t collect tax.
+
+
+                      > 📘
+
+                      >
+
+                      > This value is externally validated. If the validation is successful, a `tax_id_valid` [event](https://techdocs.akamai.com/linode-api/reference/get-events) is triggered. If unsuccessful, a `tax_id_invalid` event is triggered and an error response is issued for an operation that included it.'
+                    example: ATU99999999
+                    maxLength: 25
+                    type: string
+                  zip:
+                    description: 'The zip code for this account''s `address`.
+
+
+                      - It can only contain ASCII letters, numbers, and dashes (`-`).
+
+
+                      - It can''t contain more than nine letter or number characters.'
+                    example: 19102-1234
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/account.yaml
+          description: Returns a single account object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get your account
+      tags:
+      - Account
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_account
+    put:
+      description: 'Updates contact and billing information related to your account. If you exclude any properties from the request, the operation leaves them unchanged.
+
+
+        > 📘
+
+        >
+
+        > When updating an account''s `country` to `US`, you''ll get an error if the account''s `zip` is not a valid US zip code.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature:
+
+
+        - You can''t change the company for a parent account.
+
+
+        - Child account users can''t run this operation.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_account`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account update \
+
+        --address_1 "123 Main St." \
+
+        --address_2 "Suite 101" \
+
+        --city Philadelphia \
+
+        --company My Company \ LLC \
+
+        --country US \
+
+        --email jsmith@mycompany.com \
+
+        --first_name John \
+
+        --last_name Smith \
+
+        --phone 555-555-1212 \
+
+        --state PA \
+
+        --tax_id ATU99999999 \
+
+        --zip 19102
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-account
+      operationId: put-account
+      requestBody:
+        content:
+          application/json:
+            example:
+              address_1: 123 Main Street
+              address_2: Suite A
+              city: Philadelphia
+              company: Company Name
+              country: US
+            schema:
+              additionalProperties: false
+              description: Account object.
+              properties:
+                active_promotions:
+                  items:
+                    additionalProperties: false
+                    description: 'Promotions generally offer a set amount of credit that can be used toward your Linode services, and the promotion expires after a specified date. As well, a monthly cap on the promotional offer is set.
+
+
+                      Simply put, a promotion offers a certain amount of credit  month, until either the expiration date is passed, or until the total promotional credit is used, whichever comes first.'
+                    properties:
+                      credit_monthly_cap:
+                        description: The amount available to spend per month.
+                        example: '10.00'
+                        type: string
+                        x-linode-cli-display: 5
+                      credit_remaining:
+                        description: The total amount of credit left for this promotion.
+                        example: '50.00'
+                        type: string
+                        x-linode-cli-display: 3
+                      description:
+                        description: A detailed description of this promotion.
+                        example: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                        type: string
+                      expire_dt:
+                        description: When this promotion's credits expire.
+                        example: '2018-01-31T23:59:59'
+                        type: string
+                        x-linode-cli-display: 2
+                      image_url:
+                        description: The location of an image for this promotion.
+                        example: https://linode.com/10_a_month_promotion.svg
+                        type: string
+                      service_type:
+                        description: The service to which this promotion applies, either a specific service or `all` for any service. Specific services include `linode`, `longview`, `nodebalancer`, `objectstorage`, `blockstorage`, `backup`, `db_mysql`, `ip_v4`, `linode_disk`, `linode_memory`, `managed`, `placement_group`, and `transfer_tx`.
+                        enum:
+                        - all
+                        - backup
+                        - blockstorage
+                        - db_mysql
+                        - ip_v4
+                        - linode
+                        - linode_disk
+                        - linode_memory
+                        - longview
+                        - managed
+                        - nodebalancer
+                        - objectstorage
+                        - placement_group
+                        - transfer_tx
+                        example: all
+                        type: string
+                        x-linode-cli-display: 1
+                      summary:
+                        description: Short details of this promotion.
+                        example: $10 off your Linode a month!
+                        type: string
+                        x-linode-cli-display: 10
+                      this_month_credit_remaining:
+                        description: The amount of credit left for this month for this promotion.
+                        example: '10.00'
+                        type: string
+                        x-linode-cli-display: 4
+                    type: object
+                    x-akamai:
+                      file-path: schemas/promotion.yaml
+                  readOnly: true
+                  type: array
+                active_since:
+                  description: __Read-only__ The date and time the account was activated.
+                  example: '{{active_since}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+                address_1:
+                  description: The first line of this account's billing address.
+                  example: '{{address_1}}'
+                  maxLength: 64
+                  type: string
+                address_2:
+                  description: The second line of this account's billing address.
+                  example: '{{address_2}}'
+                  maxLength: 64
+                  type: string
+                balance:
+                  description: __Read-only__ This account's balance, in US dollars.
+                  example: '{{balance}}'
+                  readOnly: true
+                  type: number
+                  x-linode-cli-display: 4
+                balance_uninvoiced:
+                  description: __Read-only__ This account's current estimated invoice in US dollars. This is not your final invoice balance. Transfer charges are not included in the estimate.
+                  example: '{{balance_uninvoiced}}'
+                  readOnly: true
+                  type: number
+                  x-linode-cli-display: 4
+                billing_source:
+                  description: __Read-only__ The source of service charges for this account. Accounts that are associated with Akamai-specific customers return a value of `akamai`. All other accounts return a value of `linode`.
+                  enum:
+                  - akamai
+                  - linode
+                  example: '{{billing_source}}'
+                  readOnly: true
+                  type: string
+                capabilities:
+                  description: __Read-only__ The Akamai Cloud Computing services your account supports.
+                  example:
+                  - Linodes
+                  - NodeBalancers
+                  - Block Storage
+                  - Object Storage
+                  - Placement Groups
+                  - Block Storage Encryption
+                  - Cloud Firewall Rule Set
+                  - Custom VPC IPv4 Ranges
+                  - GPUDirect RDMA
+                  - VPC Dual Stack
+                  - VPC IPv6 Stack
+                  items:
+                    type: string
+                  readOnly: true
+                  type: array
+                city:
+                  description: The city for this account's `address`.
+                  example: '{{city}}'
+                  maxLength: 24
+                  type: string
+                company:
+                  description: The company name assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                  example: '{{company}}'
+                  maxLength: 128
+                  type: string
+                country:
+                  description: The two-letter ISO 3166 country code for this account's `address`.
+                  example: '{{country}}'
+                  type: string
+                credit_card:
+                  additionalProperties: false
+                  description: __Read-only__ The credit card information assigned to this account.
+                  properties:
+                    expiry:
+                      description: The expiration month and year of the `credit_card`.
+                      example: 11/2022
+                      type:
+                      - string
+                      - 'null'
+                    last_four:
+                      description: The last four digits of the `credit_card` assigned to this account.
+                      example: 1111
+                      type:
+                      - string
+                      - 'null'
+                  readOnly: true
+                  type: object
+                email:
+                  description: The email address of the person assigned to this account.
+                  example: '{{email}}'
+                  maxLength: 128
+                  type: string
+                  x-linode-cli-display: 3
+                euuid:
+                  description: __Read-only__ An external unique identifier for this account.
+                  example: '{{euuid}}'
+                  readOnly: true
+                  type: string
+                first_name:
+                  description: The first name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                  example: '{{first_name}}'
+                  maxLength: 50
+                  type: string
+                  x-linode-cli-display: 1
+                last_name:
+                  description: The last name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                  example: '{{last_name}}'
+                  maxLength: 50
+                  type: string
+                  x-linode-cli-display: 2
+                phone:
+                  description: The phone number assigned to this account.
+                  example: '{{phone}}'
+                  maxLength: 32
+                  type: string
+                state:
+                  description: 'The state or province for the `address` set for your account, if applicable.
+
+
+                    - If the `address` is in the United States (US) or Canada (CA), this is the two-letter ISO 3166 code for the state or province.
+
+
+                    - If it''s a US military `address`, this is the abbreviation for that territory. This includes `AA` for Armed Forces Americas (excluding Canada), `AE` for Armed Forces Africa, Europe, Middle East, and Canada, or `AP` for Armed Forces Pacific.
+
+
+                    - If outside the US or CA, this is the province associated with the account''s `address`.'
+                  example: '{{state}}'
+                  maxLength: 24
+                  type: string
+                tax_id:
+                  description: 'The tax identification number (TIN) assigned to this account, used for tax calculations. A TIN is set by the national authorities in your `country`, based on your `address_1`, and it may be named differently between countries. Set to an empty string (`""`) if a TIN doesn''t apply or for countries that don''t collect tax.
+
+
+                    > 📘
+
+                    >
+
+                    > This value is externally validated. If the validation is successful, a `tax_id_valid` [event](https://techdocs.akamai.com/linode-api/reference/get-events) is triggered. If unsuccessful, a `tax_id_invalid` event is triggered and an error response is issued for an operation that included it.'
+                  example: '{{tax_id}}'
+                  maxLength: 25
+                  type: string
+                zip:
+                  description: 'The zip code for this account''s `address`.
+
+
+                    - It can only contain ASCII letters, numbers, and dashes (`-`).
+
+
+                    - It can''t contain more than nine letter or number characters.'
+                  example: '{{zip}}'
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/account.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                active_promotions:
+                - credit_monthly_cap: '10.00'
+                  credit_remaining: '50.00'
+                  description: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                  expire_dt: '2018-01-31T23:59:59'
+                  image_url: https://linode.com/10_a_month_promotion.svg
+                  service_type: all
+                  summary: $10 off your Linode a month!
+                  this_month_credit_remaining: '10.00'
+                active_since: '2018-01-01T00:01:01'
+                address_1: 123 Main Street
+                address_2: Suite A
+                balance: 200
+                balance_uninvoiced: 145
+                billing_source: akamai
+                capabilities:
+                - Linodes
+                - NodeBalancers
+                - Block Storage
+                - Object Storage
+                - Placement Groups
+                - Block Storage Encryption
+                - Cloud Firewall Rule Set
+                - VPC Dual Stack
+                - VPC IPv6 Stack
+                - VPC IPv6 Large Prefixes
+                - Custom VPC IPv4 Ranges
+                - GPUDirect RDMA
+                city: Philadelphia
+                company: Linode LLC
+                country: US
+                credit_card:
+                  expiry: 11/2022
+                  last_four: 1111
+                email: mrossi@linode.com
+                euuid: E1AF5EEC-526F-487D-B317EBEB34C87D71
+                first_name: John
+                last_name: Smith
+                phone: 215-555-1212
+                state: PA
+                tax_id: ATU99999999
+                zip: 19102-1234
+              schema:
+                additionalProperties: false
+                description: Account object.
+                properties:
+                  active_promotions:
+                    items:
+                      additionalProperties: false
+                      description: 'Promotions generally offer a set amount of credit that can be used toward your Linode services, and the promotion expires after a specified date. As well, a monthly cap on the promotional offer is set.
+
+
+                        Simply put, a promotion offers a certain amount of credit  month, until either the expiration date is passed, or until the total promotional credit is used, whichever comes first.'
+                      properties:
+                        credit_monthly_cap:
+                          description: The amount available to spend per month.
+                          example: '10.00'
+                          type: string
+                          x-linode-cli-display: 5
+                        credit_remaining:
+                          description: The total amount of credit left for this promotion.
+                          example: '50.00'
+                          type: string
+                          x-linode-cli-display: 3
+                        description:
+                          description: A detailed description of this promotion.
+                          example: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                          type: string
+                        expire_dt:
+                          description: When this promotion's credits expire.
+                          example: '2018-01-31T23:59:59'
+                          type: string
+                          x-linode-cli-display: 2
+                        image_url:
+                          description: The location of an image for this promotion.
+                          example: https://linode.com/10_a_month_promotion.svg
+                          type: string
+                        service_type:
+                          description: The service to which this promotion applies, either a specific service or `all` for any service. Specific services include `linode`, `longview`, `nodebalancer`, `objectstorage`, `blockstorage`, `backup`, `db_mysql`, `ip_v4`, `linode_disk`, `linode_memory`, `managed`, `placement_group`, and `transfer_tx`.
+                          enum:
+                          - all
+                          - backup
+                          - blockstorage
+                          - db_mysql
+                          - ip_v4
+                          - linode
+                          - linode_disk
+                          - linode_memory
+                          - longview
+                          - managed
+                          - nodebalancer
+                          - objectstorage
+                          - placement_group
+                          - transfer_tx
+                          example: all
+                          type: string
+                          x-linode-cli-display: 1
+                        summary:
+                          description: Short details of this promotion.
+                          example: $10 off your Linode a month!
+                          type: string
+                          x-linode-cli-display: 10
+                        this_month_credit_remaining:
+                          description: The amount of credit left for this month for this promotion.
+                          example: '10.00'
+                          type: string
+                          x-linode-cli-display: 4
+                      type: object
+                      x-akamai:
+                        file-path: schemas/promotion.yaml
+                    readOnly: true
+                    type: array
+                  active_since:
+                    description: __Read-only__ The date and time the account was activated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  address_1:
+                    description: The first line of this account's billing address.
+                    example: 123 Main Street
+                    maxLength: 64
+                    type: string
+                  address_2:
+                    description: The second line of this account's billing address.
+                    example: Suite A
+                    maxLength: 64
+                    type: string
+                  balance:
+                    description: __Read-only__ This account's balance, in US dollars.
+                    example: 200
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  balance_uninvoiced:
+                    description: __Read-only__ This account's current estimated invoice in US dollars. This is not your final invoice balance. Transfer charges are not included in the estimate.
+                    example: 145
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  billing_source:
+                    description: __Read-only__ The source of service charges for this account. Accounts that are associated with Akamai-specific customers return a value of `akamai`. All other accounts return a value of `linode`.
+                    enum:
+                    - akamai
+                    - linode
+                    example: akamai
+                    readOnly: true
+                    type: string
+                  capabilities:
+                    description: __Read-only__ The Akamai Cloud Computing services your account supports.
+                    example:
+                    - Linodes
+                    - NodeBalancers
+                    - Block Storage
+                    - Object Storage
+                    - Placement Groups
+                    - Block Storage Encryption
+                    - Cloud Firewall Rule Set
+                    - Custom VPC IPv4 Ranges
+                    - GPUDirect RDMA
+                    - VPC Dual Stack
+                    - VPC IPv6 Stack
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                  city:
+                    description: The city for this account's `address`.
+                    example: Philadelphia
+                    maxLength: 24
+                    type: string
+                  company:
+                    description: The company name assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: Linode LLC
+                    maxLength: 128
+                    type: string
+                  country:
+                    description: The two-letter ISO 3166 country code for this account's `address`.
+                    example: US
+                    type: string
+                  credit_card:
+                    additionalProperties: false
+                    description: __Read-only__ The credit card information assigned to this account.
+                    properties:
+                      expiry:
+                        description: The expiration month and year of the `credit_card`.
+                        example: 11/2022
+                        type:
+                        - string
+                        - 'null'
+                      last_four:
+                        description: The last four digits of the `credit_card` assigned to this account.
+                        example: 1111
+                        type:
+                        - string
+                        - 'null'
+                    readOnly: true
+                    type: object
+                  email:
+                    description: The email address of the person assigned to this account.
+                    example: john.smith@linode.com
+                    maxLength: 128
+                    type: string
+                    x-linode-cli-display: 3
+                  euuid:
+                    description: __Read-only__ An external unique identifier for this account.
+                    example: E1AF5EEC-526F-487D-B317EBEB34C87D71
+                    readOnly: true
+                    type: string
+                  first_name:
+                    description: The first name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: John
+                    maxLength: 50
+                    type: string
+                    x-linode-cli-display: 1
+                  last_name:
+                    description: The last name of the person assigned to this account. This value can't include the characters, `<` `>` `(` `)` `"` `=`.
+                    example: Smith
+                    maxLength: 50
+                    type: string
+                    x-linode-cli-display: 2
+                  phone:
+                    description: The phone number assigned to this account.
+                    example: 215-555-1212
+                    maxLength: 32
+                    type: string
+                  state:
+                    description: 'The state or province for the `address` set for your account, if applicable.
+
+
+                      - If the `address` is in the United States (US) or Canada (CA), this is the two-letter ISO 3166 code for the state or province.
+
+
+                      - If it''s a US military `address`, this is the abbreviation for that territory. This includes `AA` for Armed Forces Americas (excluding Canada), `AE` for Armed Forces Africa, Europe, Middle East, and Canada, or `AP` for Armed Forces Pacific.
+
+
+                      - If outside the US or CA, this is the province associated with the account''s `address`.'
+                    example: PA
+                    maxLength: 24
+                    type: string
+                  tax_id:
+                    description: 'The tax identification number (TIN) assigned to this account, used for tax calculations. A TIN is set by the national authorities in your `country`, based on your `address_1`, and it may be named differently between countries. Set to an empty string (`""`) if a TIN doesn''t apply or for countries that don''t collect tax.
+
+
+                      > 📘
+
+                      >
+
+                      > This value is externally validated. If the validation is successful, a `tax_id_valid` [event](https://techdocs.akamai.com/linode-api/reference/get-events) is triggered. If unsuccessful, a `tax_id_invalid` event is triggered and an error response is issued for an operation that included it.'
+                    example: ATU99999999
+                    maxLength: 25
+                    type: string
+                  zip:
+                    description: 'The zip code for this account''s `address`.
+
+
+                      - It can only contain ASCII letters, numbers, and dashes (`-`).
+
+
+                      - It can''t contain more than nine letter or number characters.'
+                    example: 19102-1234
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/account.yaml
+          description: The updated account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Update your account
+      tags:
+      - Account
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli account update \\\n  --address_1 \"123 Main St.\" \\\n  --address_2 \"Suite 101\" \\\n  --city Philadelphia \\\n  --company My Company \\ LLC \\\n  --country US \\\n  --email jsmith@mycompany.com \\\n  --first_name John \\\n  --last_name Smith \\\n  --phone 555-555-1212 \\\n  --state PA \\\n  --tax_id ATU99999999 \\\n  --zip 19102"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_account
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/account/cancel:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/account-cancel.yaml
+      path-info: /{apiVersion}/account/cancel
+    x-linode-cli-command: account
+    post:
+      description: 'Deletes an active account. Akamai attempts to charge the credit card on file for any remaining balance. An error occurs if this charge fails.
+
+
+        > 🚧
+
+        >
+
+        > This operation permanently deletes your account, which _can''t_ be recovered. Also, there is no warning prompt after you execute this operation.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, you need to contact your Akamai account team to delete a child or parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `cancel_account`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account cancel \
+
+        --comments "I''m consolidating my accounts"
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-cancel-account
+      operationId: post-cancel-account
+      requestBody:
+        content:
+          application/json:
+            example:
+              comments: I'm consolidating multiple accounts into one.
+            schema:
+              additionalProperties: false
+              properties:
+                comments:
+                  description: Share the reason for cancelling your account along with any other feedback or comments about your experience.
+                  example: '{{comments}}'
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-cancel-account.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                survey_link: https://alinktothesurvey.com
+              schema:
+                additionalProperties: false
+                example:
+                  survey_link: https://alinktothesurvey.com
+                properties:
+                  survey_link:
+                    description: A link to Linode's exit survey.
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-cancel-account-200.yaml
+          description: Account canceled.
+        '409':
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: We were unable to charge your credit card for services rendered. We cannot cancel this account until the balance has been paid.
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      properties:
+                        reason:
+                          description: A string explaining that the account could not be canceled because there is an outstanding balance on the account that must be paid first.
+                          example: We were unable to charge your credit card for services rendered. We cannot cancel this account until the balance has been paid.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+                x-akamai:
+                  file-path: schemas/post-cancel-account-409.yaml
+          description: Could not charge the credit card on file.
+          x-akamai:
+            file-path: errors/409.yaml
+        '504':
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Cancellation is taking longer than expected. It may have been successful. Contact customer support to confirm.
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      properties:
+                        reason:
+                          description: A string explaining that the account is taking longer to close than expected.
+                          example: Cancellation is taking longer than expected. It may have been successful. Contact customer support to confirm.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+                x-akamai:
+                  file-path: schemas/post-cancel-account-504.yaml
+          description: Account is taking longer than expected to cancel.
+          x-akamai:
+            file-path: errors/504-account-cancel.yaml
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Delete your account
+      tags:
+      - Account
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli account cancel \\\n  --comments \"I'm consolidating my accounts\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: cancel
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - cancel_account
+    servers:
+    - url: https://api.linode.com
   /account:
     get:
       operationId: getAccount
@@ -33,6 +1229,9 @@ paths:
                 $ref: '#/components/schemas/Account'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateAccount
       summary: Update account info
@@ -56,6 +1255,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/users:
     get:
       operationId: getUsers
@@ -75,6 +1280,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedUserList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createUser
       summary: Create a user
@@ -98,6 +1306,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/users/{username}:
     get:
       operationId: getUser
@@ -118,6 +1332,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: User not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateUser
       summary: Update a user
@@ -145,6 +1362,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: User not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     delete:
       operationId: deleteUser
       summary: Delete a user
@@ -160,6 +1380,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: User not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/events:
     get:
       operationId: getEvents
@@ -179,6 +1405,12 @@ paths:
                 $ref: '#/components/schemas/PaginatedEventList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/events/{eventId}:
     get:
       operationId: getEvent
@@ -199,6 +1431,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Event not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/invoices:
     get:
       operationId: getInvoices
@@ -218,6 +1456,12 @@ paths:
                 $ref: '#/components/schemas/PaginatedInvoiceList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /account/payments:
     get:
       operationId: getPayments
@@ -237,6 +1481,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedPaymentList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createPayment
       summary: Make a payment
@@ -260,8 +1507,209 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
+  parameters:
+    eventIdParam:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the event.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    usernameParam:
+      name: username
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The username of the user.
   schemas:
+    Account:
+      type: object
+      properties:
+        company:
+          type: string
+          description: The company name associated with this account.
+        email:
+          type: string
+          format: email
+          description: The email address associated with this account.
+        first_name:
+          type: string
+          description: The first name of the account holder.
+        last_name:
+          type: string
+          description: The last name of the account holder.
+        address_1:
+          type: string
+          description: The first line of the account's address.
+        address_2:
+          type: string
+          description: The second line of the account's address.
+        city:
+          type: string
+          description: The city of the account's address.
+        state:
+          type: string
+          description: The state or province of the account's address.
+        zip:
+          type: string
+          description: The postal code of the account's address.
+        country:
+          type: string
+          description: The two-letter ISO 3166-1 country code.
+        phone:
+          type: string
+          description: The phone number for the account.
+        balance:
+          type: number
+          format: float
+          description: The current account balance in US dollars.
+        active_since:
+          type: string
+          format: date-time
+          description: The date and time the account was activated.
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: A list of capabilities enabled on this account.
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this payment.
+        date:
+          type: string
+          format: date-time
+          description: The date this payment was made.
+        usd:
+          type: number
+          description: The amount in US dollars.
+    PaginatedPaymentList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Payment'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    PaginatedInvoiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Invoice'
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user has restricted access to account resources.
+        ssh_keys:
+          type: array
+          items:
+            type: string
+          description: A list of SSH key labels associated with the user.
+        tfa_enabled:
+          type: boolean
+          description: Whether two-factor authentication is enabled.
+    PaginatedUserList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this invoice.
+        date:
+          type: string
+          format: date-time
+          description: The date of this invoice.
+        label:
+          type: string
+          description: The label for this invoice.
+        subtotal:
+          type: number
+          description: The subtotal amount.
+        tax:
+          type: number
+          description: The tax amount.
+        total:
+          type: number
+          description: The total amount.
+    UserRequest:
+      type: object
+      required:
+      - username
+      - email
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user should have restricted access.
     Event:
       type: object
       properties:
@@ -354,130 +1802,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Event'
-    Payment:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this payment.
-        date:
-          type: string
-          format: date-time
-          description: The date this payment was made.
-        usd:
-          type: number
-          description: The amount in US dollars.
-    PaginatedUserList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/User'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    Account:
-      type: object
-      properties:
-        company:
-          type: string
-          description: The company name associated with this account.
-        email:
-          type: string
-          format: email
-          description: The email address associated with this account.
-        first_name:
-          type: string
-          description: The first name of the account holder.
-        last_name:
-          type: string
-          description: The last name of the account holder.
-        address_1:
-          type: string
-          description: The first line of the account's address.
-        address_2:
-          type: string
-          description: The second line of the account's address.
-        city:
-          type: string
-          description: The city of the account's address.
-        state:
-          type: string
-          description: The state or province of the account's address.
-        zip:
-          type: string
-          description: The postal code of the account's address.
-        country:
-          type: string
-          description: The two-letter ISO 3166-1 country code.
-        phone:
-          type: string
-          description: The phone number for the account.
-        balance:
-          type: number
-          format: float
-          description: The current account balance in US dollars.
-        active_since:
-          type: string
-          format: date-time
-          description: The date and time the account was activated.
-        capabilities:
-          type: array
-          items:
-            type: string
-          description: A list of capabilities enabled on this account.
-    UserRequest:
-      type: object
-      required:
-      - username
-      - email
-      properties:
-        username:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The user's username.
-        email:
-          type: string
-          format: email
-          description: The user's email address.
-        restricted:
-          type: boolean
-          description: Whether the user should have restricted access.
-    Invoice:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this invoice.
-        date:
-          type: string
-          format: date-time
-          description: The date of this invoice.
-        label:
-          type: string
-          description: The label for this invoice.
-        subtotal:
-          type: number
-          description: The subtotal amount.
-        tax:
-          type: number
-          description: The tax amount.
-        total:
-          type: number
-          description: The total amount.
     PaymentRequest:
       type: object
       required:
@@ -488,118 +1812,56 @@ components:
           minimum: 5
           maximum: 10000
           description: The payment amount in US dollars.
-    PaginatedInvoiceList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Invoice'
-    PaginatedPaymentList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Payment'
-    User:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The user's username.
-        email:
-          type: string
-          format: email
-          description: The user's email address.
-        restricted:
-          type: boolean
-          description: Whether the user has restricted access to account resources.
-        ssh_keys:
-          type: array
-          items:
-            type: string
-          description: A list of SSH key labels associated with the user.
-        tfa_enabled:
-          type: boolean
-          description: Whether two-factor authentication is enabled.
-  parameters:
-    usernameParam:
-      name: username
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The username of the user.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    eventIdParam:
-      name: eventId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the event.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

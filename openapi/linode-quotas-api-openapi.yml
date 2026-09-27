@@ -1,0 +1,1186 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Quotas API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Quotas are limits related to your resource usage in Object Storage. Use these operations to review and manage your Object Storage quotas.
+  name: Quotas
+paths:
+  /{apiVersion}/object-storage/global-quotas:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-global-quotas.yaml
+      path-info: /{apiVersion}/object-storage/global-quotas
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns the active Object Storage-related global quotas applied to your account, such as the maximum number of access keys. The operation includes any quota overrides in the response.
+
+
+        > 📘
+
+        >
+
+        > You can''t combine parameters when filtering with this operation. Only a single filterable parameter can be used.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage global-quotas-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-global-quotas
+      operationId: get-object-storage-global-quotas
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - description: Current number of access keys per account
+                  has_usage: true
+                  quota_id: keys
+                  quota_limit: 100
+                  quota_name: Number of Access Keys
+                  quota_type: keys
+                  resource_metric: key
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: The current Object Storage-related quotas on your account.
+                      properties:
+                        description:
+                          description: A description for the Object Storage-related global quota.
+                          type: string
+                          x-linode-cli-display: 3
+                        has_usage:
+                          description: Indicates whether usage metrics are collected for this quota. If `true`, you can use the [Get Object Storage global quota usage](https://techdocs.akamai.com/linode-api/reference/get-object-storage-global-quota-usage) operation to see the current usage for this quota.
+                          type: boolean
+                          x-linode-cli-display: 7
+                        quota_id:
+                          description: Identifies the Object Storage-related quota.
+                          type: string
+                          x-linode-cli-display: 1
+                        quota_limit:
+                          description: The maximum quantity of the `resource_metric` allowed by the quota.
+                          type: integer
+                          x-linode-cli-display: 5
+                        quota_name:
+                          description: __Filterable__ The human-readable name of the Object Storage-related global quota. Currently the only available quota is named `Number of Access Keys`.
+                          enum:
+                          - Number of Access Keys
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        quota_type:
+                          description: 'Identifies the type of Object Storage global quota. Currently only one type of Object Storage global quota is available:
+
+
+                            - `keys`: Current number of access keys per account'
+                          enum:
+                          - keys
+                          type: string
+                          x-linode-cli-display: 6
+                        resource_metric:
+                          description: The specific Object Storage-based resource for the global quota. Currently the only resource metric for Object Storage global quotas is `key`, which refers to access keys.
+                          enum:
+                          - key
+                          type: string
+                          x-linode-cli-display: 4
+                      type: object
+                      x-akamai:
+                        file-path: schemas/object-storage-global-quota.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-global-quotas.yaml
+          description: A paginated list of Object Storage-related global quotas applied to your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: List Object Storage global quotas
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage global-quotas-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - global-quotas-list
+      - get-object-storage-global-quotas
+  /{apiVersion}/object-storage/global-quotas/{objGlobalQuotaId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: __Enum__ Identifies the Object Storage-related global quota to retrieve.
+      example: '{{objGlobalQuotaId}}'
+      in: path
+      name: objGlobalQuotaId
+      required: true
+      schema:
+        enum:
+        - keys
+        example: keys
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-global-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-global-quota.yaml
+      path-info: /{apiVersion}/object-storage/global-quotas/{objGlobalQuotaId}
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns a specific Object Storage-related global quota on your account. The operation includes any quota overrides in the response.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage global-quota-view keys
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-global-quota
+      operationId: get-object-storage-global-quota
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                description: Current number of access keys per account
+                has_usage: true
+                quota_id: keys
+                quota_limit: 100
+                quota_name: Number of Access Keys
+                quota_type: keys
+                resource_metric: key
+              schema:
+                additionalProperties: false
+                description: The current Object Storage-related quotas on your account.
+                properties:
+                  description:
+                    description: A description for the Object Storage-related global quota.
+                    type: string
+                    x-linode-cli-display: 3
+                  has_usage:
+                    description: Indicates whether usage metrics are collected for this quota. If `true`, you can use the [Get Object Storage global quota usage](https://techdocs.akamai.com/linode-api/reference/get-object-storage-global-quota-usage) operation to see the current usage for this quota.
+                    type: boolean
+                    x-linode-cli-display: 7
+                  quota_id:
+                    description: Identifies the Object Storage-related quota.
+                    type: string
+                    x-linode-cli-display: 1
+                  quota_limit:
+                    description: The maximum quantity of the `resource_metric` allowed by the quota.
+                    type: integer
+                    x-linode-cli-display: 5
+                  quota_name:
+                    description: __Filterable__ The human-readable name of the Object Storage-related global quota. Currently the only available quota is named `Number of Access Keys`.
+                    enum:
+                    - Number of Access Keys
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  quota_type:
+                    description: 'Identifies the type of Object Storage global quota. Currently only one type of Object Storage global quota is available:
+
+
+                      - `keys`: Current number of access keys per account'
+                    enum:
+                    - keys
+                    type: string
+                    x-linode-cli-display: 6
+                  resource_metric:
+                    description: The specific Object Storage-based resource for the global quota. Currently the only resource metric for Object Storage global quotas is `key`, which refers to access keys.
+                    enum:
+                    - key
+                    type: string
+                    x-linode-cli-display: 4
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-global-quota.yaml
+          description: A single Object Storage-related quota for your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get an Object Storage global quota
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage global-quota-view keys
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - global-quota-view
+      - get-object-storage-global-quota
+  /{apiVersion}/object-storage/global-quotas/{objGlobalQuotaId}/usage:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: __Enum__ Identifies the Object Storage-related global quota to retrieve.
+      example: '{{objGlobalQuotaId}}'
+      in: path
+      name: objGlobalQuotaId
+      required: true
+      schema:
+        enum:
+        - keys
+        example: keys
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-global-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-global-quota-usage.yaml
+      path-info: /{apiVersion}/object-storage/global-quotas/{objGlobalQuotaId}/usage
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns usage data for a specific global quota (`objGlobalQuotaId`). This includes the maximum number of resources permitted by the quota and your current usage for that resource.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage global-quota-usage-view keys
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-global-quota-usage
+      operationId: get-object-storage-global-quota-usage
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                quota_limit: 100
+                usage: 47
+              schema:
+                additionalProperties: false
+                description: Usage data for a specific Object Storage-related global quota on your account.
+                properties:
+                  quota_limit:
+                    description: The availability limit for a specific Object Storage resource (`objQuotaId`).
+                    example: 100
+                    type: integer
+                    x-linode-cli-display: 1
+                  usage:
+                    description: The number of Object Storage resources currently in use. Displayed as `null` if no resources are in use.
+                    example: 10
+                    minimum: 1
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-global-quota-usage.yaml
+          description: Usage data for the specified `objGlobalQuotaId`.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get Object Storage global quota usage data
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage global-quota-usage-view keys
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - global-quota-usage-view
+      - get-object-storage-global-quota-usage
+  /{apiVersion}/object-storage/quotas:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quotas.yaml
+      path-info: /{apiVersion}/object-storage/quotas
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns the active Object Storage-related quotas applied to your account. For example, you may have a quota for the maximum number of buckets you can have on a single endpoint. The operation includes any quota overrides in the response.
+
+
+        > 📘
+
+        >
+
+        > You can''t combine parameters when filtering with this operation. Only a single filterable parameter can be used.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage quotas-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quotas
+      operationId: get-object-storage-quotas
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - description: Current number of buckets per account, per endpoint
+                  endpoint_type: E1
+                  has_usage: true
+                  quota_id: obj-buckets-us-sea-1.linodeobjects.com
+                  quota_limit: 1000
+                  quota_name: Number of Buckets
+                  quota_type: obj-buckets
+                  resource_metric: bucket
+                  s3_endpoint: us-sea-1.linodeobjects.com
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: An Object Storage-related quota on your account.
+                      properties:
+                        description:
+                          description: A description for the Object Storage-related quota.
+                          type: string
+                          x-linode-cli-display: 3
+                        endpoint_type:
+                          description: The type of `s3_endpoint`, either `E0`, `E1`, `E2`, or `E3`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          enum:
+                          - E0
+                          - E1
+                          - E2
+                          - E3
+                          type: string
+                          x-linode-cli-display: 6
+                        has_usage:
+                          description: Indicates whether usage metrics are collected for this quota. If `true`, you can use the [Get Object Storage quota usage](https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota-usage) operation to see the current usage for this quota.
+                          type: boolean
+                          x-linode-cli-display: 8
+                        quota_id:
+                          description: Identifies the Object Storage-related quota. Formatted as `<quota_type>-<s3_endpoint>`.
+                          type: string
+                          x-linode-cli-display: 1
+                        quota_limit:
+                          description: The maximum quantity of the `resource_metric` allowed by the quota.
+                          type: integer
+                          x-linode-cli-display: 5
+                        quota_name:
+                          description: '__Filterable__ The human-readable name of the Object Storage-related quota. Values include:
+
+
+                            - `Number of Buckets`
+
+                            - `Number of Objects`
+
+                            - `Total Capacity`
+
+                            - `Ingress Throughput (per endpoint)`
+
+                            - `Egress Throughput (per endpoint)`
+
+                            - `Ingress Throughput (per IP)`
+
+                            - `Egress Throughput (per IP)`'
+                          enum:
+                          - Number of Objects
+                          - Number of Buckets
+                          - Total Capacity
+                          - Ingress Throughput (per endpoint)
+                          - Egress Throughput (per endpoint)
+                          - Ingress Throughput (per IP)
+                          - Egress Throughput (per IP)
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        quota_type:
+                          description: 'Identifies the type of Object Storage quota. Values include:
+
+
+                            - `obj-buckets`: Current number of buckets per account, per endpoint
+
+                            - `obj-objects`: Current number of objects per account, per endpoint
+
+                            - `obj-bytes`: Current total capacity per account, per endpoint
+
+                            - `obj-total-ingress-throughput`: Current total ingress bandwidth per account, per endpoint
+
+                            - `obj-total-egress-throughput`: Current total egress bandwidth per account, per endpoint
+
+                            - `obj-per-ip-ingress-throughput`: Current ingress bandwidth per account, per destination IP address
+
+                            - `obj-per-ip-egress-throughput`: Current egress bandwidth per account, per destination IP address'
+                          enum:
+                          - obj-buckets
+                          - obj-objects
+                          - obj-bytes
+                          - obj-total-ingress-throughput
+                          - obj-total-egress-throughput
+                          - obj-per-ip-ingress-throughput
+                          - obj-per-ip-egress-throughput
+                          type: string
+                          x-linode-cli-display: 7
+                        resource_metric:
+                          description: The specific Object Storage-based resource for the quota, either `bucket`, `object`, `byte`, or `byte_per_second`.
+                          enum:
+                          - bucket
+                          - object
+                          - byte
+                          - byte_per_second
+                          type: string
+                          x-linode-cli-display: 4
+                        s3_endpoint:
+                          description: __Filterable__ The URL for the s3 endpoint where the quota applies. Every `s3_endpoint` exists in a specific Akamai Cloud Computing data center (`region`). Run the [List Object Storage endpoints](https://techdocs.akamai.com/linode-api/reference/get-object-storage-endpoints) operation to see more specifics on this `s3_endpoint`.
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 9
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/object-storage-quota.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-quotas.yaml
+          description: A paginated list of Object Storage-related quotas applied to your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: List Object Storage quotas
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quotas-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quotas-list
+      - get-object-storage-quotas
+  /{apiVersion}/object-storage/quotas/{objQuotaId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: Identifies the Object Storage-related global quota to retrieve. This follows the pattern, `<quota_type>-<s3_endpoint>`, for example, `buckets-eu-central-1.linodeobjects.com`.
+      example: '{{objQuotaId}}'
+      in: path
+      name: objQuotaId
+      required: true
+      schema:
+        example: buckets-eu-central-1.linodeobjects.com
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quota.yaml
+      path-info: /{apiVersion}/object-storage/quotas/{objQuotaId}
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns information about a specific Object Storage-related quota on your account. The operation includes any quota overrides in the response.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage quota-view obj-objects-us-ord-1
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota
+      operationId: get-object-storage-quota
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                description: Current number of buckets per account, per endpoint
+                endpoint_type: E1
+                has_usage: true
+                quota_id: obj-buckets-us-sea-1.linodeobjects.com
+                quota_limit: 1000
+                quota_name: Number of Buckets
+                quota_type: obj-buckets
+                resource_metric: bucket
+                s3_endpoint: us-sea-1.linodeobjects.com
+              schema:
+                additionalProperties: false
+                description: An Object Storage-related quota on your account.
+                properties:
+                  description:
+                    description: A description for the Object Storage-related quota.
+                    type: string
+                    x-linode-cli-display: 3
+                  endpoint_type:
+                    description: The type of `s3_endpoint`, either `E0`, `E1`, `E2`, or `E3`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                    enum:
+                    - E0
+                    - E1
+                    - E2
+                    - E3
+                    type: string
+                    x-linode-cli-display: 6
+                  has_usage:
+                    description: Indicates whether usage metrics are collected for this quota. If `true`, you can use the [Get Object Storage quota usage](https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota-usage) operation to see the current usage for this quota.
+                    type: boolean
+                    x-linode-cli-display: 8
+                  quota_id:
+                    description: Identifies the Object Storage-related quota. Formatted as `<quota_type>-<s3_endpoint>`.
+                    type: string
+                    x-linode-cli-display: 1
+                  quota_limit:
+                    description: The maximum quantity of the `resource_metric` allowed by the quota.
+                    type: integer
+                    x-linode-cli-display: 5
+                  quota_name:
+                    description: '__Filterable__ The human-readable name of the Object Storage-related quota. Values include:
+
+
+                      - `Number of Buckets`
+
+                      - `Number of Objects`
+
+                      - `Total Capacity`
+
+                      - `Ingress Throughput (per endpoint)`
+
+                      - `Egress Throughput (per endpoint)`
+
+                      - `Ingress Throughput (per IP)`
+
+                      - `Egress Throughput (per IP)`'
+                    enum:
+                    - Number of Objects
+                    - Number of Buckets
+                    - Total Capacity
+                    - Ingress Throughput (per endpoint)
+                    - Egress Throughput (per endpoint)
+                    - Ingress Throughput (per IP)
+                    - Egress Throughput (per IP)
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  quota_type:
+                    description: 'Identifies the type of Object Storage quota. Values include:
+
+
+                      - `obj-buckets`: Current number of buckets per account, per endpoint
+
+                      - `obj-objects`: Current number of objects per account, per endpoint
+
+                      - `obj-bytes`: Current total capacity per account, per endpoint
+
+                      - `obj-total-ingress-throughput`: Current total ingress bandwidth per account, per endpoint
+
+                      - `obj-total-egress-throughput`: Current total egress bandwidth per account, per endpoint
+
+                      - `obj-per-ip-ingress-throughput`: Current ingress bandwidth per account, per destination IP address
+
+                      - `obj-per-ip-egress-throughput`: Current egress bandwidth per account, per destination IP address'
+                    enum:
+                    - obj-buckets
+                    - obj-objects
+                    - obj-bytes
+                    - obj-total-ingress-throughput
+                    - obj-total-egress-throughput
+                    - obj-per-ip-ingress-throughput
+                    - obj-per-ip-egress-throughput
+                    type: string
+                    x-linode-cli-display: 7
+                  resource_metric:
+                    description: The specific Object Storage-based resource for the quota, either `bucket`, `object`, `byte`, or `byte_per_second`.
+                    enum:
+                    - bucket
+                    - object
+                    - byte
+                    - byte_per_second
+                    type: string
+                    x-linode-cli-display: 4
+                  s3_endpoint:
+                    description: __Filterable__ The URL for the s3 endpoint where the quota applies. Every `s3_endpoint` exists in a specific Akamai Cloud Computing data center (`region`). Run the [List Object Storage endpoints](https://techdocs.akamai.com/linode-api/reference/get-object-storage-endpoints) operation to see more specifics on this `s3_endpoint`.
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 9
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-quota.yaml
+          description: A single Object Storage-related quota for your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get an Object Storage quota
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quota-view obj-objects-us-ord-1
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quota-view
+      - get-object-storage-quota
+  /{apiVersion}/object-storage/quotas/{objQuotaId}/usage:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: Identifies the Object Storage-related global quota to retrieve. This follows the pattern, `<quota_type>-<s3_endpoint>`, for example, `buckets-eu-central-1.linodeobjects.com`.
+      example: '{{objQuotaId}}'
+      in: path
+      name: objQuotaId
+      required: true
+      schema:
+        example: buckets-eu-central-1.linodeobjects.com
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quota-usage.yaml
+      path-info: /{apiVersion}/object-storage/quotas/{objQuotaId}/usage
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns usage data for a specific `objQuotaId`. This includes the maximum number of `objQuotaId` resources you can have for a single endpoint and the current usage for that resource.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage quota-usage-view obj-objects-us-ord-1
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota-usage
+      operationId: get-object-storage-quota-usage
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                quota_limit: 100
+                usage: 10
+              schema:
+                additionalProperties: false
+                description: Usage data for a specific Object Storage-related quota on your account.
+                properties:
+                  quota_limit:
+                    description: The availability limit for a specific Object Storage resource (`objQuotaId`) for a single endpoint.
+                    example: 100
+                    type: integer
+                    x-linode-cli-display: 1
+                  usage:
+                    description: The number of Object Storage resources currently in use on an endpoint. Displayed as `null` if no resources are in use.
+                    example: 10
+                    minimum: 1
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-quota-usage.yaml
+          description: Usage data for the specified `objQuotaId`.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get Object Storage quota usage data
+      tags:
+      - Quotas
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quota-usage-view obj-objects-us-ord-1
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quota-usage-view
+      - get-object-storage-quota-usage
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,0 +1,856 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Resource locks API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Add and manage locks on your Akamai Cloud resources to prevent you from inadvertently deleting them.
+  name: Resource locks
+paths:
+  /{apiVersion}/locks:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    x-akamai:
+      file-path: paths/resource-locks.yaml
+      path-info: /{apiVersion}/locks
+    x-linode-cli-command: resource-locks
+    post:
+      description: '__Beta__ Create a lock for a resource, to help prevent you from inadvertently deleting it or modifying some aspects of it. You can apply a lock to a single resource, or to a resource and all of its sub-resources. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        Once a resource has a lock, that resource (and its sub-resources, if applicable) can''t be deleted, regardless of your user permission. You can unlock a resource by running the Delete a resource lock operation for the specific lock.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > We offer an example API workflow you can follow to set up a resource lock on a Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli resource-locks create \
+
+        --entity_id 8642531 \
+
+        --entity_type linode \
+
+        --lock_type cannot_delete \
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-resource-lock
+      operationId: post-resource-lock
+      requestBody:
+        content:
+          application/json:
+            example:
+              entity_id: 8642531
+              entity_type: linode
+              lock_type: cannot_delete
+            schema:
+              additionalProperties: false
+              description: Resource lock settings to apply to a specific `entity_type` resource--a Linode Kubernetes Engine-related resource, such as an `lkecluster` or `lkenodepool`, or all other supported resources, including a `linode`, `nodebalancer`, or Block Storage `volume`.
+              oneOf:
+              - additionalProperties: false
+                properties:
+                  entity_id:
+                    description: 'The unique identifier assigned to the resource where you want to apply the lock. Get this value by running the list operation for the appropriate resource. For example, if your resource is one of your Linodes, run the [List Linode instances](https://techdocs.akamai.com/linode-api/reference/get-linode-instances) operation and store the `id` for the appropriate Linode from the response.
+
+
+                      > 📘
+
+                      >
+
+                      > Your user needs to have access to the target resource.'
+                    example: 8642531
+                    type: integer
+                  entity_type:
+                    description: The type of resource where you want to apply the lock. Use `linode` for a resource lock on a Linode, `nodebalancer` for a NodeBalancer, or `volume` for a Block Storage volume.
+                    enum:
+                    - linode
+                    - nodebalancer
+                    - volume
+                    example: linode
+                    type: string
+                  lock_type:
+                    description: 'The type of lock you want to apply to the resource. A single resource can have one of these lock types set for it:
+
+
+                      - `cannot_delete`. The resource itself can''t be deleted. Any sub-resources attached to it can be freely deleted. You need to unlock the resource by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete it.
+
+
+                      - `cannot_delete_with_subresources`. The resource and its various sub-resources can''t be deleted. For example, if a Linode instance has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource by deleting its lock. Then you can delete the resource and any of its sub-resources.'
+                    enum:
+                    - cannot_delete
+                    - cannot_delete_with_subresources
+                    example: cannot_delete
+                    type: string
+                required:
+                - entity_type
+                - entity_id
+                - lock_type
+                title: Linode, NodeBalancer, or Block Storage volume
+                type: object
+                x-akamai:
+                  file-path: schemas/resource-lock-create-others.yaml
+              - additionalProperties: false
+                properties:
+                  entity_id:
+                    description: 'The unique identifier for the resource where you want to apply the lock. Get this value by running the list operation for the appropriate resource. For example, if your resource is one of your LKE clusters, run the [List Kubernetes clusters](https://techdocs.akamai.com/linode-api/reference//get-lke-clusters) operation and store the `id` for the appropriate cluster from the response.
+
+
+                      > 📘
+
+                      >
+
+                      > Your user needs to have access to the target resource.'
+                    example: 8642531
+                    type: integer
+                  entity_type:
+                    description: The type of resource where you want to apply the lock. Use `lkecluster` for a Linode Kubernetes engine (LKE) cluster, or `lkenodepool` for a Linode Kubernetes node pool.
+                    enum:
+                    - lkecluster
+                    - lkenodepool
+                    example: lkecluster
+                    type: string
+                  lock_type:
+                    description: 'Set this to `cannot_delete` to lock the resource from accidental deletion. You need to unlock the resource by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete it. A single LKE resource can have one lock set for it.
+
+
+                      > 📘
+
+                      >
+
+                      > The `cannot_delete_with_subresources` form of `lock_type` that''s available with other resources does not apply to an `entity_type` of `lkecluster` or `lkenodepool`.'
+                    enum:
+                    - cannot_delete
+                    example: cannot_delete
+                    type: string
+                required:
+                - entity_type
+                - entity_id
+                - lock_type
+                title: LKE cluster or LKE node pool
+                type: object
+                x-akamai:
+                  file-path: schemas/resource-lock-create-lke.yaml
+              type: object
+              x-akamai:
+                file-path: schemas/resource-locks-create.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                entity:
+                  id: 97531
+                  label: Linode-video-streaming-assets-2025
+                  type: linode
+                  url: /v4/linode/instances/97531
+                id: 1
+                lock_type: cannot_delete
+              schema:
+                additionalProperties: false
+                properties:
+                  entity:
+                    additionalProperties: false
+                    description: Details on the specific resource that's protected by the resource lock.
+                    properties:
+                      id:
+                        description: __Filterable__ The unique identifier assigned to the specific resource.
+                        example: 97531
+                        type: integer
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      label:
+                        description: The name of the resource. This is used for display purposes in Akamai Cloud Manager.
+                        example: Linode-video-streaming-assets-2025
+                        type: string
+                      type:
+                        description: __Filterable__ The type of resource. This can be `linode` for a resource lock on a Linode, `lkecluster` for a Linode Kubernetes engine cluster, `lkenodepool` for a Linode Kubernetes engine node pool, `nodebalancer` for a NodeBalancer, or `volume` for a Block Storage volume.
+                        enum:
+                        - linode
+                        - lkecluster
+                        - lkenodepool
+                        - nodebalancer
+                        - volume
+                        example: linode
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      url:
+                        description: The URL to access the resource.
+                        example: /v4/linode/instances/97531
+                        format: uri
+                        type: string
+                    type: object
+                  id:
+                    description: __Filterable__ The unique identifier assigned to the resource lock.
+                    example: 1
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  lock_type:
+                    description: '__Filterable__ The type of lock set for the resource:
+
+
+                      - `cannot_delete`. The resource itself can''t be deleted. Any sub-resources attached to it can be freely deleted. You need to unlock the resource by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete it.
+
+
+                      - `cannot_delete_with_subresources`. The resource and its various sub-resources can''t be deleted. For example, if a Linode instance has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource by deleting its lock. Then you can delete the resource and any of its sub-resources.
+
+
+                      > 📘
+
+                      >
+
+                      > The `cannot_delete_with_subresources` form of `lock_type` does not apply for an `entity_type` of `lkecluster` or `lkenodepool`.'
+                    enum:
+                    - cannot_delete
+                    - cannot_delete_with_subresources
+                    example: cannot_delete
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/resource-lock.yaml
+          description: The resource lock was created.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Create a resource lock
+      tags:
+      - Resource locks
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: 'linode-cli resource-locks create \
+
+            --entity_id 8642531 \
+
+            --entity_type linode \
+
+            --lock_type cannot_delete \'
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: create
+      x-linode-grant: unrestricted
+    get:
+      description: '__Beta__ Returns all available locks and information on the resources they protect. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli resource-locks list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-resource-locks
+      operationId: get-resource-locks
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - entity:
+                    id: 97531
+                    label: Linode-video-streaming-assets-2025
+                    type: linode
+                    url: /v4/linode/instances/97531
+                  id: 1
+                  lock_type: cannot_delete
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        entity:
+                          additionalProperties: false
+                          description: Details on the specific resource that's protected by the resource lock.
+                          properties:
+                            id:
+                              description: __Filterable__ The unique identifier assigned to the specific resource.
+                              example: 97531
+                              type: integer
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            label:
+                              description: The name of the resource. This is used for display purposes in Akamai Cloud Manager.
+                              example: Linode-video-streaming-assets-2025
+                              type: string
+                            type:
+                              description: __Filterable__ The type of resource. This can be `linode` for a resource lock on a Linode, `lkecluster` for a Linode Kubernetes engine cluster, `lkenodepool` for a Linode Kubernetes engine node pool, `nodebalancer` for a NodeBalancer, or `volume` for a Block Storage volume.
+                              enum:
+                              - linode
+                              - lkecluster
+                              - lkenodepool
+                              - nodebalancer
+                              - volume
+                              example: linode
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            url:
+                              description: The URL to access the resource.
+                              example: /v4/linode/instances/97531
+                              format: uri
+                              type: string
+                          type: object
+                        id:
+                          description: __Filterable__ The unique identifier assigned to the resource lock.
+                          example: 1
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        lock_type:
+                          description: '__Filterable__ The type of lock set for the resource:
+
+
+                            - `cannot_delete`. The resource itself can''t be deleted. Any sub-resources attached to it can be freely deleted. You need to unlock the resource by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete it.
+
+
+                            - `cannot_delete_with_subresources`. The resource and its various sub-resources can''t be deleted. For example, if a Linode instance has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource by deleting its lock. Then you can delete the resource and any of its sub-resources.
+
+
+                            > 📘
+
+                            >
+
+                            > The `cannot_delete_with_subresources` form of `lock_type` does not apply for an `entity_type` of `lkecluster` or `lkenodepool`.'
+                          enum:
+                          - cannot_delete
+                          - cannot_delete_with_subresources
+                          example: cannot_delete
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/resource-lock.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/resource-locks.yaml
+          description: Returns a paginated list of resource locks.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List resource locks
+      tags:
+      - Resource locks
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: linode-cli resource-locks list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - ls
+      - list
+      x-linode-grant: unrestricted
+  /{apiVersion}/locks/{resourceLockId}:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    - description: The unique identifier assigned to the resource lock. Run the [List resource locks](https://techdocs.akamai.com/linode-api/reference/get-resource-locks) operation and store the `id` for the applicable resource lock.
+      example: '{{resourceLockId}}'
+      in: path
+      name: resourceLockId
+      required: true
+      schema:
+        example: 25
+        type: integer
+      x-akamai:
+        file-path: parameters/resource-lock-id.yaml
+    x-akamai:
+      file-path: paths/resource-lock.yaml
+      path-info: /{apiVersion}/locks/{resourceLockId}
+    x-linode-cli-command: resource-locks
+    get:
+      description: '__Beta__ Returns a specific resource lock. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli resource-locks view 25
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-resource-lock
+      operationId: get-resource-lock
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                entity:
+                  id: 97531
+                  label: Linode-video-streaming-assets-2025
+                  type: linode
+                  url: /v4/linode/instances/97531
+                id: 1
+                lock_type: cannot_delete
+              schema:
+                additionalProperties: false
+                properties:
+                  entity:
+                    additionalProperties: false
+                    description: Details on the specific resource that's protected by the resource lock.
+                    properties:
+                      id:
+                        description: __Filterable__ The unique identifier assigned to the specific resource.
+                        example: 97531
+                        type: integer
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      label:
+                        description: The name of the resource. This is used for display purposes in Akamai Cloud Manager.
+                        example: Linode-video-streaming-assets-2025
+                        type: string
+                      type:
+                        description: __Filterable__ The type of resource. This can be `linode` for a resource lock on a Linode, `lkecluster` for a Linode Kubernetes engine cluster, `lkenodepool` for a Linode Kubernetes engine node pool, `nodebalancer` for a NodeBalancer, or `volume` for a Block Storage volume.
+                        enum:
+                        - linode
+                        - lkecluster
+                        - lkenodepool
+                        - nodebalancer
+                        - volume
+                        example: linode
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      url:
+                        description: The URL to access the resource.
+                        example: /v4/linode/instances/97531
+                        format: uri
+                        type: string
+                    type: object
+                  id:
+                    description: __Filterable__ The unique identifier assigned to the resource lock.
+                    example: 1
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  lock_type:
+                    description: '__Filterable__ The type of lock set for the resource:
+
+
+                      - `cannot_delete`. The resource itself can''t be deleted. Any sub-resources attached to it can be freely deleted. You need to unlock the resource by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete it.
+
+
+                      - `cannot_delete_with_subresources`. The resource and its various sub-resources can''t be deleted. For example, if a Linode instance has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource by deleting its lock. Then you can delete the resource and any of its sub-resources.
+
+
+                      > 📘
+
+                      >
+
+                      > The `cannot_delete_with_subresources` form of `lock_type` does not apply for an `entity_type` of `lkecluster` or `lkenodepool`.'
+                    enum:
+                    - cannot_delete
+                    - cannot_delete_with_subresources
+                    example: cannot_delete
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/resource-lock.yaml
+          description: Returns the specified resource lock.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get a resource lock
+      tags:
+      - Resource locks
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: linode-cli resource-locks view 25
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: unrestricted
+    delete:
+      description: '__Beta__ Delete a specific resource lock. Once deleted, the resource it was assigned to is unlocked, and that resource can be deleted. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        > 📘
+
+        >
+
+        > For specific delete instructions and requirements, see the relevant resource''s delete operation documentation.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli resource-locks delete 25
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-resource-lock
+      operationId: delete-resource-lock
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: The resource lock was successfully deleted.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Delete a resource lock
+      tags:
+      - Resource locks
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: linode-cli resource-locks delete 25
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: delete
+      x-linode-grant: unrestricted
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

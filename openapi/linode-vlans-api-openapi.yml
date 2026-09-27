@@ -1,0 +1,464 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode VLANs API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: VLANs
+paths:
+  /{apiVersion}/networking/vlans:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/vlans.yaml
+      path-info: /{apiVersion}/networking/vlans
+    x-linode-cli-command: vlans
+    get:
+      description: 'Returns a list of all Virtual Local Area Networks (VLANs) on your account. VLANs provide a mechanism for secure communication between two or more Linodes that are assigned to the same VLAN, and are both within the same Layer 2 broadcast domain.
+
+
+        For legacy configuration profile interfaces, you can use the following operations to create, attach, detach, and delete VLANs on a Linode:
+
+        - Create a Linode
+
+        - Create a config profile
+
+        - Update a config profile
+
+        - Update the active Configuration Profile to remove the VLAN Interface, then reboot the Linode.
+
+        - Create a config profile without the VLAN Interface, then reboot the Linode into the new Configuration Profile.
+
+        - Delete the Linode.
+
+
+        For Linode interfaces, you can use the following operations to create, attach, detach, and delete VLANs on a Linode:
+
+        - Create a Linode
+
+        - Add a Linode interface
+
+        - Update a Linode interface
+
+        - Delete a Linode interface from a Linode.
+
+
+        > 📘
+
+        >
+
+        > - Only Next Generation Network (NGN) data centers support VLANs. Run the List regions operation to view the capabilities of data center regions. If a VLAN is attached to your Linode and you attempt to migrate or clone it to a non-NGN data center, the migration or cloning won''t initiate. If a Linode cannot be migrated because of an incompatibility, you will be prompted to select a different data center or contact support.
+
+        >
+
+        > - See the VLANs Overview to view additional specifications and limitations.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vlans list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-vlans
+      operationId: get-vlans
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2020-01-01T00:01:01'
+                  label: vlan-example
+                  linodes:
+                  - 111
+                  - 222
+                  region: ap-west
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: A virtual local area network (VLAN) associated with your Account.
+                      properties:
+                        created:
+                          description: __Read-only__ The date this VLAN was created.
+                          example: '2020-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        label:
+                          description: __Filterable__, __Read-only__ The name of this VLAN.
+                          example: vlan-example
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        linodes:
+                          description: __Read-only__ An array of Linode IDs attached to this VLAN.
+                          example:
+                          - 111
+                          - 222
+                          items:
+                            type: integer
+                          readOnly: true
+                          type: array
+                          x-linode-cli-display: 3
+                        region:
+                          description: '__Filterable__, __Read-only__ This VLAN''s data center region.
+
+
+                            > 📘
+
+                            >
+
+                            > Currently, a VLAN can only be assigned to a Linode within the same data center region.'
+                          example: ap-west
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/vlans.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-vlans-200.yaml
+          description: The VLANs available on this Account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: List VLANs
+      tags:
+      - VLANs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli vlans list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+  /{apiVersion}/networking/vlans/{regionId}/{label}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The label of the VLAN to be deleted.
+      example: '{{label}}'
+      in: path
+      name: label
+      required: true
+      schema:
+        example: vlan-label
+        type: string
+      x-akamai:
+        file-path: parameters/label-vlan.yaml
+    - description: The VLAN's region.
+      example: '{{regionId}}'
+      in: path
+      name: regionId
+      required: true
+      schema:
+        example: us-east
+        type: string
+      x-akamai:
+        file-path: parameters/region-id-vlan.yaml
+    x-akamai:
+      file-path: paths/vlan.yaml
+      path-info: /{apiVersion}/networking/vlans/{regionId}/{label}
+    x-linode-cli-command: vlans
+    delete:
+      description: 'This operation deletes a legacy configuration profile VLAN interface. To delete a Linode interface VLAN, use the Delete a Linode interface operation.
+
+
+        You can''t delete a VLAN if it''s still attached to a Linode. There are a few ways to detach it:
+
+        - Update the active configuration profile to remove the VLAN interface, then reboot the Linode.
+
+        - Create a config profile without the VLAN interface, then reboot the Linode into the new configuration profile.
+
+        - Delete the Linode.
+
+
+        A successful request triggers a `vlan_delete` event.
+
+
+        > 📘
+
+        >
+
+        > VLANs without any attached Linodes are periodically cleaned up by the system.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vlans delete $regionId $label
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-vlan
+      operationId: delete-vlan
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: The VLAN was deleted.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Delete a VLAN
+      tags:
+      - VLANs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli vlans delete $regionId $label
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: delete
+      x-linode-grant: read_write
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

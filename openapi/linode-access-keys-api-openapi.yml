@@ -1,0 +1,1193 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Access keys API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Object Storage keys are used to authenticate access to your Object Storage buckets. Use these operations to create, view, update, and revoke these keys.
+  name: Access keys
+paths:
+  /{apiVersion}/object-storage/keys:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-keys.yaml
+      path-info: /{apiVersion}/object-storage/keys
+    x-linode-cli-command: object-storage
+    post:
+      description: 'Generates a new Object Storage access key and an associated secret key. The secret key is only displayed when the access key is generated and cannot be viewed again. A successful request triggers an `obj_access_key_create` event.
+
+
+        > 📘
+
+        >
+
+        > - Accounts with negative balances can''t access this operation.
+
+        >
+
+        > - This operation has specific rate limits.
+
+
+        **Unlimited vs. limited access keys**
+
+
+        An unlimited access key grants full access to all of your buckets in each region you name, using the `regions` array. A limited access key lets you name specific buckets where you need to manage content, using the `bucket_access` array.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > We offer workflows for both an unlimited access key and a limited access key.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage keys-create \
+
+        --label "my-object-storage-key" \
+
+        --bucket_access ''[{"region": "ap-south", "bucket_name": "bucket-example-1", "permissions": "read_write" }]''
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys
+      operationId: post-object-storage-keys
+      requestBody:
+        content:
+          application/json:
+            example:
+              bucket_access:
+              - bucket_name: app-data
+                permissions: read_only
+                region: us-ord
+              label: app-dev
+            schema:
+              additionalProperties: false
+              description: The settings necessary to create a new Object Storage access key.
+              oneOf:
+              - additionalProperties: false
+                properties:
+                  bucket_access:
+                    description: Settings that limit access to specific buckets, each with a specific permission level. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                    items:
+                      additionalProperties: false
+                      oneOf:
+                      - additionalProperties: false
+                        properties:
+                          bucket_name:
+                            description: The name of the bucket the key can access in the `region`.
+                            example: primary-bucket
+                            type: string
+                          permissions:
+                            description: The level of access the key grants to the `bucket_name`. Keys with `read_write` access can manage content in the `bucket_name`, while `read_only` can be used to view content.
+                            enum:
+                            - read_write
+                            - read_only
+                            example: read_only
+                            type: string
+                          region:
+                            description: The region where the Object Storage `bucket_name` resides.
+                            example: us-iad
+                            type: string
+                        title: region
+                        type: object
+                        x-akamai:
+                          file-path: schemas/post-object-storage-key-bucket-access-region.yaml
+                      - additionalProperties: false
+                        properties:
+                          bucket_name:
+                            description: The name of the bucket the key can access in the `region`.
+                            example: primary-bucket
+                            type: string
+                          cluster:
+                            deprecated: true
+                            description: '__Deprecated__ For backwards compatibility, this is included to identify the legacy cluster equivalent of the `region` where this key can be used. The key grants access to each specified `bucket_name`, based on the `permissions` set.
+
+
+                              > 📘
+
+                              >
+
+                              > Use of clusters in a limited access key has been deprecated. You should use the `region` parameter instead.'
+                            example: us-west-1
+                            type: string
+                            x-akamai:
+                              status: DEPRECATED
+                          permissions:
+                            description: The level of access the key grants to the `bucket_name`. Keys with `read_write` access can manage content in the `bucket_name`, while `read_only` can be used to view content.
+                            enum:
+                            - read_write
+                            - read_only
+                            example: read_only
+                            type: string
+                        title: cluster
+                        type: object
+                        x-akamai:
+                          file-path: schemas/post-object-storage-key-bucket-access-cluster.yaml
+                      type: object
+                    type: array
+                  label:
+                    description: The name for the key. For display purposes only.
+                    example: my-key
+                    type: string
+                title: Limited access key
+                type: object
+                x-akamai:
+                  file-path: schemas/post-object-storage-key-bucket-access.yaml
+              - additionalProperties: false
+                properties:
+                  label:
+                    description: The name for the key. For display purposes only.
+                    example: my-key
+                    type: string
+                  regions:
+                    description: The key can be used in these regions to manage all buckets. See [Create an unlimited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                    example:
+                    - us-iad
+                    - in-bom-2
+                    items:
+                      type: string
+                    type: array
+                title: Unlimited access key
+                type: object
+                x-akamai:
+                  file-path: schemas/post-object-storage-key-regions.yaml
+              type: object
+              x-akamai:
+                file-path: schemas/post-object-storage-key.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                limited-access-key:
+                  summary: Limited access key
+                  value:
+                    access_key: ITF2Z812XHI6ILKQ3L7Z
+                    bucket_access:
+                    - bucket_name: app-data
+                      cluster: us-ord-1
+                      permissions: read_only
+                      region: us-ord
+                    id: 3173895
+                    label: app-dev
+                    limited: true
+                    regions:
+                    - endpoint_type: E1
+                      id: us-ord
+                      s3_endpoint: us-ord-1.linodeobjects.com
+                    - endpoint_type: E3
+                      id: us-ord
+                      s3_endpoint: us-ord-10.linodeobjects.com
+                    secret_key: dlRdj7mQepZqehLJL1a5bYpzvqTO8jFdazVN9Fcb
+                unlimited-access-key:
+                  summary: Unlimited access key
+                  value:
+                    access_key: QP8ASYHDHK38UV1TPKBY
+                    bucket_access: null
+                    id: 3173945
+                    label: app-dev
+                    limited: false
+                    regions:
+                    - endpoint_type: E1
+                      id: us-ord
+                      s3_endpoint: us-ord-1.linodeobjects.com
+                    - endpoint_type: E3
+                      id: us-ord
+                      s3_endpoint: us-ord-10.linodeobjects.com
+                    secret_key: XRYxk0ldY5fptxgtK2C6Ztx2aEVyP2WwnzYKEN9u
+              schema:
+                additionalProperties: false
+                description: The settings necessary to create a new Object Storage access key.
+                properties:
+                  access_key:
+                    description: __Read-only__ A unique string chosen by the API to identify this key. Used as a username to identify this key when making requests.
+                    example: ABCDEFGHI1JKL2MNOP34
+                    readOnly: true
+                    type: string
+                  bucket_access:
+                    description: Settings that limit access to specific buckets, each with a specific permission level. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        bucket_name:
+                          description: The name of the bucket the key can access in the `region`.
+                          example: primary-bucket
+                          type: string
+                        cluster:
+                          deprecated: true
+                          description: '__Deprecated__ For backwards compatibility, this is included to identify the legacy cluster equivalent of the `region` where this key can be used. The key grants access to each specified `bucket_name`, based on the `permissions` set. Returned as an empty object for newer regions that don''t support the legacy `cluster` parameter.
+
+
+                            > 📘
+
+                            >
+
+                            > Use of clusters in a limited access key has been deprecated. You should use the `region` parameter instead.'
+                          example: us-west-1
+                          type: string
+                          x-akamai:
+                            status: DEPRECATED
+                        permissions:
+                          description: The level of access the key grants to the `bucket_name`. Keys with `read_write` access can manage content in the `bucket_name`, while `read_only` can be used to view content.
+                          enum:
+                          - read_write
+                          - read_only
+                          example: read_only
+                          type: string
+                        region:
+                          description: The region where the Object Storage `bucket_name` resides.
+                          example: us-west
+                          type: string
+                      type: object
+                    type:
+                    - array
+                    - 'null'
+                  id:
+                    description: __Read-only__ This Object Storage key's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                  label:
+                    description: The label given to this key. For display purposes only.
+                    example: my-key
+                    type: string
+                  limited:
+                    description: __Read-only__ Whether this Object Storage key limits access to specific buckets and permissions. Returns `false` if this key grants full access. Specific limitations are set in `bucket_access`.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  regions:
+                    description: Identifies each region where you can use the Object Storage key.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        endpoint_type:
+                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          enum:
+                          - E0
+                          - E1
+                          - E2
+                          - E3
+                          example: E1
+                          type: string
+                        id:
+                          description: 'The individual region where this key is valid.
+
+
+                            - **For an unlimited key**. Each `id` represents an individual region you set in the `regions` array, when you set up the key. See [Create an unlimited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+
+
+                            - **For a limited access key**. The API server populates each object in this array with each of the individual instances of the `region` parameter you set in the `bucket_access` array. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.'
+                          example: us-iad
+                          type: string
+                        s3_endpoint:
+                          description: The S3-compatible hostname you can use to access the Object Storage buckets in this region.
+                          example: us-west-00.linodeobjects.com
+                          type: string
+                      type: object
+                    type: array
+                  secret_key:
+                    description: '__Read-only__ This Object Storage key''s secret key. Used as a password to validate this key when making requests.
+
+
+                      > 🚧
+
+                      >
+
+                      > The `secret_key` is only revealed in the response for this operation. Make sure to store it for later use.'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/post-object-storage-key-200.yaml
+          description: The new Object Storage access key. *This is the only time* the `secret_key` is returned.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_write
+      summary: Create an Object Storage access key
+      tags:
+      - Access keys
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli object-storage keys-create \\\n  --label \"my-object-storage-key\" \\\n  --bucket_access '[{\"region\": \"ap-south\", \"bucket_name\": \"bucket-example-1\", \"permissions\": \"read_write\" }]'"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: keys-create
+    get:
+      description: 'Returns a paginated list of Object Storage access keys for authentication.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage keys-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-keys
+      operationId: get-object-storage-keys
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - access_key: ABCDEFGHI1JKL2MNOP34
+                  bucket_access:
+                  - bucket_name: example-bucket
+                    cluster: us-west-1
+                    permissions: read_only
+                    region: us-west
+                  id: 123
+                  label: my-key
+                  limited: true
+                  regions:
+                  - endpoint_type: E1
+                    id: us-west
+                    s3_endpoint: us-west-00.linodeobjects.com
+                  secret_key: '[REDACTED]'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Object Storage access keys added to your account.
+                    items:
+                      additionalProperties: false
+                      description: A key used to validate requests to an S3 API.
+                      properties:
+                        access_key:
+                          description: A unique string chosen by the API to identify this key. Used as a username to identify this key when making requests.
+                          example: ABCDEFGHI1JKL2MNOP34
+                          type: string
+                        bucket_access:
+                          description: Settings that limit access to specific buckets, each with a specific permission level. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              bucket_name:
+                                description: The name of the bucket the key can access in the `region`.
+                                example: primary-bucket
+                                type: string
+                              cluster:
+                                deprecated: true
+                                description: '__Deprecated__ For backwards compatibility, this is included to identify the legacy cluster equivalent of the `region` where this key can be used. The key grants access to each specified `bucket_name`, based on the `permissions` set.
+
+
+                                  > 📘
+
+                                  >
+
+                                  > Use of clusters in a limited access key has been deprecated.'
+                                example: us-west-1
+                                type: string
+                                x-akamai:
+                                  status: DEPRECATED
+                              permissions:
+                                description: The level of access the key grants to the `bucket_name`. Keys with `read_write` access can manage content in the `bucket_name`, while `read_only` can be used to view content.
+                                enum:
+                                - read_write
+                                - read_only
+                                example: read_only
+                                type: string
+                              region:
+                                description: The region where the `bucket_name` resides.
+                                example: us-west
+                                type: string
+                            type: object
+                          type: array
+                        id:
+                          description: This Object Storage key's unique ID.
+                          example: 123
+                          type: integer
+                        label:
+                          description: The label given to this key. For display purposes only.
+                          example: my-key
+                          type: string
+                        limited:
+                          description: Whether this Object Storage key limits access to specific buckets and permissions. Returns `false` if this key grants full access. Specific limitations are set in `bucket_access`.
+                          example: true
+                          type: boolean
+                        regions:
+                          description: The key can be used in these regions to manage buckets.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              endpoint_type:
+                                description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                                enum:
+                                - E0
+                                - E1
+                                - E2
+                                - E3
+                                example: E1
+                                type: string
+                              id:
+                                description: 'Identifies each region where you can use the Object Storage key.
+
+
+                                  - **For an unlimited key**. Each `id` represents an individual region you set in the `regions` array, when you set up the key. See [Create an unlimited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+
+
+                                  - **For a limited access key**. The API server populates each object in this array with each of the individual instances of the `region` parameter you set in the `bucket_access` array. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.'
+                                example: us-west
+                                type: string
+                              s3_endpoint:
+                                description: The S3-compatible hostname you can use to access the Object Storage buckets in this region.
+                                example: us-west-00.linodeobjects.com
+                                type: string
+                            type: object
+                          type: array
+                        secret_key:
+                          description: 'This Object Storage key''s secret key. Used as a password to validate this key when making requests.
+
+
+                            > 📘
+
+                            >
+
+                            > This value is listed as `[REDACTED]` for this operation, to protect it. It''s only revealed in a response after [creating](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) a key.'
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/object-storage-key.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-object-storage-keys-200.yaml
+          description: A paginated list of Object Storage Keys.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: List Object Storage access keys
+      tags:
+      - Access keys
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage keys-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: keys-list
+  /{apiVersion}/object-storage/keys/{keyId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The key to look up.
+      example: '{{keyId}}'
+      in: path
+      name: keyId
+      required: true
+      schema:
+        example: 715
+        type: integer
+      x-akamai:
+        file-path: parameters/key-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-key.yaml
+      path-info: /{apiVersion}/object-storage/keys/{keyId}
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns a single Object Storage access key.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage keys-view \
+
+        --keyId 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-key
+      operationId: get-object-storage-key
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                access_key: ABCDEFGHI1JKL2MNOP34
+                bucket_access:
+                - bucket_name: example-bucket
+                  cluster: us-west-1
+                  permissions: read_only
+                  region: us-west
+                id: 123
+                label: my-key
+                limited: true
+                regions:
+                - endpoint_type: E1
+                  id: us-west
+                  s3_endpoint: us-west-00.linodeobjects.com
+                secret_key: '[REDACTED]'
+              schema:
+                additionalProperties: false
+                description: A key used to validate requests to an S3 API.
+                properties:
+                  access_key:
+                    description: A unique string chosen by the API to identify this key. Used as a username to identify this key when making requests.
+                    example: ABCDEFGHI1JKL2MNOP34
+                    type: string
+                  bucket_access:
+                    description: Settings that limit access to specific buckets, each with a specific permission level. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        bucket_name:
+                          description: The name of the bucket the key can access in the `region`.
+                          example: primary-bucket
+                          type: string
+                        cluster:
+                          deprecated: true
+                          description: '__Deprecated__ For backwards compatibility, this is included to identify the legacy cluster equivalent of the `region` where this key can be used. The key grants access to each specified `bucket_name`, based on the `permissions` set.
+
+
+                            > 📘
+
+                            >
+
+                            > Use of clusters in a limited access key has been deprecated.'
+                          example: us-west-1
+                          type: string
+                          x-akamai:
+                            status: DEPRECATED
+                        permissions:
+                          description: The level of access the key grants to the `bucket_name`. Keys with `read_write` access can manage content in the `bucket_name`, while `read_only` can be used to view content.
+                          enum:
+                          - read_write
+                          - read_only
+                          example: read_only
+                          type: string
+                        region:
+                          description: The region where the `bucket_name` resides.
+                          example: us-west
+                          type: string
+                      type: object
+                    type: array
+                  id:
+                    description: This Object Storage key's unique ID.
+                    example: 123
+                    type: integer
+                  label:
+                    description: The label given to this key. For display purposes only.
+                    example: my-key
+                    type: string
+                  limited:
+                    description: Whether this Object Storage key limits access to specific buckets and permissions. Returns `false` if this key grants full access. Specific limitations are set in `bucket_access`.
+                    example: true
+                    type: boolean
+                  regions:
+                    description: The key can be used in these regions to manage buckets.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        endpoint_type:
+                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          enum:
+                          - E0
+                          - E1
+                          - E2
+                          - E3
+                          example: E1
+                          type: string
+                        id:
+                          description: 'Identifies each region where you can use the Object Storage key.
+
+
+                            - **For an unlimited key**. Each `id` represents an individual region you set in the `regions` array, when you set up the key. See [Create an unlimited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+
+
+                            - **For a limited access key**. The API server populates each object in this array with each of the individual instances of the `region` parameter you set in the `bucket_access` array. See [Create a limited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.'
+                          example: us-west
+                          type: string
+                        s3_endpoint:
+                          description: The S3-compatible hostname you can use to access the Object Storage buckets in this region.
+                          example: us-west-00.linodeobjects.com
+                          type: string
+                      type: object
+                    type: array
+                  secret_key:
+                    description: 'This Object Storage key''s secret key. Used as a password to validate this key when making requests.
+
+
+                      > 📘
+
+                      >
+
+                      > This value is listed as `[REDACTED]` for this operation, to protect it. It''s only revealed in a response after [creating](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) a key.'
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-key.yaml
+          description: The key pair.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get an Object Storage access key
+      tags:
+      - Access keys
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli object-storage keys-view \\\n  --keyId 12345"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: keys-view
+    put:
+      description: 'Updates an Object Storage access key on your account. A successful request triggers an `obj_access_key_update` event.
+
+
+        > 📘
+
+        >
+
+        > This operation has specific rate limits.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage keys-update \
+
+        --keyId 12345
+
+        --label "my-object-storage-key"
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-object-storage-key
+      operationId: put-object-storage-key
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: my-key
+              regions:
+              - us-ord
+              - us-iad
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: The label for the Object Storage key. Used for display purposes. Omit this to leave the `label` unchanged.
+                  example: '{{label}}'
+                  type: string
+                regions:
+                  description: 'Replace the current list of `regions` set in a specific key. Include an existing region to keep it, or leave it out to remove it. Omit the `regions` array to leave the existing list unchanged. If you include new `regions` in the key, you can''t immediately use the key to manage content in buckets in those regions. You need to grant these keys this access using [bucket policies](https://techdocs.akamai.com/cloud-computing/docs/define-access-and-permissions-using-bucket-policies).
+
+
+                    > 🚧 Limited keys have restrictions
+
+                    >
+
+                    > These points apply to keys you''ve [created](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) using the `bucket_access` array:
+
+                    >
+
+                    > - You can''t remove a `region` from a limited key''s original `bucket_access` list. If you include the `regions` array in this operation and target a limited key, you need to include all existing `region` entries from the `bucket_access` array. Otherwise, the operation fails with an error. Run [Get an Object Storage key](https://techdocs.akamai.com/linode-api/reference/get-object-storage-key) to review current `region` entries in a limited key.
+
+                    >
+
+                    > - If you need to remove a specific region from an active limited key, you can [revoke the key](https://techdocs.akamai.com/linode-api/reference/delete-object-storage-key) and create a new Object Storage key, without the specific region.'
+                  example:
+                  - us-iad
+                  - fr-par
+                  items:
+                    type: string
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/put-object-storage-key.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                access_key: ABCDEFGHI1JKL2MNOP34
+                id: 123
+                label: my-key
+                limited: true
+                regions:
+                - endpoint_type: E1
+                  id: us-west
+                  s3_endpoint: us-west-00.linodeobjects.com
+                secret_key: '[REDACTED]'
+              schema:
+                additionalProperties: false
+                description: An updated Object Storage key used for authentication.
+                properties:
+                  access_key:
+                    description: A unique string chosen by the API to identify this key. Used as a username to identify this key when making requests.
+                    example: ABCDEFGHI1JKL2MNOP34
+                    type: string
+                  id:
+                    description: This Object Storage key's unique numeric identifier.
+                    example: 123
+                    type: integer
+                  label:
+                    description: The label given to this key. For display purposes only.
+                    example: my-key
+                    type: string
+                  limited:
+                    description: 'Whether this Object Storage key limits access to specific buckets and permissions. Returns `false` if this key grants full access.
+
+
+                      > 📘
+
+                      >
+
+                      > The `bucket_access` array that contains limited Object Storage key settings doesn''t appear in this response. Store this key''s `id` from the response and run [Get an Object Storage key](https://techdocs.akamai.com/linode-api/reference/get-object-storage-key) to view these settings.'
+                    example: true
+                    type: boolean
+                  regions:
+                    description: The key can be used in these regions to list buckets and create new ones, but it can't be used to manage content in the newly created buckets. See [Create an unlimited access key](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) for more information.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        endpoint_type:
+                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          enum:
+                          - E0
+                          - E1
+                          - E2
+                          - E3
+                          example: E1
+                          type: string
+                        id:
+                          description: Identifies each region where you can use the Object Storage key.
+                          example: us-west
+                          type: string
+                        s3_endpoint:
+                          description: The S3-compatible hostname you can use to access your Object Storage buckets in this region.
+                          example: us-west-00.linodeobjects.com
+                          type: string
+                      type: object
+                    type: array
+                  secret_key:
+                    description: 'This Object Storage key''s secret key. Used as a password to validate this key when making requests.
+
+
+                      > 📘
+
+                      >
+
+                      > This value is listed as `[REDACTED]` for this operation, to protect it. It''s only revealed in a response after [creating](https://techdocs.akamai.com/linode-api/reference/post-object-storage-keys) a key.'
+                    example: OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/put-object-storage-key-200.yaml
+          description: Update Successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_write
+      summary: Update an Object Storage access key
+      tags:
+      - Access keys
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli object-storage keys-update \\\n  --keyId 12345\n  --label \"my-object-storage-key\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: keys-update
+    delete:
+      description: 'Revokes an Object Storage access key. Once revoked, the access key can no longer be used by third-party clients. A successful request triggers an `obj_access_key_delete` event.
+
+
+        > 📘
+
+        >
+
+        > This operation has specific rate limits.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `object_storage:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli object-storage keys-delete 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-object-storage-key
+      operationId: delete-object-storage-key
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Deletion successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_write
+      summary: Revoke an Object Storage access key
+      tags:
+      - Access keys
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage keys-delete 12345
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: keys-delete
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

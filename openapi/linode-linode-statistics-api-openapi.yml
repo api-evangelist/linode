@@ -1,0 +1,1064 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Linode statistics API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to review various statistics for your Linodes.
+  name: Linode statistics
+paths:
+  /{apiVersion}/linode/instances/{linodeId}/stats:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    x-akamai:
+      file-path: paths/linode-stats.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/stats
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns CPU, IO, IPv4, and IPv6 statistics for your Linode for the past 24 hours.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_stats`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-stats
+      operationId: get-linode-stats
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                cpu:
+                - - - 1521483600000
+                    - 0.42
+                io:
+                  io:
+                  - - - 1521484800000
+                      - 0.19
+                  swap:
+                  - - - 1521484800000
+                      - 0
+                netv4:
+                  in:
+                  - - - 1521484800000
+                      - 2004.36
+                  out:
+                  - - - 1521484800000
+                      - 3928.91
+                  private_in:
+                  - - - 1521484800000
+                      - 0
+                  private_out:
+                  - - - 1521484800000
+                      - 5.6
+                netv6:
+                  in:
+                  - - - 1521484800000
+                      - 0
+                  out:
+                  - - - 1521484800000
+                      - 0
+                  private_in:
+                  - - - 1521484800000
+                      - 195.18
+                  private_out:
+                  - - - 1521484800000
+                      - 5.6
+                title: linode.com - my-linode (linode123456) - day (5 min avg)
+              schema:
+                additionalProperties: false
+                description: CPU, IO, IPv4, and IPv6 statistics. Graph data, if available, is in `[timestamp, reading]` array format. Timestamp is a UNIX timestamp in EST.
+                properties:
+                  cpu:
+                    description: Percentage of CPU used.
+                    example:
+                    - 0.42
+                    - 1521483600000
+                    items:
+                      items:
+                        type: number
+                      type: array
+                    type: array
+                  io:
+                    additionalProperties: false
+                    description: Input/Output statistics.
+                    properties:
+                      io:
+                        description: Block/s written.
+                        example:
+                        - 1521484800000
+                        - 0.19
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      swap:
+                        description: Block/s written.
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  netv4:
+                    additionalProperties: false
+                    description: IPv4 statistics.
+                    properties:
+                      in:
+                        description: Input stats for IPv4, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 2004.36
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      out:
+                        description: Output stats for IPv4, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 3928.91
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_in:
+                        description: Private IPv4 input statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_out:
+                        description: Private IPv4 output statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 5.6
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  netv6:
+                    additionalProperties: false
+                    description: IPv6 statistics.
+                    properties:
+                      in:
+                        description: Input stats for IPv6, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      out:
+                        description: Output stats for IPv6, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_in:
+                        description: Private IPv6 input statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 195.18
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_out:
+                        description: Private IPv6 output statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 5.6
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  title:
+                    description: The title for this data set.
+                    example: linode.com - my-linode (linode123456) - day (5 min avg)
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/linode-stats.yaml
+          description: The Linode's stats for the past 24 hours.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get daily Linode statistics
+      tags:
+      - Linode statistics
+      x-linode-cli-action: stats
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - view_linode_stats
+  /{apiVersion}/linode/instances/{linodeId}/stats/{year}/{month}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: Numeric value representing the year to look up.
+      example: '{{year}}'
+      in: path
+      name: year
+      required: true
+      schema:
+        example: 2024
+        maximum: 2037
+        minimum: 2000
+        type: integer
+      x-akamai:
+        file-path: parameters/year-path.yaml
+    - description: Numeric value representing the month to look up.
+      example: '{{month}}'
+      in: path
+      name: month
+      required: true
+      schema:
+        example: 8
+        maximum: 12
+        minimum: 1
+        type: integer
+      x-akamai:
+        file-path: parameters/month-path.yaml
+    x-akamai:
+      file-path: paths/linode-stats-month.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/stats/{year}/{month}
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns CPU, IO, IPv4, and IPv6 statistics for your Linode for a specific month. If the `{year}` and `{month}` are set to the current month, the API returns statistics for the past 30 days.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_monthly_stats`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-stats-by-year-month
+      operationId: get-linode-stats-by-year-month
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                cpu:
+                - - - 1521483600000
+                    - 0.42
+                io:
+                  io:
+                  - - - 1521484800000
+                      - 0.19
+                  swap:
+                  - - - 1521484800000
+                      - 0
+                netv4:
+                  in:
+                  - - - 1521484800000
+                      - 2004.36
+                  out:
+                  - - - 1521484800000
+                      - 3928.91
+                  private_in:
+                  - - - 1521484800000
+                      - 0
+                  private_out:
+                  - - - 1521484800000
+                      - 5.6
+                netv6:
+                  in:
+                  - - - 1521484800000
+                      - 0
+                  out:
+                  - - - 1521484800000
+                      - 0
+                  private_in:
+                  - - - 1521484800000
+                      - 195.18
+                  private_out:
+                  - - - 1521484800000
+                      - 5.6
+                title: linode.com - my-linode (linode123456) - day (5 min avg)
+              schema:
+                additionalProperties: false
+                description: CPU, IO, IPv4, and IPv6 statistics. Graph data, if available, is in `[timestamp, reading]` array format. Timestamp is a UNIX timestamp in EST.
+                properties:
+                  cpu:
+                    description: Percentage of CPU used.
+                    example:
+                    - 0.42
+                    - 1521483600000
+                    items:
+                      items:
+                        type: number
+                      type: array
+                    type: array
+                  io:
+                    additionalProperties: false
+                    description: Input/Output statistics.
+                    properties:
+                      io:
+                        description: Block/s written.
+                        example:
+                        - 1521484800000
+                        - 0.19
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      swap:
+                        description: Block/s written.
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  netv4:
+                    additionalProperties: false
+                    description: IPv4 statistics.
+                    properties:
+                      in:
+                        description: Input stats for IPv4, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 2004.36
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      out:
+                        description: Output stats for IPv4, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 3928.91
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_in:
+                        description: Private IPv4 input statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_out:
+                        description: Private IPv4 output statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 5.6
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  netv6:
+                    additionalProperties: false
+                    description: IPv6 statistics.
+                    properties:
+                      in:
+                        description: Input stats for IPv6, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      out:
+                        description: Output stats for IPv6, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 0
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_in:
+                        description: Private IPv6 input statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 195.18
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                      private_out:
+                        description: Private IPv6 output statistics, measured in bits/s (bits/second).
+                        example:
+                        - 1521484800000
+                        - 5.6
+                        items:
+                          items:
+                            type: number
+                          type: array
+                        type: array
+                    type: object
+                  title:
+                    description: The title for this data set.
+                    example: linode.com - my-linode (linode123456) - day (5 min avg)
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/linode-stats.yaml
+          description: The Linode's statistics for the requested period.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get a month's Linode statistics
+      tags:
+      - Linode statistics
+      x-linode-cli-action: stats-month
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - view_linode_monthly_stats
+  /{apiVersion}/linode/instances/{linodeId}/transfer:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-dc17dce5.yaml
+    x-akamai:
+      file-path: paths/linode-transfer.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/transfer
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns a Linode''s network transfer pool statistics for the current month.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_monthly_network_transfer_stats`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes transfer-view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-transfer
+      operationId: get-linode-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                bytes_in: 30471077120
+                bytes_out: 22956600198
+                bytes_total: 53427677318
+              schema:
+                additionalProperties: false
+                properties:
+                  billable:
+                    description: __Read-only__ The amount of network transfer this Linode has used, in GB, past your monthly quota.
+                    example: 0
+                    readOnly: true
+                    type: integer
+                  quota:
+                    description: __Read-only__ The amount of network transfer this Linode adds to your transfer pool, in GB, for the current month's billing cycle.
+                    example: 2000
+                    readOnly: true
+                    type: integer
+                  used:
+                    description: __Read-only__ The amount of network transfer used by this Linode, in bytes, for the current month's billing cycle.
+                    example: 22956600198
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-linode-transfer-200.yaml
+          description: A collection of the specified Linode's network transfer statistics.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get this month's network transfer stats
+      tags:
+      - Linode statistics
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes transfer-view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: transfer-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode_monthly_network_transfer_stats
+  /{apiVersion}/linode/instances/{linodeId}/transfer/{year}/{month}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: Numeric value representing the year to look up.
+      example: '{{year}}'
+      in: path
+      name: year
+      required: true
+      schema:
+        example: 2024
+        maximum: 2037
+        minimum: 2000
+        type: integer
+      x-akamai:
+        file-path: parameters/year-path.yaml
+    - description: Numeric value representing the month to look up.
+      example: '{{month}}'
+      in: path
+      name: month
+      required: true
+      schema:
+        example: 8
+        maximum: 12
+        minimum: 1
+        type: integer
+      x-akamai:
+        file-path: parameters/month-path.yaml
+    x-akamai:
+      file-path: paths/linode-transfer-month.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/transfer/{year}/{month}
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns a Linode''s network transfer pool statistics for a specific month. If the `{year}` and `{month}` are set to the current month, the API returns statistics for the past 30 days.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-transfer-by-year-month
+      operationId: get-linode-transfer-by-year-month
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                bytes_in: 30471077120
+                bytes_out: 22956600198
+                bytes_total: 53427677318
+              schema:
+                additionalProperties: false
+                properties:
+                  bytes_in:
+                    description: __Read-only__ The amount of inbound public network traffic received by this Linode, in bytes, for a specific year/month.
+                    example: 30471077120
+                    readOnly: true
+                    type: integer
+                  bytes_out:
+                    description: __Read-only__ The amount of outbound public network traffic sent by this Linode, in bytes, for a specific year/month.
+                    example: 22956600198
+                    readOnly: true
+                    type: integer
+                  bytes_total:
+                    description: __Read-only__ The total amount of public network traffic sent and received by this Linode, in bytes, for a specific year/month.
+                    example: 53427677318
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-linode-transfer-by-year-month-200.yaml
+          description: A collection of the specified Linode's network transfer statistics for the requested month.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get monthly network transfer stats
+      tags:
+      - Linode statistics
+      x-akamai:
+        tabs:
+        - syntax: linodes:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: transfer-month
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+  /{apiVersion}/nodebalancers/{nodeBalancerId}/stats:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the NodeBalancer.
+      example: '{{nodeBalancerId}}'
+      in: path
+      name: nodeBalancerId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/node-balancer-id.yaml
+    x-akamai:
+      file-path: paths/stats.yaml
+      path-info: /{apiVersion}/nodebalancers/{nodeBalancerId}/stats
+    x-linode-cli-command: nodebalancers
+    get:
+      description: 'Returns detailed statistics about the requested NodeBalancer.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_nodebalancer_statistics`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-stats
+      operationId: get-node-balancer-stats
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: Stats for this NodeBalancer.
+                properties:
+                  data:
+                    additionalProperties: false
+                    description: The data returned about this NodeBalancers.
+                    properties:
+                      connections:
+                        description: An array of key/value pairs representing unix timestamp and reading for connections to this NodeBalancer.
+                        items:
+                          example:
+                          - 1526391300000
+                          - 0
+                          type: number
+                        type: array
+                      traffic:
+                        additionalProperties: false
+                        description: Traffic statistics for this NodeBalancer.
+                        properties:
+                          in:
+                            description: An array of key/value pairs representing unix timestamp and reading for inbound traffic.
+                            items:
+                              example:
+                              - 1526391300000
+                              - 631.21
+                              type: number
+                            type: array
+                          out:
+                            description: An array of key/value pairs representing unix timestamp and reading for outbound traffic.
+                            items:
+                              example:
+                              - 1526391300000
+                              - 103.44
+                              type: number
+                            type: array
+                        type: object
+                    type: object
+                  title:
+                    description: The title for the statistics generated in this response.
+                    example: linode.com - balancer12345 (12345) - day (5 min avg)
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/node-balancer-stats.yaml
+              x-example:
+                x-ref: ../examples/get-node-balancer-stats-200.json
+          description: The requested stats.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_only
+      summary: Get NodeBalancer statistics
+      tags:
+      - Linode statistics
+      x-linode-cli-action: stats
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_nodebalancer_statistics
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

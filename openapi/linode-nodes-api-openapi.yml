@@ -1,0 +1,2267 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Nodes API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Nodes
+paths:
+  /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the NodeBalancer.
+      example: '{{nodeBalancerId}}'
+      in: path
+      name: nodeBalancerId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/node-balancer-id.yaml
+    - description: The ID of the NodeBalancer config to access.
+      example: '{{configId}}'
+      in: path
+      name: configId
+      required: true
+      schema:
+        example: 521
+        type: integer
+      x-akamai:
+        file-path: parameters/config-id-node-balancer.yaml
+    x-akamai:
+      file-path: paths/nodes.yaml
+      path-info: /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes
+    x-linode-cli-command: nodebalancers
+    post:
+      description: 'Creates a backend node that can receive traffic for the NodeBalancer configuration. Requests are routed to backend nodes on the specified port based on their `status`. The configurable fields for the backend node depend on the chosen protocol and whether the node is located within a Linode VPC.
+
+
+        After creating a NodeBalancer backend node, account administrators can add a lock to prevent accidental node deletion by using the Create a resource lock operation.
+
+
+        > 🚧
+
+        >
+
+        > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_nodebalancer_config_node`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_write`
+
+
+        **CLI**
+
+
+        *TCP, HTTP, HTTPS*
+
+
+        ```shell
+
+        linode-cli nodebalancers node-create \
+
+        12345 4567 \
+
+        --address 10.0.0.45:80 \
+
+        --label node54321 \
+
+        --weight 50 \
+
+        --mode accept \
+
+        --subnet_id 1
+
+        ```
+
+
+        *UDP*
+
+
+        ```shell
+
+        linode-cli nodebalancers node-create \
+
+        12345 4567 \
+
+        --address 192.168.210.120:80 \
+
+        --label node54321 \
+
+        --weight 50
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-node-balancer-node
+      operationId: post-node-balancer-node
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                oneOf:
+                - additionalProperties: false
+                  description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: "Backend nodes can be Linodes and Linodes within a VPC. The following IP types are supported:\n  - For non-VPC backend nodes, the private IPv4 address and port where this backend can be reached.\n  - For non-VPC backend nodes, the public IPv6 address and port where this backend can be reached.\n  - For backend nodes within a VPC, the IPv4 address and port where this backend can be reached."
+                      example:
+                      - 192.168.210.120:443
+                      - 10.100.5.5:80
+                      - '[2300:5800::f03c:93ff:fe6e:1264]:8080'
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 4567
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 54321
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: node54321
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                      enum:
+                      - none
+                      example: none
+                      readOnly: true
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 12345
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                      enum:
+                      - unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    subnet_id:
+                      description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                      example: 1
+                      type: integer
+                      x-linode-cli-display: 8
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: UDP config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-udp.yaml
+                    status: BETA
+                - additionalProperties: false
+                  description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: "Backend nodes can be Linodes and Linodes within a VPC. The following IP types are supported:\n  - For non-VPC backend nodes, the private IPv4 address and port where this backend can be reached.\n  - For non-VPC backend nodes, the public IPv6 address and port where this backend can be reached.\n  - For backend nodes within a VPC, the IPv4 address and port where this backend can be reached."
+                      example:
+                      - 192.168.210.120:443
+                      - 10.100.5.5:80
+                      - '[2300:5800::f03c:93ff:fe6e:1264]:8080'
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 4567
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 54321
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: node54321
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                        - If set to `accept` this backend is accepting traffic.
+
+                        - If set to `reject` this backend will not receive traffic.
+
+                        - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                        - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                      enum:
+                      - accept
+                      - reject
+                      - drain
+                      - backup
+                      example: accept
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 12345
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                      enum:
+                      - unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    subnet_id:
+                      description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                      example: 1
+                      type: integer
+                      x-linode-cli-display: 8
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: TCP, HTTP, or HTTPS config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-tcp-http-https.yaml
+                x-akamai:
+                  file-path: schemas/node-balancer-node.yaml
+              required:
+              - label
+              - address
+              x-akamai:
+                file-path: schemas/added-post-node-balancer-node.yaml
+            x-example:
+              x-ref: ../examples/post-node-balancer-node.json
+            x-linode-cli-use-schema:
+              additionalProperties: false
+              properties:
+                address:
+                  description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                  example: 192.168.210.120:80
+                  format: ip
+                  type: string
+                  x-linode-cli-display: 3
+                config_id:
+                  description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                  example: 4567
+                  readOnly: true
+                  type: integer
+                id:
+                  description: __Read-only__ This node's unique ID.
+                  example: 54321
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                label:
+                  description: The label for this node.  This is for display purposes only.
+                  example: node54321
+                  maxLength: 32
+                  minLength: 3
+                  pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                  type: string
+                  x-linode-cli-display: 2
+                mode:
+                  description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                    - If set to `accept`, this backend is accepting traffic.
+
+                    - If set to `reject`, this backend will not receive traffic.
+
+                    - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                    - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                  enum:
+                  - accept
+                  - reject
+                  - drain
+                  - backup
+                  example: accept
+                  type: string
+                  x-linode-cli-display: 6
+                nodebalancer_id:
+                  description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                  example: 12345
+                  readOnly: true
+                  type: integer
+                status:
+                  description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                  enum:
+                  - unknown
+                  - UP
+                  - DOWN
+                  example: UP
+                  readOnly: true
+                  type: string
+                  x-linode-cli-color:
+                    DOWN: red
+                    UP: green
+                    default_: white
+                    unknown: yellow
+                  x-linode-cli-display: 4
+                subnet_id:
+                  description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                  example: 1
+                  type: integer
+                  x-linode-cli-display: 8
+                weight:
+                  description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                  example: 50
+                  maximum: 255
+                  minimum: 1
+                  type: integer
+                  x-linode-cli-display: 5
+              type: object
+              x-akamai:
+                file-path: schemas/node-balancer-node-cli.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                oneOf:
+                - additionalProperties: false
+                  description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 8
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                        - If set to `accept` this backend is accepting traffic.
+
+                        - If set to `reject` this backend will not receive traffic.
+
+                        - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                        - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                      enum:
+                      - accept
+                      - reject
+                      - drain
+                      - backup
+                      example: accept
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, you can use the `vpc_config_id` to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only in `{apiVersion}` `v4beta`.
+                      example: 8
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: TCP, HTTP, or HTTPS config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-tcp-http-https-response.yaml
+                - additionalProperties: false
+                  description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address.  If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 9
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: non-vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                      enum:
+                      - none
+                      example: none
+                      readOnly: true
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, the `vpc_config_id` can be used to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only when the `apiVersion` is `v4beta`.
+                      example: null
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: UDP config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-udp-response.yaml
+                    status: BETA
+                x-akamai:
+                  file-path: schemas/node-balancer-node-response.yaml
+              x-example:
+                x-ref: ../examples/post-node-balancer-node-200.json
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                    example: 192.168.210.120:80
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                      - If set to `accept`, this backend is accepting traffic.
+
+                      - If set to `reject`, this backend will not receive traffic.
+
+                      - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                      - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                    enum:
+                    - accept
+                    - reject
+                    - drain
+                    - backup
+                    example: accept
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/node-balancer-node-cli.yaml
+          description: Node created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_write
+      summary: Create a node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli nodebalancers node-create \\\n  12345 4567 \\\n  --address 10.0.0.45:80 \\\n  --label node54321 \\\n  --weight 50 \\\n  --mode accept \\\n  --subnet_id 1"
+          title: 'CLI: TCP, HTTP, HTTPS'
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: "linode-cli nodebalancers node-create \\\n  12345 4567 \\\n  --address 192.168.210.120:80 \\\n  --label node54321 \\\n  --weight 50"
+          title: 'CLI: UDP'
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: node-create
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - create_nodebalancer_config_node
+    get:
+      description: 'Returns a paginated list of NodeBalancer nodes associated with this Config. These are the backends that will be sent traffic for this port.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_nodebalancer_config_nodes`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli nodebalancers nodes-list 12345 4567
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config-nodes
+      operationId: get-node-balancer-config-nodes
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - address: 10.0.0.10:80
+                  config_id: 34
+                  id: 56
+                  label: vpc-node
+                  mode: accept
+                  nodebalancer_id: 12
+                  status: Unknown
+                  vpc_config_id: 8
+                  weight: 50
+                - address: 192.168.128.2:80
+                  config_id: 34
+                  id: 57
+                  label: non-vpc-node
+                  mode: accept
+                  nodebalancer_id: 12
+                  status: Unknown
+                  vpc_config_id: null
+                  weight: 50
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                      oneOf:
+                      - additionalProperties: false
+                        description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                        properties:
+                          address:
+                            description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                            example: 10.0.0.45:80
+                            format: ip
+                            type: string
+                          config_id:
+                            description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                            example: 6
+                            readOnly: true
+                            type: integer
+                          id:
+                            description: __Read-only__ This node's unique ID.
+                            example: 8
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 1
+                          label:
+                            description: The label for this node.  This is for display purposes only.
+                            example: vpc-node
+                            maxLength: 32
+                            minLength: 3
+                            pattern: '[a-zA-Z0-9-_.]{3,32}'
+                            type: string
+                            x-linode-cli-display: 2
+                          mode:
+                            description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                              - If set to `accept` this backend is accepting traffic.
+
+                              - If set to `reject` this backend will not receive traffic.
+
+                              - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                              - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                            enum:
+                            - accept
+                            - reject
+                            - drain
+                            - backup
+                            example: accept
+                            type: string
+                            x-linode-cli-display: 6
+                          nodebalancer_id:
+                            description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                            example: 10
+                            readOnly: true
+                            type: integer
+                          status:
+                            description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                            enum:
+                            - Unknown
+                            - UP
+                            - DOWN
+                            example: UP
+                            readOnly: true
+                            type: string
+                            x-linode-cli-color:
+                              DOWN: red
+                              UP: green
+                              default_: white
+                              unknown: yellow
+                            x-linode-cli-display: 4
+                          vpc_config_id:
+                            description: __Read-only__ For VPC backends, you can use the `vpc_config_id` to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only in `{apiVersion}` `v4beta`.
+                            example: 8
+                            readOnly: true
+                            type:
+                            - integer
+                            - 'null'
+                          weight:
+                            description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                            example: 50
+                            maximum: 255
+                            minimum: 1
+                            type: integer
+                            x-linode-cli-display: 5
+                        title: TCP, HTTP, or HTTPS config
+                        x-akamai:
+                          file-path: schemas/node-balancer-node-tcp-http-https-response.yaml
+                      - additionalProperties: false
+                        description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address.  If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                        properties:
+                          address:
+                            description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                            example: 10.0.0.45:80
+                            format: ip
+                            type: string
+                          config_id:
+                            description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                            example: 6
+                            readOnly: true
+                            type: integer
+                          id:
+                            description: __Read-only__ This node's unique ID.
+                            example: 9
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 1
+                          label:
+                            description: The label for this node.  This is for display purposes only.
+                            example: non-vpc-node
+                            maxLength: 32
+                            minLength: 3
+                            pattern: '[a-zA-Z0-9-_.]{3,32}'
+                            type: string
+                            x-linode-cli-display: 2
+                          mode:
+                            description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                            enum:
+                            - none
+                            example: none
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 6
+                          nodebalancer_id:
+                            description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                            example: 10
+                            readOnly: true
+                            type: integer
+                          status:
+                            description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                            enum:
+                            - Unknown
+                            - UP
+                            - DOWN
+                            example: UP
+                            readOnly: true
+                            type: string
+                            x-linode-cli-color:
+                              DOWN: red
+                              UP: green
+                              default_: white
+                              unknown: yellow
+                            x-linode-cli-display: 4
+                          vpc_config_id:
+                            description: __Read-only__ For VPC backends, the `vpc_config_id` can be used to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only when the `apiVersion` is `v4beta`.
+                            example: null
+                            readOnly: true
+                            type:
+                            - integer
+                            - 'null'
+                          weight:
+                            description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                            example: 50
+                            maximum: 255
+                            minimum: 1
+                            type: integer
+                            x-linode-cli-display: 5
+                        title: UDP config
+                        x-akamai:
+                          file-path: schemas/node-balancer-node-udp-response.yaml
+                          status: BETA
+                      x-akamai:
+                        file-path: schemas/node-balancer-node-response.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-node-balancer-config-nodes-200.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                    example: 192.168.210.120:80
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                      - If set to `accept`, this backend is accepting traffic.
+
+                      - If set to `reject`, this backend will not receive traffic.
+
+                      - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                      - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                    enum:
+                    - accept
+                    - reject
+                    - drain
+                    - backup
+                    example: accept
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/node-balancer-node-cli.yaml
+          description: A paginated list of NodeBalancer nodes.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_only
+      summary: List nodes
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli nodebalancers nodes-list 12345 4567
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: nodes-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_nodebalancer_config_nodes
+  /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes/{nodeId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the NodeBalancer.
+      example: '{{nodeBalancerId}}'
+      in: path
+      name: nodeBalancerId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/node-balancer-id.yaml
+    - description: The ID of the Config to access.
+      example: '{{configId}}'
+      in: path
+      name: configId
+      required: true
+      schema:
+        example: 521
+        type: integer
+      x-akamai:
+        file-path: parameters/config-id.yaml
+    - description: The ID of the Node to access.
+      example: '{{nodeId}}'
+      in: path
+      name: nodeId
+      required: true
+      schema:
+        example: 12345-6aa78910bc
+        type: string
+      x-akamai:
+        file-path: parameters/node-id.yaml
+    x-akamai:
+      file-path: paths/config-node.yaml
+      path-info: /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes/{nodeId}
+    x-linode-cli-command: nodebalancers
+    get:
+      description: 'Returns information about a single Node, a backend for this NodeBalancer''s configured port.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_nodebalancer_config_node`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli nodebalancers node-view 12345 4567 54321
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node
+      operationId: get-node-balancer-node
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 10.0.0.45:80
+                config_id: 6
+                id: 8
+                label: vpc-node
+                mode: accept
+                nodebalancer_id: 10
+                status: UP
+                vpc_config_id: 8
+                weight: 50
+              schema:
+                description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                oneOf:
+                - additionalProperties: false
+                  description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 8
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                        - If set to `accept` this backend is accepting traffic.
+
+                        - If set to `reject` this backend will not receive traffic.
+
+                        - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                        - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                      enum:
+                      - accept
+                      - reject
+                      - drain
+                      - backup
+                      example: accept
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, you can use the `vpc_config_id` to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only in `{apiVersion}` `v4beta`.
+                      example: 8
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: TCP, HTTP, or HTTPS config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-tcp-http-https-response.yaml
+                - additionalProperties: false
+                  description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address.  If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 9
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: non-vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                      enum:
+                      - none
+                      example: none
+                      readOnly: true
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, the `vpc_config_id` can be used to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only when the `apiVersion` is `v4beta`.
+                      example: null
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: UDP config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-udp-response.yaml
+                    status: BETA
+                x-akamai:
+                  file-path: schemas/node-balancer-node-response.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                    example: 192.168.210.120:80
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                      - If set to `accept`, this backend is accepting traffic.
+
+                      - If set to `reject`, this backend will not receive traffic.
+
+                      - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                      - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                    enum:
+                    - accept
+                    - reject
+                    - drain
+                    - backup
+                    example: accept
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/node-balancer-node-cli.yaml
+          description: A single NodeBalancer node.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_write
+      summary: Get a NodeBalancer's node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli nodebalancers node-view 12345 4567 54321
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: node-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_nodebalancer_config_node
+    put:
+      description: 'Updates information about a node, a backend for this NodeBalancer''s configured port. The fields available for the backend node depend on the configuration''s protocol, and if the backend node is in a VPC.
+
+
+        > 🚧
+
+        >
+
+        > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_nodebalancer_config_node`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_write`
+
+
+        **CLI**
+
+
+        *TCP, HTTP, HTTPS*
+
+
+        ```shell
+
+        linode-cli nodebalancers node-update \
+
+        12345 4567 54321 \
+
+        --address 192.168.210.120:80 \
+
+        --label node54321 \
+
+        --weight 50 \
+
+        --mode accept
+
+        ```
+
+
+        *UDP*
+
+
+        ```shell
+
+        linode-cli nodebalancers node-create \
+
+        12345 4567 \
+
+        --address 192.168.210.120:80 \
+
+        --label node54321 \
+
+        --weight 50
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-node-balancer-node
+      operationId: put-node-balancer-node
+      requestBody:
+        content:
+          application/json:
+            example:
+              address: 10.100.5.5:80
+              label: node54321
+              subnet_id: 1
+              weight: 50
+            schema:
+              description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+              oneOf:
+              - additionalProperties: false
+                description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                properties:
+                  address:
+                    description: "Backend nodes can be Linodes and Linodes within a VPC. The following IP types are supported:\n  - For non-VPC backend nodes, the private IPv4 address and port where this backend can be reached.\n  - For non-VPC backend nodes, the public IPv6 address and port where this backend can be reached.\n  - For backend nodes within a VPC, the IPv4 address and port where this backend can be reached."
+                    example:
+                    - 192.168.210.120:443
+                    - 10.100.5.5:80
+                    - '[2300:5800::f03c:93ff:fe6e:1264]:8080'
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_.]{3,32}'
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                    enum:
+                    - none
+                    example: none
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                title: UDP config
+                x-akamai:
+                  file-path: schemas/node-balancer-node-udp.yaml
+                  status: BETA
+              - additionalProperties: false
+                description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                properties:
+                  address:
+                    description: "Backend nodes can be Linodes and Linodes within a VPC. The following IP types are supported:\n  - For non-VPC backend nodes, the private IPv4 address and port where this backend can be reached.\n  - For non-VPC backend nodes, the public IPv6 address and port where this backend can be reached.\n  - For backend nodes within a VPC, the IPv4 address and port where this backend can be reached."
+                    example:
+                    - 192.168.210.120:443
+                    - 10.100.5.5:80
+                    - '[2300:5800::f03c:93ff:fe6e:1264]:8080'
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_.]{3,32}'
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                      - If set to `accept` this backend is accepting traffic.
+
+                      - If set to `reject` this backend will not receive traffic.
+
+                      - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                      - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                    enum:
+                    - accept
+                    - reject
+                    - drain
+                    - backup
+                    example: accept
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                title: TCP, HTTP, or HTTPS config
+                x-akamai:
+                  file-path: schemas/node-balancer-node-tcp-http-https.yaml
+              x-akamai:
+                file-path: schemas/node-balancer-node.yaml
+            x-linode-cli-use-schema:
+              additionalProperties: false
+              properties:
+                address:
+                  description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                  example: 192.168.210.120:80
+                  format: ip
+                  type: string
+                  x-linode-cli-display: 3
+                config_id:
+                  description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                  example: 4567
+                  readOnly: true
+                  type: integer
+                id:
+                  description: __Read-only__ This node's unique ID.
+                  example: 54321
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                label:
+                  description: The label for this node.  This is for display purposes only.
+                  example: node54321
+                  maxLength: 32
+                  minLength: 3
+                  pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                  type: string
+                  x-linode-cli-display: 2
+                mode:
+                  description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                    - If set to `accept`, this backend is accepting traffic.
+
+                    - If set to `reject`, this backend will not receive traffic.
+
+                    - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                    - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                  enum:
+                  - accept
+                  - reject
+                  - drain
+                  - backup
+                  example: accept
+                  type: string
+                  x-linode-cli-display: 6
+                nodebalancer_id:
+                  description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                  example: 12345
+                  readOnly: true
+                  type: integer
+                status:
+                  description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                  enum:
+                  - unknown
+                  - UP
+                  - DOWN
+                  example: UP
+                  readOnly: true
+                  type: string
+                  x-linode-cli-color:
+                    DOWN: red
+                    UP: green
+                    default_: white
+                    unknown: yellow
+                  x-linode-cli-display: 4
+                subnet_id:
+                  description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                  example: 1
+                  type: integer
+                  x-linode-cli-display: 8
+                weight:
+                  description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                  example: 50
+                  maximum: 255
+                  minimum: 1
+                  type: integer
+                  x-linode-cli-display: 5
+              type: object
+              x-akamai:
+                file-path: schemas/node-balancer-node-cli.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 10.0.0.45:80
+                config_id: 6
+                id: 8
+                label: vpc-node
+                mode: accept
+                nodebalancer_id: 10
+                status: UP
+                vpc_config_id: 8
+                weight: 50
+              schema:
+                description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                oneOf:
+                - additionalProperties: false
+                  description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 8
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                        - If set to `accept` this backend is accepting traffic.
+
+                        - If set to `reject` this backend will not receive traffic.
+
+                        - If set to `drain` this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                        - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                      enum:
+                      - accept
+                      - reject
+                      - drain
+                      - backup
+                      example: accept
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, you can use the `vpc_config_id` to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only in `{apiVersion}` `v4beta`.
+                      example: 8
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: TCP, HTTP, or HTTPS config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-tcp-http-https-response.yaml
+                - additionalProperties: false
+                  description: __Beta__ A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address.  If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both UDP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
+                  properties:
+                    address:
+                      description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                      example: 10.0.0.45:80
+                      format: ip
+                      type: string
+                    config_id:
+                      description: __Read-only__ The NodeBalancer Config ID that this Node belongs to.
+                      example: 6
+                      readOnly: true
+                      type: integer
+                    id:
+                      description: __Read-only__ This node's unique ID.
+                      example: 9
+                      readOnly: true
+                      type: integer
+                      x-linode-cli-display: 1
+                    label:
+                      description: The label for this node.  This is for display purposes only.
+                      example: non-vpc-node
+                      maxLength: 32
+                      minLength: 3
+                      pattern: '[a-zA-Z0-9-_.]{3,32}'
+                      type: string
+                      x-linode-cli-display: 2
+                    mode:
+                      description: __Read-only__ The mode this NodeBalancer should use when sending traffic to this backend. For backend nodes with a UDP config, the `mode` doesn't apply, so the value is `none`.
+                      enum:
+                      - none
+                      example: none
+                      readOnly: true
+                      type: string
+                      x-linode-cli-display: 6
+                    nodebalancer_id:
+                      description: __Read-only__ The NodeBalancer ID that this Node belongs to.
+                      example: 10
+                      readOnly: true
+                      type: integer
+                    status:
+                      description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer config.
+                      enum:
+                      - Unknown
+                      - UP
+                      - DOWN
+                      example: UP
+                      readOnly: true
+                      type: string
+                      x-linode-cli-color:
+                        DOWN: red
+                        UP: green
+                        default_: white
+                        unknown: yellow
+                      x-linode-cli-display: 4
+                    vpc_config_id:
+                      description: __Read-only__ For VPC backends, the `vpc_config_id` can be used to [get VPC IDs and VPC subnet IDs](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpc-config). Returns a `null` value if the backend is not a VPC node. Included only when the `apiVersion` is `v4beta`.
+                      example: null
+                      readOnly: true
+                      type:
+                      - integer
+                      - 'null'
+                    weight:
+                      description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
+                      example: 50
+                      maximum: 255
+                      minimum: 1
+                      type: integer
+                      x-linode-cli-display: 5
+                  title: UDP config
+                  x-akamai:
+                    file-path: schemas/node-balancer-node-udp-response.yaml
+                    status: BETA
+                x-akamai:
+                  file-path: schemas/node-balancer-node-response.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    description: 'The address and port where this backend can be reached: either the Linode’s private IPv4, public IPv6, or the VPC''s IPv4 address.'
+                    example: 192.168.210.120:80
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  config_id:
+                    description: __Read-only__ The NodeBalancer config ID that this node belongs to.
+                    example: 4567
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ This node's unique ID.
+                    example: 54321
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this node.  This is for display purposes only.
+                    example: node54321
+                    maxLength: 32
+                    minLength: 3
+                    pattern: ^[a-zA-Z0-9-_.]{3,32}$
+                    type: string
+                    x-linode-cli-display: 2
+                  mode:
+                    description: 'The mode this NodeBalancer should use when sending traffic to this backend.
+
+
+                      - If set to `accept`, this backend is accepting traffic.
+
+                      - If set to `reject`, this backend will not receive traffic.
+
+                      - If set to `drain`, this backend will not receive _new_ traffic, but connections already pinned to it will continue to be routed to it.
+
+                      - If set to `backup`, this backend will only receive traffic if all `accept` nodes are down.'
+                    enum:
+                    - accept
+                    - reject
+                    - drain
+                    - backup
+                    example: accept
+                    type: string
+                    x-linode-cli-display: 6
+                  nodebalancer_id:
+                    description: __Read-only__ The NodeBalancer ID that this node belongs to.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                  status:
+                    description: __Read-only__ The current status of this node, based on the configured checks of its NodeBalancer Config.
+                    enum:
+                    - unknown
+                    - UP
+                    - DOWN
+                    example: UP
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      DOWN: red
+                      UP: green
+                      default_: white
+                      unknown: yellow
+                    x-linode-cli-display: 4
+                  subnet_id:
+                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 8
+                  weight:
+                    description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
+                    example: 50
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/node-balancer-node-cli.yaml
+          description: Node updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_write
+      summary: Update a node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli nodebalancers node-update \\\n  12345 4567 54321 \\\n  --address 192.168.210.120:80 \\\n  --label node54321 \\\n  --weight 50 \\\n  --mode accept"
+          title: 'CLI: TCP, HTTP, HTTPS'
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: "linode-cli nodebalancers node-create \\\n  12345 4567 \\\n  --address 192.168.210.120:80 \\\n  --label node54321 \\\n  --weight 50"
+          title: 'CLI: UDP'
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: node-update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_nodebalancer_config_node
+    delete:
+      description: 'Deletes a node from a configuration. This backend will no longer receive traffic for the configured port of this NodeBalancer.
+
+
+        A NodeBalancer backend node can''t be deleted if it has a `cannot_delete_with_subresources` lock. Only account administrators can remove locks using the Delete a resource lock operation.
+
+
+        This does not change or remove the Linode whose address was used in the creation of this node.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_nodebalancer_config_node`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `nodebalancers:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli nodebalancers node-delete \
+
+        12345 4567 54321
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-node-balancer-config-node
+      operationId: delete-node-balancer-config-node
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Node deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - nodebalancers:read_write
+      summary: Delete a NodeBalancer's node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli nodebalancers node-delete \\\n  12345 4567 54321"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: node-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_nodebalancer_config_node
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

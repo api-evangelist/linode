@@ -1,0 +1,1749 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Linode disks API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to manage the individual disks on your Linode.
+  name: Linode disks
+paths:
+  /{apiVersion}/linode/instances/{linodeId}/disks:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    x-akamai:
+      file-path: paths/linode-disks.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/disks
+    x-linode-cli-command: linodes
+    post:
+      description: 'Add a new disk to an existing Linode. You can create an empty disk to manually configure it later. You can also target a stored `image` to build the disk using a pre-configured file system--either through an image you''ve created or via a StackScript. Consider these points when creating a new disk:
+
+
+        **General**
+
+
+        - A Linode can have up to 50 disks.
+
+
+        - You need to provide at least one authentication mechanism for disk access: a `root_pass`, `authorized_keys`, or `authorized_users`, with the latter two offering SSH protection.
+
+
+        **Empty disks**
+
+
+        - To do this, don''t include the `image`, `filesystem`, `stackscript_id`, or `stackscript_data` fields.
+
+
+        - An empty disk still requires a `label`.
+
+
+        - The default file system for an empty disk is `ext4`.
+
+
+        **Disks created from an `image`**
+
+
+        - A created disk inherits both the `label` and the `filesystem` from the target `image`, unless you specify otherwise.
+
+
+        - We offer an example workflow to create a disk using a stored image.
+
+
+        **Disks created from a StackScript**
+
+
+        - You can run List StackScripts to review available StackScripts.
+
+
+        - You need to include a StackScript-compatible `image` when creating the disk. Run Get a StackScript to review available images.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-create 123 \
+
+        --size 1300 \
+
+        --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer" \
+
+        --authorized_users "myUser" \
+
+        --authorized_users "secondaryUser" \
+
+        --root_pass aComplex@Password \
+
+        --image "linode/debian13" \
+
+        --stackscript_id 10079 \
+
+        --stackscript_data ''{"gh_username": "linode"}''
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-add-linode-disk
+      operationId: post-add-linode-disk
+      requestBody:
+        content:
+          application/json:
+            example:
+              authorized_keys:
+              - ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer
+              authorized_users:
+              - example-user
+              filesystem: ext4
+              image: linode/debian13
+              label: Debian 13 Disk
+              root_pass: strong-password
+              size: 48640
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: Disk object request.
+                properties:
+                  authorized_keys:
+                    description: '__Write-only__ A list of public SSH keys that will be automatically appended to the root user''s `~/.ssh/authorized_keys` file when deploying from an image.
+
+
+                      > 📘
+
+                      >
+
+                      > You need to set at least one form of authentication to access a Linode disk. This can be `authorized_keys`, `authorized_users`, or a `root_pass`. You can optionally combine `authorized_keys` with a `root_pass` for added security.'
+                    example:
+                    - ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer
+                    items:
+                      type: string
+                    type: array
+                    writeOnly: true
+                  authorized_users:
+                    description: '__Write-only__ A list of usernames for authorized users. Before you can add a user, it needs an SSH key assigned to its profile. See [Add an SSH key](https://techdocs.akamai.com/linode-api/reference/post-add-ssh-key) for more information. If the usernames already have associated SSH keys, the keys will be appended to the root users `~/.ssh/authorized_keys` file automatically when deploying from an image.
+
+
+                      > 📘
+
+                      >
+
+                      > You need to set at least one form of authentication to access a Linode disk. This can be `authorized_users`, `authorized_keys` or a `root_pass`. You can optionally combine `authorized_users` with a `root_pass` for added security.'
+                    example:
+                    - myUser
+                    - secondaryUser
+                    items:
+                      type: string
+                    type: array
+                    writeOnly: true
+                  filesystem:
+                    description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                      > 📘
+
+                      >
+
+                      > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                    enum:
+                    - raw
+                    - swap
+                    - ext2
+                    - ext3
+                    - ext4
+                    - initrd
+                    example: ext4
+                    type: string
+                    x-linode-cli-display: 5
+                  image:
+                    description: The identifier assigned to the disk image to be deployed to the new Linode. You can run the [List images](https://techdocs.akamai.com/linode-api/reference/get-images) operation with authentication to view all available images, and store the `id` from the applicable one. Official Linode images start with `linode/`, while any custom images available on your account start with `private/`. To create a disk from a `private/` image, you need `read_only` or `read_write` permissions for it. Run the [Update a user's grants](https://techdocs.akamai.com/linode-api/reference/put-user-grants) operation to adjust permissions for a `private/` image, or talk to your local account administrator.
+                    example: linode/debian9
+                    type:
+                    - string
+                    - 'null'
+                  label:
+                    description: __Filterable__ The name of the disk. This is for display purposes only.
+                    example: Debian 13 Disk
+                    maxLength: 48
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  root_pass:
+                    description: '__Write-only__ This sets the root user''s password on a newly created Linode disk when deploying from an `image`. A `root_pass` needs to meet a password strength score requirement that is calculated internally by the API. If the strength requirement isn''t met, you''ll receive a `Password does not meet strength requirement` error.
+
+
+                      > 📘
+
+                      >
+
+                      > You need to set at least one form of authentication to access a Linode disk. This can be a `root_pass`, `authorized_keys`, or `authorized_users`. You can optionally combine a `root_pass` and either `authorized_keys` or `authorized_users` for added security.'
+                    example: aC0mplexP@$$w0rd
+                    format: password
+                    maxLength: 128
+                    minLength: 7
+                    type: string
+                    writeOnly: true
+                  size:
+                    description: __Filterable__ The size of the disk in MB. Images require a minimum size. Run the [Get an image](https://techdocs.akamai.com/linode-api/reference/get-image) operation to view its size.
+                    example: 48640
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  stackscript_data:
+                    description: 'This field is required only if the StackScript being deployed requires input data from the user for successful completion. See [Declare user-defined fields (UDFs)](https://techdocs.akamai.com/cloud-computing/docs/write-a-custom-script-for-use-with-stackscripts#declare-user-defined-fields-udfs) for more details.
+
+
+                      - This field needs to be formatted in valid JSON.
+
+
+                      - The total length can''t exceed 65,535 characters.'
+                    example:
+                      gh_username: linode
+                    type: object
+                  stackscript_id:
+                    description: An identifier for a StackScript that to be run during deployment of this Linode. A compatible `image` is required to use a StackScript. To get a list of available StackScripts and their permitted images, run the [List StackScripts](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts) operation. This field can't be used when deploying from a backup or a private image.
+                    example: 10079
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/disk-request.yaml
+              - required:
+                - size
+                type: object
+              x-akamai:
+                file-path: schemas/added-post-add-linode-disk.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                disk_encryption: disabled
+                filesystem: ext4
+                id: 25674
+                label: Debian 13 Disk
+                size: 48640
+                status: ready
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                properties:
+                  created:
+                    description: __Read-only__ When this disk was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  disk_encryption:
+                    description: __Read-only__ Indicates whether encryption is enabled on this disk. This setting is based on the `disk_encryption` setting of the Linode. This can be `enabled` or `disabled`.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: disabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  filesystem:
+                    description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                      > 📘
+
+                      >
+
+                      > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                    enum:
+                    - raw
+                    - swap
+                    - ext2
+                    - ext3
+                    - ext4
+                    - initrd
+                    example: ext4
+                    type: string
+                    x-linode-cli-display: 5
+                  id:
+                    description: __Read-only__ This disk's ID. You need this value to run other operations that interact with the disk.
+                    example: 25674
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the disk. This is for display purposes only.
+                    example: Debian 13 Disk
+                    maxLength: 48
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  size:
+                    description: __Filterable__ The size of the disk in MB.
+                    example: 48640
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: __Read-only__ The current state of the disk, either `ready`, `not ready`, or `deleting`.
+                    enum:
+                    - ready
+                    - not ready
+                    - deleting
+                    example: ready
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      not ready: red
+                      ready: green
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When this disk was last updated.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/disk.yaml
+          description: Disk created.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Create a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes disk-create 123 \\\n  --size 1300 \\\n  --authorized_keys \"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer\" \\\n  --authorized_users \"myUser\" \\\n  --authorized_users \"secondaryUser\" \\\n  --root_pass aComplex@Password \\\n  --image \"linode/debian13\" \\\n  --stackscript_id 10079 \\\n  --stackscript_data '{\"gh_username\": \"linode\"}'"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-create
+      x-linode-iam:
+      - permissions:
+        - create_linode_disk
+    get:
+      description: 'View information for disks associated with this Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disks-list 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-disks
+      operationId: get-linode-disks
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2018-01-01T00:01:01'
+                  disk_encryption: disabled
+                  filesystem: ext4
+                  id: 25674
+                  label: Debian 13 Disk
+                  size: 48640
+                  status: ready
+                  updated: '2018-01-01T00:01:01'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      properties:
+                        created:
+                          description: __Read-only__ When this disk was created.
+                          example: '2018-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                        disk_encryption:
+                          description: __Read-only__ Indicates whether encryption is enabled on this disk. This setting is based on the `disk_encryption` setting of the Linode. This can be `enabled` or `disabled`.
+                          enum:
+                          - enabled
+                          - disabled
+                          example: disabled
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 6
+                        filesystem:
+                          description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                            > 📘
+
+                            >
+
+                            > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                          enum:
+                          - raw
+                          - swap
+                          - ext2
+                          - ext3
+                          - ext4
+                          - initrd
+                          example: ext4
+                          type: string
+                          x-linode-cli-display: 5
+                        id:
+                          description: __Read-only__ This disk's ID. You need this value to run other operations that interact with the disk.
+                          example: 25674
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Filterable__ The name of the disk. This is for display purposes only.
+                          example: Debian 13 Disk
+                          maxLength: 48
+                          minLength: 1
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        size:
+                          description: __Filterable__ The size of the disk in MB.
+                          example: 48640
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        status:
+                          description: __Read-only__ The current state of the disk, either `ready`, `not ready`, or `deleting`.
+                          enum:
+                          - ready
+                          - not ready
+                          - deleting
+                          example: ready
+                          readOnly: true
+                          type: string
+                          x-linode-cli-color:
+                            default_: yellow
+                            not ready: red
+                            ready: green
+                          x-linode-cli-display: 3
+                        updated:
+                          description: __Read-only__ When this disk was last updated.
+                          example: '2018-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/disk.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-linode-disks-200.yaml
+          description: Returns a paginated list of disks associated with this Linode.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: List disks
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes disks-list 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disks-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode_disk
+  /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: ID of the Disk to look up.
+      example: '{{diskId}}'
+      in: path
+      name: diskId
+      required: true
+      schema:
+        example: 124458
+        type: integer
+      x-akamai:
+        file-path: parameters/disk-id-path-7d2fdd58.yaml
+    x-akamai:
+      file-path: paths/linode-disk.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}
+    x-linode-cli-command: linodes
+    get:
+      description: 'View information for a specific disk assigned to a Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-view 123 25674
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-disk
+      operationId: get-linode-disk
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                disk_encryption: disabled
+                filesystem: ext4
+                id: 25674
+                label: Debian 13 Disk
+                size: 48640
+                status: ready
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                properties:
+                  created:
+                    description: __Read-only__ When this disk was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  disk_encryption:
+                    description: __Read-only__ Indicates whether encryption is enabled on this disk. This setting is based on the `disk_encryption` setting of the Linode. This can be `enabled` or `disabled`.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: disabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  filesystem:
+                    description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                      > 📘
+
+                      >
+
+                      > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                    enum:
+                    - raw
+                    - swap
+                    - ext2
+                    - ext3
+                    - ext4
+                    - initrd
+                    example: ext4
+                    type: string
+                    x-linode-cli-display: 5
+                  id:
+                    description: __Read-only__ This disk's ID. You need this value to run other operations that interact with the disk.
+                    example: 25674
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the disk. This is for display purposes only.
+                    example: Debian 13 Disk
+                    maxLength: 48
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  size:
+                    description: __Filterable__ The size of the disk in MB.
+                    example: 48640
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: __Read-only__ The current state of the disk, either `ready`, `not ready`, or `deleting`.
+                    enum:
+                    - ready
+                    - not ready
+                    - deleting
+                    example: ready
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      not ready: red
+                      ready: green
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When this disk was last updated.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/disk.yaml
+          description: Returns a single Disk object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes disk-view 123 25674
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode_disk
+    put:
+      description: 'Update a specific disk on a Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-update 123 25674 \
+
+        --label "Debian 13 Disk"
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-disk
+      operationId: put-disk
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: Debian 13 Disk
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: __Filterable__ The name of the disk. This is for display purposes only.
+                  example: '{{label}}'
+                  maxLength: 48
+                  minLength: 1
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-disk.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                disk_encryption: disabled
+                filesystem: ext4
+                id: 25674
+                label: Debian 13 Disk
+                size: 48640
+                status: ready
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                properties:
+                  created:
+                    description: __Read-only__ When this disk was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  disk_encryption:
+                    description: __Read-only__ Indicates whether encryption is enabled on this disk. This setting is based on the `disk_encryption` setting of the Linode. This can be `enabled` or `disabled`.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: disabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  filesystem:
+                    description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                      > 📘
+
+                      >
+
+                      > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                    enum:
+                    - raw
+                    - swap
+                    - ext2
+                    - ext3
+                    - ext4
+                    - initrd
+                    example: ext4
+                    type: string
+                    x-linode-cli-display: 5
+                  id:
+                    description: __Read-only__ This disk's ID. You need this value to run other operations that interact with the disk.
+                    example: 25674
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the disk. This is for display purposes only.
+                    example: Debian 13 Disk
+                    maxLength: 48
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  size:
+                    description: __Filterable__ The size of the disk in MB.
+                    example: 48640
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: __Read-only__ The current state of the disk, either `ready`, `not ready`, or `deleting`.
+                    enum:
+                    - ready
+                    - not ready
+                    - deleting
+                    example: ready
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      not ready: red
+                      ready: green
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When this disk was last updated.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/disk.yaml
+          description: The updated Disk.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Update a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes disk-update 123 25674 \\\n  --label \"Debian 13 Disk\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_linode_disk
+    delete:
+      description: 'Delete a specific disk from a Linode.
+
+
+        > 🚧
+
+        >
+
+        > Deleting a disk is a destructive action and can''t be undone.
+
+
+        You can''t delete a disk on a Linode that has a `cannot_delete_with_subresources` resource lock set for it.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-delete 123 24674
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-disk
+      operationId: delete-disk
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Delete successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Delete a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes disk-delete 123 24674
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_linode_disk
+  /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/clone:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: ID of the Disk to clone.
+      example: '{{diskId}}'
+      in: path
+      name: diskId
+      required: true
+      schema:
+        example: 124458
+        type: integer
+      x-akamai:
+        file-path: parameters/disk-id-path-dee05ba9.yaml
+    x-akamai:
+      file-path: paths/linode-disk-clone.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/clone
+    x-linode-cli-command: linodes
+    post:
+      description: 'Copies a disk, byte-for-byte, into a new disk on the same Linode. The operation fails if the target doesn''t have enough storage space. A Linode can have up to 50 disks.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `clone_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-clone
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-clone-linode-disk
+      operationId: post-clone-linode-disk
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                disk_encryption: disabled
+                filesystem: ext4
+                id: 25674
+                label: Debian 13 Disk
+                size: 48640
+                status: ready
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                properties:
+                  created:
+                    description: __Read-only__ When this disk was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  disk_encryption:
+                    description: __Read-only__ Indicates whether encryption is enabled on this disk. This setting is based on the `disk_encryption` setting of the Linode. This can be `enabled` or `disabled`.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: disabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  filesystem:
+                    description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                      > 📘
+
+                      >
+
+                      > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                    enum:
+                    - raw
+                    - swap
+                    - ext2
+                    - ext3
+                    - ext4
+                    - initrd
+                    example: ext4
+                    type: string
+                    x-linode-cli-display: 5
+                  id:
+                    description: __Read-only__ This disk's ID. You need this value to run other operations that interact with the disk.
+                    example: 25674
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the disk. This is for display purposes only.
+                    example: Debian 13 Disk
+                    maxLength: 48
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  size:
+                    description: __Filterable__ The size of the disk in MB.
+                    example: 48640
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: __Read-only__ The current state of the disk, either `ready`, `not ready`, or `deleting`.
+                    enum:
+                    - ready
+                    - not ready
+                    - deleting
+                    example: ready
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      not ready: red
+                      ready: green
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When this disk was last updated.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/disk.yaml
+          description: Disk clone initiated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Clone a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes disk-clone
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-clone
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - clone_linode_disk
+  /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/password:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: ID of the Disk to look up.
+      example: '{{diskId}}'
+      in: path
+      name: diskId
+      required: true
+      schema:
+        example: 124458
+        type: integer
+      x-akamai:
+        file-path: parameters/disk-id-path.yaml
+    x-akamai:
+      file-path: paths/linode-disk-password.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/password
+    x-linode-cli-command: linodes
+    post:
+      description: 'Resets the password of a disk.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `reset_linode_disk_root_password`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-reset-password \
+
+        123 25674 \
+
+        --password aComplex@Password
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-reset-disk-password
+      operationId: post-reset-disk-password
+      requestBody:
+        content:
+          application/json:
+            example:
+              password: new-strong-password
+            schema:
+              additionalProperties: false
+              properties:
+                password:
+                  description: The new root password for the OS installed on this Disk. The password must meet the complexity strength validation requirements for a strong password.
+                  example: '{{password}}'
+                  type: string
+              required:
+              - password
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-reset-disk-password.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Returns a single Disk object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Reset a disk root password
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes disk-reset-password \\\n  123 25674 \\\n  --password aComplex@Password"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-reset-password
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - reset_linode_disk_root_password
+  /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/resize:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    - description: ID of the Disk to look up.
+      example: '{{diskId}}'
+      in: path
+      name: diskId
+      required: true
+      schema:
+        example: 124458
+        type: integer
+      x-akamai:
+        file-path: parameters/disk-id-path.yaml
+    x-akamai:
+      file-path: paths/linode-disk-resize.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/disks/{diskId}/resize
+    x-linode-cli-command: linodes
+    post:
+      description: 'Resizes a Disk.
+
+
+        The Disk must not be in use. If the Disk is in use, the request will succeed but the resize will ultimately fail. For a request to succeed, the Linode must be shut down prior to resizing the Disk, or the Disk must not be assigned to the Linode''s active Configuration Profile.
+
+
+        If you are resizing the Disk to a smaller size, it cannot be made smaller than what is required by the total size of the files current on the Disk.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `resize_linode_disk`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes disk-resize 123 25674 \
+
+        --size 2048
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-resize-disk
+      operationId: post-resize-disk
+      requestBody:
+        content:
+          application/json:
+            example:
+              size: 2048
+            schema:
+              additionalProperties: false
+              properties:
+                size:
+                  description: The desired size, in MB, of the disk.
+                  example: '{{size}}'
+                  minimum: 1
+                  type: integer
+              required:
+              - size
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-resize-disk.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Resize started.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Resize a disk
+      tags:
+      - Linode disks
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes disk-resize 123 25674 \\\n  --size 2048"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: disk-resize
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - resize_linode_disk
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

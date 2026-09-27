@@ -71,15 +71,6 @@ components:
           minLength: 3
           maxLength: 32
           description: The label for the Longview client.
-    PaginatedLongviewClientList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/LongviewClient'
     Pagination:
       type: object
       properties:
@@ -92,6 +83,15 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedLongviewClientList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/LongviewClient'
     LongviewClient:
       type: object
       properties:
@@ -119,14 +119,6 @@ components:
           format: date-time
           description: When this client was last updated.
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -136,6 +128,14 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
     personalAccessToken:
       type: http

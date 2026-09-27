@@ -1,29 +1,1733 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Placement Groups API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Placement groups API
+  version: '1.0'
+  description: 'Operations tagged Placement groups across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Placement Groups
-  description: Create and manage placement groups for controlling the physical placement of Linode instances within a data center.
+- description: Use a placement group to distribute your Linodes within a core compute region. Depending on your needs, you can group them together to reduce latency or spread them apart to promote high-availability.
+  name: Placement groups
 paths:
+  /{apiVersion}/placement/groups:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/placement-groups.yaml
+      path-info: /{apiVersion}/placement/groups
+    x-linode-cli-command: placement
+    post:
+      description: 'Creates a placement group on your account. Placement groups disperse your Linodes across physical machines (hosts) in one of our compute regions. Depending on your workload requirements, you may need your Linodes to follow specific strategies:
+
+
+        - __Grouped-together model__. You may want them placed close together to reduce latency between Linodes that are used for an application or workload. Affinity placement groups follow this model.
+
+
+        - __Spread-apart model__. You may want to disperse them across several hosts to support high availability, for example when required for failover. Anti-affinity placement groups follow this model.
+
+
+        To run this operation, your user needs the `add_linodes` grant. Talk to your local account administrator about grant management for your user.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > We offer an example API workflow you can follow to create a placement group and add Linodes to it.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement group-create \
+
+        --label PG_Miami_failover \
+
+        --region us-mia \
+
+        --placement_group_type "anti_affinity:local" \
+
+        --placement_group_policy strict
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-placement-group
+      operationId: post-placement-group
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: PG_Miami_failover
+              placement_group_policy: strict
+              placement_group_type: anti_affinity:local
+              region: us-iad
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: Common properties for creating and rebuilding placement groups.
+                properties:
+                  label:
+                    description: 'A unique name for the placement group. A placement group `label` has the following constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled:
+
+
+                      - `strict`: Ensures the placement group stays compliant with your selected model. If a target Linode breaks the grouped-together or spread-apart model set by your placement group type, it won''t be added. For example, with `anti-affinity:local` as your `placement_group_type`, assume it already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, an error is thrown and the system won''t add it. You can add up to 5 Linodes to a strict placement group.
+
+
+                      - `flexible`. A target Linode will be added even if it breaks the grouped-together or spread-apart model set by your placement group type. Breaking the model makes the placement group non-compliant. This makes the placement group non-compliant. Use this if you need more flexibility to add future Linodes and compliance isn''t an immediate concern. You can add up to 250 Linodes to a flexible placement group.
+
+
+                      > 📘
+
+                      >
+
+                      > Once you create a placement group, you can''t change its `placement_group_policy` setting.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: 'How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    type: string
+                    x-linode-cli-display: 1
+                  region:
+                    description: The data center that houses the Linodes you want to add to your placement group. Run the [List Linodes](https://techdocs.akamai.com/linode-api/reference/get-linode-instances) operation to view your Linodes and store the `region` identifier.
+                    example: us-iad
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group-request.yaml
+              required:
+              - placement_group_type
+              - placement_group_policy
+              - label
+              - region
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-placement-group.yaml
+        required: true
+        x-linode-cli-allowed-defaults:
+        - placement_group_type
+        - placement_group_policy
+        - label
+        - region
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 528
+                is_compliant: true
+                label: PG_Miami_failover
+                members:
+                - is_compliant: true
+                  linode_id: 123
+                placement_group_policy: strict
+                placement_group_type: anti_affinity:local
+                region: us-mia
+              schema:
+                additionalProperties: false
+                properties:
+                  id:
+                    description: The placement group's ID. You need to provide it for all operations that affect it.
+                    example: 528
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_compliant:
+                    description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isb''t compliant. For example, assume you''ve set `anti-affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                      > 📘
+
+                      >
+
+                      > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                    example: true
+                    type: boolean
+                  label:
+                    description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  members:
+                    description: Linodes included in the placement group.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        is_compliant:
+                          description: The compliance status of each individual Linode in the placement group.
+                          example: true
+                          type: boolean
+                        linode_id:
+                          description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                      type: object
+                    type: array
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                      - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                      - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                      <<LB>>
+
+
+                      > 📘
+
+                      >
+
+                      > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  region:
+                    description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                    example: us-mia
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group.yaml
+          description: A new placement group is being created.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Create a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli placement group-create \\\n  --label PG_Miami_failover \\\n  --region us-mia \\\n  --placement_group_type \"anti_affinity:local\" \\\n  --placement_group_policy strict"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode charge: true
+      x-linode grant: add_placement
+      x-linode-cli-action: group-create
+    get:
+      description: 'Returns a paginated list of placement groups you have permission to view.
+
+
+        > 📘
+
+        >
+
+        > Your user needs at least `read-only` permission to all Linodes included in a placement group to view it. Placement groups that contain Linodes that you don''t have this permission for are left out of the response. If all placement groups contain Linodes that lack this permission, the API returns a 403 error. Talk to your local account administrator about managing permissions.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linode:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement groups-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-placement-groups
+      operationId: get-placement-groups
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: 528
+                  is_compliant: true
+                  label: PG_Miami_failover
+                  members:
+                  - is_compliant: true
+                    linode_id: 123
+                  migrations:
+                    inbound:
+                    - linode_id: 123
+                    outbound:
+                    - linode_id: 456
+                  placement_group_policy: strict
+                  placement_group_type: anti_affinity:local
+                  region: us-mia
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        id:
+                          description: The placement group's ID. You need to provide it for all operations that affect it.
+                          example: 528
+                          type: integer
+                          x-linode-cli-display: 1
+                        is_compliant:
+                          description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isn''t compliant. For example, assume you''ve set `anti_affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                            > 📘
+
+                            >
+
+                            > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                          example: true
+                          type: boolean
+                        label:
+                          description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                            - It needs to begin and end with an alphanumeric character.
+
+                            - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                          example: PG_Miami_failover
+                          minLength: 1
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                        members:
+                          description: Linodes included in the placement group.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              is_compliant:
+                                description: The compliance status of each individual Linode in the placement group.
+                                example: true
+                                type: boolean
+                              linode_id:
+                                description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                                example: 123
+                                readOnly: true
+                                type: integer
+                            type: object
+                          type: array
+                        migrations:
+                          additionalProperties: false
+                          description: Any Linodes that are being migrated to or from the placement group. Returned as `null` if no migrations are taking place.
+                          properties:
+                            inbound:
+                              description: The individual Linodes the system is migrating into the placement group.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  linode_id:
+                                    description: __Read-only__ The unique identifier for a Linode being migrated into the placement group.
+                                    example: 123
+                                    readOnly: true
+                                    type: integer
+                                type: object
+                              type: array
+                            outbound:
+                              description: The individual Linodes the system is migrating out of the placement group.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  linode_id:
+                                    description: __Read-only__ The unique identifier for a Linode being migrated out of the placement group.
+                                    example: 456
+                                    readOnly: true
+                                    type: integer
+                                type: object
+                              type: array
+                          type:
+                          - object
+                          - 'null'
+                        placement_group_policy:
+                          description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                            - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                            - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                            <<LB>>
+
+
+                            > 📘
+
+                            >
+
+                            > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                          enum:
+                          - strict
+                          - flexible
+                          example: strict
+                          type: string
+                        placement_group_type:
+                          description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                            > 📘
+
+                            >
+
+                            > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                          enum:
+                          - anti_affinity:local
+                          example: anti_affinity:local
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                        region:
+                          description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                          example: us-mia
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/placement-group-migrate.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-placement-groups-200.yaml
+          description: Returns an array of all placement groups on your Account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linode:read_only
+      summary: List placement groups
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli placement groups-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - groups-list
+      - groups-ls
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/placement/groups/{groupId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the placement group to look up. Run the [List placement groups](https://techdocs.akamai.com/linode-api/reference/get-placement-groups) operation and store the `id` for the applicable placement group.
+      example: '{{groupId}}'
+      in: path
+      name: groupId
+      required: true
+      schema:
+        example: 32145
+        type: integer
+      x-akamai:
+        file-path: parameters/group-id-path-043ea725.yaml
+    x-akamai:
+      file-path: paths/placement-group.yaml
+      path-info: /{apiVersion}/placement/groups/{groupId}
+    x-linode-cli-command: placement
+    get:
+      description: 'View a specific placement group by ID.
+
+
+        > 📘
+
+        >
+
+        > Your user needs at least `read-only` permission to all Linodes included in a placement group to view it. If you don''t have this access and call this operation, the API returns a 403 error. Talk to your local account administrator about managing permissions.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement group-view 528
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-placement-group
+      operationId: get-placement-group
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 528
+                is_compliant: true
+                label: PG_Miami_failover
+                members:
+                - is_compliant: true
+                  linode_id: 123
+                migrations:
+                  inbound:
+                  - linode_id: 123
+                  outbound:
+                  - linode_id: 456
+                placement_group_policy: strict
+                placement_group_type: anti_affinity:local
+                region: us-mia
+              schema:
+                additionalProperties: false
+                properties:
+                  id:
+                    description: The placement group's ID. You need to provide it for all operations that affect it.
+                    example: 528
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_compliant:
+                    description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isn''t compliant. For example, assume you''ve set `anti_affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                      > 📘
+
+                      >
+
+                      > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                    example: true
+                    type: boolean
+                  label:
+                    description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  members:
+                    description: Linodes included in the placement group.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        is_compliant:
+                          description: The compliance status of each individual Linode in the placement group.
+                          example: true
+                          type: boolean
+                        linode_id:
+                          description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                      type: object
+                    type: array
+                  migrations:
+                    additionalProperties: false
+                    description: Any Linodes that are being migrated to or from the placement group. Returned as `null` if no migrations are taking place.
+                    properties:
+                      inbound:
+                        description: The individual Linodes the system is migrating into the placement group.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            linode_id:
+                              description: __Read-only__ The unique identifier for a Linode being migrated into the placement group.
+                              example: 123
+                              readOnly: true
+                              type: integer
+                          type: object
+                        type: array
+                      outbound:
+                        description: The individual Linodes the system is migrating out of the placement group.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            linode_id:
+                              description: __Read-only__ The unique identifier for a Linode being migrated out of the placement group.
+                              example: 456
+                              readOnly: true
+                              type: integer
+                          type: object
+                        type: array
+                    type:
+                    - object
+                    - 'null'
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                      - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                      - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                      <<LB>>
+
+
+                      > 📘
+
+                      >
+
+                      > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  region:
+                    description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                    example: us-mia
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group-migrate.yaml
+          description: Returns a single placement group object.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli placement group-view 528
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: group-view
+      x-linode-grant: read-only
+    put:
+      description: 'Change the `label` for a specific placement group. This is the only value you can update. However, you can add more Linodes or remove existing ones.
+
+
+        > 📘
+
+        >
+
+        > To update a placement group, your user grants need to include `read_write` permission to all of the Linodes in the group. Talk to your local account administrator about grant management for your user.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement group-update 528 \
+
+        --label PG_Miami_failover_update
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-placement-group
+      operationId: put-placement-group
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: PG_Miami_failover
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: 'A unique name for the placement group. A placement group `label` has the following constraints:
+
+
+                    - It needs to begin and end with an alphanumeric character.
+
+                    - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                  example: '{{label}}'
+                  minLength: 1
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-placement-group.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 528
+                is_compliant: true
+                label: PG_Miami_failover
+                members:
+                - is_compliant: true
+                  linode_id: 123
+                migrations:
+                  inbound:
+                  - linode_id: 123
+                  outbound:
+                  - linode_id: 456
+                placement_group_policy: strict
+                placement_group_type: anti_affinity:local
+                region: us-mia
+              schema:
+                additionalProperties: false
+                properties:
+                  id:
+                    description: The placement group's ID. You need to provide it for all operations that affect it.
+                    example: 528
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_compliant:
+                    description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isb''t compliant. For example, assume you''ve set `anti-affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                      > 📘
+
+                      >
+
+                      > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                    example: true
+                    type: boolean
+                  label:
+                    description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  members:
+                    description: Linodes included in the placement group.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        is_compliant:
+                          description: The compliance status of each individual Linode in the placement group.
+                          example: true
+                          type: boolean
+                        linode_id:
+                          description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                      type: object
+                    type: array
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                      - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                      - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                      <<LB>>
+
+
+                      > 📘
+
+                      >
+
+                      > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  region:
+                    description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                    example: us-mia
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group.yaml
+          description: The updated placement group.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Update a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli placement group-update 528 \\\n  --label PG_Miami_failover_update"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: group-update
+      x-linode-grant: read-write
+    delete:
+      description: 'Deletes a placement group you have permission to `read_write`.
+
+
+        - Deleting a placement group can''t be undone.
+
+
+        - All Linodes need to be removed before you can delete a placement group.
+
+
+        - If your placement group is non-compliant, you can''t delete it. You need to wait for our help to bring it compliant.
+
+
+        >
+
+
+        > 📘
+
+        >
+
+        > To run this operation, your user needs the `add_linodes` grant. Talk to your local account administrator about grant management for your user.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement group-delete 528
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-placement-group
+      operationId: delete-placement-group
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Delete successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Delete a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli placement group-delete 528
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - group-delete
+      - group-rm
+      x-linode-grant: read_write
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/placement/groups/{groupId}/assign:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the placement group to look up. Run the [List placement groups](https://techdocs.akamai.com/linode-api/reference/get-placement-groups) operation and store the `id` for the applicable placement group.
+      example: '{{groupId}}'
+      in: path
+      name: groupId
+      required: true
+      schema:
+        example: 32145
+        type: integer
+      x-akamai:
+        file-path: parameters/group-id-path.yaml
+    x-akamai:
+      file-path: paths/placement-group-assign.yaml
+      path-info: /{apiVersion}/placement/groups/{groupId}/assign
+    x-linode-cli-command: placement
+    post:
+      description: 'Add a Linode to your placement group. Check out our example API workflow to create a placement group and add Linodes.
+
+
+        > 📘
+
+        >
+
+        > Your user needs the `add_linodes` grant and `read-write` permission to the Linodes you want to add to the group. Talk to your local account administrator about grant and permissions management.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement assign-linode 528 \
+
+        --linodes 123 456 \
+
+        --non-compliant true
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-group-add-linode
+      operationId: post-group-add-linode
+      requestBody:
+        content:
+          application/json:
+            example:
+              linodes:
+              - 528
+            schema:
+              additionalProperties: false
+              description: The Linodes included in a placement group.
+              properties:
+                linodes:
+                  description: The `linodeId` values for individual Linodes included in the placement group.
+                  example: 528
+                  items:
+                    type: integer
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/placement-group-linodes.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 528
+                is_compliant: true
+                label: PG_Miami_failover
+                members:
+                - is_compliant: true
+                  linode_id: 123
+                placement_group_policy: strict
+                placement_group_type: anti_affinity:local
+                region: us-mia
+              schema:
+                additionalProperties: false
+                properties:
+                  id:
+                    description: The placement group's ID. You need to provide it for all operations that affect it.
+                    example: 528
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_compliant:
+                    description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isb''t compliant. For example, assume you''ve set `anti-affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                      > 📘
+
+                      >
+
+                      > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                    example: true
+                    type: boolean
+                  label:
+                    description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  members:
+                    description: Linodes included in the placement group.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        is_compliant:
+                          description: The compliance status of each individual Linode in the placement group.
+                          example: true
+                          type: boolean
+                        linode_id:
+                          description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                      type: object
+                    type: array
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                      - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                      - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                      <<LB>>
+
+
+                      > 📘
+
+                      >
+
+                      > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  region:
+                    description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                    example: us-mia
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group.yaml
+          description: The Linode was added successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Assign a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli placement assign-linode 528 \\\n  --linodes 123 456 \\\n  --non-compliant true"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: assign-linode
+      x-linode-grant: read-write
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/placement/groups/{groupId}/unassign:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the placement group to look up. Run the [List placement groups](https://techdocs.akamai.com/linode-api/reference/get-placement-groups) operation and store the `id` for the applicable placement group.
+      example: '{{groupId}}'
+      in: path
+      name: groupId
+      required: true
+      schema:
+        example: 32145
+        type: integer
+      x-akamai:
+        file-path: parameters/group-id-path-0d373f63.yaml
+    x-akamai:
+      file-path: paths/placement-group-unassign.yaml
+      path-info: /{apiVersion}/placement/groups/{groupId}/unassign
+    x-linode-cli-command: placement
+    post:
+      description: 'Remove a Linode from your placement group.
+
+
+        > 📘
+
+        >
+
+        > To run this operation, your user needs the `add_linodes` grant and `read-write` permission to the Linodes you want to remove from the group. Talk to your local account administrator about grant and permissions management.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli placement unassign-linode 528 \
+
+        --linode 123 456
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-group-unassign
+      operationId: post-group-unassign
+      requestBody:
+        content:
+          application/json:
+            example:
+              linodes:
+              - 528
+            schema:
+              additionalProperties: false
+              description: The Linodes included in a placement group.
+              properties:
+                linodes:
+                  description: The `linodeId` values for individual Linodes included in the placement group.
+                  example: 528
+                  items:
+                    type: integer
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/placement-group-linodes.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: 528
+                is_compliant: true
+                label: PG_Miami_failover
+                members:
+                - is_compliant: true
+                  linode_id: 123
+                placement_group_policy: strict
+                placement_group_type: anti_affinity:local
+                region: us-mia
+              schema:
+                additionalProperties: false
+                properties:
+                  id:
+                    description: The placement group's ID. You need to provide it for all operations that affect it.
+                    example: 528
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_compliant:
+                    description: 'Whether all of the Linodes in your placement group are compliant. If `true`, all Linodes meet either the grouped-together or spread-apart model, which you determine through your selected `placement_group_type`. If `false`, a Linode isb''t compliant. For example, assume you''ve set `anti-affinity:local` as your `placement_group_type` and your group already has three qualifying Linodes on separate hosts, to support the spread-apart model. If a fourth Linode is assigned that''s on the same host as one of the existing three, the placement group is non-compliant. Enforce compliance in your group by setting a `placement_group_policy`.
+
+
+                      > 📘
+
+                      >
+
+                      > Fixing compliance is not self-service. You need to wait for our assistance to physically move Linodes to make the group compliant again.'
+                    example: true
+                    type: boolean
+                  label:
+                    description: '__Filterable__ The unique name set for the placement group. A label has these constraints:
+
+
+                      - It needs to begin and end with an alphanumeric character.
+
+                      - It can only consist of alphanumeric characters, hyphens (`-`), underscores (`_`), or periods (`.`).'
+                    example: PG_Miami_failover
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  members:
+                    description: Linodes included in the placement group.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        is_compliant:
+                          description: The compliance status of each individual Linode in the placement group.
+                          example: true
+                          type: boolean
+                        linode_id:
+                          description: __Read-only__ The unique identifier for a Linode included in the placement group.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                      type: object
+                    type: array
+                  placement_group_policy:
+                    description: 'How requests to add future Linodes to your placement group are handled, and whether it remains compliant:
+
+
+                      - `strict`. Don''t assign a new Linode if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. Use this to ensure the placement group stays compliant (`is_compliant: true`).
+
+                      - `flexible`. Assign a new Linode, even if it breaks the grouped-together or spread-apart model set by the `placement_group_type`. This makes the group non-compliant (`is_compliant: false`). You need to wait for Akamai to move the offending Linode to make it compliant again, once the necessary capacity is available in the region. Offers flexibility to add future Linodes if compliance isn''t an immediate concern.
+
+
+                      <<LB>>
+
+
+                      > 📘
+
+                      >
+
+                      > In rare cases, non-compliance can occur with a `strict` placement group if Akamai needs to failover or migrate your Linodes for maintenance. Fixing non-compliance for a `strict` placement group is prioritized over a `flexible` group.'
+                    enum:
+                    - strict
+                    - flexible
+                    example: strict
+                    type: string
+                  placement_group_type:
+                    description: '__Filterable__, __Read-only__ How Linodes are distributed in your placement group. A `placement_group_type` using anti-affinity (`anti_affinity:local`) places Linodes in separate hosts, but still in the same region. This best supports the spread-apart model for high availability. A `placement_group_type` using affinity places Linodes physically close together, possibly on the same host. This supports the grouped-together model for low-latency.
+
+
+                      > 📘
+
+                      >
+
+                      > Currently, only `anti_affinity:local` is available for `placement_group_type`.'
+                    enum:
+                    - anti_affinity:local
+                    example: anti_affinity:local
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  region:
+                    description: __Filterable__, __Read-only__ The [region](https://techdocs.akamai.com/linode-api/reference/get-regions) where the placement group was deployed.
+                    example: us-mia
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/placement-group.yaml
+          description: The Linode was removed successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Unassign a placement group
+      tags:
+      - Placement groups
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli placement unassign-linode 528 \\\n  --linode 123 456"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: unassign-linode
+      x-linode-grant: read-write
+    servers:
+    - url: https://api.linode.com
   /placement/groups:
     get:
       operationId: getPlacementGroups
       summary: List placement groups
       description: Returns a paginated list of placement groups on your account.
       tags:
-      - Placement Groups
+      - Placement groups
       parameters:
       - $ref: '#/components/parameters/pageParam'
       - $ref: '#/components/parameters/pageSizeParam'
@@ -36,12 +1740,15 @@ paths:
                 $ref: '#/components/schemas/PaginatedPlacementGroupList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createPlacementGroup
       summary: Create a placement group
       description: Creates a new placement group in the specified region with the given placement group type.
       tags:
-      - Placement Groups
+      - Placement groups
       requestBody:
         required: true
         content:
@@ -59,6 +1766,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
   schemas:
     PlacementGroup:
@@ -99,15 +1812,6 @@ components:
                 type: boolean
                 description: Whether this member satisfies the policy.
           description: The members of this placement group.
-    PaginatedPlacementGroupList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/PlacementGroup'
     Pagination:
       type: object
       properties:
@@ -120,6 +1824,15 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedPlacementGroupList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/PlacementGroup'
     PlacementGroupRequest:
       type: object
       required:
@@ -148,14 +1861,6 @@ components:
           - flexible
           description: The enforcement policy.
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -165,47 +1870,64 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

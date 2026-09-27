@@ -1,0 +1,1586 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Delegation for parent and child accounts API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to manage delegations for parent and child accounts.
+  name: Delegation for parent and child accounts
+paths:
+  /{apiVersion}/iam/delegation/child-accounts:
+    parameters:
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    - description: Users added to the account delegation for each child account, `false` by default.
+      example: '{{users}}'
+      in: query
+      name: users
+      schema:
+        default: false
+        example: true
+        type: boolean
+      x-akamai:
+        file-path: parameters/users.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-all-child-accounts.yaml
+      path-info: /{apiVersion}/iam/delegation/child-accounts
+    get:
+      description: 'Returns the list of available child accounts under your parent account. With the `users` query parameter set to `true`, it also returns the account delegation for each child account. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. The child account''s admins manage the role assignment of delegate users on the child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_all_child_accounts`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-all-child-accounts
+      operationId: get-iam-delegation-all-child-accounts
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - company: Internet Company
+                  euuid: 9971F100-C111-0000-9DDFC3AD1A537B00
+                  users:
+                  - username
+                  - uzantnomo
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of child accounts.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        company:
+                          description: The company name for the child account.
+                          type: string
+                        euuid:
+                          description: The unique identifier of the child account.
+                          type: string
+                        users:
+                          description: Users added to the account delegation for the child account. This appears only when the `users` query parameter is set to `true`.
+                          items:
+                            type: string
+                          minItems: 0
+                          type: array
+                      type: object
+                    minItems: 0
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-iam-delegation-all-child-accounts.yaml
+          description: List of child accounts.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List child accounts
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - list_all_child_accounts
+  /{apiVersion}/iam/delegation/child-accounts/{euuid}/users:
+    parameters:
+    - description: A unique identifier for a child account. To get this value, run [List child accounts](https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-all-child-accounts).
+      example: '{{euuid}}'
+      in: path
+      name: euuid
+      required: true
+      schema:
+        example: 9971F100-C111-0000-9DDFC3AD1A537B00
+        type: string
+      x-akamai:
+        file-path: parameters/euuid.yaml
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-child-accounts-users.yaml
+      path-info: /{apiVersion}/iam/delegation/child-accounts/{euuid}/users
+    get:
+      description: 'Returns the list of users added to the account delegation for a specific child account. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. The child account''s admins manage the role assignment of delegate users on the child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_delegate_users`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-child-account-users
+      operationId: get-iam-delegation-child-account-users
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - username
+                - uzantnomo
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Users in the account delegation for the child account.
+                    items:
+                      type: string
+                    minItems: 0
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-delegation-child-account-users.yaml
+          description: Users in the account delegation for the child account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get the account delegation for a child account
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - list_delegate_users
+    put:
+      description: 'Updates the list of users added to the account delegation for a specific child account. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. The child account''s admins manage the role assignment of delegate users on the child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_delegate_users`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-child-account-users
+      operationId: put-iam-delegation-child-account-users
+      requestBody:
+        content:
+          application/json:
+            example:
+              users:
+              - username
+              - uzantnomo
+            schema:
+              additionalProperties: false
+              properties:
+                users:
+                  description: Usernames to add to the account delegation for the child account.
+                  items:
+                    example: user1234
+                    type: string
+                  minItems: 1
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/iam-delegation-usernames.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - username
+                - uzantnomo
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Users in the account delegation for the child account.
+                    items:
+                      type: string
+                    minItems: 0
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-delegation-child-account-users.yaml
+          description: Users in the account delegation for the child account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update the account delegation for a child account
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - update_delegate_users
+  /{apiVersion}/iam/delegation/default-role-permissions:
+    parameters:
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-default-role-permissions.yaml
+      path-info: /{apiVersion}/iam/delegation/default-role-permissions
+    get:
+      description: 'Returns roles assigned to new delegate users by default. A *delegate user* is a user from the parent account delegated by a parent account''s admin on the parent account to have access to your, child, account. Note that the delegate users'' access can be modified just as a regular child account user, so the returned list doesn''t provide the role assignment of all delegate users. To get the detailed role assignment of a delegate user, run the Get a user''s access level operation. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a child account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_default_delegate_access`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-default-role-permissions
+      operationId: get-iam-delegation-default-role-permissions
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                account_access:
+                - account_linode_creator
+                - account_firewall_creator
+                entity_access:
+                - id: 1
+                  roles:
+                  - linode_contributor
+                  type: linode
+                - id: 1
+                  roles:
+                  - firewall_admin
+                  type: firewall
+              schema:
+                additionalProperties: false
+                description: The user's access level.
+                properties:
+                  account_access:
+                    description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                    items:
+                      enum:
+                      - account_admin
+                      - account_idp_admin
+                      - account_idp_viewer
+                      - account_event_viewer
+                      - account_maintenance_viewer
+                      - account_notification_viewer
+                      - account_billing_viewer
+                      - account_billing_admin
+                      - account_billing_admin
+                      - account_linode_creator
+                      - account_oauth_client_viewer
+                      - account_oauth_client_admin
+                      - account_firewall_creator
+                      - account_firewall_admin
+                      - account_image_creator
+                      - account_image_admin
+                      - account_nodebalancer_creator
+                      - account_maintenance_viewer
+                      - account_volume_creator
+                      - account_volume_admin
+                      - volume_contributor
+                      - account_vpc_admin
+                      - account_vpc_viewer
+                      - account_vpc_creator
+                      - account_database_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      - account_lkecluster_creator
+                      - account_longview_subscription_admin
+                      - account_placement_group_creator
+                      - account_stackscript_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      type: string
+                    minItems: 0
+                    type: array
+                  entity_access:
+                    description: Encapsulates assigned entity access roles and entities they apply to.
+                    example:
+                    - id: 1
+                      roles:
+                      - linode_contributor
+                      type: linode
+                    - id: 1
+                      roles:
+                      - firewall_admin
+                      type: firewall
+                    items:
+                      additionalProperties: false
+                      properties:
+                        id:
+                          description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                          example: 1
+                          minimum: 1
+                          type: integer
+                        roles:
+                          description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                          example:
+                          - linode_contributor
+                          items:
+                            enum:
+                            - linode_admin
+                            - linode_contributor
+                            - linode_viewer
+                            - firewall_admin
+                            - firewall_contributor
+                            - firewall_viewer
+                            - nodebalancer_admin
+                            - nodebalancer_viewer
+                            - vpc_admin
+                            - vpc_viewer
+                            - volume_admin
+                            - volume_viewer
+                            - image_admin
+                            - image_viewer
+                            - lkecluster_admin
+                            - lkecluster_viewer
+                            - domain_admin
+                            - domain_viewer
+                            - stackscript_admin
+                            - stackscript_viewer
+                            - database_admin
+                            - database_viewer
+                            - longview_admin
+                            - longview_viewer
+                            type: string
+                          minItems: 0
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          example: linode
+                          type: string
+                      required:
+                      - id
+                      - type
+                      - roles
+                      type: object
+                    minItems: 0
+                    type: array
+                required:
+                - account_access
+                - entity_access
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-users-role-permissions.yaml
+          description: The list of roles assigned to new delegate users by default.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get the default role assignment for delegate users
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - view_default_delegate_access
+    put:
+      description: 'Updates the default role assignment for new delegate users on your child account. A *delegate user* is a user from the parent account delegated by a parent account''s admin on the parent account to have access to your, child, account. Note that the change applies only to new delegate users coming to your account. To edit current delegate users'' access, you need to run the Update a user''s access level operation. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a child account by its admin.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_default_delegate_access`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-default-role-permissions
+      operationId: put-iam-delegation-default-role-permissions
+      requestBody:
+        content:
+          application/json:
+            example:
+              account_access:
+              - account_linode_creator
+              - account_firewall_creator
+              entity_access:
+              - id: 1
+                roles:
+                - linode_contributor
+                type: linode
+              - id: 1
+                roles:
+                - firewall_admin
+                type: firewall
+            schema:
+              additionalProperties: false
+              description: The user's access level.
+              properties:
+                account_access:
+                  description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                  items:
+                    enum:
+                    - account_admin
+                    - account_idp_admin
+                    - account_idp_viewer
+                    - account_event_viewer
+                    - account_maintenance_viewer
+                    - account_notification_viewer
+                    - account_billing_viewer
+                    - account_billing_admin
+                    - account_billing_admin
+                    - account_linode_creator
+                    - account_oauth_client_viewer
+                    - account_oauth_client_admin
+                    - account_firewall_creator
+                    - account_firewall_admin
+                    - account_image_creator
+                    - account_image_admin
+                    - account_nodebalancer_creator
+                    - account_maintenance_viewer
+                    - account_volume_creator
+                    - account_volume_admin
+                    - volume_contributor
+                    - account_vpc_admin
+                    - account_vpc_viewer
+                    - account_vpc_creator
+                    - account_database_creator
+                    - account_domain_creator
+                    - account_longview_creator
+                    - account_lkecluster_creator
+                    - account_longview_subscription_admin
+                    - account_placement_group_creator
+                    - account_stackscript_creator
+                    - account_domain_creator
+                    - account_longview_creator
+                    type: string
+                  minItems: 0
+                  type: array
+                entity_access:
+                  description: Encapsulates assigned entity access roles and entities they apply to.
+                  example:
+                  - id: 1
+                    roles:
+                    - linode_contributor
+                    type: linode
+                  - id: 1
+                    roles:
+                    - firewall_admin
+                    type: firewall
+                  items:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                        example: 1
+                        minimum: 1
+                        type: integer
+                      roles:
+                        description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                        example:
+                        - linode_contributor
+                        items:
+                          enum:
+                          - linode_admin
+                          - linode_contributor
+                          - linode_viewer
+                          - firewall_admin
+                          - firewall_contributor
+                          - firewall_viewer
+                          - nodebalancer_admin
+                          - nodebalancer_viewer
+                          - vpc_admin
+                          - vpc_viewer
+                          - volume_admin
+                          - volume_viewer
+                          - image_admin
+                          - image_viewer
+                          - lkecluster_admin
+                          - lkecluster_viewer
+                          - domain_admin
+                          - domain_viewer
+                          - stackscript_admin
+                          - stackscript_viewer
+                          - database_admin
+                          - database_viewer
+                          - longview_admin
+                          - longview_viewer
+                          type: string
+                        minItems: 0
+                        type: array
+                      type:
+                        description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                        enum:
+                        - linode
+                        - firewall
+                        - database
+                        - domain
+                        - image
+                        - longview
+                        - nodebalancer
+                        - stackscript
+                        - volume
+                        - vpc
+                        example: linode
+                        type: string
+                    required:
+                    - id
+                    - type
+                    - roles
+                    type: object
+                  minItems: 0
+                  type: array
+              required:
+              - account_access
+              - entity_access
+              type: object
+              x-akamai:
+                file-path: schemas/iam-users-role-permissions.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                account_access:
+                - account_linode_creator
+                - account_firewall_creator
+                entity_access:
+                - id: 1
+                  roles:
+                  - linode_contributor
+                  type: linode
+                - id: 1
+                  roles:
+                  - firewall_admin
+                  type: firewall
+              schema:
+                additionalProperties: false
+                description: The user's access level.
+                properties:
+                  account_access:
+                    description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                    items:
+                      enum:
+                      - account_admin
+                      - account_idp_admin
+                      - account_idp_viewer
+                      - account_event_viewer
+                      - account_maintenance_viewer
+                      - account_notification_viewer
+                      - account_billing_viewer
+                      - account_billing_admin
+                      - account_billing_admin
+                      - account_linode_creator
+                      - account_oauth_client_viewer
+                      - account_oauth_client_admin
+                      - account_firewall_creator
+                      - account_firewall_admin
+                      - account_image_creator
+                      - account_image_admin
+                      - account_nodebalancer_creator
+                      - account_maintenance_viewer
+                      - account_volume_creator
+                      - account_volume_admin
+                      - volume_contributor
+                      - account_vpc_admin
+                      - account_vpc_viewer
+                      - account_vpc_creator
+                      - account_database_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      - account_lkecluster_creator
+                      - account_longview_subscription_admin
+                      - account_placement_group_creator
+                      - account_stackscript_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      type: string
+                    minItems: 0
+                    type: array
+                  entity_access:
+                    description: Encapsulates assigned entity access roles and entities they apply to.
+                    example:
+                    - id: 1
+                      roles:
+                      - linode_contributor
+                      type: linode
+                    - id: 1
+                      roles:
+                      - firewall_admin
+                      type: firewall
+                    items:
+                      additionalProperties: false
+                      properties:
+                        id:
+                          description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                          example: 1
+                          minimum: 1
+                          type: integer
+                        roles:
+                          description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                          example:
+                          - linode_contributor
+                          items:
+                            enum:
+                            - linode_admin
+                            - linode_contributor
+                            - linode_viewer
+                            - firewall_admin
+                            - firewall_contributor
+                            - firewall_viewer
+                            - nodebalancer_admin
+                            - nodebalancer_viewer
+                            - vpc_admin
+                            - vpc_viewer
+                            - volume_admin
+                            - volume_viewer
+                            - image_admin
+                            - image_viewer
+                            - lkecluster_admin
+                            - lkecluster_viewer
+                            - domain_admin
+                            - domain_viewer
+                            - stackscript_admin
+                            - stackscript_viewer
+                            - database_admin
+                            - database_viewer
+                            - longview_admin
+                            - longview_viewer
+                            type: string
+                          minItems: 0
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          example: linode
+                          type: string
+                      required:
+                      - id
+                      - type
+                      - roles
+                      type: object
+                    minItems: 0
+                    type: array
+                required:
+                - account_access
+                - entity_access
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-users-role-permissions.yaml
+          description: The updated list of roles assigned to new delegate users by default.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update the default role assignment for delegate users
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - update_default_delegate_access
+  /{apiVersion}/iam/delegation/profile/child-accounts:
+    parameters:
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-profile-child-accounts.yaml
+      path-info: /{apiVersion}/iam/delegation/profile/child-accounts
+    get:
+      description: 'Returns the list of child accounts you are part of the account delegation for. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. The child account''s admins manage the role assignment of delegate users on the child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_user_delegate_accounts`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-profile-child-account
+      operationId: get-iam-delegation-profile-child-account
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - company: Internet Company
+                  euuid: 9971F100-C111-0000-9DDFC3AD1A537B00
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of child accounts.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        company:
+                          description: The company name for the child account.
+                          type: string
+                        euuid:
+                          description: The unique identifier for the child account.
+                          type: string
+                    minItems: 0
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-delegation-user-child-accounts.yaml
+          description: List of child accounts you are part of account delegation for.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get your account delegations
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - list_user_delegate_accounts
+  /{apiVersion}/iam/delegation/profile/child-accounts/{euuid}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: A unique identifier for a child account. To get this value, run [List child accounts](https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-all-child-accounts).
+      example: '{{euuid}}'
+      in: path
+      name: euuid
+      required: true
+      schema:
+        example: 9971F100-C111-0000-9DDFC3AD1A537B00
+        type: string
+      x-akamai:
+        file-path: parameters/euuid.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-profile-child-accounts-euuid.yaml
+      path-info: /{apiVersion}/iam/delegation/profile/child-accounts/{euuid}
+    x-linode-cli-command: child-account
+    get:
+      description: 'Returns details on a specific child account you are part of the account delegation team for. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_all_child_accounts`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-delegation-profile-child-account
+      operationId: get-delegation-profile-child-account
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                company: Child account for Internet Company
+                euuid: 9971F100-C111-0000-9DDFC3AD1A537B00
+              schema:
+                additionalProperties: false
+                properties:
+                  company:
+                    description: The company name of the child account.
+                    type: string
+                  euuid:
+                    description: The unique identifier of the child account.
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-delegation-profile-child-accounts-details.yaml
+          description: Details of the child account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get a child account
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - list_all_child_accounts
+  /{apiVersion}/iam/delegation/profile/child-accounts/{euuid}/token:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: A unique identifier for a child account. To get this value, run [List child accounts](https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-all-child-accounts).
+      example: '{{euuid}}'
+      in: path
+      name: euuid
+      required: true
+      schema:
+        example: 9971F100-C111-0000-9DDFC3AD1A537B00
+        type: string
+      x-akamai:
+        file-path: parameters/euuid.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-profile-child-accounts-token.yaml
+      path-info: /{apiVersion}/iam/delegation/profile/child-accounts/{euuid}/token
+    x-linode-cli-command: child-account
+    post:
+      description: 'Creates a short-lived bearer token for you as a delegate user to run API operations on a specific child account. The token inherits the permissions set by a child account admin for your delegate user. Your username as the delegate user follows the specific naming convention:
+
+
+        -
+
+
+        These variables only use the first 15 and 16 characters of these values, respectively.
+
+
+        > 📘
+
+        >
+
+        > The API returns the raw token in the response. You can''t get it again, so be sure to store it.
+
+
+        Example workflow:
+
+
+        1. List child accounts and store the `euuid` for the applicable one.
+
+        2. Run this operation and store the `token` that''s created for the delegate user.
+
+        3. Run operations on the child account using the stored `token` to authenticate API operations.
+
+
+        **Prerequisite**:
+
+
+        To manage a child account, you need to be added by a parent account admin to the *account delegation* for the specific child account. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `No permission, the access is provided by adding a user to an account delegation`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-iam-delegation-profile-child-account-token
+      operationId: post-iam-delegation-profile-child-account-token
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2024-05-01T00:01:01'
+                expiry: '2024-05-01T00:16:01'
+                id: 918
+                label: parent1_1234_2024-05-01T00:01:01
+                scopes: '*'
+                token: abcdefghijklmnop
+              schema:
+                additionalProperties: false
+                description: The token for a delegate user to manage a child account.
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ The time this token was created.
+                    example: '2024-05-01T00:01:01'
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  expiry:
+                    description: __Read-only__ When this token expires, which is 15 minutes from the time of creation. You can't renew the delegate user token. After this time, Akamai revokes the token and you need to generate a new one.
+                    example: '2024-05-01T00:16:01'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  id:
+                    description: __Read-only__ The unique identifier of the delegate user token.
+                    example: 918
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the token. The API automatically sets this to `<username>_<uid>_<time>`. It's composed of the `username` for your parent account user, the unique `uid` Akamai assigned to identify your user, and the `time` the API generated the token. This is for display purposes only, but you can use it to help track how you're using each delegation user token.
+                    example: parent1_1234_2024-05-01T00:01:01
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  scopes:
+                    default: '*'
+                    description: __Read-only__ The scopes this token was created with. This defaults to `*`. Delegation user tokens automatically inherit all the permissions of the delegation user.
+                    example: '*'
+                    format: oauth-scopes
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  token:
+                    description: __Read-only__ The delegate user token. After you create the token, you can see the full token in the response. All other operations that contain this token only show the first 16 characters in their response.
+                    example: abcdefghijklmnop
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/delegation-user-token.yaml
+          description: Token created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Create a delegate user token
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - No permission, the access is provided by adding a user to an account delegation
+  /{apiVersion}/iam/delegation/users/{username}/child-accounts:
+    parameters:
+    - description: The username to look up.
+      example: '{{username}}'
+      in: path
+      name: username
+      required: true
+      schema:
+        example: jsmith
+        type: string
+      x-akamai:
+        file-path: parameters/username-path.yaml
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-delegation-users-child-accounts.yaml
+      path-info: /{apiVersion}/iam/delegation/users/{username}/child-accounts
+    get:
+      description: 'Returns the list of child accounts a specific user is part of the account delegation for. An *account delegation* is a group of parent account users, either admin or non-admin, delegated to manage a specific child account. The child account''s admins manage the role assignment of delegate users on the child account. To learn more about the parent and child accounts feature and account delegations, see Parent and child accounts.
+
+
+        > 📘 Parent and child accounts feature
+
+        >
+
+        > This operation is available only within the context of the parent and child accounts feature and can be run only on a parent account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_user_delegate_accounts`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-delegation-user-child-accounts
+      operationId: get-iam-delegation-user-child-accounts
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - company: Internet Company
+                  euuid: 9971F100-C111-0000-9DDFC3AD1A537B00
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of child accounts.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        company:
+                          description: The company name for the child account.
+                          type: string
+                        euuid:
+                          description: The unique identifier for the child account.
+                          type: string
+                    minItems: 0
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-delegation-user-child-accounts.yaml
+          description: List of child accounts for which the user is part of the account delegation.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get user's account delegations
+      tags:
+      - Delegation for parent and child accounts
+      x-linode-cli-skip: true
+      x-linode-iam:
+      - permissions:
+        - list_user_delegate_accounts
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,0 +1,459 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Review Beta programs API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to view information about available beta programs. You can sign up to participate in one of these programs using the Enroll in a Beta program operation, that's available with the **Administration** operations.
+  name: Review Beta programs
+paths:
+  /{apiVersion}/betas:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/betas.yaml
+      path-info: /{apiVersion}/betas
+    x-linode-cli-command: betas
+    get:
+      description: 'Display all active Beta programs. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli betas list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-beta-programs
+      operationId: get-beta-programs
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - description: This is an open public beta for an example feature.
+                  ended: null
+                  greenlight_only: true
+                  id: example_open
+                  label: Example Open Beta
+                  more_info: https://www.linode.com/green-light/
+                  started: '2023-07-11T00:00:00'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      description: Specific information for the Beta program.
+                      properties:
+                        description:
+                          description: __Read-only__ Additional details regarding the Beta program.
+                          example: This is an open public beta for an example feature.
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 3
+                        ended:
+                          description: __Filterable__, __Read-only__ The date-time that the Beta program ended. A value of `null` indicates that the Beta program is ongoing.
+                          example: null
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                        greenlight_only:
+                          description: __Filterable__, __Read-only__ Whether the Beta program requires [Green Light](https://www.linode.com/green-light/) participation for enrollment.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        id:
+                          description: The unique identifier for the Beta program.
+                          example: example_open
+                          type: string
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Filterable__, __Read-only__ The name of the Beta program.
+                          example: Example Open Beta
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        more_info:
+                          description: __Read-only__ Additional source of information for the Beta program.
+                          example: https://www.linode.com/green-light/
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 7
+                        started:
+                          description: __Filterable__, __Read-only__ The start date-time of the Beta program.
+                          example: '2023-07-11T00:00:00'
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 5
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/beta-program.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-beta-programs-200.yaml
+          description: Returns a paginated list of all available Beta programs.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: List Beta programs
+      tags:
+      - Review Beta programs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli betas list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: unrestricted only
+  /{apiVersion}/betas/{betaId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the Beta program.
+      example: '{{betaId}}'
+      in: path
+      name: betaId
+      required: true
+      schema:
+        example: example_open
+        type: string
+      x-akamai:
+        file-path: parameters/beta-id.yaml
+    x-akamai:
+      file-path: paths/beta.yaml
+      path-info: /{apiVersion}/betas/{betaId}
+    x-linode-cli-command: betas
+    get:
+      description: 'Display information about a Beta program. You can use it to access inactive and active Beta programs. This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli betas view $betaId
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-beta-program
+      operationId: get-beta-program
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                description: This is an open public beta for an example feature.
+                ended: null
+                greenlight_only: true
+                id: example_open
+                label: Example Open Beta
+                more_info: https://www.linode.com/green-light/
+                started: '2023-07-11T00:00:00'
+              schema:
+                additionalProperties: false
+                description: Specific information for the Beta program.
+                properties:
+                  description:
+                    description: __Read-only__ Additional details regarding the Beta program.
+                    example: This is an open public beta for an example feature.
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 3
+                  ended:
+                    description: __Filterable__, __Read-only__ The date-time that the Beta program ended. A value of `null` indicates that the Beta program is ongoing.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  greenlight_only:
+                    description: __Filterable__, __Read-only__ Whether the Beta program requires [Green Light](https://www.linode.com/green-light/) participation for enrollment.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  id:
+                    description: The unique identifier for the Beta program.
+                    example: example_open
+                    type: string
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__, __Read-only__ The name of the Beta program.
+                    example: Example Open Beta
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  more_info:
+                    description: __Read-only__ Additional source of information for the Beta program.
+                    example: https://www.linode.com/green-light/
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  started:
+                    description: __Filterable__, __Read-only__ The start date-time of the Beta program.
+                    example: '2023-07-11T00:00:00'
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/beta-program.yaml
+          description: Returns a Beta program object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: Get a Beta program
+      tags:
+      - Review Beta programs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli betas view $betaId
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: unrestricted only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

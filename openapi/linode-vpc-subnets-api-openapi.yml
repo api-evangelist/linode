@@ -1,0 +1,3528 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode VPC subnets API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use the VPC subnet endpoints to view, create, and manage Virtual Private Cloud (VPC) subnet resources.
+  name: VPC subnets
+paths:
+  /{apiVersion}/vpcs/{vpcId}/subnets:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The `id` of the VPC.
+      example: '{{vpcId}}'
+      in: path
+      name: vpcId
+      required: true
+      schema:
+        example: 527
+        type: integer
+      x-akamai:
+        file-path: parameters/vpc-id.yaml
+    x-akamai:
+      file-path: paths/subnets.yaml
+      path-info: /{apiVersion}/vpcs/{vpcId}/subnets
+    x-linode-cli-command: vpcs
+    post:
+      description: 'Create a VPC subnet within an existing VPC.
+
+
+        A successful request triggers a `subnet_create` event.
+
+
+        After you create a VPC subnet, you can attach it to a Linode by assigning the subnet to one of the Linode''s network interfaces. You can also attach managed databases and NodeBalancers.
+
+
+        If the subnet''s VPC is an `rdma` network type, consider the following when creating a subnet:
+
+
+        - Your account must include the required capability to create a subnet in an RDMA VPC.
+
+        - RDMA subnets don''t support routing outside the VPC or NAT gateways.
+
+        - RDMA subnets currently support only IPv4 addressing.
+
+        - You can''t attach managed databases or NodeBalancers to an RDMA subnet. These subnets are dedicated exclusively to interconnected RDMA instance interfaces.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_vpc_subnet`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `vpc:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vpcs subnet-create $vpcId \
+
+        --label vpc-subnet-example \
+
+        --ipv4 10.0.1.0/24 \
+
+        --ipv6.range /56
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-vpc-subnet
+      operationId: post-vpc-subnet
+      requestBody:
+        content:
+          application/json:
+            example:
+              created: '2025-05-11T00:00:00'
+              databases:
+              - id: 1337
+                ipv4_range: 192.168.0.20/30
+                ipv6_ranges:
+                - range: 2001:DB8::/62
+              id: 456
+              ipv4: 10.0.1.0/24
+              ipv6:
+              - range: 2001:db8:0:5100::/56
+              label: vpc-subnet-example
+              linodes:
+              - id: 111
+                interfaces:
+                - active: true
+                  config_id: 4567
+                  id: 421
+              nodebalancers:
+              - id: 4444
+                ipv4_range: 192.168.0.20/30
+                ipv6_ranges:
+                - range: 2001:DB8::/62
+              updated: '2025-05-11T00:00:00'
+              vpc_type: regular
+            schema:
+              description: The VPC subnet's IPv4 or IPv6 or dual stack.
+              oneOf:
+              - additionalProperties: false
+                description: VPC subnet create request object.
+                properties:
+                  ipv4:
+                    description: 'IPv4 range in CIDR canonical form.
+
+
+                      - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                      - Allowed prefix lengths: 1-29.
+
+                      - The range must not overlap with 192.168.128.0/17.
+
+                      - The range must not overlap with other Subnets on the same VPC.'
+                    example: 10.0.1.0/24
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  label:
+                    description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                      - Must be unique among the VPC''s subnets.
+
+                      - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                    example: vpc-subnet-example
+                    maxLength: 64
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                required:
+                - label
+                - ipv4
+                title: IPv4 only
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-vpc-subnet-ipv4.yaml
+              - additionalProperties: false
+                description: VPC subnet create request object.
+                properties:
+                  ipv6:
+                    description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                      - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix does not overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                      - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                      - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                      Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                      Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                    items:
+                      additionalProperties: false
+                      properties:
+                        allocation_range:
+                          description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                          example: 2001:db8:1234::/56
+                          type: string
+                        range:
+                          default: auto
+                          description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                          enum:
+                          - auto
+                          - /56
+                          - /52
+                          - /53
+                          - /54
+                          - /55
+                          - /57
+                          - /58
+                          - /59
+                          - /60
+                          - /61
+                          - /62
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  label:
+                    description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                      - Must be unique among the VPC''s subnets.
+
+                      - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                    example: vpc-subnet-example
+                    maxLength: 64
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                required:
+                - label
+                - ipv6
+                title: IPv6 only
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-vpc-subnet-ipv6.yaml
+              - additionalProperties: false
+                description: VPC subnet create request object.
+                properties:
+                  ipv4:
+                    description: 'IPv4 range in CIDR canonical form.
+
+
+                      - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                      - Allowed prefix lengths: 1-29.
+
+                      - The range must not overlap with 192.168.128.0/17.
+
+                      - The range must not overlap with other Subnets on the same VPC.'
+                    example: 10.0.1.0/24
+                    format: ip
+                    type: string
+                    x-linode-cli-display: 3
+                  ipv6:
+                    description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                      - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix doesn''t overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                      - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                      - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                      Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                      Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                    items:
+                      additionalProperties: false
+                      properties:
+                        allocation_range:
+                          description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                          example: 2001:db8:1234::/56
+                          type: string
+                        range:
+                          default: auto
+                          description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                          enum:
+                          - auto
+                          - /56
+                          - /52
+                          - /53
+                          - /54
+                          - /55
+                          - /57
+                          - /58
+                          - /59
+                          - /60
+                          - /61
+                          - /62
+                          type: string
+                      type: object
+                    maxItems: 1
+                    type: array
+                  label:
+                    description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                      - Must be unique among the VPC''s subnets.
+
+                      - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                    example: vpc-subnet-example
+                    maxLength: 64
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                required:
+                - label
+                - ipv4
+                - ipv6
+                title: IPv4 and IPv6
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-vpc-subnet-ipv4-ipv6.yaml
+              x-akamai:
+                file-path: schemas/added-post-vpc-subnet.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-05-11T00:00:00'
+                databases:
+                - id: 1337
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                id: 456
+                ipv4: 10.0.1.0/24
+                ipv6:
+                - range: 2001:db8:0:5100::/56
+                label: vpc-subnet-example
+                linodes:
+                - id: 111
+                  interfaces:
+                  - active: true
+                    config_id: 4567
+                    id: 421
+                nodebalancers:
+                - id: 4444
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                updated: '2025-05-11T00:00:00'
+                vpc_type: regular
+              schema:
+                description: The VPC subnet's IPv4 or IPv6 or dual stack.
+                oneOf:
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: The IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 4
+                      x-linode-filterable: true
+                  title: IPv4 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix does not overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 3
+                      x-linode-filterable: true
+                  title: IPv6 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv6.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type:
+                              - object
+                              - 'null'
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix doesn''t overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 5
+                      x-linode-filterable: true
+                  title: IPv4 and IPv6 subnets
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4-ipv6.yaml
+                type: object
+                x-akamai:
+                  file-path: schemas/vpc-subnet.yaml
+          description: The new VPC subnet.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - vpc:read_write
+      summary: Create a VPC subnet
+      tags:
+      - VPC subnets
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli vpcs subnet-create $vpcId \\\n  --label vpc-subnet-example \\\n  --ipv4 10.0.1.0/24 \\\n  --ipv6.range /56"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: subnet-create
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - create_vpc_subnet
+    get:
+      description: 'Get information about all VPC Subnets associated with a VPC.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_vpc_subnet`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vpcs subnets-list $vpcId
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-vpc-subnets
+      operationId: get-vpc-subnets
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2025-07-11T00:00:00'
+                  id: 456
+                  ipv4: 10.1.0.0/24
+                  ipv6:
+                  - range: 2001:db8:0:5200::/56
+                  label: vpc-subnet-example
+                  linodes:
+                  - id: 111
+                    interfaces:
+                    - active: true
+                      config_id: null
+                      id: 421
+                  updated: '2025-09-11T00:00:00'
+                  vpc_type: rdma
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                - properties:
+                    data:
+                      items:
+                        description: The VPC subnet's IPv4 or IPv6 or dual stack.
+                        oneOf:
+                        - additionalProperties: false
+                          description: An object describing a VPC Subnet.
+                          properties:
+                            created:
+                              description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                              example: '2023-07-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            databases:
+                              description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a managed database assigned to the VPC Subnet.
+                                    example: 3333
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the database.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the database.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: The IPv6 address range in CIDR notation.
+                                          example: 2830:0:0:4::/62
+                                          type: string
+                                      type: object
+                                    readOnly: true
+                                    type: array
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 6
+                            id:
+                              description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                              example: 456
+                              readOnly: true
+                              type: integer
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 1
+                              x-linode-filterable: true
+                            ipv4:
+                              description: 'IPv4 range in CIDR canonical form.
+
+
+                                - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                                - Allowed prefix lengths: 1-29.
+
+                                - The range must not overlap with 192.168.128.0/17.
+
+                                - The range must not overlap with other Subnets on the same VPC.'
+                              example: 10.0.1.0/24
+                              format: ip
+                              type: string
+                              x-linode-cli-display: 3
+                            label:
+                              description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                                - Must be unique among the VPC''s subnets.
+
+                                - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                              example: vpc-subnet-example
+                              maxLength: 64
+                              minLength: 1
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 2
+                              x-linode-filterable: true
+                            linodes:
+                              description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                                A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a Linode assigned to the VPC Subnet.
+                                    example: 111
+                                    type: integer
+                                  interfaces:
+                                    description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        active:
+                                          description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                          example: true
+                                          type: boolean
+                                        config_id:
+                                          description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                          example: 4567
+                                          type:
+                                          - integer
+                                          - 'null'
+                                        id:
+                                          description: ID of the interface.
+                                          example: 421
+                                          type: integer
+                                      type: object
+                                    type: array
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 5
+                            nodebalancers:
+                              description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a NodeBalancer assigned to the VPC Subnet.
+                                    example: 4444
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the NodeBalancer.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: An IPv6 address range in CIDR notation.
+                                          type: string
+                                      type: object
+                                    readOnly: true
+                                    type:
+                                    - array
+                                    - 'null'
+                                type: object
+                                x-linode-cli-display: 7
+                              readOnly: true
+                              type: array
+                            updated:
+                              description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                              example: '2023-09-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            vpc_type:
+                              default: regular
+                              description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                                - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                                - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                              enum:
+                              - regular
+                              - rdma
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 4
+                              x-linode-filterable: true
+                          title: IPv4 subnets only
+                          type: object
+                          x-akamai:
+                            file-path: schemas/vpc-subnet-ipv4.yaml
+                        - additionalProperties: false
+                          description: An object describing a VPC Subnet.
+                          properties:
+                            created:
+                              description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                              example: '2023-07-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            databases:
+                              description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a managed database assigned to the VPC Subnet.
+                                    example: 3333
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the database.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the database.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: An IPv6 address range in CIDR notation.
+                                          example: 2830:0:0:4::/62
+                                          type: string
+                                      type: object
+                                    readOnly: true
+                                    type:
+                                    - array
+                                    - 'null'
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 6
+                            id:
+                              description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                              example: 456
+                              readOnly: true
+                              type: integer
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 1
+                              x-linode-filterable: true
+                            ipv6:
+                              description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                                - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix does not overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                                - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                                - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                                Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                                Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  allocation_range:
+                                    description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                                    example: 2001:db8:1234::/56
+                                    type: string
+                                  range:
+                                    default: auto
+                                    description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                                    enum:
+                                    - auto
+                                    - /56
+                                    - /52
+                                    - /53
+                                    - /54
+                                    - /55
+                                    - /57
+                                    - /58
+                                    - /59
+                                    - /60
+                                    - /61
+                                    - /62
+                                    type: string
+                                type: object
+                              maxItems: 1
+                              type: array
+                            label:
+                              description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                                - Must be unique among the VPC''s subnets.
+
+                                - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                              example: vpc-subnet-example
+                              maxLength: 64
+                              minLength: 1
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 2
+                              x-linode-filterable: true
+                            linodes:
+                              description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                                A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a Linode assigned to the VPC Subnet.
+                                    example: 111
+                                    type: integer
+                                  interfaces:
+                                    description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        active:
+                                          description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                          example: true
+                                          type: boolean
+                                        config_id:
+                                          description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                          example: 4567
+                                          type:
+                                          - integer
+                                          - 'null'
+                                        id:
+                                          description: ID of the interface.
+                                          example: 421
+                                          type: integer
+                                      type: object
+                                    type: array
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 5
+                            nodebalancers:
+                              description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a NodeBalancer assigned to the VPC Subnet.
+                                    example: 4444
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the NodeBalancer.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: An IPv6 address range in CIDR notation.
+                                          type: string
+                                      type: object
+                                    readOnly: true
+                                    type:
+                                    - array
+                                    - 'null'
+                                type: object
+                                x-linode-cli-display: 7
+                              readOnly: true
+                              type: array
+                            updated:
+                              description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                              example: '2023-09-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            vpc_type:
+                              default: regular
+                              description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                                - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                                - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                              enum:
+                              - regular
+                              - rdma
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 3
+                              x-linode-filterable: true
+                          title: IPv6 subnets only
+                          type: object
+                          x-akamai:
+                            file-path: schemas/vpc-subnet-ipv6.yaml
+                        - additionalProperties: false
+                          description: An object describing a VPC Subnet.
+                          properties:
+                            created:
+                              description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                              example: '2023-07-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            databases:
+                              description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a managed database assigned to the VPC Subnet.
+                                    example: 3333
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the database.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the database.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: An IPv6 address range in CIDR notation.
+                                          example: 2830:0:0:4::/62
+                                          type: string
+                                      type:
+                                      - object
+                                      - 'null'
+                                    readOnly: true
+                                    type: array
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 6
+                            id:
+                              description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                              example: 456
+                              readOnly: true
+                              type: integer
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 1
+                              x-linode-filterable: true
+                            ipv4:
+                              description: 'IPv4 range in CIDR canonical form.
+
+
+                                - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                                - Allowed prefix lengths: 1-29.
+
+                                - The range must not overlap with 192.168.128.0/17.
+
+                                - The range must not overlap with other Subnets on the same VPC.'
+                              example: 10.0.1.0/24
+                              format: ip
+                              type: string
+                              x-linode-cli-display: 3
+                            ipv6:
+                              description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                                - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix doesn''t overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                                - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                                - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                                Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                                Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  allocation_range:
+                                    description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                                    example: 2001:db8:1234::/56
+                                    type: string
+                                  range:
+                                    default: auto
+                                    description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                                    enum:
+                                    - auto
+                                    - /56
+                                    - /52
+                                    - /53
+                                    - /54
+                                    - /55
+                                    - /57
+                                    - /58
+                                    - /59
+                                    - /60
+                                    - /61
+                                    - /62
+                                    type: string
+                                type: object
+                              maxItems: 1
+                              type: array
+                            label:
+                              description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                                - Must be unique among the VPC''s subnets.
+
+                                - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                              example: vpc-subnet-example
+                              maxLength: 64
+                              minLength: 1
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 2
+                              x-linode-filterable: true
+                            linodes:
+                              description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                                A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a Linode assigned to the VPC Subnet.
+                                    example: 111
+                                    type: integer
+                                  interfaces:
+                                    description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        active:
+                                          description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                          example: true
+                                          type: boolean
+                                        config_id:
+                                          description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                          example: 4567
+                                          type:
+                                          - integer
+                                          - 'null'
+                                        id:
+                                          description: ID of the interface.
+                                          example: 421
+                                          type: integer
+                                      type: object
+                                    type: array
+                                type: object
+                              readOnly: true
+                              type: array
+                              x-linode-cli-display: 5
+                            nodebalancers:
+                              description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                              items:
+                                additionalProperties: false
+                                properties:
+                                  id:
+                                    description: ID of a NodeBalancer assigned to the VPC Subnet.
+                                    example: 4444
+                                    type: integer
+                                  ipv4_range:
+                                    description: IPv4 range assigned to the NodeBalancer.
+                                    example: 192.168.0.20/30
+                                    type: string
+                                  ipv6_ranges:
+                                    description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                                    items:
+                                      additionalProperties: false
+                                      properties:
+                                        range:
+                                          description: An IPv6 address range in CIDR notation.
+                                          type: string
+                                      type: object
+                                    readOnly: true
+                                    type:
+                                    - array
+                                    - 'null'
+                                type: object
+                                x-linode-cli-display: 7
+                              readOnly: true
+                              type: array
+                            updated:
+                              description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                              example: '2023-09-11T00:00:00'
+                              format: date-time
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            vpc_type:
+                              default: regular
+                              description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                                - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                                - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                              enum:
+                              - regular
+                              - rdma
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 5
+                              x-linode-filterable: true
+                          title: IPv4 and IPv6 subnets
+                          type: object
+                          x-akamai:
+                            file-path: schemas/vpc-subnet-ipv4-ipv6.yaml
+                        type: object
+                        x-akamai:
+                          file-path: schemas/vpc-subnet.yaml
+                      type: array
+                x-akamai:
+                  file-path: schemas/added-get-vpc-subnets-200.yaml
+          description: A paginated list of VPC Subnet objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: List VPC subnets
+      tags:
+      - VPC subnets
+      x-akamai:
+        tabs:
+        - syntax: linode-cli vpcs subnets-list $vpcId
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - subnets-list
+      - subnets-ls
+      x-linode-iam:
+      - permissions:
+        - view_vpc_subnet
+  /{apiVersion}/vpcs/{vpcId}/subnets/{vpcSubnetId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The `id` of the VPC.
+      example: '{{vpcId}}'
+      in: path
+      name: vpcId
+      required: true
+      schema:
+        example: 527
+        type: integer
+      x-akamai:
+        file-path: parameters/vpc-id.yaml
+    - description: The `id` of the VPC Subnet.
+      example: '{{vpcSubnetId}}'
+      in: path
+      name: vpcSubnetId
+      required: true
+      schema:
+        example: 627
+        type: integer
+      x-akamai:
+        file-path: parameters/vpc-subnet-id.yaml
+    x-akamai:
+      file-path: paths/vpc-subnet.yaml
+      path-info: /{apiVersion}/vpcs/{vpcId}/subnets/{vpcSubnetId}
+    x-linode-cli-command: vpcs
+    get:
+      description: 'Get information about a single VPC Subnet.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_vpc_subnet`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vpcs subnet-view $vpcId $vpcSubnetId
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet
+      operationId: get-vpc-subnet
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-05-11T00:00:00'
+                databases:
+                - id: 3333
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                id: 456
+                ipv4: 10.0.1.0/24
+                ipv6:
+                - range: 2001:db8:115:200::/56
+                label: vpc-subnet-example
+                linodes:
+                - id: 111
+                  interfaces:
+                  - active: true
+                    config_id: 4567
+                    id: 421
+                nodebalancers:
+                - id: 4444
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                updated: '2025-05-11T00:00:00'
+                vpc_type: regular
+              schema:
+                description: The VPC subnet's IPv4 or IPv6 or dual stack.
+                oneOf:
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: The IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 4
+                      x-linode-filterable: true
+                  title: IPv4 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix does not overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 3
+                      x-linode-filterable: true
+                  title: IPv6 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv6.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type:
+                              - object
+                              - 'null'
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix doesn''t overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 5
+                      x-linode-filterable: true
+                  title: IPv4 and IPv6 subnets
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4-ipv6.yaml
+                type: object
+                x-akamai:
+                  file-path: schemas/vpc-subnet.yaml
+          description: A VPC Subnet object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: Get a VPC subnet
+      tags:
+      - VPC subnets
+      x-akamai:
+        tabs:
+        - syntax: linode-cli vpcs subnet-view $vpcId $vpcSubnetId
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: subnet-view
+      x-linode-iam:
+      - permissions:
+        - view_vpc_subnet
+    put:
+      description: 'Update a VPC Subnet. A successful request triggers a `subnet_update` event.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_vpc_subnet`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `vpc:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vpcs subnet-update $vpcId \
+
+        --label vpc-subnet-example
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-vpc-subnet
+      operationId: put-vpc-subnet
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: example-subnet-name
+            schema:
+              additionalProperties: false
+              description: A VPC Subnet Update request object.
+              properties:
+                label:
+                  description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                    - Must be unique among the VPC''s subnets.
+
+                    - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                  example: '{{label}}'
+                  maxLength: 64
+                  minLength: 1
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-vpc-subnet.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-05-11T00:00:00'
+                databases:
+                - id: 3333
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                id: 456
+                ipv4: 10.0.1.0/24
+                ipv6:
+                - range: 2001:db8:115:200::/56
+                label: vpc-subnet-example
+                linodes:
+                - id: 111
+                  interfaces:
+                  - active: true
+                    config_id: 4567
+                    id: 421
+                nodebalancers:
+                - id: 4444
+                  ipv4_range: 192.168.0.20/30
+                  ipv6_ranges:
+                  - range: 2001:DB8::/62
+                updated: '2025-05-11T00:00:00'
+                vpc_type: regular
+              schema:
+                description: The VPC subnet's IPv4 or IPv6 or dual stack.
+                oneOf:
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: The IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 4
+                      x-linode-filterable: true
+                  title: IPv4 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix does not overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain ASCII letters, numbers, and dashes (`-`). You can''t use two consecutive dashes (`--`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 3
+                      x-linode-filterable: true
+                  title: IPv6 subnets only
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv6.yaml
+                - additionalProperties: false
+                  description: An object describing a VPC Subnet.
+                  properties:
+                    created:
+                      description: __Filterable__, __Read-only__ The date-time of VPC Subnet creation.
+                      example: '2023-07-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    databases:
+                      description: __Read-only__ An array of managed databases assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a managed database assigned to the VPC Subnet.
+                            example: 3333
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the database.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the database.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  example: 2830:0:0:4::/62
+                                  type: string
+                              type:
+                              - object
+                              - 'null'
+                            readOnly: true
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 6
+                    id:
+                      description: __Filterable__, __Read-only__ The unique ID of the VPC Subnet.
+                      example: 456
+                      readOnly: true
+                      type: integer
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 1
+                      x-linode-filterable: true
+                    ipv4:
+                      description: 'IPv4 range in CIDR canonical form.
+
+
+                        - The range must belong to a private address space as defined in [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918).
+
+                        - Allowed prefix lengths: 1-29.
+
+                        - The range must not overlap with 192.168.128.0/17.
+
+                        - The range must not overlap with other Subnets on the same VPC.'
+                      example: 10.0.1.0/24
+                      format: ip
+                      type: string
+                      x-linode-cli-display: 3
+                    ipv6:
+                      description: 'The IPv6 prefix for the subnet of a `regular` VPC. Options include:
+
+
+                        - The IPv6 prefix in CIDR notation (such as `2001:db8:115:200::/54`) within the VPC''s allocated IPv6 space. Ensure that this new subnet prefix doesn''t overlap with any existing prefixes owned by other subnets on the same VPC.
+
+                        - The default `auto` allows the system to automatically allocate an IPv6 prefix. This results in the allocation of a `/56` prefix if the VPC has enough aligned, and unallocated space within its prefixes for the request.
+
+                        - A prefix length preceded by a slash (such as `/56`). This results in the allocation of a prefix of the specified length.
+
+
+                        Optionally, you can specify an `allocation_range` to constrain the area from which the system can allocate the subnet. If you provide an `allocation_range`, the `range` must be any size starting from the VPC prefix length down to `/62`. The final assigned prefix will be within both the VPC''s CIDR block and the `allocation_range`, and must fit entirely within the smallest of the two ranges.
+
+
+                        Once an IPv6 prefix is assigned to a subnet, it can''t be changed. To modify the prefix, delete and recreate the subnet.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          allocation_range:
+                            description: An IPv6 CIDR block that limits where the subnet can be allocated. It must overlap with the VPC's CIDR block. The `range` must be contained within the smallest of `allocation_range` and the VPC's range.
+                            example: 2001:db8:1234::/56
+                            type: string
+                          range:
+                            default: auto
+                            description: "The range to allocate:\n  - A specific IPv6 CIDR, such as `2001:db8::/64`,\n  - The string `\"auto\"` (default),\n  - A prefix length from `/52` to `/62` to request an auto-assigned range of that size.\n\nIf `allocation_range` is set, then `range` must be a prefix length."
+                            enum:
+                            - auto
+                            - /56
+                            - /52
+                            - /53
+                            - /54
+                            - /55
+                            - /57
+                            - /58
+                            - /59
+                            - /60
+                            - /61
+                            - /62
+                            type: string
+                        type: object
+                      maxItems: 1
+                      type: array
+                    label:
+                      description: '__Filterable__ The VPC subnet''s unique label that is used as an identifier for the VPC subnet.
+
+
+                        - Must be unique among the VPC''s subnets.
+
+                        - Can only contain alphanumeric characters and non-consecutive dashes (`-`).'
+                      example: vpc-subnet-example
+                      maxLength: 64
+                      minLength: 1
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 2
+                      x-linode-filterable: true
+                    linodes:
+                      description: '__Read-only__ An array of Linode IDs assigned to the VPC Subnet.
+
+
+                        A Linode is assigned to a VPC Subnet if it has a Configuration Profile with a `vpc` purpose interface with the subnet''s `subnet_id`. Even if the Configuration Profile is not active, meaning the Linode does not have access to the Subnet, the Linode still appears in this array.'
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a Linode assigned to the VPC Subnet.
+                            example: 111
+                            type: integer
+                          interfaces:
+                            description: VPC purpose interfaces with the subnet's `subnet_id` assigned to the Linode.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                active:
+                                  description: Returns `true` if the Interface is in use, meaning that the Linode was powered on using the Configuration Profile to which the Interface belongs. Otherwise returns `false`.
+                                  example: true
+                                  type: boolean
+                                config_id:
+                                  description: The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                  example: 4567
+                                  type:
+                                  - integer
+                                  - 'null'
+                                id:
+                                  description: ID of the interface.
+                                  example: 421
+                                  type: integer
+                              type: object
+                            type: array
+                        type: object
+                      readOnly: true
+                      type: array
+                      x-linode-cli-display: 5
+                    nodebalancers:
+                      description: __Read-only__ An array of NodeBalancers assigned to the VPC Subnet.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: ID of a NodeBalancer assigned to the VPC Subnet.
+                            example: 4444
+                            type: integer
+                          ipv4_range:
+                            description: IPv4 range assigned to the NodeBalancer.
+                            example: 192.168.0.20/30
+                            type: string
+                          ipv6_ranges:
+                            description: __Read-only__ IPv6 ranges assigned to the NodeBalancers.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                range:
+                                  description: An IPv6 address range in CIDR notation.
+                                  type: string
+                              type: object
+                            readOnly: true
+                            type:
+                            - array
+                            - 'null'
+                        type: object
+                        x-linode-cli-display: 7
+                      readOnly: true
+                      type: array
+                    updated:
+                      description: __Filterable__, __Read-only__ The date-time of the most recent VPC Subnet update.
+                      example: '2023-09-11T00:00:00'
+                      format: date-time
+                      readOnly: true
+                      type:
+                      - string
+                      - 'null'
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-filterable: true
+                    vpc_type:
+                      default: regular
+                      description: '__Filterable__, __Read-only__ The network type for this VPC.
+
+
+                        - `regular`. Standard VPC network for typical compute instances and managed services.
+
+                        - `rdma`. High-speed network dedicated strictly to GPUDirect RDMA clusters.'
+                      enum:
+                      - regular
+                      - rdma
+                      readOnly: true
+                      type: string
+                      x-akamai:
+                        labels:
+                        - Filterable
+                      x-linode-cli-display: 5
+                      x-linode-filterable: true
+                  title: IPv4 and IPv6 subnets
+                  type: object
+                  x-akamai:
+                    file-path: schemas/vpc-subnet-ipv4-ipv6.yaml
+                type: object
+                x-akamai:
+                  file-path: schemas/vpc-subnet.yaml
+          description: The updated VPC Subnet.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - vpc:read_write
+      summary: Update a VPC subnet
+      tags:
+      - VPC subnets
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli vpcs subnet-update $vpcId \\\n  --label vpc-subnet-example"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: subnet-update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_vpc_subnet
+    delete:
+      description: 'Delete a single VPC subnet. A successful request triggers a `subnet_delete` event.
+
+
+        > 📘
+
+        >
+
+        > You need to delete all network interfaces, managed databases and NodeBalancers that this subnet is assigned to before you can delete it. If interfaces are active, the associated Linode needs to be shut down before they can be removed. For more information see:
+
+        >
+
+        > - Delete a Linode interface and Delete a configuration profile interface
+
+        > - Delete a MySQL Managed Database and Delete a PostgreSQL Managed Database
+
+        > - Delete a NodeBalancer
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_vpc_subnet`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `vpc:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli vpcs subnet-delete $vpcId $vpcSubnetId
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-vpc-subnet
+      operationId: delete-vpc-subnet
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Delete request successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - vpc:read_write
+      summary: Delete a VPC subnet
+      tags:
+      - VPC subnets
+      x-akamai:
+        tabs:
+        - syntax: linode-cli vpcs subnet-delete $vpcId $vpcSubnetId
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: subnet-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_vpc_subnet
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

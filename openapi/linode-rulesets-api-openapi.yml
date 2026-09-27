@@ -1,0 +1,1620 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Rule Sets API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Rulesets
+paths:
+  /{apiVersion}/networking/firewalls/rulesets:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/firewall-rulesets.yaml
+      path-info: /{apiVersion}/networking/firewalls/rulesets
+    x-linode-cli-command: firewalls
+    post:
+      description: 'Creates a Rule Set. A Rule Set is a named ordered set of Cloud Firewall rules. Rule Sets are designed to be reusable and are referenced in your Cloud Firewalls to help control access to network resources and services.
+
+
+        - Rule Sets can be defined by users or managed services. Rule Sets created by a managed service cannot be modified, but you can view them. For example, LKE-E automatically creates and manages Rule Sets that allow cluster nodes to access necessary resources. You can review these rules, but LKE-E manages them for you.
+
+
+        - Rule Sets capability is available for Linodes.
+
+
+        - Rule Sets are versioned for auditing.
+
+
+        - Rule Sets can be assigned to multiple firewalls, and each firewall can have multiple Rule Sets. However, Rule Sets can''t reference other Rule Sets.
+
+
+        - A `rulesets_add` event is generated when the firewall device is added successfully.
+
+
+        - Prefix Lists can be referenced in Rule Sets.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls ruleset-create \
+
+        --label ruleset123 \
+
+        --description rulesetABC \
+
+        --type "inbound" \
+
+        --rules ''[{"action":"ACCEPT", "description":"ABC-NeT-RuleSet", "protocol": "TCP", "ports": "22-24, 80, 443", "addresses": {"ipv4": ["192.0.2.0/24", "198.51.100.2/32", "pl::vpcs:1234", "pl::vpcs:"], "ipv6": ["2001:DB8::/128", "pl::vpcs:1234", "pl::vpcs:"]}}]''
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-ruleset
+      operationId: post-ruleset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              description: Rule Set
+              properties:
+                created:
+                  description: __Filterable__, __Read-only__ When this Rule Set was created.
+                  example: '{{created}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 4
+                  x-linode-filterable: true
+                deleted:
+                  description: __Read-only__ This indicates when a Rule Set was deleted, or `null` if it's not deleted.
+                  example: '{{deleted}}'
+                  format: date-time
+                  readOnly: true
+                  type:
+                  - string
+                  - 'null'
+                  x-linode-cli-display: 9
+                description:
+                  description: Describes this Rule Set. For display purposes only.
+                  example: '{{description}}'
+                  maxLength: 255
+                  minLength: 1
+                  type: string
+                  x-linode-cli-display: 2
+                id:
+                  description: __Filterable__, __Read-only__ The Rule Set's unique ID.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: integer
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 5
+                  x-linode-filterable: true
+                is_service_defined:
+                  description: __Read-only__ Indicates whether the Rule Set is defined by a managed service. If `true`, the Rule Set can't be modified, but it can be viewed.
+                  example: '{{is_service_defined}}'
+                  readOnly: true
+                  type: boolean
+                  x-linode-cli-display: 7
+                label:
+                  description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 2
+                  type:
+                  - string
+                  - 'null'
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 1
+                  x-linode-filterable: true
+                rules:
+                  description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                  items:
+                    additionalProperties: false
+                    properties:
+                      action:
+                        description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                        enum:
+                        - ACCEPT
+                        - DROP
+                        example: ACCEPT
+                        type: string
+                      addresses:
+                        additionalProperties: false
+                        description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                          Must contain `ipv4`, `ipv6`, or both.'
+                        properties:
+                          ipv4:
+                            description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                              If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                            example:
+                            - 192.0.2.0/24
+                            - 198.51.100.2/32
+                            - pl::vpcs:1234
+                            - pl::vpcs:<current>
+                            - pl:system:test:123
+                            items:
+                              type: string
+                            type: array
+                          ipv6:
+                            description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                              If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                            example:
+                            - 2001:DB8::/128
+                            - pl::vpcs:1234
+                            - pl::vpcs:<current>
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      description:
+                        description: Used to describe this rule. For display purposes only.
+                        example: An example firewall rule description.
+                        maxLength: 100
+                        minLength: 1
+                        type: string
+                      label:
+                        description: Used to identify this rule. For display purposes only.
+                        example: RuleSetrule123
+                        maxLength: 32
+                        minLength: 3
+                        type: string
+                      ports:
+                        description: 'A string representing any ports affected by this rule:
+
+
+                          - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                          - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                          - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                          - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                          - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                          - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                        example: 22-24, 80, 443
+                        type:
+                        - string
+                        - 'null'
+                      protocol:
+                        description: The type of network traffic affected by this rule.
+                        enum:
+                        - TCP
+                        - UDP
+                        - ICMP
+                        - IPENCAP
+                        example: TCP
+                        type: string
+                    type: object
+                  type: array
+                type:
+                  description: Indicates whether the Rule Set’s rules are for `inbound` or `outbound` traffic. This needs to match the `type` in the rule group in which it appears.
+                  enum:
+                  - inbound
+                  - outbound
+                  example: '{{type}}'
+                  type: string
+                  x-linode-cli-display: 3
+                updated:
+                  description: __Read-only__ When the Rule Set was last updated.
+                  example: '{{updated}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 8
+                version:
+                  description: __Read-only__ The Rule Set's version, starting from `1`. The version number increments when the Rule Set's rules change.
+                  example: '{{version}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 6
+              type: object
+              x-akamai:
+                file-path: schemas/firewall-rulesets.yaml
+            x-example:
+              x-ref: ../examples/firewall-rulesets-200.json
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: Rule Set
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ When this Rule Set was created.
+                    example: '2025-09-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  deleted:
+                    description: __Read-only__ This indicates when a Rule Set was deleted, or `null` if it's not deleted.
+                    example: '2025-09-15 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 9
+                  description:
+                    description: Describes this Rule Set. For display purposes only.
+                    example: An example firewall Rule Set description.
+                    maxLength: 255
+                    minLength: 1
+                    type: string
+                    x-linode-cli-display: 2
+                  id:
+                    description: __Filterable__, __Read-only__ The Rule Set's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_service_defined:
+                    description: __Read-only__ Indicates whether the Rule Set is defined by a managed service. If `true`, the Rule Set can't be modified, but it can be viewed.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 7
+                  label:
+                    description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                    example: ruleset123
+                    maxLength: 32
+                    minLength: 2
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  rules:
+                    description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        action:
+                          description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                          enum:
+                          - ACCEPT
+                          - DROP
+                          example: ACCEPT
+                          type: string
+                        addresses:
+                          additionalProperties: false
+                          description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                            Must contain `ipv4`, `ipv6`, or both.'
+                          properties:
+                            ipv4:
+                              description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                                If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                              example:
+                              - 192.0.2.0/24
+                              - 198.51.100.2/32
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              - pl:system:test:123
+                              items:
+                                type: string
+                              type: array
+                            ipv6:
+                              description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                                If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                              example:
+                              - 2001:DB8::/128
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        description:
+                          description: Used to describe this rule. For display purposes only.
+                          example: An example firewall rule description.
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                        label:
+                          description: Used to identify this rule. For display purposes only.
+                          example: RuleSetrule123
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                        ports:
+                          description: 'A string representing any ports affected by this rule:
+
+
+                            - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                            - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                            - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                            - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                            - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                            - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                          example: 22-24, 80, 443
+                          type:
+                          - string
+                          - 'null'
+                        protocol:
+                          description: The type of network traffic affected by this rule.
+                          enum:
+                          - TCP
+                          - UDP
+                          - ICMP
+                          - IPENCAP
+                          example: TCP
+                          type: string
+                      type: object
+                    type: array
+                  type:
+                    description: Indicates whether the Rule Set’s rules are for `inbound` or `outbound` traffic. This needs to match the `type` in the rule group in which it appears.
+                    enum:
+                    - inbound
+                    - outbound
+                    example: inbound
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the Rule Set was last updated.
+                    example: '2025-09-01 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  version:
+                    description: __Read-only__ The Rule Set's version, starting from `1`. The version number increments when the Rule Set's rules change.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-rulesets.yaml
+              x-example:
+                x-ref: ../examples/firewall-rulesets-200.json
+          description: Returns information about the created Rule Set.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_write
+      summary: Create a Rule Set
+      tags:
+      - Rulesets
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli firewalls ruleset-create \\\n  --label ruleset123 \\\n  --description rulesetABC \\\n  --type \"inbound\" \\\n  --rules '[{\"action\":\"ACCEPT\", \"description\":\"ABC-NeT-RuleSet\", \"protocol\": \"TCP\", \"ports\": \"22-24, 80, 443\", \"addresses\": {\"ipv4\": [\"192.0.2.0/24\", \"198.51.100.2/32\", \"pl::vpcs:1234\", \"pl::vpcs:<current>\"], \"ipv6\": [\"2001:DB8::/128\", \"pl::vpcs:1234\", \"pl::vpcs:<current>\"]}}]'"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: ruleset-create
+      x-linode-grant: read_write
+    get:
+      description: '__Beta__ Returns a paginated list of Rule Sets.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls rulesets-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-rulesets
+      operationId: get-rulesets
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Rule Set
+                      properties:
+                        created:
+                          description: __Filterable__, __Read-only__ When this Rule Set was created.
+                          example: '2025-09-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        deleted:
+                          description: __Read-only__ This indicates when a Rule Set was deleted, or `null` if it's not deleted.
+                          example: '2025-09-15 00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 9
+                        description:
+                          description: Describes this Rule Set. For display purposes only.
+                          example: An example firewall Rule Set description.
+                          maxLength: 255
+                          minLength: 1
+                          type: string
+                          x-linode-cli-display: 2
+                        id:
+                          description: __Filterable__, __Read-only__ The Rule Set's unique ID.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 5
+                          x-linode-filterable: true
+                        is_service_defined:
+                          description: __Read-only__ Indicates whether the Rule Set is defined by a managed service. If `true`, the Rule Set can't be modified, but it can be viewed.
+                          example: false
+                          readOnly: true
+                          type: boolean
+                          x-linode-cli-display: 7
+                        label:
+                          description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                          example: ruleset123
+                          maxLength: 32
+                          minLength: 2
+                          type:
+                          - string
+                          - 'null'
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                        rules:
+                          description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              action:
+                                description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                                enum:
+                                - ACCEPT
+                                - DROP
+                                example: ACCEPT
+                                type: string
+                              addresses:
+                                additionalProperties: false
+                                description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                                  Must contain `ipv4`, `ipv6`, or both.'
+                                properties:
+                                  ipv4:
+                                    description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                                      If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                                    example:
+                                    - 192.0.2.0/24
+                                    - 198.51.100.2/32
+                                    - pl::vpcs:1234
+                                    - pl::vpcs:<current>
+                                    - pl:system:test:123
+                                    items:
+                                      type: string
+                                    type: array
+                                  ipv6:
+                                    description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                                      If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                                    example:
+                                    - 2001:DB8::/128
+                                    - pl::vpcs:1234
+                                    - pl::vpcs:<current>
+                                    items:
+                                      type: string
+                                    type: array
+                                type: object
+                              description:
+                                description: Used to describe this rule. For display purposes only.
+                                example: An example firewall rule description.
+                                maxLength: 100
+                                minLength: 1
+                                type: string
+                              label:
+                                description: Used to identify this rule. For display purposes only.
+                                example: RuleSetrule123
+                                maxLength: 32
+                                minLength: 3
+                                type: string
+                              ports:
+                                description: 'A string representing any ports affected by this rule:
+
+
+                                  - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                                  - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                                  - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                                  - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                                  - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                                  - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                                example: 22-24, 80, 443
+                                type:
+                                - string
+                                - 'null'
+                              protocol:
+                                description: The type of network traffic affected by this rule.
+                                enum:
+                                - TCP
+                                - UDP
+                                - ICMP
+                                - IPENCAP
+                                example: TCP
+                                type: string
+                            type: object
+                          type: array
+                        type:
+                          description: Indicates whether the Rule Set’s rules are for `inbound` or `outbound` traffic. This needs to match the `type` in the rule group in which it appears.
+                          enum:
+                          - inbound
+                          - outbound
+                          example: inbound
+                          type: string
+                          x-linode-cli-display: 3
+                        updated:
+                          description: __Read-only__ When the Rule Set was last updated.
+                          example: '2025-09-01 00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 8
+                        version:
+                          description: __Read-only__ The Rule Set's version, starting from `1`. The version number increments when the Rule Set's rules change.
+                          example: 1
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 6
+                      type: object
+                      x-akamai:
+                        file-path: schemas/firewall-rulesets.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-firewall-rulesets-200.yaml
+              x-example:
+                x-ref: ../examples/get-firewall-rulesets-200.json
+          description: A paginated list of your Rule Sets.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: List Rule Sets
+      tags:
+      - Rulesets
+      x-akamai:
+        status: BETA
+        tabs:
+        - syntax: linode-cli firewalls rulesets-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: rulesets-list
+      x-linode-grant: read_only
+  /{apiVersion}/networking/firewalls/rulesets/{ruleSetId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Rule Set to access.
+      example: '{{ruleSetId}}'
+      in: path
+      name: ruleSetId
+      required: true
+      schema:
+        example: 123
+        type: integer
+      x-akamai:
+        file-path: parameters/ruleset-id.yaml
+    x-akamai:
+      file-path: paths/firewall-ruleset.yaml
+      path-info: /{apiVersion}/networking/firewalls/rulesets/{ruleSetId}
+    x-linode-cli-command: firewalls
+    get:
+      description: 'Returns the complete Rule Set definition, along with the `version`, `created`, `deleted`, and `updated` fields.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls ruleset-view \
+
+        123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-ruleset
+      operationId: get-ruleset
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: Rule Set
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ When this Rule Set was created.
+                    example: '2025-09-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  deleted:
+                    description: __Read-only__ This indicates when a Rule Set was deleted, or `null` if it's not deleted.
+                    example: '2025-09-15 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 9
+                  description:
+                    description: Describes this Rule Set. For display purposes only.
+                    example: An example firewall Rule Set description.
+                    maxLength: 255
+                    minLength: 1
+                    type: string
+                    x-linode-cli-display: 2
+                  id:
+                    description: __Filterable__, __Read-only__ The Rule Set's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_service_defined:
+                    description: __Read-only__ Indicates whether the Rule Set is defined by a managed service. If `true`, the Rule Set can't be modified, but it can be viewed.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 7
+                  label:
+                    description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                    example: ruleset123
+                    maxLength: 32
+                    minLength: 2
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  rules:
+                    description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        action:
+                          description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                          enum:
+                          - ACCEPT
+                          - DROP
+                          example: ACCEPT
+                          type: string
+                        addresses:
+                          additionalProperties: false
+                          description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                            Must contain `ipv4`, `ipv6`, or both.'
+                          properties:
+                            ipv4:
+                              description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                                If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                              example:
+                              - 192.0.2.0/24
+                              - 198.51.100.2/32
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              - pl:system:test:123
+                              items:
+                                type: string
+                              type: array
+                            ipv6:
+                              description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                                If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                              example:
+                              - 2001:DB8::/128
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        description:
+                          description: Used to describe this rule. For display purposes only.
+                          example: An example firewall rule description.
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                        label:
+                          description: Used to identify this rule. For display purposes only.
+                          example: RuleSetrule123
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                        ports:
+                          description: 'A string representing any ports affected by this rule:
+
+
+                            - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                            - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                            - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                            - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                            - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                            - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                          example: 22-24, 80, 443
+                          type:
+                          - string
+                          - 'null'
+                        protocol:
+                          description: The type of network traffic affected by this rule.
+                          enum:
+                          - TCP
+                          - UDP
+                          - ICMP
+                          - IPENCAP
+                          example: TCP
+                          type: string
+                      type: object
+                    type: array
+                  type:
+                    description: Indicates whether the Rule Set’s rules are for `inbound` or `outbound` traffic. This needs to match the `type` in the rule group in which it appears.
+                    enum:
+                    - inbound
+                    - outbound
+                    example: inbound
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the Rule Set was last updated.
+                    example: '2025-09-01 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  version:
+                    description: __Read-only__ The Rule Set's version, starting from `1`. The version number increments when the Rule Set's rules change.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-rulesets.yaml
+              x-example:
+                x-ref: ../examples/firewall-rulesets-200.json
+          description: The requested Rule Set.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: Get a Rule Set
+      tags:
+      - Rulesets
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli firewalls ruleset-view \\\n  123"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: ruleset-view
+      x-linode-grant: read_only
+    put:
+      description: 'Updates the `label`, `description`, and `rules` for a Rule Set. If the Rule Set is successfully updated, the changes apply to all firewalls that reference it.
+
+
+        - If the Rule Set''s `label` or `description` fields are not provided in the update request, the existing values remain unchanged.
+
+
+        - When updating the `rules`, you must include the entire final rules expression. This operation replaces all of a Rule Set''s `inbound` and `outbound` with the values specified in your request.
+
+
+        If the Rule Set was created by a managed service (`is_service_defined` is `true`), it can''t be updated using a non-service account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls ruleset-update 123 \
+
+        --label ruleset123 \
+
+        --description rulesetABC \
+
+        --rules ''[{"action":"ACCEPT", "description":"ABC-NeT-RuleSet", "protocol": "TCP", "ports": "22-24, 80, 443, 6443", "addresses": {"ipv4": ["192.0.2.0/24", "198.51.100.2/32", "pl::vpcs:1234", "pl::vpcs:"], "ipv6": ["2001:DB8::/128", "pl::vpcs:1234", "pl::vpcs:"]}}]''
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-ruleset
+      operationId: put-ruleset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                description:
+                  description: Describes this Rule Set. For display purposes only.
+                  example: '{{description}}'
+                  maxLength: 255
+                  minLength: 1
+                  type: string
+                  x-linode-cli-display: 2
+                label:
+                  description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 2
+                  type:
+                  - string
+                  - 'null'
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 1
+                  x-linode-filterable: true
+                rules:
+                  description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                  items:
+                    additionalProperties: false
+                    properties:
+                      action:
+                        description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                        enum:
+                        - ACCEPT
+                        - DROP
+                        example: ACCEPT
+                        type: string
+                      addresses:
+                        additionalProperties: false
+                        description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                          Must contain `ipv4`, `ipv6`, or both.'
+                        properties:
+                          ipv4:
+                            description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                              If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                            example:
+                            - 192.0.2.0/24
+                            - 198.51.100.2/32
+                            - pl::vpcs:1234
+                            - pl::vpcs:<current>
+                            - pl:system:test:123
+                            items:
+                              type: string
+                            type: array
+                          ipv6:
+                            description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                              If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                            example:
+                            - 2001:DB8::/128
+                            - pl::vpcs:1234
+                            - pl::vpcs:<current>
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      description:
+                        description: Used to describe this rule. For display purposes only.
+                        example: An example firewall rule description.
+                        maxLength: 100
+                        minLength: 1
+                        type: string
+                      label:
+                        description: Used to identify this rule. For display purposes only.
+                        example: RuleSetrule123
+                        maxLength: 32
+                        minLength: 3
+                        type: string
+                      ports:
+                        description: 'A string representing any ports affected by this rule:
+
+
+                          - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                          - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                          - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                          - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                          - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                          - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                        example: 22-24, 80, 443
+                        type:
+                        - string
+                        - 'null'
+                      protocol:
+                        description: The type of network traffic affected by this rule.
+                        enum:
+                        - TCP
+                        - UDP
+                        - ICMP
+                        - IPENCAP
+                        example: TCP
+                        type: string
+                    type: object
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-firewall-ruleset.yaml
+            x-example:
+              x-ref: ../examples/firewall-rulesets-200.json
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: Rule Set
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ When this Rule Set was created.
+                    example: '2025-09-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  deleted:
+                    description: __Read-only__ This indicates when a Rule Set was deleted, or `null` if it's not deleted.
+                    example: '2025-09-15 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 9
+                  description:
+                    description: Describes this Rule Set. For display purposes only.
+                    example: An example firewall Rule Set description.
+                    maxLength: 255
+                    minLength: 1
+                    type: string
+                    x-linode-cli-display: 2
+                  id:
+                    description: __Filterable__, __Read-only__ The Rule Set's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_service_defined:
+                    description: __Read-only__ Indicates whether the Rule Set is defined by a managed service. If `true`, the Rule Set can't be modified, but it can be viewed.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 7
+                  label:
+                    description: __Filterable__ Unique, user-defined label for this Rule Set. This label helps you identify and describe your Rule Set.
+                    example: ruleset123
+                    maxLength: 32
+                    minLength: 2
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  rules:
+                    description: The inbound or outbound access rules for the Rule Set. A Rule Set can have a total of 25 inbound and outbound rules. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        action:
+                          description: Controls whether traffic is accepted or dropped by this rule. Overrides the firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                          enum:
+                          - ACCEPT
+                          - DROP
+                          example: ACCEPT
+                          type: string
+                        addresses:
+                          additionalProperties: false
+                          description: 'Prefix List references, IPv4 and IPv6 addresses affected by this rule. A rule can have up to 255 total addresses or networks listed across its `ipv4` and `ipv6` arrays. A network and a single IP are treated as equivalent when accounting for this limit.
+
+
+                            Must contain `ipv4`, `ipv6`, or both.'
+                          properties:
+                            ipv4:
+                              description: 'A list of IPv4 addresses, networks, and Prefix List references. Addresses must be in IP/mask format. Must not be an empty list.
+
+
+                                If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                              example:
+                              - 192.0.2.0/24
+                              - 198.51.100.2/32
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              - pl:system:test:123
+                              items:
+                                type: string
+                              type: array
+                            ipv6:
+                              description: 'A list of IPv6 addresses, networks, and Prefix List references. Addresses must be in IP/mask format and must not include zone_id notation as described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007). Must not be an empty list.
+
+
+                                If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                              example:
+                              - 2001:DB8::/128
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        description:
+                          description: Used to describe this rule. For display purposes only.
+                          example: An example firewall rule description.
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                        label:
+                          description: Used to identify this rule. For display purposes only.
+                          example: RuleSetrule123
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                        ports:
+                          description: 'A string representing any ports affected by this rule:
+
+
+                            - If no ports are configured, or if an empty string value (`""`) or `null` is used, all ports are affected.
+
+                            - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space can follow each comma.
+
+                            - A range of ports includes both the start and end values. The end value must be greater than the start value.
+
+                            - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                            - The `ports` string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string `22-24, 80, 443` has four pieces.
+
+                            - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                          example: 22-24, 80, 443
+                          type:
+                          - string
+                          - 'null'
+                        protocol:
+                          description: The type of network traffic affected by this rule.
+                          enum:
+                          - TCP
+                          - UDP
+                          - ICMP
+                          - IPENCAP
+                          example: TCP
+                          type: string
+                      type: object
+                    type: array
+                  type:
+                    description: Indicates whether the Rule Set’s rules are for `inbound` or `outbound` traffic. This needs to match the `type` in the rule group in which it appears.
+                    enum:
+                    - inbound
+                    - outbound
+                    example: inbound
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the Rule Set was last updated.
+                    example: '2025-09-01 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  version:
+                    description: __Read-only__ The Rule Set's version, starting from `1`. The version number increments when the Rule Set's rules change.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-rulesets.yaml
+              x-example:
+                x-ref: ../examples/firewall-rulesets-200.json
+          description: Returns information about the created Rule Set.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_write
+      summary: Update a Rule Set
+      tags:
+      - Rulesets
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli firewalls ruleset-update 123 \\\n  --label ruleset123 \\\n  --description rulesetABC \\\n  --rules '[{\"action\":\"ACCEPT\", \"description\":\"ABC-NeT-RuleSet\", \"protocol\": \"TCP\", \"ports\": \"22-24, 80, 443, 6443\", \"addresses\": {\"ipv4\": [\"192.0.2.0/24\", \"198.51.100.2/32\", \"pl::vpcs:1234\", \"pl::vpcs:<current>\"], \"ipv6\": [\"2001:DB8::/128\", \"pl::vpcs:1234\", \"pl::vpcs:<current>\"]}}]'"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: ruleset-update
+      x-linode-grant: read_write
+    delete:
+      description: 'Deletes a Rule Set that belongs to your account and is not referenced by any Cloud Firewall. If the Rule Set is still in use, it is marked for deletion and will be deleted once all references are removed.
+
+
+        If the Rule Set was created by a managed service (`is_service_defined` is `true`), it can''t be deleted using a non-service account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls ruleset-delete 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-ruleset
+      operationId: delete-ruleset
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-firewall-device-200.json
+          description: Delete Successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_write
+      summary: Delete a Rule Set
+      tags:
+      - Rulesets
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls ruleset-delete 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: ruleset-delete
+      x-linode-grant: read_write
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

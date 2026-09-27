@@ -1,0 +1,231 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Maintenance policies API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to view maintenance policies that are available for your Linodes.
+  name: Maintenance policies
+paths:
+  /{apiVersion}/maintenance/policies:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    x-akamai:
+      file-path: paths/maintenance-policies.yaml
+      path-info: /{apiVersion}/maintenance/policies
+    x-linode-cli-command: maintenance
+    get:
+      description: 'List all available maintenance policies that can be applied to your Linodes.
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli maintenance policies-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies
+      operationId: get-maintenance-policies
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - description: Migrates the Linode to a new host while it remains fully operational. Recommended for maximizing availability.
+                  is_default: true
+                  label: Migrate
+                  notification_period_sec: 10800
+                  slug: linode/migrate
+                  type: migrate
+                - description: Powers off the Linode at the start of the maintenance event and reboots it once the maintenance finishes. Recommended for maximizing performance.
+                  is_default: false
+                  label: Power Off / Power On
+                  notification_period_sec: 604800
+                  slug: linode/power_off_on
+                  type: power_off_on
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Available maintenance policies that can be applied to your Linodes.
+                    items:
+                      additionalProperties: false
+                      description: Information about maintenance policies.
+                      properties:
+                        description:
+                          description: A brief explanation of the maintenance policy's intended behavior.
+                          example: Migrates the Linode to a new host while it remains fully operational. Recommended for maximizing availability.
+                          type: string
+                        is_default:
+                          description: Indicates whether this policy is the default one applied when creating a Linode.
+                          example: true
+                          type: boolean
+                        label:
+                          description: The display name for the maintenance policy.
+                          example: Migrate
+                          type: string
+                        notification_period_sec:
+                          description: __Filterable__ Number of seconds before the maintenance event triggers. A value of 0 means no prior notification.
+                          example: 10800
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        slug:
+                          description: Unique identifier for the maintenance policy. System policies are prefixed with `linode/`.
+                          example: linode/migrate
+                          type: string
+                        type:
+                          description: The type of policy, either `migrate` or `power_off_on`. The `migrate` type keeps the Linode operational during maintenance, while `power_off_on` will power off the Linode before maintenance and power it back on afterward.
+                          enum:
+                          - migrate
+                          - power_off_on
+                          example: migrate
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/maintenance-policies.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-maintenance-policies-200.yaml
+          description: Returns a paginated list of maintenance policy objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: List maintenance policies
+      tags:
+      - Maintenance policies
+      x-akamai:
+        tabs:
+        - syntax: linode-cli maintenance policies-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: policies-list
+      x-linode-grant: read_only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

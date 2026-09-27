@@ -1,0 +1,1750 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Reserved IPs API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Reserved IPs
+paths:
+  /{apiVersion}/networking/reserved/ips:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/reserved-ips.yaml
+      path-info: /{apiVersion}/networking/reserved/ips
+    x-linode-cli-command: networking
+    post:
+      description: 'Reserve a public IPv4 address within a specific region for future assignment to a resource. Because Reserved IPs are tied to a specific datacenter''s network infrastructure, they can''t be moved across regions. However, they provide a persistent public entry point for your cloud infrastructure inside that region, independent of the underlying resource. Unlike ephemeral IPs that are recycled upon deletion, a reserved IP remains in your account until manually released.
+
+
+        Benefits:
+
+        - Rebuild or migrate Linodes and NodeBalancers without changing your public-facing IP.
+
+        - Eliminates the need to update allowlists, firewall rules, automation scripts, or DNS records during deployments.
+
+        - Maintain ownership of the address during failovers or maintenance windows when it may be temporarily unassigned.
+
+        - Billed at a flat monthly rate per IP, regardless of assignment status. Unreserving an IP stops billing immediately and returns the address to the general pool, where it can''t be recovered.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ip-add \
+
+        --region us-east \
+
+        --tags NB1,Linode1
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-reserved-ip
+      operationId: post-reserved-ip
+      requestBody:
+        content:
+          application/json:
+            example:
+              region: us-east
+              tags:
+              - nb1
+              - https-443
+            schema:
+              additionalProperties: false
+              properties:
+                region:
+                  description: Reserve a public IPv4 address from the specified region.
+                  example: '{{region}}'
+                  type: string
+                tags:
+                  description: Tags to apply to this IP that match [existing tags](https://techdocs.akamai.com/linode-api/reference/get-tags).
+                  example:
+                  - NB1
+                  - Linode1
+                  items:
+                    type: string
+                  type: array
+              required:
+              - region
+              type: object
+              x-akamai:
+                file-path: schemas/post-reserved-ip.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 192.0.2.141
+                assigned_entity: null
+                gateway: 192.0.2.1
+                interface_id: null
+                linode_id: null
+                prefix: 24
+                public: true
+                rdns: ''
+                region: us-east
+                reserved: true
+                subnet_mask: 255.255.255.0
+                tags:
+                - NB1, Linode1
+                type: ipv4
+                vpc_nat_1_1: null
+              schema:
+                additionalProperties: false
+                description: A reserved public IPv4 address that can be assigned to any Linode or NodeBalancer in the same region.
+                properties:
+                  address:
+                    description: __Filterable__, __Read-only__ The reserved public IPv4 address.
+                    example: 192.0.2.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 192.0.2.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address is assigned to.
+                    example: 123
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask. This prefix refers to the subnet mask of the network to which the IP belongs, and not the size of the IP reservation.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address. Reserved IPs are public.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: __Filterable__ The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Filterable__, __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  tags:
+                    description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                    example:
+                    - NB1
+                    - Linode1
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Read-only__ The type of address this is.
+                    enum:
+                    - ipv4
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: __Read-only__ IPv4 address configured as a 1:1 NAT for this Interface.
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 11
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        x-linode-cli-display: 1
+                      label:
+                        x-linode-cli-display: 3
+                      type:
+                        x-linode-cli-display: 2
+                      url:
+                        x-linode-cli-display: 4
+                    type: object
+                  gateway:
+                    x-linode-cli-display: 2
+                  interface_id:
+                    x-linode-cli-display: 10
+                  linode_id:
+                    x-linode-cli-display: 9
+                  prefix:
+                    x-linode-cli-display: 4
+                  public:
+                    x-linode-cli-display: 6
+                  rdns:
+                    x-linode-cli-display: 7
+                  region:
+                    x-linode-cli-display: 8
+                  reserved:
+                    x-linode-cli-display: 11
+                  subnet_mask:
+                    x-linode-cli-display: 3
+                  tags:
+                    x-linode-cli-display: 12
+                  type:
+                    x-linode-cli-display: 5
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    properties:
+                      address:
+                        x-linode-cli-display: 3
+                      subnet_id:
+                        x-linode-cli-display: 2
+                      vpc_id:
+                        x-linode-cli-display: 1
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address-cli.yaml
+                x-linode-cli-subtables:
+                - assigned_entity
+                - vpc_nat_1_1
+          description: Returns the reserved public IPv4 address, available for assignment.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_write
+      summary: Reserve a public IPv4 address
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli networking reserved-ip-add \\\n  --region us-east \\\n  --tags NB1,Linode1"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: 'ips:read_write
+
+            linodes:read_write'
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: reserved-ip-add
+      x-linode-grant: read_write
+    get:
+      description: 'Returns a paginated list of reserved IP addresses on your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ips-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-reserved-ips
+      operationId: get-reserved-ips
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - address: 192.0.2.141
+                  assigned_entity: null
+                  gateway: 192.0.2.1
+                  interface_id: null
+                  linode_id: null
+                  prefix: 24
+                  public: true
+                  rdns: ''
+                  region: us-east
+                  reserved: true
+                  subnet_mask: 255.255.255.0
+                  tags:
+                  - NB1, Linode1
+                  type: ipv4
+                  vpc_nat_1_1: null
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                - properties:
+                    data:
+                      description: Reserved public IPv4 addresses.
+                      items:
+                        additionalProperties: false
+                        description: A reserved public IPv4 address that can be assigned to any Linode or NodeBalancer in the same region.
+                        properties:
+                          address:
+                            description: __Filterable__, __Read-only__ The reserved public IPv4 address.
+                            example: 192.0.2.141
+                            format: ip
+                            readOnly: true
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 1
+                          assigned_entity:
+                            additionalProperties: false
+                            description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                            properties:
+                              id:
+                                description: The unique identifier for the resource.
+                                example: 1234
+                                type: integer
+                              label:
+                                description: The name of the entity.
+                                example: demo-linode
+                                type: string
+                              type:
+                                description: The type of entity.
+                                enum:
+                                - linode
+                                - nodebalancer
+                                example: nodebalancer
+                                type: string
+                              url:
+                                description: The API URL path you can use to access this entity.
+                                example: /v4/nodebalancer/1234
+                                type: string
+                            readOnly: true
+                            type:
+                            - object
+                            - 'null'
+                            x-linode-cli-display: 10
+                          gateway:
+                            description: __Read-only__ The default gateway for this address.
+                            example: 192.0.2.1
+                            format: ip
+                            readOnly: true
+                            type:
+                            - string
+                            - 'null'
+                          interface_id:
+                            description: __Read-only__ The Linode interface ID that this IP address is assigned to.
+                            example: 456
+                            readOnly: true
+                            type:
+                            - integer
+                            - 'null'
+                            x-linode-cli-display: 7
+                          linode_id:
+                            description: __Read-only__ The ID of the Linode this address is assigned to.
+                            example: 123
+                            readOnly: true
+                            type:
+                            - integer
+                            - 'null'
+                            x-linode-cli-display: 6
+                          prefix:
+                            description: __Read-only__ The number of bits set in the subnet mask. This prefix refers to the subnet mask of the network to which the IP belongs, and not the size of the IP reservation.
+                            example: 24
+                            readOnly: true
+                            type: integer
+                          public:
+                            description: __Read-only__ Whether this is a public or private IP address. Reserved IPs are public.
+                            example: true
+                            readOnly: true
+                            type: boolean
+                            x-linode-cli-display: 3
+                          rdns:
+                            description: __Filterable__ The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                            example: test.example.org
+                            type:
+                            - string
+                            - 'null'
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 4
+                          region:
+                            description: __Filterable__, __Read-only__ The region this IP address resides in.
+                            example: us-east
+                            readOnly: true
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 5
+                          reserved:
+                            description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                            example: true
+                            readOnly: true
+                            type: boolean
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 8
+                          subnet_mask:
+                            description: __Read-only__ The mask that separates host bits from network bits for this address.
+                            example: 255.255.255.0
+                            format: ip
+                            readOnly: true
+                            type: string
+                          tags:
+                            description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                            example:
+                            - NB1
+                            - Linode1
+                            items:
+                              type: string
+                            readOnly: true
+                            type: array
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 9
+                          type:
+                            description: __Read-only__ The type of address this is.
+                            enum:
+                            - ipv4
+                            example: ipv4
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 2
+                          vpc_nat_1_1:
+                            additionalProperties: false
+                            description: __Read-only__ IPv4 address configured as a 1:1 NAT for this Interface.
+                            properties:
+                              address:
+                                description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                                example: 192.168.0.42
+                                format: ipv4
+                                type: string
+                              subnet_id:
+                                description: The `id` of the VPC subnet for this interface.
+                                example: 101
+                                type: integer
+                              vpc_id:
+                                description: __Read-only__ The `id` of the VPC configured for this interface.
+                                example: 111
+                                readOnly: true
+                                type: integer
+                            readOnly: true
+                            type:
+                            - object
+                            - 'null'
+                            x-linode-cli-display: 11
+                        type: object
+                        x-akamai:
+                          file-path: schemas/reserved-ip-address.yaml
+                      type: array
+                  type: object
+                description: The response data for the [List reserved IP addresses](https://techdocs.akamai.com/linode-api/reference/get-reserved-ips) operation.
+                x-akamai:
+                  file-path: schemas/reserved-ip-addresses-list-response.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        x-linode-cli-display: 1
+                      label:
+                        x-linode-cli-display: 3
+                      type:
+                        x-linode-cli-display: 2
+                      url:
+                        x-linode-cli-display: 4
+                    type: object
+                  gateway:
+                    x-linode-cli-display: 2
+                  interface_id:
+                    x-linode-cli-display: 10
+                  linode_id:
+                    x-linode-cli-display: 9
+                  prefix:
+                    x-linode-cli-display: 4
+                  public:
+                    x-linode-cli-display: 6
+                  rdns:
+                    x-linode-cli-display: 7
+                  region:
+                    x-linode-cli-display: 8
+                  reserved:
+                    x-linode-cli-display: 11
+                  subnet_mask:
+                    x-linode-cli-display: 3
+                  tags:
+                    x-linode-cli-display: 12
+                  type:
+                    x-linode-cli-display: 5
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    properties:
+                      address:
+                        x-linode-cli-display: 3
+                      subnet_id:
+                        x-linode-cli-display: 2
+                      vpc_id:
+                        x-linode-cli-display: 1
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address-cli.yaml
+                x-linode-cli-subtables:
+                - assigned_entity
+                - vpc_nat_1_1
+          description: A paginated list of reserved IP addresses.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_only
+      summary: List reserved IP addresses
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli networking reserved-ips-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: reserved-ips-list
+      x-linode-grant: read_only
+  /{apiVersion}/networking/reserved/ips/types:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/reserved-ip-types.yaml
+      path-info: /{apiVersion}/networking/reserved/ips/types
+    x-linode-cli-command: networking
+    get:
+      description: 'Returns pricing information for reserved IPs.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ip-types-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-reserved-ip-types
+      operationId: get-reserved-ip-types
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: reserved-ipv4
+                  label: Reserved IPv4
+                  price:
+                    hourly: 0.0068
+                    monthly: null
+                  region_prices: []
+                  transfer: 0
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                - properties:
+                    data:
+                      description: Reserved IP address type.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          id:
+                            description: The unique identifier for the IP type.
+                            example: reserved-ipv4
+                            type: string
+                            x-linode-cli-display: 1
+                          label:
+                            description: Label for the IP type.
+                            example: Reserved IPv4 Address
+                            type: string
+                            x-linode-cli-display: 2
+                          price:
+                            additionalProperties: false
+                            description: __Read-only__ The default cost of provisioning this reserved IP type. Prices are in U.S. dollars, broken down into hourly and monthly charges. Certain regions have different prices. For region-specific pricing, see `region_prices`.
+                            properties:
+                              hourly:
+                                description: The cost per hour in U.S. dollars.
+                                example: 0.007
+                                type: number
+                                x-linode-cli-display: 3
+                              monthly:
+                                description: The cost per month in U.S. dollars.
+                                example: 5
+                                type: number
+                                x-linode-cli-display: 4
+                            readOnly: true
+                            type: object
+                          region_prices:
+                            items:
+                              additionalProperties: false
+                              properties:
+                                hourly:
+                                  description: The cost per hour for this region in U.S. dollars.
+                                  example: 0.014
+                                  type: number
+                                  x-linode-cli-display: 6
+                                id:
+                                  description: The unique identifier for the region.
+                                  example: us-east
+                                  type: string
+                                  x-linode-cli-display: 5
+                                monthly:
+                                  description: The cost per month for this region in U.S. dollars.
+                                  example: 10
+                                  type: number
+                                  x-linode-cli-display: 7
+                              type: object
+                            type: array
+                        type: object
+                      type: array
+                  type: object
+                description: Pricing information for reserved IPs.
+                x-akamai:
+                  file-path: schemas/reserved-ip-types-list-response.yaml
+          description: Reserved IP pricing.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_only
+      summary: Get reserved IP pricing
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli networking reserved-ip-types-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: reserved-ip-types-list
+      x-linode-grant: read_only
+  /{apiVersion}/networking/reserved/ips/{address}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The reserved address to update, view, or delete.
+      example: '{{address}}'
+      in: path
+      name: address
+      required: true
+      schema:
+        example: 192.0.2.49
+        format: ip
+        type: string
+      x-akamai:
+        file-path: parameters/reserved-address-path.yaml
+    x-akamai:
+      file-path: paths/reserved-ip.yaml
+      path-info: /{apiVersion}/networking/reserved/ips/{address}
+    x-linode-cli-command: networking
+    get:
+      description: 'Returns information about a reserved IP address on your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ip-view 192.107.143.141
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-reserved-ip
+      operationId: get-reserved-ip
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 192.0.2.141
+                assigned_entity: null
+                gateway: 192.0.2.1
+                interface_id: null
+                linode_id: null
+                prefix: 24
+                public: true
+                rdns: ''
+                region: us-east
+                reserved: true
+                subnet_mask: 255.255.255.0
+                tags:
+                - NB1, Linode1
+                type: ipv4
+                vpc_nat_1_1: null
+              schema:
+                additionalProperties: false
+                description: A reserved public IPv4 address that can be assigned to any Linode or NodeBalancer in the same region.
+                properties:
+                  address:
+                    description: __Filterable__, __Read-only__ The reserved public IPv4 address.
+                    example: 192.0.2.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 192.0.2.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address is assigned to.
+                    example: 123
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask. This prefix refers to the subnet mask of the network to which the IP belongs, and not the size of the IP reservation.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address. Reserved IPs are public.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: __Filterable__ The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Filterable__, __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  tags:
+                    description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                    example:
+                    - NB1
+                    - Linode1
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Read-only__ The type of address this is.
+                    enum:
+                    - ipv4
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: __Read-only__ IPv4 address configured as a 1:1 NAT for this Interface.
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 11
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        x-linode-cli-display: 1
+                      label:
+                        x-linode-cli-display: 3
+                      type:
+                        x-linode-cli-display: 2
+                      url:
+                        x-linode-cli-display: 4
+                    type: object
+                  gateway:
+                    x-linode-cli-display: 2
+                  interface_id:
+                    x-linode-cli-display: 10
+                  linode_id:
+                    x-linode-cli-display: 9
+                  prefix:
+                    x-linode-cli-display: 4
+                  public:
+                    x-linode-cli-display: 6
+                  rdns:
+                    x-linode-cli-display: 7
+                  region:
+                    x-linode-cli-display: 8
+                  reserved:
+                    x-linode-cli-display: 11
+                  subnet_mask:
+                    x-linode-cli-display: 3
+                  tags:
+                    x-linode-cli-display: 12
+                  type:
+                    x-linode-cli-display: 5
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    properties:
+                      address:
+                        x-linode-cli-display: 3
+                      subnet_id:
+                        x-linode-cli-display: 2
+                      vpc_id:
+                        x-linode-cli-display: 1
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address-cli.yaml
+                x-linode-cli-subtables:
+                - assigned_entity
+                - vpc_nat_1_1
+          description: Details for the requested reserved IP address.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_only
+      summary: Get a reserved IP address
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: linode-cli networking reserved-ip-view 192.107.143.141
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: reserved-ip-view
+      x-linode-grant: read_only
+    put:
+      description: 'Replaces the current tags for the reserved IP address with the new set provided.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ip-update \
+
+        192.107.143.141 \
+
+        --tags NB2, Linode2
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-reserved-ip
+      operationId: put-reserved-ip
+      requestBody:
+        content:
+          application/json:
+            example:
+              tags:
+              - nb1
+              - tcp-8080
+            schema:
+              additionalProperties: false
+              properties:
+                tags:
+                  description: Tags to apply to this reserved IP that match [existing tags](https://techdocs.akamai.com/linode-api/reference/get-tags). This operation performs a full replacement of existing tags. The tags in the request body will overwrite all current tags associated with the reserved IP. To maintain existing tags, they must be included in the update request.
+                  example:
+                  - NB2
+                  - Linode2
+                  items:
+                    type: string
+                  type: array
+              required:
+              - tags
+              type: object
+              x-akamai:
+                file-path: schemas/put-reserved-ip.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 192.0.2.141
+                assigned_entity: null
+                gateway: 192.0.2.1
+                interface_id: null
+                linode_id: null
+                prefix: 24
+                public: true
+                rdns: ''
+                region: us-east
+                reserved: true
+                subnet_mask: 255.255.255.0
+                tags:
+                - NB1, Linode1
+                type: ipv4
+                vpc_nat_1_1: null
+              schema:
+                additionalProperties: false
+                description: A reserved public IPv4 address that can be assigned to any Linode or NodeBalancer in the same region.
+                properties:
+                  address:
+                    description: __Filterable__, __Read-only__ The reserved public IPv4 address.
+                    example: 192.0.2.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 192.0.2.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address is assigned to.
+                    example: 123
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask. This prefix refers to the subnet mask of the network to which the IP belongs, and not the size of the IP reservation.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address. Reserved IPs are public.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: __Filterable__ The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Filterable__, __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  tags:
+                    description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                    example:
+                    - NB1
+                    - Linode1
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Read-only__ The type of address this is.
+                    enum:
+                    - ipv4
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: __Read-only__ IPv4 address configured as a 1:1 NAT for this Interface.
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 11
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  address:
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        x-linode-cli-display: 1
+                      label:
+                        x-linode-cli-display: 3
+                      type:
+                        x-linode-cli-display: 2
+                      url:
+                        x-linode-cli-display: 4
+                    type: object
+                  gateway:
+                    x-linode-cli-display: 2
+                  interface_id:
+                    x-linode-cli-display: 10
+                  linode_id:
+                    x-linode-cli-display: 9
+                  prefix:
+                    x-linode-cli-display: 4
+                  public:
+                    x-linode-cli-display: 6
+                  rdns:
+                    x-linode-cli-display: 7
+                  region:
+                    x-linode-cli-display: 8
+                  reserved:
+                    x-linode-cli-display: 11
+                  subnet_mask:
+                    x-linode-cli-display: 3
+                  tags:
+                    x-linode-cli-display: 12
+                  type:
+                    x-linode-cli-display: 5
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    properties:
+                      address:
+                        x-linode-cli-display: 3
+                      subnet_id:
+                        x-linode-cli-display: 2
+                      vpc_id:
+                        x-linode-cli-display: 1
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/reserved-ip-address-cli.yaml
+                x-linode-cli-subtables:
+                - assigned_entity
+                - vpc_nat_1_1
+          description: Tags updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_write
+      summary: Update reserved IP address tags
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli networking reserved-ip-update \\\n  192.107.143.141 \\\n  --tags NB2, Linode2"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: reserved-ip-update
+      x-linode-grant: read_write
+    delete:
+      description: 'Permanently removes the reserved IP address from your account and stops all associated charges. Once unreserved, the IP address can''t be recovered.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking reserved-ip-delete \
+
+        192.107.143.141
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-reserved-ip
+      operationId: delete-reserved-ip
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: The IP address has been unreserved.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_write
+      summary: Unreserve an IP address
+      tags:
+      - Reserved IPs
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli networking reserved-ip-delete \\\n  192.107.143.141"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: reserved-ip-delete
+      x-linode-grant: read_write
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

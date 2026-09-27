@@ -1,0 +1,422 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Profile logins API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: View a history of successful logins to your Linode account.
+  name: Profile logins
+paths:
+  /{apiVersion}/profile/logins:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/profile-logins.yaml
+      path-info: /{apiVersion}/profile/logins
+    x-linode-cli-command: profile
+    get:
+      description: 'Returns a collection of successful account logins from this user during the last 90 days.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_profile_logins`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli profile logins-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-profile-logins
+      operationId: get-profile-logins
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - datetime: '2018-01-01T00:01:01'
+                  id: 1234
+                  ip: 192.0.2.0
+                  restricted: true
+                  status: successful
+                  username: tyamada
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Previous successful logins for a user.
+                    items:
+                      additionalProperties: false
+                      description: A previous successful login for a user.
+                      properties:
+                        datetime:
+                          description: __Read-only__ When the login was initiated.
+                          example: '2018-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 2
+                        id:
+                          description: __Read-only__ The unique ID of this login object.
+                          example: 1234
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        ip:
+                          description: __Read-only__ The remote IP address that requested the login.
+                          example: 192.0.2.0
+                          format: ip
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 3
+                        restricted:
+                          description: __Read-only__ True if the User that attempted the login was a restricted User, false otherwise.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                          x-linode-cli-display: 6
+                        status:
+                          description: __Read-only__ Whether the login attempt was `successful` or if it `failed`.
+                          enum:
+                          - successful
+                          - failed
+                          example: successful
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 5
+                        username:
+                          description: __Read-only__ The username of the User that attempted the login.
+                          example: example_user
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 4
+                      type: object
+                      x-akamai:
+                        file-path: schemas/login.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-profile-logins-200.yaml
+          description: An array of successful account logins from this user during the last 90 days.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List logins
+      tags:
+      - Profile logins
+      x-akamai:
+        tabs:
+        - syntax: linode-cli profile logins-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: logins-list
+      x-linode-iam:
+      - permissions:
+        - list_profile_logins
+  /{apiVersion}/profile/logins/{loginId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the login object to access.
+      example: '{{loginId}}'
+      in: path
+      name: loginId
+      required: true
+      schema:
+        example: 863
+        type: integer
+      x-akamai:
+        file-path: parameters/login-id-path.yaml
+    x-akamai:
+      file-path: paths/profile-login.yaml
+      path-info: /{apiVersion}/profile/logins/{loginId}
+    x-linode-cli-command: profile
+    get:
+      description: 'Returns a login object displaying information about a successful account login from this user.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_profile_login`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli profile login-view 1234
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-profile-login
+      operationId: get-profile-login
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                datetime: '2018-01-01T00:01:01'
+                id: 1234
+                ip: 192.0.2.0
+                restricted: true
+                status: successful
+                username: szhang
+              schema:
+                additionalProperties: false
+                description: A previous successful login for a user.
+                properties:
+                  datetime:
+                    description: __Read-only__ When the login was initiated.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  id:
+                    description: __Read-only__ The unique ID of this login object.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  ip:
+                    description: __Read-only__ The remote IP address that requested the login.
+                    example: 192.0.2.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  restricted:
+                    description: __Read-only__ True if the User that attempted the login was a restricted User, false otherwise.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 6
+                  status:
+                    description: __Read-only__ Whether the login attempt was `successful` or if it `failed`.
+                    enum:
+                    - successful
+                    - failed
+                    example: successful
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                  username:
+                    description: __Read-only__ The username of the User that attempted the login.
+                    example: example_user
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                type: object
+                x-akamai:
+                  file-path: schemas/login.yaml
+          description: The requested login object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get a profile's login
+      tags:
+      - Profile logins
+      x-akamai:
+        tabs:
+        - syntax: linode-cli profile login-view 1234
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: login-view
+      x-linode-iam:
+      - permissions:
+        - view_profile_login
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

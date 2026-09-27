@@ -1,0 +1,1056 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Devices API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Devices
+paths:
+  /{apiVersion}/networking/firewalls/{firewallId}/devices:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Firewall to access.
+      example: '{{firewallId}}'
+      in: path
+      name: firewallId
+      required: true
+      schema:
+        example: 9000
+        type: integer
+      x-akamai:
+        file-path: parameters/firewall-id.yaml
+    x-akamai:
+      file-path: paths/firewall-devices.yaml
+      path-info: /{apiVersion}/networking/firewalls/{firewallId}/devices
+    x-linode-cli-command: firewalls
+    post:
+      description: 'Creates a firewall device, which assigns a firewall to a service (referred to as the device''s `entity`) and applies the firewall''s rules to the device.
+
+
+        - Currently, devices with `linode`, `linode_interface`, and `nodebalancer` entity types are accepted.
+
+        - The `linode` type is not allowed for Linodes using Linode interfaces.
+
+        - The `linode_interface` type is not allowed for legacy config interfaces. For VPC and public legacy config profile interfaces, the firewall is applied through the `linode` device.
+
+        - The `linode_interface` type only supports regular Linode interfaces, (public or VPC Linode interfaces).
+
+
+        - Firewalls only apply to inbound TCP traffic to NodeBalancers.
+
+
+        - A firewall can be assigned to multiple services at a time.
+
+
+        - A service can have one assigned firewall at a time.
+
+
+        - Assigned Linodes must not have any ongoing live migrations.
+
+
+        - A `firewall_device_add` event is generated when the firewall device is added successfully.
+
+
+        - RDMA VPC interfaces don''t support firewalls and can''t be assigned to a firewall device.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_firewall_device`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls device-create 123 \
+
+        --id 456 \
+
+        --type "linode"
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-firewall-device
+      operationId: post-firewall-device
+      requestBody:
+        content:
+          application/json:
+            example:
+              id: 123
+              type: linode
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: The Linode, NodeBalancer, or Linode interface this firewall is assigned to.
+                properties:
+                  id:
+                    description: The entity's ID.
+                    example: 123
+                    type: integer
+                  label:
+                    description: __Read-only__ The entity's label.
+                    example: my-linode
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  parent_entity:
+                    additionalProperties: false
+                    description: __Read-only__ The Linode this `linode_interface` is assigned to. Returns `null` when the entity `type` is `linode` or `nodebalancer`.
+                    properties:
+                      id:
+                        description: The ID of the Linode assigned to this `linode_interface`.
+                        example: 5000
+                        type: integer
+                      label:
+                        description: The name of the Linode this `linode_interface` is assigned to.
+                        example: linode5000
+                        type: string
+                      parent_entity:
+                        description: __Read-only__ Currently, no parent entity has a parent of its own. Each `parent_entity` will have its own `parent_entity` set to `null`.
+                        example: null
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                      type:
+                        description: A Linode interface’s `parent_entity` is a Linode.
+                        enum:
+                        - linode
+                        example: linode
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/linode/instances/5000
+                        format: url
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                  type:
+                    description: The entity's type.
+                    enum:
+                    - linode
+                    - nodebalancer
+                    - linode_interface
+                    example: linode
+                    type: string
+                  url:
+                    description: __Read-only__ The API URL path you can use to access this entity.
+                    example: /v4/linode/instances/123
+                    format: url
+                    readOnly: true
+                    type: string
+                type: object
+              required:
+              - id
+              - type
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-firewall-device.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                entity:
+                  id: 123
+                  label: my-linode
+                  parent_entity:
+                    id: 5000
+                    label: linode5000
+                    parent_entity: null
+                    type: linode
+                    url: /v4/linode/instances/5000
+                  type: linode
+                  url: /v4/linode/instances/123
+                id: 123
+                updated: '2025-01-02T00:01:01'
+              schema:
+                additionalProperties: false
+                description: Associates a firewall with a Linode, a Linode interface, or a NodeBalancer service.
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ When this device was created.
+                    example: '2025-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  entity:
+                    additionalProperties: false
+                    description: The Linode, NodeBalancer, or Linode interface this firewall is assigned to.
+                    properties:
+                      id:
+                        description: The entity's ID.
+                        example: 123
+                        type: integer
+                      label:
+                        description: __Read-only__ The entity's label.
+                        example: my-linode
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                      parent_entity:
+                        additionalProperties: false
+                        description: __Read-only__ The Linode this `linode_interface` is assigned to. Returns `null` when the entity `type` is `linode` or `nodebalancer`.
+                        properties:
+                          id:
+                            description: The ID of the Linode assigned to this `linode_interface`.
+                            example: 5000
+                            type: integer
+                          label:
+                            description: The name of the Linode this `linode_interface` is assigned to.
+                            example: linode5000
+                            type: string
+                          parent_entity:
+                            description: __Read-only__ Currently, no parent entity has a parent of its own. Each `parent_entity` will have its own `parent_entity` set to `null`.
+                            example: null
+                            readOnly: true
+                            type:
+                            - string
+                            - 'null'
+                          type:
+                            description: A Linode interface’s `parent_entity` is a Linode.
+                            enum:
+                            - linode
+                            example: linode
+                            type: string
+                          url:
+                            description: The API URL path you can use to access this entity.
+                            example: /v4/linode/instances/5000
+                            format: url
+                            type: string
+                        readOnly: true
+                        type:
+                        - object
+                        - 'null'
+                      type:
+                        description: The entity's type.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        - linode_interface
+                        example: linode
+                        type: string
+                      url:
+                        description: __Read-only__ The API URL path you can use to access this entity.
+                        example: /v4/linode/instances/123
+                        format: url
+                        readOnly: true
+                        type: string
+                    type: object
+                  id:
+                    description: __Filterable__ The device's unique ID.
+                    example: 123
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Filterable__, __Read-only__ When this device was last updated.
+                    example: '2025-01-02T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-devices.yaml
+          description: Returns information about the created Firewall Device.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_write
+      summary: Create a firewall device
+      tags:
+      - Devices
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli firewalls device-create 123 \\\n  --id 456 \\\n  --type \"linode\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: device-create
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - create_firewall_device
+    get:
+      description: 'Returns a paginated list of a firewall''s devices. A firewall device assigns a firewall to a service (referred to as the device''s `entity`).
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_firewall`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls devices-list 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-firewall-devices
+      operationId: get-firewall-devices
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2018-01-01 00:01:01'
+                  entity:
+                    id: 123
+                    label: my-linode
+                    parent_entity: null
+                    type: linode
+                    url: /v4/linode/instances/123
+                  id: 456
+                  updated: '2018-01-02 00:01:01'
+                - created: '2018-01-01 00:01:01'
+                  entity:
+                    id: 321
+                    label: my-nodebalancer
+                    parent_entity: null
+                    type: nodebalancer
+                    url: /v4/nodebalancers/1234
+                  id: 654
+                  updated: '2018-01-02 00:01:01'
+                - created: '2025-01-01 00:01:01'
+                  entity:
+                    id: 321
+                    label: my-interface
+                    parent_entity:
+                      id: 5000
+                      label: linode5000
+                      parent_entity: null
+                      type: linode
+                      url: /v4/linode/instances/5000
+                    type: linode_interface
+                    url: /v4/linode/instances/123/linode_interface/12345
+                  id: 654
+                  updated: '2025-01-02 00:01:01'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    example:
+                    - created: '2018-01-01 00:01:01'
+                      entity:
+                        id: 123
+                        label: my-linode
+                        parent_entity: null
+                        type: linode
+                        url: /v4/linode/instances/123
+                      id: 456
+                      updated: '2018-01-02 00:01:01'
+                    - created: '2018-01-01 00:01:01'
+                      entity:
+                        id: 321
+                        label: my-nodebalancer
+                        parent_entity: null
+                        type: nodebalancer
+                        url: /v4/nodebalancers/1234
+                      id: 654
+                      updated: '2018-01-02 00:01:01'
+                    - created: '2025-01-01 00:01:01'
+                      entity:
+                        id: 321
+                        label: my-interface
+                        parent_entity:
+                          id: 5000
+                          label: linode5000
+                          parent_entity: null
+                          type: linode
+                          url: /v4/linode/instances/5000
+                        type: linode_interface
+                        url: /v4/linode/instances/123/linode_interface/12345
+                      id: 654
+                      updated: '2025-01-02 00:01:01'
+                    items:
+                      additionalProperties: false
+                      description: Associates a firewall with a Linode, a Linode interface, or a NodeBalancer service.
+                      properties:
+                        created:
+                          description: __Filterable__, __Read-only__ When this device was created.
+                          example: '2025-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        entity:
+                          additionalProperties: false
+                          description: The Linode, NodeBalancer, or Linode interface this firewall is assigned to.
+                          properties:
+                            id:
+                              description: The entity's ID.
+                              example: 123
+                              type: integer
+                            label:
+                              description: __Read-only__ The entity's label.
+                              example: my-linode
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                            parent_entity:
+                              additionalProperties: false
+                              description: __Read-only__ The Linode this `linode_interface` is assigned to. Returns `null` when the entity `type` is `linode` or `nodebalancer`.
+                              properties:
+                                id:
+                                  description: The ID of the Linode assigned to this `linode_interface`.
+                                  example: 5000
+                                  type: integer
+                                label:
+                                  description: The name of the Linode this `linode_interface` is assigned to.
+                                  example: linode5000
+                                  type: string
+                                parent_entity:
+                                  description: __Read-only__ Currently, no parent entity has a parent of its own. Each `parent_entity` will have its own `parent_entity` set to `null`.
+                                  example: null
+                                  readOnly: true
+                                  type:
+                                  - string
+                                  - 'null'
+                                type:
+                                  description: A Linode interface’s `parent_entity` is a Linode.
+                                  enum:
+                                  - linode
+                                  example: linode
+                                  type: string
+                                url:
+                                  description: The API URL path you can use to access this entity.
+                                  example: /v4/linode/instances/5000
+                                  format: url
+                                  type: string
+                              readOnly: true
+                              type:
+                              - object
+                              - 'null'
+                            type:
+                              description: The entity's type.
+                              enum:
+                              - linode
+                              - nodebalancer
+                              - linode_interface
+                              example: linode
+                              type: string
+                            url:
+                              description: __Read-only__ The API URL path you can use to access this entity.
+                              example: /v4/linode/instances/123
+                              format: url
+                              readOnly: true
+                              type: string
+                          type: object
+                        id:
+                          description: __Filterable__ The device's unique ID.
+                          example: 123
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        updated:
+                          description: __Filterable__, __Read-only__ When this device was last updated.
+                          example: '2025-01-02T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/firewall-devices.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-firewall-devices-200.yaml
+          description: A paginated list of Firewall Devices.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: List firewall devices
+      tags:
+      - Devices
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls devices-list 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: devices-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_firewall
+  /{apiVersion}/networking/firewalls/{firewallId}/devices/{deviceId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Firewall to access.
+      example: '{{firewallId}}'
+      in: path
+      name: firewallId
+      required: true
+      schema:
+        example: 9000
+        type: integer
+      x-akamai:
+        file-path: parameters/firewall-id.yaml
+    - description: ID of the Firewall Device to access.
+      example: '{{deviceId}}'
+      in: path
+      name: deviceId
+      required: true
+      schema:
+        example: 768
+        type: integer
+      x-akamai:
+        file-path: parameters/device-id-path-b7287cbb.yaml
+    x-akamai:
+      file-path: paths/firewall-device.yaml
+      path-info: /{apiVersion}/networking/firewalls/{firewallId}/devices/{deviceId}
+    x-linode-cli-command: firewalls
+    get:
+      description: 'Returns information for a Firewall Device, which assigns a Firewall to a service (referred to as the Device''s `entity`).
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_firewall_device`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls device-view \
+
+        123 456
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-firewall-device
+      operationId: get-firewall-device
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                entity:
+                  id: 123
+                  label: my-linode
+                  parent_entity:
+                    id: 5000
+                    label: linode5000
+                    parent_entity: null
+                    type: linode
+                    url: /v4/linode/instances/5000
+                  type: linode
+                  url: /v4/linode/instances/123
+                id: 123
+                updated: '2025-01-02T00:01:01'
+              schema:
+                additionalProperties: false
+                description: Associates a firewall with a Linode, a Linode interface, or a NodeBalancer service.
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ When this device was created.
+                    example: '2025-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  entity:
+                    additionalProperties: false
+                    description: The Linode, NodeBalancer, or Linode interface this firewall is assigned to.
+                    properties:
+                      id:
+                        description: The entity's ID.
+                        example: 123
+                        type: integer
+                      label:
+                        description: __Read-only__ The entity's label.
+                        example: my-linode
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                      parent_entity:
+                        additionalProperties: false
+                        description: __Read-only__ The Linode this `linode_interface` is assigned to. Returns `null` when the entity `type` is `linode` or `nodebalancer`.
+                        properties:
+                          id:
+                            description: The ID of the Linode assigned to this `linode_interface`.
+                            example: 5000
+                            type: integer
+                          label:
+                            description: The name of the Linode this `linode_interface` is assigned to.
+                            example: linode5000
+                            type: string
+                          parent_entity:
+                            description: __Read-only__ Currently, no parent entity has a parent of its own. Each `parent_entity` will have its own `parent_entity` set to `null`.
+                            example: null
+                            readOnly: true
+                            type:
+                            - string
+                            - 'null'
+                          type:
+                            description: A Linode interface’s `parent_entity` is a Linode.
+                            enum:
+                            - linode
+                            example: linode
+                            type: string
+                          url:
+                            description: The API URL path you can use to access this entity.
+                            example: /v4/linode/instances/5000
+                            format: url
+                            type: string
+                        readOnly: true
+                        type:
+                        - object
+                        - 'null'
+                      type:
+                        description: The entity's type.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        - linode_interface
+                        example: linode
+                        type: string
+                      url:
+                        description: __Read-only__ The API URL path you can use to access this entity.
+                        example: /v4/linode/instances/123
+                        format: url
+                        readOnly: true
+                        type: string
+                    type: object
+                  id:
+                    description: __Filterable__ The device's unique ID.
+                    example: 123
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Filterable__, __Read-only__ When this device was last updated.
+                    example: '2025-01-02T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-devices.yaml
+          description: The requested Firewall Device.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: Get a firewall device
+      tags:
+      - Devices
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli firewalls device-view \\\n  123 456"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: device-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_firewall_device
+    delete:
+      description: 'Removes a Firewall Device, which removes a Firewall from the service it was assigned to by the Device. This removes all of the Firewall''s Rules from the service. If any other Firewalls have been assigned to the service, then those Rules remain in effect.
+
+
+        - Assigned Linodes must not have any ongoing live migrations.
+
+
+        - A `firewall_device_remove` Event is generated when the Firewall Device is removed successfully.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_firewall_device`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls device-delete 123 456
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-firewall-device
+      operationId: delete-firewall-device
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Delete Successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_write
+      summary: Delete a firewall device
+      tags:
+      - Devices
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls device-delete 123 456
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: device-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_firewall_device
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

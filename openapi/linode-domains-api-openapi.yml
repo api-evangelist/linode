@@ -1,22 +1,2301 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Domains API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Domains API
+  version: '1.0'
+  description: 'Operations tagged Domains across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Domains
-  description: Manage DNS domains and their associated resource records including A, AAAA, CNAME, MX, TXT, SRV, CAA, and NS records.
+- description: Use these operations to create and manage domains on your account.
+  name: Domains
 paths:
+  /{apiVersion}/domains:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/domains.yaml
+      path-info: /{apiVersion}/domains
+    x-linode-cli-command: domains
+    post:
+      description: 'Adds a new domain to DNS Manager. You must own the domain before adding it here. Be sure to point your registrar to our nameservers. Akamai Cloud does not act as a registrar.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `account_domain_creator`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains create \
+
+        --type master \
+
+        --domain example.org \
+
+        --soa_email admin@example.org
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-domain
+      operationId: post-domain
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: example.org
+              expire_sec: 300
+              refresh_sec: 300
+              retry_sec: 300
+              soa_email: admin@example.org
+              status: active
+              ttl_sec: 300
+              type: master
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+              required:
+              - domain
+              - type
+              x-akamai:
+                file-path: schemas/added-post-domain.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                axfr_ips: []
+                description: null
+                domain: example.org
+                expire_sec: 300
+                id: 1234
+                master_ips: []
+                refresh_sec: 300
+                retry_sec: 300
+                soa_email: admin@example.org
+                status: active
+                tags:
+                - example tag
+                - another example
+                ttl_sec: 300
+                type: master
+              schema:
+                additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+          description: Domain added successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Create a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli domains create \\\n  --type master \\\n  --domain example.org \\\n  --soa_email admin@example.org"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: create
+      x-linode-grant: add_domains
+      x-linode-iam:
+      - roles:
+        - account_domain_creator
+    get:
+      description: 'This is a collection of Domains that you have registered in Linode''s DNS Manager. Linode is not a registrar, and in order for these to work you must own the domains and point your registrar at Linode''s nameservers.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-domains
+      operationId: get-domains
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - axfr_ips: []
+                  description: null
+                  domain: example.org
+                  expire_sec: 300
+                  id: 1234
+                  master_ips: []
+                  refresh_sec: 300
+                  retry_sec: 300
+                  soa_email: admin@example.org
+                  status: active
+                  tags:
+                  - example tag
+                  - another example
+                  ttl_sec: 300
+                  type: master
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                      properties:
+                        axfr_ips:
+                          description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                            > 📘
+
+                            >
+
+                            > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                          example: []
+                          items:
+                            format: ip
+                            type: string
+                          type: array
+                        description:
+                          description: A description for this domain. This is for display purposes only.
+                          example: null
+                          maxLength: 253
+                          minLength: 1
+                          type:
+                          - string
+                          - 'null'
+                        domain:
+                          description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                          example: example.org
+                          maxLength: 253
+                          minLength: 1
+                          pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        expire_sec:
+                          default: 0
+                          description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                            - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                            - Any other value is rounded up to the nearest valid value.
+
+
+                            - A value of 0 is equivalent to the default value of 1209600.'
+                          example: 300
+                          type: integer
+                        group:
+                          deprecated: true
+                          description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                          example: null
+                          maxLength: 50
+                          minLength: 1
+                          type:
+                          - string
+                          - 'null'
+                          x-akamai:
+                            labels:
+                            - Filterable
+                            status: DEPRECATED
+                          x-linode-filterable: true
+                        id:
+                          description: __Read-only__ This domain's unique ID.
+                          example: 1234
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        master_ips:
+                          description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                          example: []
+                          items:
+                            format: ip
+                            type: string
+                          type: array
+                        refresh_sec:
+                          default: 0
+                          description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                            - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                            - Any other value is rounded up to the nearest valid value.
+
+
+                            - A value of 0 is equivalent to the default value of 14400.'
+                          example: 300
+                          type: integer
+                        retry_sec:
+                          default: 0
+                          description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                            - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                            - Any other value is rounded up to the nearest valid value.
+
+
+                            - A value of 0 is equivalent to the default value of 14400.'
+                          example: 300
+                          type: integer
+                        soa_email:
+                          description: Start of Authority email address. This is required for `type` master domains.
+                          example: admin@example.org
+                          format: email
+                          type: string
+                          x-linode-cli-display: 5
+                        status:
+                          default: active
+                          description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                          enum:
+                          - disabled
+                          - active
+                          example: active
+                          type: string
+                          x-linode-cli-color:
+                            active: green
+                            default_: red
+                            disabled: yellow
+                            edit_mode: yellow
+                          x-linode-cli-display: 4
+                        tags:
+                          description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                          example:
+                          - example tag
+                          - another example
+                          items:
+                            type: string
+                          type: array
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        ttl_sec:
+                          default: 0
+                          description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                            - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                            - Any other value is rounded up to the nearest valid value.
+
+
+                            - A value of 0 is equivalent to the default value of 86400.'
+                          example: 300
+                          type: integer
+                        type:
+                          description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                          enum:
+                          - master
+                          - slave
+                          example: master
+                          type: string
+                          x-linode-cli-display: 3
+                      title: Domain
+                      type: object
+                      x-akamai:
+                        file-path: schemas/domain.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-domains-200.yaml
+          description: A paginated list of Domains you have registered.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_only
+      summary: List domains
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - domain_viewer
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/domains/import:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/domains-import.yaml
+      path-info: /{apiVersion}/domains/import
+    x-linode-cli-command: domains
+    post:
+      description: 'Imports a domain zone from a remote nameserver. Your nameserver must allow zone transfers (AXFR) from the following IPs:
+
+
+        - 96.126.114.97
+
+        - 96.126.114.98
+
+        - 2600:3c00::5e
+
+        - 2600:3c00::5f
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains import --domain example.com --remote_nameserver examplenameserver.com
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-import-domain
+      operationId: post-import-domain
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: example.com
+              remote_nameserver: examplenameserver.com
+            schema:
+              additionalProperties: false
+              properties:
+                domain:
+                  description: The domain to import.
+                  example: '{{domain}}'
+                  type: string
+                remote_nameserver:
+                  description: The remote nameserver that allows zone transfers (AXFR).
+                  example: '{{remote_nameserver}}'
+                  type: string
+              required:
+              - domain
+              - remote_nameserver
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-import-domain.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                axfr_ips: []
+                description: null
+                domain: example.org
+                expire_sec: 300
+                id: 1234
+                master_ips: []
+                refresh_sec: 300
+                retry_sec: 300
+                soa_email: admin@example.org
+                status: active
+                tags:
+                - example tag
+                - another example
+                ttl_sec: 300
+                type: master
+              schema:
+                additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+          description: A single Domain in Linode's DNS Manager.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Import a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains import --domain example.com --remote_nameserver examplenameserver.com
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: import
+      x-linode-cli-command: domains
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/domains/{domainId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Domain to access.
+      example: '{{domainId}}'
+      in: path
+      name: domainId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/domain-id-path-6aab9d6d.yaml
+    x-akamai:
+      file-path: paths/domain.yaml
+      path-info: /{apiVersion}/domains/{domainId}
+    x-linode-cli-command: domains
+    get:
+      description: 'This is a single domain that you have registered in DNS Manager. For this domain record to resolve, you must own the domain and point your registrar at Akamai Cloud''s nameservers. Akamai Cloud does not act as a registrar.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-domain
+      operationId: get-domain
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                axfr_ips: []
+                description: null
+                domain: example.org
+                expire_sec: 300
+                id: 1234
+                master_ips: []
+                refresh_sec: 300
+                retry_sec: 300
+                soa_email: admin@example.org
+                status: active
+                tags:
+                - example tag
+                - another example
+                ttl_sec: 300
+                type: master
+              schema:
+                additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+          description: A single Domain in Linode's DNS Manager.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_only
+      summary: Get a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - domain_viewer
+    put:
+      description: 'Update information about a domain in DNS Manager.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains update 1234 \
+
+        --retry_sec 7200 \
+
+        --ttl_sec 300
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-domain
+      operationId: put-domain
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: example.org
+              expire_sec: 300
+              refresh_sec: 300
+              retry_sec: 300
+              soa_email: admin@example.org
+              status: active
+              ttl_sec: 300
+              type: master
+            schema:
+              additionalProperties: false
+              description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+              properties:
+                axfr_ips:
+                  description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                    > 📘
+
+                    >
+
+                    > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                  example: []
+                  items:
+                    format: ip
+                    type: string
+                  type: array
+                description:
+                  description: A description for this domain. This is for display purposes only.
+                  example: '{{description}}'
+                  maxLength: 253
+                  minLength: 1
+                  type:
+                  - string
+                  - 'null'
+                domain:
+                  description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                  example: '{{domain}}'
+                  maxLength: 253
+                  minLength: 1
+                  pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+                expire_sec:
+                  default: 0
+                  description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                    - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                    - Any other value is rounded up to the nearest valid value.
+
+
+                    - A value of 0 is equivalent to the default value of 1209600.'
+                  example: '{{expire_sec}}'
+                  type: integer
+                group:
+                  deprecated: true
+                  description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                  example: '{{group}}'
+                  maxLength: 50
+                  minLength: 1
+                  type:
+                  - string
+                  - 'null'
+                  x-akamai:
+                    labels:
+                    - Filterable
+                    status: DEPRECATED
+                  x-linode-filterable: true
+                id:
+                  description: __Read-only__ This domain's unique ID.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                master_ips:
+                  description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                  example: []
+                  items:
+                    format: ip
+                    type: string
+                  type: array
+                refresh_sec:
+                  default: 0
+                  description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                    - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                    - Any other value is rounded up to the nearest valid value.
+
+
+                    - A value of 0 is equivalent to the default value of 14400.'
+                  example: '{{refresh_sec}}'
+                  type: integer
+                retry_sec:
+                  default: 0
+                  description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                    - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                    - Any other value is rounded up to the nearest valid value.
+
+
+                    - A value of 0 is equivalent to the default value of 14400.'
+                  example: '{{retry_sec}}'
+                  type: integer
+                soa_email:
+                  description: Start of Authority email address. This is required for `type` master domains.
+                  example: '{{soa_email}}'
+                  format: email
+                  type: string
+                  x-linode-cli-display: 5
+                status:
+                  default: active
+                  description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                  enum:
+                  - disabled
+                  - active
+                  example: '{{status}}'
+                  type: string
+                  x-linode-cli-color:
+                    active: green
+                    default_: red
+                    disabled: yellow
+                    edit_mode: yellow
+                  x-linode-cli-display: 4
+                tags:
+                  description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                  example:
+                  - example tag
+                  - another example
+                  items:
+                    type: string
+                  type: array
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+                ttl_sec:
+                  default: 0
+                  description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                    - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                    - Any other value is rounded up to the nearest valid value.
+
+
+                    - A value of 0 is equivalent to the default value of 86400.'
+                  example: '{{ttl_sec}}'
+                  type: integer
+                type:
+                  description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                  enum:
+                  - master
+                  - slave
+                  example: '{{type}}'
+                  type: string
+                  x-linode-cli-display: 3
+              title: Domain
+              type: object
+              x-akamai:
+                file-path: schemas/domain.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                axfr_ips: []
+                description: null
+                domain: example.org
+                expire_sec: 300
+                id: 1234
+                master_ips: []
+                refresh_sec: 300
+                retry_sec: 300
+                soa_email: admin@example.org
+                status: active
+                tags:
+                - example tag
+                - another example
+                ttl_sec: 300
+                type: master
+              schema:
+                additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+          description: Domain update successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Update a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli domains update 1234 \\\n  --retry_sec 7200 \\\n  --ttl_sec 300"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+    delete:
+      description: 'Deletes a domain from DNS Manager. The domain will be removed from our nameservers shortly after this operation completes. This also deletes all associated domain records.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains delete 1234
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-domain
+      operationId: delete-domain
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Domain deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Delete a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains delete 1234
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - delete
+      - rm
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/domains/{domainId}/clone:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Domain to clone.
+      example: '{{domainId}}'
+      in: path
+      name: domainId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/domain-id-path-f5ed829a.yaml
+    x-akamai:
+      file-path: paths/domains-clone.yaml
+      path-info: /{apiVersion}/domains/{domainId}/clone
+    x-linode-cli-command: domains
+    post:
+      description: 'Clones a domain and all associated DNS records from a domain that is registered in DNS manager.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains clone 123 --domain example.com
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-clone-domain
+      operationId: post-clone-domain
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: example.org
+            schema:
+              additionalProperties: false
+              properties:
+                domain:
+                  description: __Filterable__ The new domain for the clone. Domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). Domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two Domains representing the same domain.
+                  example: '{{domain}}'
+                  maxLength: 253
+                  minLength: 1
+                  pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+              required:
+              - domain
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-clone-domain.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                axfr_ips: []
+                description: null
+                domain: example.org
+                expire_sec: 300
+                id: 1234
+                master_ips: []
+                refresh_sec: 300
+                retry_sec: 300
+                soa_email: admin@example.org
+                status: active
+                tags:
+                - example tag
+                - another example
+                ttl_sec: 300
+                type: master
+              schema:
+                additionalProperties: false
+                description: A domain zonefile in our DNS system.  You must own the domain name and tell your registrar to use Linode's nameservers in order for a domain in our system to be treated as authoritative.
+                properties:
+                  axfr_ips:
+                    description: 'The list of IPs that may perform a zone transfer for this domain. The total combined length of all data within this array cannot exceed 1000 characters.
+
+
+                      > 📘
+
+                      >
+
+                      > This is potentially dangerous, and should be set to an empty list unless you intend to use it.'
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  description:
+                    description: A description for this domain. This is for display purposes only.
+                    example: null
+                    maxLength: 253
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                  domain:
+                    description: __Filterable__ The domain this domain represents. domain labels cannot be longer than 63 characters and must conform to [RFC1035](https://tools.ietf.org/html/rfc1035). domains must be unique on Linode's platform, including across different Linode accounts; there cannot be two domains representing the same domain.
+                    example: example.org
+                    maxLength: 253
+                    minLength: 1
+                    pattern: ^(\*\.)?([a-zA-Z0-9-_]{1,63}\.)+([a-zA-Z]{2,3}\.)?([a-zA-Z]{2,16}|xn--[a-zA-Z0-9]+)$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  expire_sec:
+                    default: 0
+                    description: 'The amount of time in seconds that may pass before this domain is no longer authoritative.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 1209600.'
+                    example: 300
+                    type: integer
+                  group:
+                    deprecated: true
+                    description: __Deprecated__, __Filterable__ The group this domain belongs to.  This is for display purposes only.
+                    example: null
+                    maxLength: 50
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                      status: DEPRECATED
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ This domain's unique ID.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  master_ips:
+                    description: The IP addresses representing the master DNS for this domain. At least one value is required for `type` slave domains. The total combined length of all data within this array cannot exceed 1000 characters.
+                    example: []
+                    items:
+                      format: ip
+                      type: string
+                    type: array
+                  refresh_sec:
+                    default: 0
+                    description: 'The amount of time in seconds before this domain should be refreshed.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  retry_sec:
+                    default: 0
+                    description: 'The interval, in seconds, at which a failed refresh should be retried.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 14400.'
+                    example: 300
+                    type: integer
+                  soa_email:
+                    description: Start of Authority email address. This is required for `type` master domains.
+                    example: admin@example.org
+                    format: email
+                    type: string
+                    x-linode-cli-display: 5
+                  status:
+                    default: active
+                    description: Indicates whether this domain is currently being rendered, either `active` or `disabled`.
+                    enum:
+                    - disabled
+                    - active
+                    example: active
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      default_: red
+                      disabled: yellow
+                      edit_mode: yellow
+                    x-linode-cli-display: 4
+                  tags:
+                    description: __Filterable__ An array of tags applied to this object.  Tags are for organizational purposes only.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  ttl_sec:
+                    default: 0
+                    description: '"Time to Live" - the amount of time in seconds that this domain''s records may be cached by resolvers or other domain servers.
+
+
+                      - Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200.
+
+
+                      - Any other value is rounded up to the nearest valid value.
+
+
+                      - A value of 0 is equivalent to the default value of 86400.'
+                    example: 300
+                    type: integer
+                  type:
+                    description: Whether this domain represents the authoritative source of information for the domain it describes (`master`), or whether it is a read-only copy of a master (`slave`).
+                    enum:
+                    - master
+                    - slave
+                    example: master
+                    type: string
+                    x-linode-cli-display: 3
+                title: Domain
+                type: object
+                x-akamai:
+                  file-path: schemas/domain.yaml
+          description: A new Domain in Linode's DNS Manager, based on a cloned Domain.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Clone a domain
+      tags:
+      - Domains
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains clone 123 --domain example.com
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: clone
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+    servers:
+    - url: https://api.linode.com
   /domains:
     get:
       operationId: getDomains
@@ -36,6 +2315,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedDomainList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createDomain
       summary: Create a domain
@@ -59,6 +2341,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /domains/{domainId}:
     get:
       operationId: getDomain
@@ -79,6 +2367,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Domain not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateDomain
       summary: Update a domain
@@ -106,6 +2397,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Domain not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     delete:
       operationId: deleteDomain
       summary: Delete a domain
@@ -121,6 +2415,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Domain not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /domains/{domainId}/records:
     get:
       operationId: getDomainRecords
@@ -143,6 +2443,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Domain not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createDomainRecord
       summary: Create a domain record
@@ -170,66 +2473,14 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Domain not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
   schemas:
-    PaginatedDomainList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Domain'
-    PaginatedDomainRecordList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/DomainRecord'
-    DomainRecord:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this domain record.
-        type:
-          type: string
-          enum:
-          - A
-          - AAAA
-          - NS
-          - MX
-          - CNAME
-          - TXT
-          - SRV
-          - PTR
-          - CAA
-          description: The type of DNS record.
-        name:
-          type: string
-          description: The hostname or FQDN for this record.
-        target:
-          type: string
-          description: The target for this record.
-        priority:
-          type: integer
-          description: The priority for MX and SRV records.
-        weight:
-          type: integer
-          description: The weight for SRV records.
-        port:
-          type: integer
-          description: The port for SRV records.
-        ttl_sec:
-          type: integer
-          description: The TTL in seconds for this record.
-        tag:
-          type: string
-          description: The tag for CAA records.
     Domain:
       type: object
       properties:
@@ -284,33 +2535,6 @@ components:
         expire_sec:
           type: integer
           description: The expiry time in seconds.
-    DomainRequest:
-      type: object
-      required:
-      - domain
-      - type
-      properties:
-        domain:
-          type: string
-          description: The domain name.
-        type:
-          type: string
-          enum:
-          - master
-          - slave
-          description: Whether this is a master or slave zone.
-        soa_email:
-          type: string
-          format: email
-          description: The SOA email address.
-        description:
-          type: string
-          description: A description for this domain.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for this domain.
     Pagination:
       type: object
       properties:
@@ -359,15 +2583,92 @@ components:
         ttl_sec:
           type: integer
           description: The TTL in seconds.
+    PaginatedDomainList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Domain'
+    DomainRequest:
+      type: object
+      required:
+      - domain
+      - type
+      properties:
+        domain:
+          type: string
+          description: The domain name.
+        type:
+          type: string
+          enum:
+          - master
+          - slave
+          description: Whether this is a master or slave zone.
+        soa_email:
+          type: string
+          format: email
+          description: The SOA email address.
+        description:
+          type: string
+          description: A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this domain.
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this domain record.
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN for this record.
+        target:
+          type: string
+          description: The target for this record.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds for this record.
+        tag:
+          type: string
+          description: The tag for CAA records.
+    PaginatedDomainRecordList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/DomainRecord'
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -377,6 +2678,14 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     domainIdParam:
       name: domainId
       in: path
@@ -385,46 +2694,55 @@ components:
         type: integer
       description: The ID of the domain.
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

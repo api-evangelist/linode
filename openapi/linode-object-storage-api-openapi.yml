@@ -133,46 +133,6 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
-    PaginatedObjectStorageBucketList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ObjectStorageBucket'
-    PaginatedObjectStorageKeyList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ObjectStorageKey'
-    ObjectStorageBucket:
-      type: object
-      properties:
-        label:
-          type: string
-          description: The name of this bucket.
-        region:
-          type: string
-          description: The region where this bucket is located.
-        created:
-          type: string
-          format: date-time
-          description: When this bucket was created.
-        hostname:
-          type: string
-          description: The hostname for accessing this bucket.
-        objects:
-          type: integer
-          description: The number of objects in this bucket.
-        size:
-          type: integer
-          description: The total size of objects in bytes.
     ObjectStorageKey:
       type: object
       properties:
@@ -209,23 +169,15 @@ components:
                 - read_write
                 description: The permission level.
           description: Specific bucket access permissions for this key.
-    ObjectStorageEndpointList:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              region:
-                type: string
-                description: The region ID.
-              endpoint_type:
-                type: string
-                description: The type of endpoint.
-              s3_endpoint:
-                type: string
-                description: The S3-compatible endpoint URL.
+    PaginatedObjectStorageBucketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageBucket'
     Pagination:
       type: object
       properties:
@@ -238,6 +190,37 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedObjectStorageKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageKey'
+    ObjectStorageBucket:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The name of this bucket.
+        region:
+          type: string
+          description: The region where this bucket is located.
+        created:
+          type: string
+          format: date-time
+          description: When this bucket was created.
+        hostname:
+          type: string
+          description: The hostname for accessing this bucket.
+        objects:
+          type: integer
+          description: The number of objects in this bucket.
+        size:
+          type: integer
+          description: The total size of objects in bytes.
     ObjectStorageKeyRequest:
       type: object
       required:
@@ -267,22 +250,24 @@ components:
                 - read_only
                 - read_write
           description: Specific bucket access permissions.
+    ObjectStorageEndpointList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: The region ID.
+              endpoint_type:
+                type: string
+                description: The type of endpoint.
+              s3_endpoint:
+                type: string
+                description: The S3-compatible endpoint URL.
   parameters:
-    bucketParam:
-      name: bucket
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The name of the Object Storage bucket.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -299,6 +284,21 @@ components:
       schema:
         type: string
       description: The ID of the region.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    bucketParam:
+      name: bucket
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The name of the Object Storage bucket.
   securitySchemes:
     personalAccessToken:
       type: http

@@ -1,22 +1,2537 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Volumes API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Volumes API
+  version: '1.0'
+  description: 'Operations tagged Volumes across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Volumes
-  description: Create and manage Block Storage volumes that can be attached to Linode instances for persistent data storage.
+- description: The Block Storage service lets you add additional storage drives to Linodes, to store more data without resizing your Linode to a larger plan. These storage drives, called volumes, can be formatted with any Linux-compatible file system and attached and mounted to a Linode.
+  name: Volumes
 paths:
+  /{apiVersion}/volumes:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/volumes.yaml
+      path-info: /{apiVersion}/volumes
+    x-linode-cli-command: volumes
+    post:
+      description: 'Creates a Block Storage volume on your account. Creating a new volume accrues additional charges on your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes create \
+
+        --label my-volume \
+
+        --size 20 \
+
+        --linode_id 12346 \
+
+        --no-defaults
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-volume
+      operationId: post-volume
+      requestBody:
+        content:
+          application/json:
+            example:
+              config_id: 23456
+              encryption: enabled
+              label: Video-file-storage
+              linode_id: 12346
+              region: us-iad
+              size: 30
+              tags:
+              - blk-stg-volume-1
+              - videos-storage
+            schema:
+              additionalProperties: false
+              properties:
+                config_id:
+                  description: 'When creating a volume attached to a Linode, this is the identifier of the Linode configuration profile (config) where the volume will live. Run the [List configuration profiles](https://techdocs.akamai.com/linode-api/reference/get-linode-configs) operation and store the `id` for the applicable config. The following apply when adding a `config_id`:
+
+
+                    - The selected config needs to belong to the Linode referenced by `linode_id` in this request.
+
+
+                    - You can''t provide a `config_id` if you don''t also provide a `linode_id` in the request.
+
+
+                    - If you send a `linode_id` without a `config_id`, the API attaches the volume to that Linode''s last used config, or to the only config in that Linode. If there isn''t a config available for attachment, the API returns an error.'
+                  example: '{{config_id}}'
+                  type: integer
+                encryption:
+                  default: enabled
+                  description: 'Sets the disk encryption status for a volume, either `enabled` or `disabled`. When you create a new volume, disk encryption is enabled by default. Full disk encryption ensures the data stored on a Block Storage volume drive is secure. It protects against unauthorized access by keeping the data encrypted if the volume drive is removed from the data center, decommissioned, or disposed of. The platform automatically manages the encryption and decryption process for you. You can use an encrypted volume the same way you use a non-encrypted volume.
+
+
+                    > 📘
+
+                    >
+
+                    > You can only set disk encryption status when creating a new Block Storage volume. After you create a volume, you can''t change its encryption setting.'
+                  enum:
+                  - enabled
+                  - disabled
+                  example: '{{encryption}}'
+                  type: string
+                label:
+                  description: The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, hyphens, and underscores. This value is also used in the volume's `filesystem_path`.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 1
+                  pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                  type: string
+                linode_id:
+                  description: The Linode this volume should be attached to after it's created. If not given, the volume will be created without an attachment.
+                  example: '{{linode_id}}'
+                  type: integer
+                region:
+                  description: The region where the API deploys the volume. This is only required if you didn't provide a `linode_id` for the volume.
+                  example: '{{region}}'
+                  type:
+                  - string
+                  - 'null'
+                size:
+                  default: 20
+                  description: The initial size of this volume, in GB. Volumes can only be resized after the creation completes.
+                  example: '{{size}}'
+                  type: integer
+                tags:
+                  description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                  example:
+                  - example tag
+                  - another example
+                  items:
+                    type: string
+                  type: array
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+              required:
+              - label
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-volume.yaml
+        required: true
+        x-linode-cli-allowed-defaults:
+        - region
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: Video-file-storage
+                linode_id: 12346
+                linode_label: linode123
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - blk-stg-volume-1
+                - videos-storage
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A newly created Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, hyphens, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - example tag
+                    - another example
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/post-volume.yaml
+          description: Creating volume.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+      summary: Create a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli volumes create \\\n  --label my-volume \\\n  --size 20 \\\n  --linode_id 12346 \\\n  --no-defaults"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-charge: true
+      x-linode-cli-action: create
+      x-linode-grant: add_volumes
+      x-linode-iam:
+      - permissions:
+        - create_volume
+    get:
+      description: 'Returns a paginated list of the Block Storage volumes that you have permission to view.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-volumes
+      operationId: get-volumes
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2025-01-01T00:01:01'
+                  encryption: enabled
+                  filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                  hardware_type: nvme
+                  id: 12345
+                  io_ready: true
+                  label: Video-file-storage
+                  linode_id: 12346
+                  linode_label: linode123
+                  locks:
+                  - cannot_delete
+                  region: us-iad
+                  size: 30
+                  status: active
+                  tags:
+                  - blk-stg-volume-1
+                  - videos-storage
+                  updated: '2025-01-01T00:01:01'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: A Block Storage volume on your account.
+                      properties:
+                        created:
+                          description: __Read-only__ When this volume was created.
+                          example: '2025-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                        encryption:
+                          description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                          enum:
+                          - enabled
+                          - disabled
+                          example: enabled
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 8
+                        filesystem_path:
+                          description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                          example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                          readOnly: true
+                          type: string
+                        hardware_type:
+                          description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                          enum:
+                          - hdd
+                          - nvme
+                          example: nvme
+                          readOnly: true
+                          type: string
+                        id:
+                          description: __Read-only__ The unique identifier for the volume.
+                          example: 12345
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        io_ready:
+                          description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                        label:
+                          description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                          example: my-volume
+                          maxLength: 32
+                          minLength: 1
+                          pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        linode_id:
+                          description: The unique identifier of the Linode this volume is attached to, if applicable.
+                          example: 12346
+                          type:
+                          - integer
+                          - 'null'
+                          x-linode-cli-display: 6
+                        linode_label:
+                          description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                          example: linode123
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 7
+                        locks:
+                          description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                            - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                            - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                            - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                            > 📘
+
+                            >
+
+                            > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                          example:
+                          - cannot_delete
+                          items:
+                            enum:
+                            - cannot_delete
+                            - cannot_delete_with_subresources
+                            type: string
+                          type: array
+                          x-akamai:
+                            status: BETA
+                        region:
+                          description: The unique identifier for the region where the volume lives.
+                          example: us-iad
+                          type: string
+                          x-linode-cli-display: 5
+                        size:
+                          description: The volume's size, in gigabytes.
+                          example: 30
+                          maximum: 10240
+                          type: integer
+                          x-linode-cli-display: 4
+                        status:
+                          description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                            - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                            - `active`. The volume is online and ready for use.
+
+
+                            - `resizing`. The volume''s capacity is being upgraded.
+
+
+                            - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                          enum:
+                          - creating
+                          - active
+                          - resizing
+                          - key_rotating
+                          example: active
+                          readOnly: true
+                          type: string
+                          x-linode-cli-color:
+                            active: green
+                            contact_support: red
+                            default_: yellow
+                          x-linode-cli-display: 3
+                        tags:
+                          description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                          example:
+                          - blk-stg-volume-1
+                          - videos-storage
+                          items:
+                            type: string
+                          type: array
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When this volume was last updated.
+                          example: '2025-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                      title: Volume
+                      type: object
+                      x-akamai:
+                        file-path: schemas/volume.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/volumes.yaml
+          description: The Block Storage volumes on your account are returned.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_only
+      summary: List volumes
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli volumes list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_volume
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/volumes/{volumeId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the target volume. Run the [List volumes](https://techdocs.akamai.com/linode-api/reference/get-volumes) operation and store the `id` for the target volume as your `volumeId`.
+      example: '{{volumeId}}'
+      in: path
+      name: volumeId
+      required: true
+      schema:
+        example: 251
+        type: integer
+      x-akamai:
+        file-path: parameters/volume-id.yaml
+    x-akamai:
+      file-path: paths/volume.yaml
+      path-info: /{apiVersion}/volumes/{volumeId}
+    x-linode-cli-command: volumes
+    get:
+      description: 'Get information about a specific Block Storage volume.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes view 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-volume
+      operationId: get-volume
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: my-volume
+                linode_id: 12346
+                linode_label: linode123
+                locks:
+                - cannot_delete
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - blk-stg-volume-1
+                - videos-storage
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  locks:
+                    description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                      - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                      - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                      - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                      > 📘
+
+                      >
+
+                      > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                    example:
+                    - cannot_delete
+                    items:
+                      enum:
+                      - cannot_delete
+                      - cannot_delete_with_subresources
+                      type: string
+                    type: array
+                    x-akamai:
+                      status: BETA
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - blk-stg-volume-1
+                    - videos-storage
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/volume.yaml
+          description: Returns a single volume object.
+          links:
+            attach:
+              operationId: post-attach-volume
+              parameters:
+                volumeID: $request.body#/id
+            clone:
+              operationId: post-clone-volume
+              parameters:
+                volumeId: $request.body#/id
+            detach:
+              operationId: post-attach-volume
+              parameters:
+                volumeId: $request.body#/id
+            resize:
+              operationId: post-resize-volume
+              parameters:
+                volumeId: $request.body#/id
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_only
+      summary: Get a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli volumes view 12345
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_volume
+    put:
+      description: 'Update a specific Block Storage volume.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes update 12345 \
+
+        --label my_volume
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-volume
+      operationId: put-volume
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: my-volume
+              tags:
+              - blk-stg-volume-1
+              - videos-storage
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 1
+                  pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                  type: string
+                tags:
+                  description: Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                  example:
+                  - blk-stg-volume-1
+                  - videos-storage
+                  items:
+                    type: string
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-volume.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: my-volume
+                linode_id: 12346
+                linode_label: linode123
+                locks:
+                - cannot_delete
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - blk-stg-volume-1
+                - videos-storage
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  locks:
+                    description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                      - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                      - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                      - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                      > 📘
+
+                      >
+
+                      > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                    example:
+                    - cannot_delete
+                    items:
+                      enum:
+                      - cannot_delete
+                      - cannot_delete_with_subresources
+                      type: string
+                    type: array
+                    x-akamai:
+                      status: BETA
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - blk-stg-volume-1
+                    - videos-storage
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/volume.yaml
+          description: The volume was updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+      summary: Update a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli volumes update 12345 \\\n  --label my_volume"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_volume
+    delete:
+      description: 'Delete a Block Storage volume. Some conditions apply when deleting a volume:
+
+
+        - Deleting a volume can''t be undone.
+
+
+        - Deleting stops billing for the volume. You''ll be billed for the time the volume was active during the current billing period.
+
+
+        - You can''t delete a volume that''s attached to a Linode currently being migrated. You need to wait for the migration to complete.
+
+
+        - You can''t delete a volume that has a `cannot_delete` or `cannot_delete_with_subresources` resource lock set for it.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes delete 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-volume
+      operationId: delete-volume
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Volume deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+      summary: Delete a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli volumes delete 12345
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - delete
+      - rm
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_volume
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/volumes/{volumeId}/attach:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the target volume. Run the [List volumes](https://techdocs.akamai.com/linode-api/reference/get-volumes) operation and store the `id` for the target volume as your `volumeId`.
+      example: '{{volumeId}}'
+      in: path
+      name: volumeId
+      required: true
+      schema:
+        example: 251
+        type: integer
+      x-akamai:
+        file-path: parameters/volume-id.yaml
+    x-akamai:
+      file-path: paths/volume-attach.yaml
+      path-info: /{apiVersion}/volumes/{volumeId}/attach
+    x-linode-cli-command: volumes
+    post:
+      description: 'Attach a Block Storage volume to an existing Linode.
+
+
+        > 📘
+
+        >
+
+        > - The volume and its target Linode need to exist in the same `region`. You can run the List volumes and List Linodes operations and review the `region` for each.
+
+        >
+
+        > - There''s a maximum number of volumes that can be attached to a single Linode configuration. This number varies, based on the Linode''s plan, with higher plan types supporting more volumes. The maximum follows a formula of the Linode plan''s `total_ram / 1024`, with a minimum of 8 and a total maximum of 64 volumes. Rescue configurations support a maximum of 8.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `attach_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write, linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes attach 12345 \
+
+        --linode_id 12346 \
+
+        --config_id 23456
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-attach-volume
+      operationId: post-attach-volume
+      requestBody:
+        content:
+          application/json:
+            example:
+              config_id: 23456
+              linode_id: 12346
+              persist_across_boots: true
+            schema:
+              additionalProperties: false
+              properties:
+                config_id:
+                  description: 'The unique identifier assigned to the Linode configuration where you want to include this volume. Run the [List configuration profiles](https://techdocs.akamai.com/linode-api/reference/get-linode-configs) operation and store the `id` for the target configuration.
+
+
+                    > 📘
+
+                    >
+
+                    > - The configuration needs to belong to the Linode referenced by `linode_id`.
+
+                    >
+
+                    > - If you don''t include this value, the API uses the last booted configuration.'
+                  example: '{{config_id}}'
+                  type: integer
+                linode_id:
+                  description: The unique identifier assigned to the Linode where you want to attach the volume. Run the [List Linodes](https://techdocs.akamai.com/linode-api/reference/get-linode-instances) operation and store the `id` for the target Linode.
+                  example: '{{linode_id}}'
+                  type: integer
+                persist_across_boots:
+                  default: true
+                  description: 'If set to `false`, the volume won''t be attached to the Linode configuration. In this case, more than eight volumes may be attached to a Linode if a Linode has 16GB of RAM or more. The number of volumes you can attach is equal to the number of GB of RAM that the Linode has, up to a maximum of 64. If you set this to `false`, you can''t include a `config_id` and only the `linode_id` should be passed.
+
+
+                    > 📘
+
+                    >
+
+                    > To use this object, the target `linode_id` needs to have a status of `running`. Run the [List Linodes](https://techdocs.akamai.com/linode-api/reference/get-linode-instances) operation to check the `status` of each Linode.'
+                  example: '{{persist_across_boots}}'
+                  type: boolean
+              required:
+              - linode_id
+              type: object
+              x-akamai:
+                file-path: schemas/volume-attach.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: my-volume
+                linode_id: 12346
+                linode_label: linode123
+                locks:
+                - cannot_delete
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - blk-stg-volume-1
+                - videos-storage
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  locks:
+                    description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                      - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                      - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                      - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                      > 📘
+
+                      >
+
+                      > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                    example:
+                    - cannot_delete
+                    items:
+                      enum:
+                      - cannot_delete
+                      - cannot_delete_with_subresources
+                      type: string
+                    type: array
+                    x-akamai:
+                      status: BETA
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - blk-stg-volume-1
+                    - videos-storage
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/volume.yaml
+          description: The volume was attached to a Linode.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+        - linodes:read_write
+      summary: Attach a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli volumes attach 12345 \\\n  --linode_id 12346 \\\n  --config_id 23456"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: attach
+      x-linode-iam:
+      - permissions:
+        - attach_volume
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/volumes/{volumeId}/clone:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the target volume. Run the [List volumes](https://techdocs.akamai.com/linode-api/reference/get-volumes) operation and store the `id` for the target volume as your `volumeId`.
+      example: '{{volumeId}}'
+      in: path
+      name: volumeId
+      required: true
+      schema:
+        example: 251
+        type: integer
+      x-akamai:
+        file-path: parameters/volume-id.yaml
+    x-akamai:
+      file-path: paths/volume-clone.yaml
+      path-info: /{apiVersion}/volumes/{volumeId}/clone
+    x-linode-cli-command: volumes
+    post:
+      description: 'Target an existing Block Storage volume to create a new one. The resulting volume will be the same size and include the same data. A new volume will incur a charge on your account.
+
+
+        > 📘
+
+        >
+
+        > Only a volume with a `status` of `active` can be cloned. Run the List volumes operation to view the `status` of each of your volumes.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `clone_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes clone 12345 \
+
+        --label my-volume
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-clone-volume
+      operationId: post-clone-volume
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: cloned-my-volume
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: The name of the new volume after the clone. A `label` can be up to 32 characters long and contain alphanumeric characters, hyphens, and underscores. This value is also used in the volume's `filesystem_path`.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 1
+                  pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                  type: string
+              required:
+              - label
+              type: object
+              x-akamai:
+                file-path: schemas/volume-clone.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: Video-file-storage
+                linode_id: 12346
+                linode_label: linode123
+                locks: []
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - blk-stg-volume-1
+                - videos-storage
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  locks:
+                    description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                      - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                      - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                      - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                      > 📘
+
+                      >
+
+                      > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                    example:
+                    - cannot_delete
+                    items:
+                      enum:
+                      - cannot_delete
+                      - cannot_delete_with_subresources
+                      type: string
+                    type: array
+                    x-akamai:
+                      status: BETA
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - blk-stg-volume-1
+                    - videos-storage
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/volume.yaml
+          description: Clone started.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+      summary: Clone a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli volumes clone 12345 \\\n  --label my-volume"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-charge: true
+      x-linode-cli-action: clone
+      x-linode-grant: add_volumes
+      x-linode-iam:
+      - permissions:
+        - clone_volume
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/volumes/{volumeId}/detach:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the target volume. Run the [List volumes](https://techdocs.akamai.com/linode-api/reference/get-volumes) operation and store the `id` for the target volume as your `volumeId`.
+      example: '{{volumeId}}'
+      in: path
+      name: volumeId
+      required: true
+      schema:
+        example: 251
+        type: integer
+      x-akamai:
+        file-path: parameters/volume-id.yaml
+    x-akamai:
+      file-path: paths/volume-detach.yaml
+      path-info: /{apiVersion}/volumes/{volumeId}/detach
+    x-linode-cli-command: volumes
+    post:
+      description: 'Detach a Block Storage volume from a Linode. When you delete a Linode, any volumes attached to it are automatically detached.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `detach_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write, linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes detach 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-detach-volume
+      operationId: post-detach-volume
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Volume was detached from a Linode.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+        - linodes:read_write
+      summary: Detach a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli volumes detach 12345
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: detach
+      x-linode-iam:
+      - permissions:
+        - detach_volume
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/volumes/{volumeId}/resize:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier for the target volume. Run the [List volumes](https://techdocs.akamai.com/linode-api/reference/get-volumes) operation and store the `id` for the target volume as your `volumeId`.
+      example: '{{volumeId}}'
+      in: path
+      name: volumeId
+      required: true
+      schema:
+        example: 251
+        type: integer
+      x-akamai:
+        file-path: parameters/volume-id.yaml
+    x-akamai:
+      file-path: paths/volume-resize.yaml
+      path-info: /{apiVersion}/volumes/{volumeId}/resize
+    x-linode-cli-command: volumes
+    post:
+      description: 'Increase the size of an existing Block Storage volume on your account.
+
+
+        > 📘
+
+        >
+
+        > - You can''t decrease the size of an existing volume.
+
+        >
+
+        > - Only a volume with a `status` of `active` can be resized. Run the List volumes operation to view the `status` of each of your volumes.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `resize_volume`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `volumes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli volumes resize 12345 \
+
+        --size 30
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-resize-volume
+      operationId: post-resize-volume
+      requestBody:
+        content:
+          application/json:
+            example:
+              size: 30
+            schema:
+              additionalProperties: false
+              properties:
+                size:
+                  description: The volume's size, in gigabytes.
+                  example: '{{size}}'
+                  maximum: 10240
+                  type: integer
+                  x-linode-cli-display: 4
+              required:
+              - size
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-resize-volume.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2025-01-01T00:01:01'
+                encryption: enabled
+                filesystem_path: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                hardware_type: nvme
+                id: 12345
+                io_ready: true
+                label: my-volume
+                linode_id: 12346
+                linode_label: linode123
+                locks:
+                - cannot_delete
+                region: us-iad
+                size: 30
+                status: active
+                tags:
+                - example tag
+                - another example
+                updated: '2025-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Block Storage volume on your account.
+                properties:
+                  created:
+                    description: __Read-only__ When this volume was created.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  encryption:
+                    description: __Read-only__ Indicates whether encryption is `enabled` or `disabled` on this volume.
+                    enum:
+                    - enabled
+                    - disabled
+                    example: enabled
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  filesystem_path:
+                    description: __Read-only__ The full file system path for the volume, based on its `label`. The path is `/dev/disk/by-id/scsi-0Linode_Volume_label`.
+                    example: /dev/disk/by-id/scsi-0Linode_Volume_my-volume
+                    readOnly: true
+                    type: string
+                  hardware_type:
+                    description: __Read-only__ The storage type of this volume. This can be either `hdd` to emulate a hard disk drive for the volume, or `nvme` to emulate a non-volatile memory express solid state drive.
+                    enum:
+                    - hdd
+                    - nvme
+                    example: nvme
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The unique identifier for the volume.
+                    example: 12345
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  io_ready:
+                    description: __Read-only__ Indicates whether the volume is successfully attached to a Linode and ready for read and write operations.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  label:
+                    description: __Filterable__ The name of the volume. A `label` can be up to 32 characters long and contain alphanumeric characters, dashes, and underscores. This value is also used in the volume's `filesystem_path`.
+                    example: my-volume
+                    maxLength: 32
+                    minLength: 1
+                    pattern: ^[a-zA-Z]((?!--|__)[a-zA-Z0-9-_])+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  linode_id:
+                    description: The unique identifier of the Linode this volume is attached to, if applicable.
+                    example: 12346
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 6
+                  linode_label:
+                    description: __Read-only__ The name of the Linode this volume is attached to, if applicable.
+                    example: linode123
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 7
+                  locks:
+                    description: '__Beta__ A resource lock applied to the Block Storage volume. You can optionally [set up this lock](https://techdocs.akamai.com/linode-api/reference/post-resource-lock) to prevent you from inadvertently deleting the volume. Supported values here include:
+
+
+                      - `cannot_delete`. The volume itself can''t be deleted. Any sub-resources assigned to it can be freely deleted. You need to unlock the volume by [deleting its lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) to delete the volume.
+
+
+                      - `cannot_delete_with_subresources`.  The volume and various sub-resources assigned to it can''t be deleted. For example, if a volume has a configuration profile interface assigned to it, this lock prevents you from deleting either of them. You need to unlock the resource (the volume) by deleting its lock. Then you can delete the volume and any of its sub-resources.
+
+
+                      - **Empty**. The volume doesn''t have a resource lock configured. This is also empty when you clone a volume, because resource lock settings aren''t carried to the cloned volume.
+
+
+                      > 📘
+
+                      >
+
+                      > This array appears for a volume only if you call this operation using the `v4beta` path parameter in the URL.'
+                    example:
+                    - cannot_delete
+                    items:
+                      enum:
+                      - cannot_delete
+                      - cannot_delete_with_subresources
+                      type: string
+                    type: array
+                    x-akamai:
+                      status: BETA
+                  region:
+                    description: The unique identifier for the region where the volume lives.
+                    example: us-iad
+                    type: string
+                    x-linode-cli-display: 5
+                  size:
+                    description: The volume's size, in gigabytes.
+                    example: 30
+                    maximum: 10240
+                    type: integer
+                    x-linode-cli-display: 4
+                  status:
+                    description: '__Read-only__ The current status of the volume. This can be one of:
+
+
+                      - `creating`. The API is creating the volume and it''s not ready for use.
+
+
+                      - `active`. The volume is online and ready for use.
+
+
+                      - `resizing`. The volume''s capacity is being upgraded.
+
+
+                      - `key_rotating`. The volume''s encryption keys are being rotated to new values. Requests to resize, delete, or clone a volume fail during encryption key rotation.'
+                    enum:
+                    - creating
+                    - active
+                    - resizing
+                    - key_rotating
+                    example: active
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      active: green
+                      contact_support: red
+                      default_: yellow
+                    x-linode-cli-display: 3
+                  tags:
+                    description: __Filterable__ Any tags applied to this object. Use [tags](https://techdocs.akamai.com/linode-api/reference/post-tag) to label and organize your cloud computing resources.
+                    example:
+                    - blk-stg-volume-1
+                    - videos-storage
+                    items:
+                      type: string
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this volume was last updated.
+                    example: '2025-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                title: Volume
+                type: object
+                x-akamai:
+                  file-path: schemas/volume.yaml
+          description: Volume resize started.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - volumes:read_write
+      summary: Resize a volume
+      tags:
+      - Volumes
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli volumes resize 12345 \\\n  --size 30"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-charge: true
+      x-linode-cli-action: resize
+      x-linode-iam:
+      - permissions:
+        - resize_volume
+    servers:
+    - url: https://api.linode.com
   /volumes:
     get:
       operationId: getVolumes
@@ -36,6 +2551,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedVolumeList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createVolume
       summary: Create a volume
@@ -59,6 +2577,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /volumes/{volumeId}:
     get:
       operationId: getVolume
@@ -79,6 +2603,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Volume not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateVolume
       summary: Update a volume
@@ -106,6 +2633,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Volume not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     delete:
       operationId: deleteVolume
       summary: Delete a volume
@@ -121,6 +2651,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Volume not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /volumes/{volumeId}/attach:
     post:
       operationId: attachVolume
@@ -158,6 +2694,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Volume not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /volumes/{volumeId}/detach:
     post:
       operationId: detachVolume
@@ -174,8 +2716,76 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Volume not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
   schemas:
+    PaginatedVolumeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Volume'
+    VolumeRequest:
+      type: object
+      required:
+      - label
+      - size
+      - region
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the new volume.
+        size:
+          type: integer
+          minimum: 10
+          maximum: 10240
+          description: The size of the volume in GB.
+        region:
+          type: string
+          description: The region to create the volume in.
+        linode_id:
+          type: integer
+          description: A Linode instance to attach the volume to.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new volume.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    VolumeUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The new label for the volume.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Updated tags for the volume.
     Volume:
       type: object
       properties:
@@ -221,77 +2831,7 @@ components:
           type: string
           format: date-time
           description: When this volume was last updated.
-    VolumeUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The new label for the volume.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Updated tags for the volume.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    PaginatedVolumeList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Volume'
-    VolumeRequest:
-      type: object
-      required:
-      - label
-      - size
-      - region
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the new volume.
-        size:
-          type: integer
-          minimum: 10
-          maximum: 10240
-          description: The size of the volume in GB.
-        region:
-          type: string
-          description: The region to create the volume in.
-        linode_id:
-          type: integer
-          description: A Linode instance to attach the volume to.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the new volume.
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     volumeIdParam:
       name: volumeId
       in: path
@@ -308,47 +2848,64 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

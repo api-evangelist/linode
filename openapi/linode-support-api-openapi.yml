@@ -61,6 +61,27 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
+    PaginatedSupportTicketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/SupportTicket'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     SupportTicket:
       type: object
       properties:
@@ -104,27 +125,6 @@ components:
             url:
               type: string
           description: The entity related to this ticket.
-    PaginatedSupportTicketList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/SupportTicket'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     SupportTicketRequest:
       type: object
       required:
@@ -160,14 +160,6 @@ components:
           type: integer
           description: The ID of the related database.
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -177,6 +169,14 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
     personalAccessToken:
       type: http

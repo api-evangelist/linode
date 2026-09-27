@@ -1,0 +1,936 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Prefix Lists API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Prefix Lists
+paths:
+  /{apiVersion}/networking/firewalls/{firewallId}/rules/expansion:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Firewall to access.
+      example: '{{firewallId}}'
+      in: path
+      name: firewallId
+      required: true
+      schema:
+        example: 9000
+        type: integer
+      x-akamai:
+        file-path: parameters/firewall-id.yaml
+    x-akamai:
+      file-path: paths/firewall-rules-expansion.yaml
+      path-info: /{apiVersion}/networking/firewalls/{firewallId}/rules/expansion
+    x-linode-cli-command: firewalls
+    get:
+      description: 'Returns firewall rules with Rule Sets always expanded to explicit IPs or CIDRs, while Prefix Lists are either retained by name or expanded into the appropriate ipv4 or ipv6 arrays.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls rules expansion-view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-expanded-firewall-rules
+      operationId: get-expanded-firewall-rules
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: "The inbound and outbound access rules to apply to the firewall. A firewall can contain up to 25 effective rules. This limit includes:\n  - Rules defined directly under inbound and outbound.\n  - All rules contained in any referenced Rule Sets, unless the Rule Set was created by a service account. Referenced Rule Sets may contain one or more rules, and those rules contribute to the firewall’s total rule count.\n\nMultiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic the same address, the first rule applies and inbound traffic from that address is accepted."
+                properties:
+                  fingerprint:
+                    description: __Read-only__ The fingerprint is a 32-bit hash. It represents the firewall rules as an 8 character hex string. You can use `fingerprint` to compare rule versions.
+                    example: 997dd135
+                    readOnly: true
+                    type: string
+                  inbound:
+                    description: The inbound rules for the firewall.
+                    items:
+                      additionalProperties: false
+                      description: One of a Firewall's inbound or outbound access rules. The `ports` property can be used to allow traffic on a comma-separated list of different ports.
+                      properties:
+                        action:
+                          description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                          enum:
+                          - ACCEPT
+                          - DROP
+                          example: ACCEPT
+                          type: string
+                        addresses:
+                          additionalProperties: false
+                          description: 'The explicit IPv4 or IPv6 IPs and CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                            Must contain `ipv4`, `ipv6`, or both.'
+                          properties:
+                            ipv4:
+                              description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                              example:
+                              - 192.0.2.0/24
+                              - 198.51.100.2/32
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              minItems: 1
+                              type: array
+                            ipv6:
+                              description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                              example:
+                              - 2001:DB8::/128
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        description:
+                          description: Used to describe this rule. For display purposes only.
+                          example: An example firewall rule description.
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                        label:
+                          description: Used to identify this rule. For display purposes only.
+                          example: firewallrule123
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                        ports:
+                          description: 'A string representing the port or ports affected by this rule:
+
+
+                            - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space is permitted following each comma.
+
+                            - A range of ports is inclusive of the start and end values for the range. The end value of the range must be greater than the start value.
+
+                            - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                            - The ports string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string "22-24, 80, 443" has four pieces.
+
+                            - If no ports are configured, all ports are affected.
+
+                            - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                          example: 22-24, 80, 443
+                          type:
+                          - string
+                          - 'null'
+                        protocol:
+                          description: The type of network traffic affected by this rule.
+                          enum:
+                          - TCP
+                          - UDP
+                          - ICMP
+                          - IPENCAP
+                          example: TCP
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/firewall-rule-config-prefixlist-expanded.yaml
+                    type: array
+                    x-linode-cli-format: json
+                  inbound_policy:
+                    description: The default behavior for inbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `inbound.action` property of the Firewall Rule.
+                    enum:
+                    - ACCEPT
+                    - DROP
+                    example: DROP
+                    type: string
+                  outbound:
+                    description: The outbound rules for the firewall.
+                    items:
+                      additionalProperties: false
+                      description: One of a Firewall's inbound or outbound access rules. The `ports` property can be used to allow traffic on a comma-separated list of different ports.
+                      properties:
+                        action:
+                          description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                          enum:
+                          - ACCEPT
+                          - DROP
+                          example: ACCEPT
+                          type: string
+                        addresses:
+                          additionalProperties: false
+                          description: 'The explicit IPv4 or IPv6 IPs and CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                            Must contain `ipv4`, `ipv6`, or both.'
+                          properties:
+                            ipv4:
+                              description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                              example:
+                              - 192.0.2.0/24
+                              - 198.51.100.2/32
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              minItems: 1
+                              type: array
+                            ipv6:
+                              description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                              example:
+                              - 2001:DB8::/128
+                              - pl::vpcs:1234
+                              - pl::vpcs:<current>
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        description:
+                          description: Used to describe this rule. For display purposes only.
+                          example: An example firewall rule description.
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                        label:
+                          description: Used to identify this rule. For display purposes only.
+                          example: firewallrule123
+                          maxLength: 32
+                          minLength: 3
+                          type: string
+                        ports:
+                          description: 'A string representing the port or ports affected by this rule:
+
+
+                            - The string may be a single port, a range of ports, or a comma-separated list of single ports and port ranges. A space is permitted following each comma.
+
+                            - A range of ports is inclusive of the start and end values for the range. The end value of the range must be greater than the start value.
+
+                            - Ports must be within 1 and 65535, and may not contain any leading zeroes. For example, port `080` is not allowed.
+
+                            - The ports string can have up to 15 _pieces_, where a single port is treated as one piece, and a port range is treated as two pieces. For example, the string "22-24, 80, 443" has four pieces.
+
+                            - If no ports are configured, all ports are affected.
+
+                            - Only allowed for the TCP and UDP protocols. Ports are not allowed for the ICMP and IPENCAP protocols.'
+                          example: 22-24, 80, 443
+                          type:
+                          - string
+                          - 'null'
+                        protocol:
+                          description: The type of network traffic affected by this rule.
+                          enum:
+                          - TCP
+                          - UDP
+                          - ICMP
+                          - IPENCAP
+                          example: TCP
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/firewall-rule-config-prefixlist-expanded.yaml
+                    type: array
+                    x-linode-cli-format: json
+                  outbound_policy:
+                    description: The default behavior for outbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `outbound.action` property of the Firewall Rule.
+                    enum:
+                    - ACCEPT
+                    - DROP
+                    example: DROP
+                    type: string
+                  version:
+                    description: __Read-only__ The firewall's rule version. The first version is `1`. The version number increments when the firewall's rules change.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+              x-example:
+                x-ref: ../examples/prefixlists-200.json
+              x-linode-cli-subtables:
+              - inbound
+              - outbound
+          description: IPv4 and IPv6 IPs, CIDRs, or Prefix List names affected by this rule, organized into arrays for `ipv4` and `ipv6`.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: List firewall rules with expanded Prefix Lists and Rule Sets
+      tags:
+      - Prefix Lists
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls rules expansion-view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: expansion-view
+      x-linode-grant: read_only
+  /{apiVersion}/networking/prefixlists:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/prefixlists.yaml
+      path-info: /{apiVersion}/networking/prefixlists
+    x-linode-cli-command: prefixlists
+    get:
+      description: 'Returns a paginated list of Prefix Lists.
+
+
+        Prefix Lists are named lists of CIDRs that can represent subnets, VPCs, data center DNS resolvers, or other service endpoints. Cloud Firewall rules reference Prefix Lists, and any updates to a Prefix List automatically apply to all rules that use it.
+
+
+        Prefix List names start with `pl` and follow this format: `pl:{scope}:{list}:{key}`
+
+
+        - **{scope}**: Can be blank (account-level scope) or set to `system` (platform-wide scope).
+
+        - Prefix Lists with a blank scope must be unique within each account. For example, you can have different `pl::foo:bar` Prefix Lists in separate accounts. Prefix List names starting with `pl::` are always private.
+
+        - Prefix Lists with `system` as the scope must be unique across the entire platform. For example, only one `pl:system:foo:bar` can exist platform-wide. Prefix List names starting with `pl:system:` are visible to all enabled customers on the platform.
+
+        - **{list}**: Represents the platform service, such as `vpcs`.
+
+        - **{key}**: Identifies the specific instance of the service element with endpoint addresses to be accessed. You may further subdivide {key} (e.g., adding `:staging` or `:test`).
+
+
+        Special Prefix List names include `pl::vpcs:` and `pl::subnets:`. These are generated Prefix Lists that provide access to VPC or VPC subnet perimeter addresses. When used in firewall rules for IPv4 or IPv6 addresses and applied to a VPC interface, the Prefix List automatically adds the CIDRs for the VPC or VPC subnet perimeter to control access to the interface.
+
+
+        **Examples of Prefix List names:**
+
+        - VPC:
+
+        - `pl::vpcs:{vpc_id}` (e.g., `pl::vpcs:101`)
+
+        - `pl::subnets:{subnet_id}` (e.g., `pl::subnets:202`)
+
+        - Special Prefix Lists:
+
+        - `pl::vpcs:`
+
+        - `pl::subnets:`
+
+        - Object Storage:
+
+        - `pl:system:object-storage:{region}` (e.g., `pl:system:object-storage:us-iad`)
+
+        - `pl:system:object-storage:{region}:staging` (e.g., `pl:system:object-storage:no-osl-1:staging`)
+
+        - DNS:
+
+        - `pl:system:resolvers:{region}` (e.g., `pl:system:resolvers:us-iad`)
+
+        - `pl:system:resolvers:{region}:staging` (e.g., `pl:system:resolvers:no-osl-1:staging`)
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli prefixlists list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-prefixlists
+      operationId: get-prefixlists
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      description: A Prefix List that can be referenced in firewall rules.
+                      properties:
+                        created:
+                          description: __Read-only__ When this Prefix List was created.
+                          example: '2025-09-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 8
+                        deleted:
+                          description: __Read-only__ If there are no references to the Prefix List, it is deleted immediately. If there are references to the Prefix List, it is marked for deletion.  When the last reference is removed, the Prefix List is deleted.
+                          example: null
+                          format: date-time
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 11
+                        description:
+                          description: Description of what the list includes.
+                          example: Resolver access control list for us-iad (staging)
+                          maxLength: 255
+                          minLength: 0
+                          type: string
+                          x-linode-cli-display: 5
+                        id:
+                          description: __Read-only__ The Prefix List's unique ID.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 9
+                        ipv4:
+                          description: IPv4 CIDR list.
+                          items:
+                            example:
+                            - 10.0.0.0/16
+                            - 10.4.0.0/16
+                            format: ipv4-cidr
+                            type: string
+                          type:
+                          - array
+                          - 'null'
+                        ipv6:
+                          description: IPv6 CIDR list.
+                          items:
+                            example:
+                            - 2001:db8:0:200::/56
+                            format: ipv6-cidr
+                            type: string
+                          type:
+                          - array
+                          - 'null'
+                        name:
+                          description: __Filterable__ The Prefix List `name` that begins with either `pl:system:` or `pl::`.
+                          example: pl::vpcs:24
+                          maxLength: 150
+                          minLength: 1
+                          pattern: ^pl:(system)?:[A-Za-z0-9-:]+$
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When the Prefix List was last updated.
+                          example: '2025-09-01 00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 10
+                        version:
+                          description: __Read-only__ The Prefix List version. The first version is `1`. The version number increments when the Prefix List updates.
+                          example: 1
+                          readOnly: true
+                          type: integer
+                        visibility:
+                          default: private
+                          description: A `private` Prefix List is visible only to you. A `public` Prefix List is visible to everyone.
+                          enum:
+                          - private
+                          - public
+                          example: private
+                          type: string
+                          x-linode-cli-display: 3
+                      required:
+                      - name
+                      - visibility
+                      type: object
+                      x-akamai:
+                        file-path: schemas/prefixlists.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-prefixlists-200.yaml
+              x-example:
+                x-ref: ../examples/prefixlists-200.json
+          description: A paginated list of Prefix Lists.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: List Prefix Lists
+      tags:
+      - Prefix Lists
+      x-akamai:
+        tabs:
+        - syntax: linode-cli prefixlists list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: firewall:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: prefixlists-list
+  /{apiVersion}/networking/prefixlists/{prefixListId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique Prefix List ID.
+      example: '{{prefixListId}}'
+      in: path
+      name: prefixListId
+      required: true
+      schema:
+        example: 123
+        type: integer
+      x-akamai:
+        file-path: parameters/prefixlist-id.yaml
+    x-akamai:
+      file-path: paths/prefixlist.yaml
+      path-info: /{apiVersion}/networking/prefixlists/{prefixListId}
+    x-linode-cli-command: prefixlists
+    get:
+      description: 'Returns a Prefix List that can be referenced in firewall rules. Prefix Lists are named lists of CIDRs that can represent such things as subnets, VPC''s, data center DNS resolvers or other service endpoints.
+
+
+        Updates to a Prefix List are automatically applied to all rules that use it.
+
+
+        Prefix List names start with `pl` and follow this format: `pl:{scope}:{list}:{key}`
+
+
+        - **{scope}**: Can be blank (account-level scope) or set to `system` (platform-wide scope).
+
+        - Prefix Lists with a blank scope must be unique within each account. For example, you can have different `pl::foo:bar` Prefix Lists in separate accounts. Prefix List names starting with `pl::` are always private.
+
+        - Prefix Lists with `system` as the scope must be unique across the entire platform. For example, only one `pl:system:foo:bar` can exist platform-wide. Prefix List names starting with `pl:system:` are visible to all enabled customers on the platform.
+
+        - **{list}**: Represents the platform service, such as `vpcs`.
+
+        - **{key}**: Identifies the specific instance of the service element with endpoint addresses to be accessed. You may further subdivide {key} (e.g., adding `:staging` or `:test`).
+
+
+        Special Prefix List names include `pl::vpcs:` and `pl::subnets:`. These are generated Prefix Lists that provide access to VPC or VPC subnet perimeter addresses. When used in firewall rules for IPv4 or IPv6 addresses and applied to a VPC interface, the Prefix List automatically adds the CIDRs for the VPC or VPC subnet perimeter to control access to the interface.
+
+
+        **Examples of Prefix List names:**
+
+        - VPC:
+
+        - `pl::vpcs:{vpc_id}` (e.g., `pl::vpcs:101`)
+
+        - `pl::subnets:{subnet_id}` (e.g., `pl::subnets:202`)
+
+        - Special Prefix Lists:
+
+        - `pl::vpcs:`
+
+        - `pl::subnets:`
+
+        - Object Storage:
+
+        - `pl:system:object-storage:{region}` (e.g., `pl:system:object-storage:us-iad`)
+
+        - `pl:system:object-storage:{region}:staging` (e.g., `pl:system:object-storage:no-osl-1:staging`)
+
+        - DNS:
+
+        - `pl:system:resolvers:{region}` (e.g., `pl:system:resolvers:us-iad`)
+
+        - `pl:system:resolvers:{region}:staging` (e.g., `pl:system:resolvers:no-osl-1:staging`)
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `prefixlist:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli prefixlists view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-prefixlist
+      operationId: get-prefixlist
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: A Prefix List that can be referenced in firewall rules.
+                properties:
+                  created:
+                    description: __Read-only__ When this Prefix List was created.
+                    example: '2025-09-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 8
+                  deleted:
+                    description: __Read-only__ If there are no references to the Prefix List, it is deleted immediately. If there are references to the Prefix List, it is marked for deletion.  When the last reference is removed, the Prefix List is deleted.
+                    example: null
+                    format: date-time
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 11
+                  description:
+                    description: Description of what the list includes.
+                    example: Resolver access control list for us-iad (staging)
+                    maxLength: 255
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 5
+                  id:
+                    description: __Read-only__ The Prefix List's unique ID.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 9
+                  ipv4:
+                    description: IPv4 CIDR list.
+                    items:
+                      example:
+                      - 10.0.0.0/16
+                      - 10.4.0.0/16
+                      format: ipv4-cidr
+                      type: string
+                    type:
+                    - array
+                    - 'null'
+                  ipv6:
+                    description: IPv6 CIDR list.
+                    items:
+                      example:
+                      - 2001:db8:0:200::/56
+                      format: ipv6-cidr
+                      type: string
+                    type:
+                    - array
+                    - 'null'
+                  name:
+                    description: __Filterable__ The Prefix List `name` that begins with either `pl:system:` or `pl::`.
+                    example: pl::vpcs:24
+                    maxLength: 150
+                    minLength: 1
+                    pattern: ^pl:(system)?:[A-Za-z0-9-:]+$
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When the Prefix List was last updated.
+                    example: '2025-09-01 00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 10
+                  version:
+                    description: __Read-only__ The Prefix List version. The first version is `1`. The version number increments when the Prefix List updates.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  visibility:
+                    default: private
+                    description: A `private` Prefix List is visible only to you. A `public` Prefix List is visible to everyone.
+                    enum:
+                    - private
+                    - public
+                    example: private
+                    type: string
+                    x-linode-cli-display: 3
+                required:
+                - name
+                - visibility
+                type: object
+                x-akamai:
+                  file-path: schemas/prefixlists.yaml
+              x-example:
+                x-ref: ../examples/prefixlists-200.json
+          description: The Prefix List.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - prefixlist:read_only
+      summary: Get a Prefix List
+      tags:
+      - Prefix Lists
+      x-akamai:
+        tabs:
+        - syntax: linode-cli  prefixlists view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: prefixlist:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: prefixlist-view
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

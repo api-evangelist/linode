@@ -1,0 +1,699 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode IPv6 ranges API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: IPv6 ranges
+paths:
+  /{apiVersion}/networking/ipv6/ranges:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/ranges.yaml
+      path-info: /{apiVersion}/networking/ipv6/ranges
+    x-linode-cli-command: networking
+    post:
+      description: 'Creates an IPv6 Range and assigns it based on the provided Linode or route target IPv6 SLAAC address. See the `ipv6` property when running the Get a Linode operation to view a Linode''s IPv6 SLAAC address.
+
+
+        - Either `linode_id` or `route_target` is required in a request.
+
+        - `linode_id` and `route_target` are mutually exclusive. Submitting values for both properties in a request results in an error.
+
+        - Upon a successful request, an IPv6 range is created in the region that corresponds to the provided `linode_id` or `route_target`.
+
+        - Your Linode is responsible for routing individual addresses in the range, or handling traffic for all the addresses in the range.
+
+        - Run the Assign IP addresses operation to re-assign IPv6 Ranges to your Linodes.
+
+
+        > 📘
+
+        >
+
+        > - A Linode can only have one IPv6 range targeting its SLAAC address.
+
+        > - An account can only have one IPv6 range in each region.
+
+        > - Open a support ticket to request expansion of these restrictions.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_write, linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking v6-range-create \
+
+        --linode_id 123 \
+
+        --prefix_length 64
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-ipv6-range
+      operationId: post-ipv6-range
+      requestBody:
+        content:
+          application/json:
+            example:
+              linode_id: 123
+              prefix_length: 64
+              route_target: 2001:0db8::1
+            schema:
+              additionalProperties: false
+              properties:
+                linode_id:
+                  description: 'The ID of the Linode to assign this range to. The SLAAC address for the provided Linode is used as the range''s `route_target`.
+
+
+                    - __Required__ if `route_target` is omitted from the request.
+
+
+                    - Mutually exclusive with `route_target`. Submitting values for both properties in a request results in an error.'
+                  example: '{{linode_id}}'
+                  type: integer
+                prefix_length:
+                  description: The prefix length of the IPv6 range, either `56` or `64`.
+                  enum:
+                  - 56
+                  - 64
+                  example: '{{prefix_length}}'
+                  type: integer
+                route_target:
+                  description: 'The IPv6 SLAAC address to assign this range to.
+
+
+                    - __Required__ if `linode_id` is omitted from the request.
+
+
+                    - Mutually exclusive with `linode_id`. Submitting values for both properties in a request results in an error.
+
+
+                    > 📘
+
+                    >
+
+                    > You need to omit the `/128` prefix length of the SLAAC address when using this property.'
+                  example: '{{route_target}}'
+                  format: ipv6
+                  type: string
+              required:
+              - prefix_length
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-ipv6-range.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                range: 2001:0db8::/64
+                route_target: 2001:0db8::1
+              schema:
+                additionalProperties: false
+                properties:
+                  range:
+                    description: The IPv6 network range, including subnet and prefix length.
+                    example: 2001:0db8::/64
+                    format: ipv6-cidr
+                    type: string
+                  route_target:
+                    description: The route target IPV6 SLAAC address for this range. Does not include the prefix length.
+                    example: 2001:0db8::1
+                    format: ipv6
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-ipv6-range-200.yaml
+          description: IPv6 range created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_write
+        - linodes:read_write
+      summary: Create an IPv6 range
+      tags:
+      - IPv6 ranges
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli networking v6-range-create \\\n  --linode_id 123 \\\n  --prefix_length 64"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: 'ips:read_write
+
+            linodes:read_write'
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: v6-range-create
+    get:
+      description: 'Displays the IPv6 ranges on your Account.
+
+
+        - An IPv6 range is a `/64` or `/56` block of IPv6 addresses routed to a single Linode in a given region.
+
+
+        - Your Linode is responsible for routing individual addresses in the range, or handling traffic for all the addresses in the range.
+
+
+        - Run the Create an IPv6 range operation to add a `/64` or `/56` block of IPv6 addresses to your account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking v6-ranges
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-ipv6-ranges
+      operationId: get-ipv6-ranges
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - prefix: 64
+                  range: 2001:db8:fc95:aec4:ed2c:17a7:c2f1:b18e
+                  region: us-east
+                  route_target: 2001:db8:f91e:f55d:2948:b4af:7a51:f579
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: An object representing an IPv6 range.
+                      properties:
+                        prefix:
+                          description: The prefix length of the address. The total number of addresses that can be assigned from this range is calculated as 2<sup>(128 - prefix length)</sup>.
+                          example: 64
+                          type: integer
+                          x-linode-cli-display: 2
+                        range:
+                          description: __Read-only__ The IPv6 address of this range.
+                          example: '2600:3c01::'
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        region:
+                          description: __Read-only__ The region for this range of IPv6 addresses.
+                          example: us-east
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 3
+                        route_target:
+                          description: The IPv6 SLAAC address.
+                          example: 2600:3c01::ffff:ffff:ffff:ffff
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/ipv6-range.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-ipv6-ranges-200.yaml
+          description: The IPv6 ranges on your Account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_only
+      summary: List IPv6 ranges
+      tags:
+      - IPv6 ranges
+      x-akamai:
+        tabs:
+        - syntax: linode-cli networking v6-ranges
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: v6-ranges
+  /{apiVersion}/networking/ipv6/ranges/{range}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: 'The IPv6 range to access. Corresponds to the `range` property of objects returned from the [List IPv6 ranges](https://techdocs.akamai.com/linode-api/reference/get-ipv6-ranges) operation.
+
+
+        > 📘
+
+        >
+
+        > You need to omit the prefix length of the IPv6 range.'
+      example: '{{range}}'
+      in: path
+      name: range
+      required: true
+      schema:
+        example: '2001:0db8::'
+        format: ipv6
+        type: string
+      x-akamai:
+        file-path: parameters/range-path.yaml
+    x-akamai:
+      file-path: paths/range.yaml
+      path-info: /{apiVersion}/networking/ipv6/ranges/{range}
+    x-linode-cli-command: networking
+    get:
+      description: 'View IPv6 range information.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking v6-range-view 2001:0db8::
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-ipv6-range
+      operationId: get-ipv6-range
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                is_bgp: false
+                linodes:
+                - 123
+                prefix: 64
+                range: 2001:db8:f469:b19f:7054:aa78:6640:e515
+                region: us-east
+              schema:
+                additionalProperties: false
+                description: An object representing an IPv6 range.
+                properties:
+                  is_bgp:
+                    description: __Read-only__ Whether this IPv6 range is shared.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                  linodes:
+                    description: __Read-only__ A list of Linodes targeted by this IPv6 range. Includes Linodes with IP sharing.
+                    example:
+                    - 123
+                    items:
+                      type: integer
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 4
+                  prefix:
+                    description: The prefix length of the address. The total number of addresses that can be assigned from this range is calculated as 2<sup>(128 - prefix length)</sup>.
+                    example: 64
+                    type: integer
+                    x-linode-cli-display: 2
+                  range:
+                    description: __Read-only__ The IPv6 address of this range.
+                    example: '2600:3c01::'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  region:
+                    description: __Read-only__ The region for this range of IPv6 addresses.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                type: object
+                x-akamai:
+                  file-path: schemas/ipv6-range-bgp.yaml
+          description: Returns IPv6 range information.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read
+      summary: Get an IPv6 range
+      tags:
+      - IPv6 ranges
+      x-akamai:
+        tabs:
+        - syntax: 'linode-cli networking v6-range-view 2001:0db8::'
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: v6-range-view
+    delete:
+      description: 'Removes this IPv6 range from your account and disconnects the range from any assigned Linodes.
+
+
+        > 📘
+
+        >
+
+        > You can''t delete shared IPv6 ranges. Contact Customer Support for assistance.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `ips:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli networking v6-range-delete 2001:0db8::
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-ipv6-range
+      operationId: delete-ipv6-range
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: IPv6 Range deleted.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - ips:read_write
+      summary: Delete an IPv6 range
+      tags:
+      - IPv6 ranges
+      x-akamai:
+        tabs:
+        - syntax: 'linode-cli networking v6-range-delete 2001:0db8::'
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: ips:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: v6-range-delete
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

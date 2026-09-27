@@ -1,0 +1,283 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Promo credits API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to manage any promotional codes you've been granted for special offers.
+  name: Promo credits
+paths:
+  /{apiVersion}/account/promo-codes:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/promo-codes.yaml
+      path-info: /{apiVersion}/account/promo-codes
+    x-linode-cli-command: account
+    post:
+      description: 'Adds an expiring Promo Credit to your account. The following restrictions apply:
+
+
+        - Your account needs to be less than 90 days old.
+
+
+        - You can''t already have a Promo Credit on your account.
+
+
+        - The `promo_code` needs to be valid and unexpired.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, this operation isn''t available for child account users.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_promo_code`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account \
+
+        promo-add \
+
+        --promo-code abcdefABCDEF1234567890
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-promo-credit
+      operationId: post-promo-credit
+      requestBody:
+        content:
+          application/json:
+            example:
+              promo_code: example-code
+            schema:
+              additionalProperties: false
+              properties:
+                promo_code:
+                  description: The Promo Code.
+                  example: '{{promo_code}}'
+                  maxLength: 32
+                  minLength: 1
+                  type: string
+              required:
+              - promo_code
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-promo-credit.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                credit_monthly_cap: '10.00'
+                credit_remaining: '50.00'
+                description: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                expire_dt: '2018-01-31T23:59:59'
+                image_url: https://linode.com/10_a_month_promotion.svg
+                service_type: all
+                summary: $10 off your Linode a month!
+                this_month_credit_remaining: '10.00'
+              schema:
+                additionalProperties: false
+                description: 'Promotions generally offer a set amount of credit that can be used toward your Linode services, and the promotion expires after a specified date. As well, a monthly cap on the promotional offer is set.
+
+
+                  Simply put, a promotion offers a certain amount of credit  month, until either the expiration date is passed, or until the total promotional credit is used, whichever comes first.'
+                properties:
+                  credit_monthly_cap:
+                    description: The amount available to spend per month.
+                    example: '10.00'
+                    type: string
+                    x-linode-cli-display: 5
+                  credit_remaining:
+                    description: The total amount of credit left for this promotion.
+                    example: '50.00'
+                    type: string
+                    x-linode-cli-display: 3
+                  description:
+                    description: A detailed description of this promotion.
+                    example: Receive up to $10 off your services every month for 6 months! Unused credits will expire once this promotion period ends.
+                    type: string
+                  expire_dt:
+                    description: When this promotion's credits expire.
+                    example: '2018-01-31T23:59:59'
+                    type: string
+                    x-linode-cli-display: 2
+                  image_url:
+                    description: The location of an image for this promotion.
+                    example: https://linode.com/10_a_month_promotion.svg
+                    type: string
+                  service_type:
+                    description: The service to which this promotion applies, either a specific service or `all` for any service. Specific services include `linode`, `longview`, `nodebalancer`, `objectstorage`, `blockstorage`, `backup`, `db_mysql`, `ip_v4`, `linode_disk`, `linode_memory`, `managed`, `placement_group`, and `transfer_tx`.
+                    enum:
+                    - all
+                    - backup
+                    - blockstorage
+                    - db_mysql
+                    - ip_v4
+                    - linode
+                    - linode_disk
+                    - linode_memory
+                    - longview
+                    - managed
+                    - nodebalancer
+                    - objectstorage
+                    - placement_group
+                    - transfer_tx
+                    example: all
+                    type: string
+                    x-linode-cli-display: 1
+                  summary:
+                    description: Short details of this promotion.
+                    example: $10 off your Linode a month!
+                    type: string
+                    x-linode-cli-display: 10
+                  this_month_credit_remaining:
+                    description: The amount of credit left for this month for this promotion.
+                    example: '10.00'
+                    type: string
+                    x-linode-cli-display: 4
+                type: object
+                x-akamai:
+                  file-path: schemas/promotion.yaml
+          description: Promo Credit successfully added.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Add a promo credit
+      tags:
+      - Promo credits
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli account \\\n  promo-add \\\n  --promo-code abcdefABCDEF1234567890"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: promo-add
+      x-linode-grant: unrestricted only
+      x-linode-iam:
+      - permissions:
+        - create_promo_code
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

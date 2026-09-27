@@ -140,43 +140,8 @@ paths:
         '404':
           description: Database not found
 components:
-  parameters:
-    databaseEngineParam:
-      name: databaseEngine
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - mysql
-        - postgresql
-      description: The database engine type.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    databaseIdParam:
-      name: databaseId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the Managed Database instance.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   schemas:
-    PaginatedDatabaseTypeList:
+    PaginatedDatabaseList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -184,20 +149,32 @@ components:
           data:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                label:
-                  type: string
-                class:
-                  type: string
-                vcpus:
-                  type: integer
-                memory:
-                  type: integer
-                disk:
-                  type: integer
+              $ref: '#/components/schemas/Database'
+    DatabaseRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the database.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: IP addresses or CIDRs allowed to connect.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     Database:
       type: object
       properties:
@@ -265,27 +242,6 @@ components:
           type: string
           format: date-time
           description: When this database was last updated.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    PaginatedDatabaseList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Database'
     PaginatedDatabaseEngineList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -302,19 +258,63 @@ components:
                   type: string
                 version:
                   type: string
-    DatabaseRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the database.
-        allow_list:
-          type: array
-          items:
-            type: string
-          description: IP addresses or CIDRs allowed to connect.
+    PaginatedDatabaseTypeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+                class:
+                  type: string
+                vcpus:
+                  type: integer
+                memory:
+                  type: integer
+                disk:
+                  type: integer
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    databaseIdParam:
+      name: databaseId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the Managed Database instance.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    databaseEngineParam:
+      name: databaseEngine
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - mysql
+        - postgresql
+      description: The database engine type.
   securitySchemes:
     personalAccessToken:
       type: http

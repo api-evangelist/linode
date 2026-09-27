@@ -1,0 +1,704 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode LKE versions API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: View the Kubernetes versions available for deployment on your LKE clusters.
+  name: LKE versions
+paths:
+  /{apiVersion}/lke/tiers/{tier}/versions:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    - description: __Enum__ The LKE tier to use.
+      example: '{{tier}}'
+      in: path
+      name: tier
+      required: true
+      schema:
+        enum:
+        - standard
+        - enterprise
+        example: standard
+        type: string
+      x-akamai:
+        file-path: parameters/lke-tier-path.yaml
+    x-akamai:
+      file-path: paths/lke-tiers-versions.yaml
+      path-info: /{apiVersion}/lke/tiers/{tier}/versions
+    x-linode-cli-command: lke
+    get:
+      description: 'List LKE Kubernetes versions available for deployment to a Kubernetes cluster (any tier).
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `lkecluster_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `lke:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli lke tiered-versions-list standard
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-lke-tiers-versions
+      operationId: get-lke-tiers-versions
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                enterprise:
+                  summary: LKE versions for enterprise tier
+                  value:
+                    data:
+                    - id: v1.31.1+lke4
+                      tier: enterprise
+                    page: 1
+                    pages: 1
+                    results: 1
+                standard:
+                  summary: LKE versions for standard tier
+                  value:
+                    data:
+                    - id: '1.33'
+                      tier: standard
+                    - id: '1.32'
+                      tier: standard
+                    - id: '1.31'
+                      tier: standard
+                    page: 1
+                    pages: 1
+                    results: 3
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: LKE versions for the requested tier.
+                    items:
+                      additionalProperties: false
+                      description: LKE version for a tier.
+                      properties:
+                        id:
+                          description: A Kubernetes version number available for deployment to a Kubernetes cluster in the format of &lt;major&gt;.&lt;minor&gt;, and the latest supported patch version.
+                          example: '1.35'
+                          minLength: 1
+                          type: string
+                        tier:
+                          description: An LKE tier, either `standard` or `enterprise`. To learn about the features of standard LKE and LKE Enterprise, see [Compare LKE and LKE Enterprise](https://techdocs.akamai.com/cloud-computing/docs/linode-kubernetes-engine#compare-lke-and-lke-enterprise).
+                          enum:
+                          - standard
+                          - enterprise
+                          example: standard
+                          type: string
+                      required:
+                      - id
+                      - tier
+                      type: object
+                      x-akamai:
+                        file-path: schemas/lke-tiers-version.yaml
+                    minItems: 1
+                    type: array
+                    uniqueItems: true
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-lke-tiers-versions-200.yaml
+          description: Returns a list of LKE Kubernetes versions available for deployment to a Kubernetes cluster (any tier).
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_only
+      summary: List LKE Kubernetes versions (any tier)
+      tags:
+      - LKE versions
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke tiered-versions-list standard
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: tiered-versions-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - lkecluster_viewer
+  /{apiVersion}/lke/tiers/{tier}/versions/{version}:
+    parameters:
+    - description: __Enum__ Call the `v4beta` URL for operations still only in beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4beta
+        example: v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4beta-path.yaml
+    - description: __Enum__ The LKE tier to use.
+      example: '{{tier}}'
+      in: path
+      name: tier
+      required: true
+      schema:
+        enum:
+        - standard
+        - enterprise
+        example: standard
+        type: string
+      x-akamai:
+        file-path: parameters/lke-tier-path.yaml
+    - description: The LKE version to view.
+      example: '{{version}}'
+      in: path
+      name: version
+      required: true
+      schema:
+        example: '1.33'
+        type: string
+      x-akamai:
+        file-path: parameters/version-path.yaml
+    x-akamai:
+      file-path: paths/lke-tiers-version.yaml
+      path-info: /{apiVersion}/lke/tiers/{tier}/versions/{version}
+    x-linode-cli-command: lke
+    get:
+      description: 'View an LKE Kubernetes version available for deployment to a Kubernetes cluster (any tier)
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `lkecluster_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `lke:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli lke tiered-version-view standard 1.31
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-lke-tiers-version
+      operationId: get-lke-tiers-version
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                enterprise:
+                  summary: LKE version for enterprise tier
+                  value:
+                    id: v1.31.1+lke4
+                    tier: enterprise
+                standard:
+                  summary: LKE version for standard tier
+                  value:
+                    id: '1.33'
+                    tier: standard
+              schema:
+                additionalProperties: false
+                description: LKE version for a tier.
+                properties:
+                  id:
+                    description: A Kubernetes version number available for deployment to a Kubernetes cluster in the format of &lt;major&gt;.&lt;minor&gt;, and the latest supported patch version.
+                    example: '1.35'
+                    minLength: 1
+                    type: string
+                  tier:
+                    description: An LKE tier, either `standard` or `enterprise`. To learn about the features of standard LKE and LKE Enterprise, see [Compare LKE and LKE Enterprise](https://techdocs.akamai.com/cloud-computing/docs/linode-kubernetes-engine#compare-lke-and-lke-enterprise).
+                    enum:
+                    - standard
+                    - enterprise
+                    example: standard
+                    type: string
+                required:
+                - id
+                - tier
+                type: object
+                x-akamai:
+                  file-path: schemas/lke-tiers-version.yaml
+          description: Returns an LKE Kubernetes version available for deployment to a Kubernetes cluster (any tier).
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_only
+      summary: Get an LKE Kubernetes version (any tier)
+      tags:
+      - LKE versions
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke tiered-version-view standard 1.31
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: tiered-version-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - lkecluster_viewer
+  /{apiVersion}/lke/versions:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/lke-versions.yaml
+      path-info: /{apiVersion}/lke/versions
+    x-linode-cli-command: lke
+    get:
+      description: 'List LKE Kubernetes versions available for deployment to a standard-tier Kubernetes cluster.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `lkecluster_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `lke:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli lke versions-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-lke-versions
+      operationId: get-lke-versions
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: '1.35'
+                - id: '1.34'
+                - id: '1.33'
+                page: 1
+                pages: 1
+                results: 3
+              schema:
+                additionalProperties: false
+                description: LKE versions for the standard tier.
+                properties:
+                  data:
+                    description: __Read-only__ LKE versions for the standard tier.
+                    items:
+                      additionalProperties: false
+                      description: LKE version.
+                      properties:
+                        id:
+                          description: __Read-only__ A Kubernetes version number available for deployment to a Kubernetes cluster in the format of &lt;major&gt;.&lt;minor&gt;, and the latest supported patch version.
+                          example: '1.31'
+                          minLength: 1
+                          readOnly: true
+                          type: string
+                      required:
+                      - id
+                      type: object
+                      x-akamai:
+                        file-path: schemas/lke-version.yaml
+                    minItems: 1
+                    readOnly: true
+                    type: array
+                    uniqueItems: true
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-lke-versions-200.yaml
+          description: Returns a list of LKE Kubernetes versions available for deployment to a standard-tier Kubernetes cluster.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_only
+      summary: List LKE Kubernetes versions (non-enterprise)
+      tags:
+      - LKE versions
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke versions-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: versions-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - lkecluster_viewer
+  /{apiVersion}/lke/versions/{version}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The LKE version to view.
+      example: '{{version}}'
+      in: path
+      name: version
+      required: true
+      schema:
+        example: '1.33'
+        type: string
+      x-akamai:
+        file-path: parameters/version-path.yaml
+    x-akamai:
+      file-path: paths/lke-version.yaml
+      path-info: /{apiVersion}/lke/versions/{version}
+    x-linode-cli-command: lke
+    get:
+      description: 'View an LKE Kubernetes version available for deployment to a standard tier Kubernetes cluster.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `lkecluster_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `lke:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli lke version-view 1.31
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-lke-version
+      operationId: get-lke-version
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                id: '1.35'
+              schema:
+                additionalProperties: false
+                description: LKE version.
+                properties:
+                  id:
+                    description: __Read-only__ A Kubernetes version number available for deployment to a Kubernetes cluster in the format of &lt;major&gt;.&lt;minor&gt;, and the latest supported patch version.
+                    example: '1.31'
+                    minLength: 1
+                    readOnly: true
+                    type: string
+                required:
+                - id
+                type: object
+                x-akamai:
+                  file-path: schemas/lke-version.yaml
+          description: Returns an LKE Kubernetes version object available for deployment to a standard tier Kubernetes cluster.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_only
+      summary: Get an LKE Kubernetes version (non-enterprise)
+      tags:
+      - LKE versions
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke version-view 1.31
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: version-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - lkecluster_viewer
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

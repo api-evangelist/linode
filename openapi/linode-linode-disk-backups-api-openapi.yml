@@ -1,0 +1,1704 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Linode disk backups API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: The Backups service lets you enable automatic backups of the disks on your Linodes. Use these operations to manage your backups.
+  name: Linode disk backups
+paths:
+  /{apiVersion}/linode/instances/{linodeId}/backups:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode the backups belong to.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-c264fcc4.yaml
+    x-akamai:
+      file-path: paths/linode-backups.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/backups
+    x-linode-cli-command: linodes
+    post:
+      description: 'Creates a snapshot backup of a Linode.
+
+
+        > 📘
+
+        >
+
+        > - Backups aren''t encrypted even when they''re taken from an encrypted disk. When a backup is restored, and if encryption is enabled, the data stored on the disk is encrypted again.
+
+        >
+
+        > - If you already have a snapshot of this Linode, the previous snapshot will be deleted.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_linode_backup_snapshot`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes snapshot 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-snapshot
+      operationId: post-snapshot
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: SnapshotLabel
+            schema:
+              additionalProperties: false
+              properties:
+                label:
+                  description: The label for the new snapshot.
+                  example: '{{label}}'
+                  maxLength: 255
+                  minLength: 1
+                  type: string
+              required:
+              - label
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-snapshot.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                available: true
+                configs:
+                - My Debian 13 Config
+                created: '2018-01-15T00:01:01'
+                disks:
+                - filesystem: ext4
+                  label: My Debian 13 Disk
+                  size: 9001
+                finished: '2018-01-15T00:01:01'
+                id: 123456
+                label: Webserver-Backup-2018
+                region: us-east
+                status: successful
+                type: snapshot
+                updated: '2018-01-15T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A backup for a Linode that can be used as a restore point.
+                properties:
+                  available:
+                    description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                      Backups undergoing maintenance are not available for restoration.'
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  configs:
+                    description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                    items:
+                      example: My Debian 13 Config
+                      type: string
+                    readOnly: true
+                    type: array
+                  created:
+                    description: __Read-only__ When the backup was taken.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  disks:
+                    description: __Read-only__ A list of the disks that are part of the backup.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        filesystem:
+                          description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                            > 📘
+
+                            >
+
+                            > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                          enum:
+                          - raw
+                          - swap
+                          - ext2
+                          - ext3
+                          - ext4
+                          - initrd
+                          example: ext4
+                          type: string
+                          x-linode-cli-display: 5
+                        label:
+                          description: The label for the disk.
+                          example: My Debian 13 Disk
+                          type: string
+                        size:
+                          description: The size of the disk in megabytes.
+                          example: 9001
+                          type: integer
+                      type: object
+                    readOnly: true
+                    type: array
+                  finished:
+                    description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique ID of this backup.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: A label for backups that are of type `snapshot`.
+                    example: Webserver-Backup-2018
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 5
+                  region:
+                    description: __Read-only__ The region where the backup is located.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                  status:
+                    description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                    enum:
+                    - paused
+                    - pending
+                    - running
+                    - needsPostProcessing
+                    - successful
+                    - failed
+                    - userAborted
+                    example: successful
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      failed: red
+                      successful: green
+                      userAborted: f
+                    x-linode-cli-display: 2
+                  type:
+                    description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                    enum:
+                    - auto
+                    - snapshot
+                    example: snapshot
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the backup was most recently updated.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                type:
+                - object
+                - 'null'
+                x-akamai:
+                  file-path: schemas/backup.yaml
+          description: Snapshot request successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Create a snapshot
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes snapshot 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: snapshot
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - create_linode_backup_snapshot
+    get:
+      description: 'Returns information about this Linode''s available backups.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes backups-list 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-backups
+      operationId: get-backups
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                automatic:
+                - available: true
+                  configs:
+                  - My Debian 13 Config
+                  created: '2018-01-15T00:01:01'
+                  disks:
+                  - filesystem: ext4
+                    label: My Debian 13 Disk
+                    size: 9001
+                  finished: '2018-01-15T00:01:01'
+                  id: 123456
+                  label: Webserver-Backup-2018
+                  region: us-east
+                  status: successful
+                  type: auto
+                  updated: '2018-01-15T00:01:01'
+                snapshot:
+                  current:
+                    available: true
+                    configs:
+                    - My Debian 13 Config
+                    created: '2018-01-15T00:01:01'
+                    disks:
+                    - filesystem: ext4
+                      label: My Debian 13 Disk
+                      size: 9001
+                    finished: '2018-01-15T00:01:01'
+                    id: 123456
+                    label: Webserver-Backup-2018
+                    region: us-east
+                    status: successful
+                    type: snapshot
+                    updated: '2018-01-15T00:01:01'
+                  in_progress:
+                    available: true
+                    configs:
+                    - My Debian 13 Config
+                    created: '2018-01-15T00:01:01'
+                    disks:
+                    - filesystem: ext4
+                      label: My Debian 13 Disk
+                      size: 9001
+                    finished: '2018-01-15T00:01:01'
+                    id: 123456
+                    label: Webserver-Backup-2018
+                    region: us-east
+                    status: successful
+                    type: snapshot
+                    updated: '2018-01-15T00:01:01'
+              schema:
+                additionalProperties: false
+                properties:
+                  automatic:
+                    description: Automatic backups for a Linode. The system creates these on a regular basis.
+                    items:
+                      additionalProperties: false
+                      description: A backup for a Linode that can be used as a restore point.
+                      properties:
+                        available:
+                          description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                            Backups undergoing maintenance are not available for restoration.'
+                          example: true
+                          readOnly: true
+                          type: boolean
+                        configs:
+                          description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                          items:
+                            example: My Debian 13 Config
+                            type: string
+                          readOnly: true
+                          type: array
+                        created:
+                          description: __Read-only__ When the backup was taken.
+                          example: '2018-01-15T00:01:01'
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 4
+                        disks:
+                          description: __Read-only__ A list of the disks that are part of the backup.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              filesystem:
+                                description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                                  > 📘
+
+                                  >
+
+                                  > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                                enum:
+                                - raw
+                                - swap
+                                - ext2
+                                - ext3
+                                - ext4
+                                - initrd
+                                example: ext4
+                                type: string
+                                x-linode-cli-display: 5
+                              label:
+                                description: The label for the disk.
+                                example: My Debian 13 Disk
+                                type: string
+                              size:
+                                description: The size of the disk in megabytes.
+                                example: 9001
+                                type: integer
+                            type: object
+                          readOnly: true
+                          type: array
+                        finished:
+                          description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                          example: '2018-01-15T00:01:01'
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: __Read-only__ The unique ID of this backup.
+                          example: 123456
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        label:
+                          description: A label for backups that are of type `snapshot`.
+                          example: Webserver-Backup-2018
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 5
+                        region:
+                          description: __Read-only__ The region where the backup is located.
+                          example: us-east
+                          readOnly: true
+                          type: string
+                        status:
+                          description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                          enum:
+                          - paused
+                          - pending
+                          - running
+                          - needsPostProcessing
+                          - successful
+                          - failed
+                          - userAborted
+                          example: successful
+                          readOnly: true
+                          type: string
+                          x-linode-cli-color:
+                            default_: yellow
+                            failed: red
+                            successful: green
+                            userAborted: f
+                          x-linode-cli-display: 2
+                        type:
+                          description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                          enum:
+                          - auto
+                          - snapshot
+                          example: snapshot
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 3
+                        updated:
+                          description: __Read-only__ When the backup was most recently updated.
+                          example: '2018-01-15T00:01:01'
+                          readOnly: true
+                          type: string
+                      type:
+                      - object
+                      - 'null'
+                      x-akamai:
+                        file-path: schemas/backup.yaml
+                    type: array
+                  snapshot:
+                    additionalProperties: false
+                    description: A snapshot backup for a Linode. The user creates this manually.
+                    properties:
+                      current:
+                        additionalProperties: false
+                        description: The current snapshot backup for this Linode. If no snapshot backup exists, this is `null`.
+                        properties:
+                          available:
+                            description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                              Backups undergoing maintenance are not available for restoration.'
+                            example: true
+                            readOnly: true
+                            type: boolean
+                          configs:
+                            description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                            items:
+                              example: My Debian 13 Config
+                              type: string
+                            readOnly: true
+                            type: array
+                          created:
+                            description: __Read-only__ When the backup was taken.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 4
+                          disks:
+                            description: __Read-only__ A list of the disks that are part of the backup.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                filesystem:
+                                  description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                                    > 📘
+
+                                    >
+
+                                    > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                                  enum:
+                                  - raw
+                                  - swap
+                                  - ext2
+                                  - ext3
+                                  - ext4
+                                  - initrd
+                                  example: ext4
+                                  type: string
+                                  x-linode-cli-display: 5
+                                label:
+                                  description: The label for the disk.
+                                  example: My Debian 13 Disk
+                                  type: string
+                                size:
+                                  description: The size of the disk in megabytes.
+                                  example: 9001
+                                  type: integer
+                              type: object
+                            readOnly: true
+                            type: array
+                          finished:
+                            description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type:
+                            - string
+                            - 'null'
+                          id:
+                            description: __Read-only__ The unique ID of this backup.
+                            example: 123456
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 1
+                          label:
+                            description: A label for backups that are of type `snapshot`.
+                            example: Webserver-Backup-2018
+                            type:
+                            - string
+                            - 'null'
+                            x-linode-cli-display: 5
+                          region:
+                            description: __Read-only__ The region where the backup is located.
+                            example: us-east
+                            readOnly: true
+                            type: string
+                          status:
+                            description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                            enum:
+                            - paused
+                            - pending
+                            - running
+                            - needsPostProcessing
+                            - successful
+                            - failed
+                            - userAborted
+                            example: successful
+                            readOnly: true
+                            type: string
+                            x-linode-cli-color:
+                              default_: yellow
+                              failed: red
+                              successful: green
+                              userAborted: f
+                            x-linode-cli-display: 2
+                          type:
+                            description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                            enum:
+                            - auto
+                            - snapshot
+                            example: snapshot
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 3
+                          updated:
+                            description: __Read-only__ When the backup was most recently updated.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type: string
+                        type:
+                        - object
+                        - 'null'
+                        x-akamai:
+                          file-path: schemas/backup.yaml
+                      in_progress:
+                        additionalProperties: false
+                        description: The snapshot backup currently being created for this Linode. If no snapshot backup is in progress, this is `null`.
+                        properties:
+                          available:
+                            description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                              Backups undergoing maintenance are not available for restoration.'
+                            example: true
+                            readOnly: true
+                            type: boolean
+                          configs:
+                            description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                            items:
+                              example: My Debian 13 Config
+                              type: string
+                            readOnly: true
+                            type: array
+                          created:
+                            description: __Read-only__ When the backup was taken.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 4
+                          disks:
+                            description: __Read-only__ A list of the disks that are part of the backup.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                filesystem:
+                                  description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                                    > 📘
+
+                                    >
+
+                                    > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                                  enum:
+                                  - raw
+                                  - swap
+                                  - ext2
+                                  - ext3
+                                  - ext4
+                                  - initrd
+                                  example: ext4
+                                  type: string
+                                  x-linode-cli-display: 5
+                                label:
+                                  description: The label for the disk.
+                                  example: My Debian 13 Disk
+                                  type: string
+                                size:
+                                  description: The size of the disk in megabytes.
+                                  example: 9001
+                                  type: integer
+                              type: object
+                            readOnly: true
+                            type: array
+                          finished:
+                            description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type:
+                            - string
+                            - 'null'
+                          id:
+                            description: __Read-only__ The unique ID of this backup.
+                            example: 123456
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 1
+                          label:
+                            description: A label for backups that are of type `snapshot`.
+                            example: Webserver-Backup-2018
+                            type:
+                            - string
+                            - 'null'
+                            x-linode-cli-display: 5
+                          region:
+                            description: __Read-only__ The region where the backup is located.
+                            example: us-east
+                            readOnly: true
+                            type: string
+                          status:
+                            description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                            enum:
+                            - paused
+                            - pending
+                            - running
+                            - needsPostProcessing
+                            - successful
+                            - failed
+                            - userAborted
+                            example: successful
+                            readOnly: true
+                            type: string
+                            x-linode-cli-color:
+                              default_: yellow
+                              failed: red
+                              successful: green
+                              userAborted: f
+                            x-linode-cli-display: 2
+                          type:
+                            description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                            enum:
+                            - auto
+                            - snapshot
+                            example: snapshot
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 3
+                          updated:
+                            description: __Read-only__ When the backup was most recently updated.
+                            example: '2018-01-15T00:01:01'
+                            readOnly: true
+                            type: string
+                        type:
+                        - object
+                        - 'null'
+                        x-akamai:
+                          file-path: schemas/backup.yaml
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-backups-200.yaml
+              x-linode-cli-rows:
+              - automatic
+              - snapshot.current
+              - snapshot.in_progress
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                description: A backup for a Linode that can be used as a restore point.
+                properties:
+                  available:
+                    description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                      Backups undergoing maintenance are not available for restoration.'
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  configs:
+                    description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                    items:
+                      example: My Debian 13 Config
+                      type: string
+                    readOnly: true
+                    type: array
+                  created:
+                    description: __Read-only__ When the backup was taken.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  disks:
+                    description: __Read-only__ A list of the disks that are part of the backup.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        filesystem:
+                          description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                            > 📘
+
+                            >
+
+                            > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                          enum:
+                          - raw
+                          - swap
+                          - ext2
+                          - ext3
+                          - ext4
+                          - initrd
+                          example: ext4
+                          type: string
+                          x-linode-cli-display: 5
+                        label:
+                          description: The label for the disk.
+                          example: My Debian 13 Disk
+                          type: string
+                        size:
+                          description: The size of the disk in megabytes.
+                          example: 9001
+                          type: integer
+                      type: object
+                    readOnly: true
+                    type: array
+                  finished:
+                    description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique ID of this backup.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: A label for backups that are of type `snapshot`.
+                    example: Webserver-Backup-2018
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 5
+                  region:
+                    description: __Read-only__ The region where the backup is located.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                  status:
+                    description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                    enum:
+                    - paused
+                    - pending
+                    - running
+                    - needsPostProcessing
+                    - successful
+                    - failed
+                    - userAborted
+                    example: successful
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      failed: red
+                      successful: green
+                      userAborted: f
+                    x-linode-cli-display: 2
+                  type:
+                    description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                    enum:
+                    - auto
+                    - snapshot
+                    example: snapshot
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the backup was most recently updated.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                type:
+                - object
+                - 'null'
+                x-akamai:
+                  file-path: schemas/backup.yaml
+          description: A collection of the specified Linode's available backups.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: List backups
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes backups-list 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: backups-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode
+  /{apiVersion}/linode/instances/{linodeId}/backups/cancel:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode to cancel backup service for.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-8c2bdc46.yaml
+    x-akamai:
+      file-path: paths/linode-backups-cancel.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/backups/cancel
+    x-linode-cli-command: linodes
+    post:
+      description: 'Cancels the Backup service on the given Linode. Deletes all of this Linode''s existing backups forever.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `cancel_linode_backups`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes backups-cancel 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-cancel-backups
+      operationId: post-cancel-backups
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Backup service was canceled for the specified Linode.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Cancel backups
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes backups-cancel 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: backups-cancel
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - cancel_linode_backups
+  /{apiVersion}/linode/instances/{linodeId}/backups/enable:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode to enable backup service for.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-b606dac5.yaml
+    x-akamai:
+      file-path: paths/linode-backup-enable.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/backups/enable
+    x-linode-cli-command: linodes
+    post:
+      description: 'Enables backups for the specified Linode.
+
+
+        > 📘
+
+        >
+
+        > Backups aren''t encrypted even when they''re taken from an encrypted disk. When a backup is restored, and if encryption is enabled, the data stored on the disk is encrypted again.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `enable_linode_backups`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes backups-enable 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-enable-backups
+      operationId: post-enable-backups
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Backup service was enabled.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Enable backups
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes backups-enable 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: backups-enable
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - enable_linode_backups
+  /{apiVersion}/linode/instances/{linodeId}/backups/{backupId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode the Backup belongs to.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-2f961b69.yaml
+    - description: The ID of the Backup to look up.
+      example: '{{backupId}}'
+      in: path
+      name: backupId
+      required: true
+      schema:
+        example: 526
+        type: integer
+      x-akamai:
+        file-path: parameters/backup-id-path-4ea00e5a.yaml
+    x-akamai:
+      file-path: paths/linode-backup.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/backups/{backupId}
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns information about a Backup.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode_backup`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes backup-view 123 123456
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-backup
+      operationId: get-backup
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                available: true
+                configs:
+                - My Debian 13 Config
+                created: '2018-01-15T00:01:01'
+                disks:
+                - filesystem: ext4
+                  label: My Debian 13 Disk
+                  size: 9001
+                finished: '2018-01-15T00:01:01'
+                id: 123456
+                label: Webserver-Backup-2018
+                region: us-east
+                status: successful
+                type: snapshot
+                updated: '2018-01-15T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A backup for a Linode that can be used as a restore point.
+                properties:
+                  available:
+                    description: '__Read-only__ Whether this backup is available for restoration.
+
+
+                      Backups undergoing maintenance are not available for restoration.'
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  configs:
+                    description: __Read-only__ A list of the labels of the configuration profiles that are part of the backup.
+                    items:
+                      example: My Debian 13 Config
+                      type: string
+                    readOnly: true
+                    type: array
+                  created:
+                    description: __Read-only__ When the backup was taken.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  disks:
+                    description: __Read-only__ A list of the disks that are part of the backup.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        filesystem:
+                          description: 'The disk''s format or file system. A value of `raw` indicates no file system, just a raw binary stream. A value of `swap` indicates a Linux swap area. The values `ext3` or `ext4` represent these Linux journaling file systems. The value `ext2` is the deprecated ext2 Linux file system. Finally, `initrd` indicates the disk is formatted as an uncompressed initial RAM disk.
+
+
+                            > 📘
+
+                            >
+
+                            > The `ext2` file system doesn''t properly support timestamps and will be removed from Linux support in the near future. Also, `initrd` is a legacy format that no longer applies to most use cases. As a best practice, use the other supported formats or file systems instead.'
+                          enum:
+                          - raw
+                          - swap
+                          - ext2
+                          - ext3
+                          - ext4
+                          - initrd
+                          example: ext4
+                          type: string
+                          x-linode-cli-display: 5
+                        label:
+                          description: The label for the disk.
+                          example: My Debian 13 Disk
+                          type: string
+                        size:
+                          description: The size of the disk in megabytes.
+                          example: 9001
+                          type: integer
+                      type: object
+                    readOnly: true
+                    type: array
+                  finished:
+                    description: __Read-only__ When the backup completed, or `null` if not yet complete.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique ID of this backup.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: A label for backups that are of type `snapshot`.
+                    example: Webserver-Backup-2018
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 5
+                  region:
+                    description: __Read-only__ The region where the backup is located.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                  status:
+                    description: __Read-only__ The current state of a specific backup, either `paused`, `pending`, `running`, `needsPostProcessing`, `successful`, `failed`, or `userAborted`.
+                    enum:
+                    - paused
+                    - pending
+                    - running
+                    - needsPostProcessing
+                    - successful
+                    - failed
+                    - userAborted
+                    example: successful
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      failed: red
+                      successful: green
+                      userAborted: f
+                    x-linode-cli-display: 2
+                  type:
+                    description: __Read-only__ This indicates whether the backup is an automatic backup (`auto`) or manual snapshot taken by the user at a specific point in time (`snapshot`).
+                    enum:
+                    - auto
+                    - snapshot
+                    example: snapshot
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  updated:
+                    description: __Read-only__ When the backup was most recently updated.
+                    example: '2018-01-15T00:01:01'
+                    readOnly: true
+                    type: string
+                type:
+                - object
+                - 'null'
+                x-akamai:
+                  file-path: schemas/backup.yaml
+          description: A single Backup.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get a backup
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes backup-view 123 123456
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: backup-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode_backup
+  /{apiVersion}/linode/instances/{linodeId}/backups/{backupId}/restore:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode that the Backup belongs to.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-b7f66cf7.yaml
+    - description: The ID of the Backup to restore.
+      example: '{{backupId}}'
+      in: path
+      name: backupId
+      required: true
+      schema:
+        example: 526
+        type: integer
+      x-akamai:
+        file-path: parameters/backup-id-path-d7402da7.yaml
+    x-akamai:
+      file-path: paths/linode-backup-restore.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/backups/{backupId}/restore
+    x-linode-cli-command: linodes
+    post:
+      description: 'Restores a Linode''s backup to the specified Linode.
+
+
+        - Backups can''t be restored across regions.
+
+
+        - You can only restore a successfully completed backup that is not under maintenance.
+
+
+        - The Linode that the backup is being restored to can''t be the target of a current backup.
+
+
+        When you restore a backup, the restored disk is assigned the same UUID as the original disk. In most cases, this is acceptable and doesn''t cause issues. However, if you try to mount both the original disk and the corresponding restore disk at the same time (by assigning them both to devices in your Configuration Profile''s __Block Device Assignment__), you''ll encounter a UUID "collision".
+
+
+        When this happens, the system selects, and mounts, only one of the disks at random. This is because both disks are sharing the same UUID. Your instance _may fail to boot_ because the API can''t tell which disk is root. If your system boots in this scenario, you won''t see an immediate indication if you''re booted into the restored disk or the original disk, and you''ll be unable to access both disks at the same time.
+
+
+        To avoid this, only restore a backup to the same Linode if you don''t intend to mount them at the same time, or you''re comfortable modifying UUIDs. If you need access to files on both the original disk and the restored disk simultaneously -- for example, if you need to copy files between them -- you should restore the backup to a separate Linode or create a new Linode using the desired `backup_id`.
+
+
+        To learn more about block device assignments and viewing your disks'' UUIDs, see our guide on Configuration Profiles.
+
+
+        > 📘
+
+        >
+
+        > Backups aren''t encrypted even when they''re taken from an encrypted disk. When a backup is restored, and if encryption is enabled, the data stored on the disk is encrypted again.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `restore_linode_backup`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes backup-restore 123 123456 \
+
+        --linode_id 234 \
+
+        --overwrite true
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-restore-backup
+      operationId: post-restore-backup
+      requestBody:
+        content:
+          application/json:
+            example:
+              linode_id: 234
+              overwrite: true
+            schema:
+              additionalProperties: false
+              properties:
+                linode_id:
+                  description: The ID of the Linode to restore a Backup to.
+                  example: '{{linode_id}}'
+                  type: integer
+                overwrite:
+                  description: 'If `true`, deletes all Disks and Configs on the target Linode before restoring.
+
+
+                    If `false`, and the Disk image size is larger than the available space on the Linode, an error message indicating insufficient space is returned.'
+                  example: '{{overwrite}}'
+                  type: boolean
+              required:
+              - linode_id
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-restore-backup.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Restore from Backup was initiated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Restore a backup
+      tags:
+      - Linode disk backups
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes backup-restore 123 123456 \\\n  --linode_id 234 \\\n  --overwrite true"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: backup-restore
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - restore_linode_backup
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

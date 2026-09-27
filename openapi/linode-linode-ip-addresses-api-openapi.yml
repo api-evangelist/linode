@@ -1,0 +1,2256 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Linode IP addresses API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to view and manage the IP addresses assigned to your Linodes.
+  name: Linode IP addresses
+paths:
+  /{apiVersion}/linode/instances/{linodeId}/ips:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path.yaml
+    x-akamai:
+      file-path: paths/linode-ips.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/ips
+    x-linode-cli-command: linodes
+    post:
+      description: 'Allocates a public or private IPv4 address to a Linode. Public IP Addresses, after the one included with each Linode, incur an additional monthly charge. If you need an additional public IP Address you must request one - please Open a support ticket. You may not add more than one private IPv4 address to a single Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes ip-add 123 \
+
+        --address 192.0.2.141 \
+
+        --type ipv4 \
+
+        --public true
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-add-linode-ip
+      operationId: post-add-linode-ip
+      requestBody:
+        content:
+          application/json:
+            example:
+              address: 192.0.2.141
+              public: true
+              type: ipv4
+            schema:
+              additionalProperties: false
+              properties:
+                address:
+                  description: An optional unassigned reserved IP address to be assigned to this Linode. If omitted, a new non-reserved IP address is allocated.
+                  example: '{{address}}'
+                  format: ipv4
+                  type: string
+                public:
+                  description: Whether to create a public or private IPv4 address.
+                  example: '{{public}}'
+                  type: boolean
+                type:
+                  description: The type of address you are allocating. Only IPv4 addresses may be allocated through this operation.
+                  enum:
+                  - ipv4
+                  example: '{{type}}'
+                  type: string
+              required:
+              - type
+              - public
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-add-linode-ip.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 172.28.184.250
+                gateway: 172.19.1.137
+                interface_id: 456
+                linode_id: 123
+                prefix: 24
+                public: true
+                rdns: test.example.org
+                region: us-east
+                subnet_mask: 255.255.255.0
+                type: ipv4
+                vpc_nat_1_1:
+                  address: 192.168.0.42
+                  subnet_id: 101
+                  vpc_id: 111
+              schema:
+                additionalProperties: false
+                description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                properties:
+                  address:
+                    description: __Read-only__ The IP address.
+                    example: 97.107.143.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 97.107.143.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  tags:
+                    description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                    example:
+                    - NB1
+                    - Linode1
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Read-only__ The type of address, either `ipv4`, `ipv6`, `ipv6/pool`, or `ipv6/range`. To learn more about these types, see the [Manage IP addresses on a Linode](https://techdocs.akamai.com/cloud-computing/docs/managing-ip-addresses-on-a-compute-instance) guide.
+                    enum:
+                    - ipv4
+                    - ipv6
+                    - ipv6/pool
+                    - ipv6/range
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: 'IPv4 address configured as a 1:1 NAT for this Interface. If no address is configured as a 1:1 NAT, `null` is returned.
+
+
+                      > 📘
+
+                      >
+
+                      > Only allowed for `vpc` type interfaces.'
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC Subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/ip-address.yaml
+          description: IP address was successfully allocated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Allocate an IPv4 address
+      tags:
+      - Linode IP addresses
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes ip-add 123 \\\n  --address 192.0.2.141 \\\n  --type ipv4 \\\n  --public true"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: ip-add
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - view_linode
+    get:
+      description: 'Returns networking information for a single Linode.
+
+
+        > 📘
+
+        >
+
+        > If the target Linode has several configuration profiles that include a Virtual Private Cloud (VPC) interface, the response lists address information for all of the VPCs.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes ips-list 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-ips
+      operationId: get-linode-ips
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                ipv4:
+                  private:
+                  - address: 192.168.133.234
+                    gateway: null
+                    linode_id: 123
+                    prefix: 17
+                    public: false
+                    rdns: null
+                    region: us-east
+                    subnet_mask: 255.255.255.0
+                    type: ipv4
+                  public:
+                  - address: 192.0.2.25
+                    assigned_entity:
+                      id: 123
+                      label: linode123
+                      type: linode
+                      url: /v4/linode/instances/123
+                    gateway: 192.0.2.1
+                    interface_id: 456
+                    linode_id: 123
+                    prefix: 24
+                    public: true
+                    rdns: 192.0.2.25.ip.linodeusercontent.com
+                    region: us-east
+                    reserved: true
+                    subnet_mask: 255.255.255.0
+                    type: ipv4
+                    vpc_nat_1_1: null
+                  reserved:
+                  - address: 172.23.248.201
+                    gateway: 172.23.76.28
+                    interface_id: 456
+                    linode_id: 123
+                    prefix: 24
+                    public: true
+                    rdns: test.example.org
+                    region: us-east
+                    subnet_mask: 255.255.255.0
+                    type: ipv4
+                    vpc_nat_1_1:
+                      address: 192.168.0.42
+                      subnet_id: 101
+                      vpc_id: 111
+                  shared:
+                  - address: 172.30.148.9
+                    gateway: 172.21.204.240
+                    interface_id: 456
+                    linode_id: 123
+                    prefix: 24
+                    public: true
+                    rdns: test.example.org
+                    region: us-east
+                    subnet_mask: 255.255.255.0
+                    type: ipv4
+                    vpc_nat_1_1:
+                      address: 192.168.0.42
+                      subnet_id: 101
+                      vpc_id: 111
+                  vpc:
+                  - active: true
+                    address: 10.0.0.42
+                    address_range: string
+                    config_id: 4567
+                    database_id: 55555
+                    gateway: 10.0.0.1
+                    interface_id: 2435
+                    linode_id: 123
+                    nat_1_1: 192.168.0.42
+                    nodebalancer_id: 12121
+                    prefix: 24
+                    region: us-east
+                    subnet_id: 101
+                    subnet_mask: 255.255.255.0
+                    vpc_id: 7654
+                ipv6:
+                  global:
+                  - prefix: 64
+                    range: 2001:db8:d516:ef8d:dedf:bb1d:260e:657e
+                    region: us-east
+                    route_target: 2001:db8:ee18:c19d:ba04:cc8c:44b3:3915
+                  link_local:
+                    address: 2001:db8:1402:18f5:2e92:64d8:f331:b5b
+                    gateway: 2001:db8:7a59:bd4e:8ee7:da1d:279:bc09
+                    linode_id: 123
+                    prefix: 64
+                    public: false
+                    rdns: null
+                    region: us-east
+                    subnet_mask: 2001:db8:9257:7c36:b19b:38b9:7281:68b6
+                    type: ipv6
+                  slaac:
+                    address: 2001:db8:6d4c:9fe4:9fb2:69fe:1fb1:fc77
+                    gateway: 2001:db8:702a:3baa:e287:e951:b726:567a
+                    linode_id: 123
+                    prefix: 64
+                    public: true
+                    rdns: null
+                    region: us-east
+                    subnet_mask: 2001:db8:5d3a:6eef:672f:64dd:4f4:b54a
+                    type: ipv6
+              schema:
+                additionalProperties: false
+                properties:
+                  ipv4:
+                    additionalProperties: false
+                    description: __Read-only__ Information about this Linode's IPv4 addresses.
+                    properties:
+                      private:
+                        description: __Read-only__ A list of private IP Address objects belonging to this Linode.
+                        items:
+                          additionalProperties: false
+                          description: A private IPv4 address that exists in Linode's system.
+                          properties:
+                            address:
+                              description: __Read-only__ The private IPv4 address.
+                              example: 192.168.133.234
+                              format: ip
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 1
+                            gateway:
+                              description: __Read-only__ The default gateway for this address.
+                              example: null
+                              format: ip
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                            linode_id:
+                              description: __Read-only__ The ID of the Linode this address currently belongs to.
+                              example: 123
+                              readOnly: true
+                              type: integer
+                              x-linode-cli-display: 6
+                            prefix:
+                              description: __Read-only__ The number of bits set in the subnet mask.
+                              example: 17
+                              readOnly: true
+                              type: integer
+                            public:
+                              description: __Read-only__ Whether this is a public or private IP address.
+                              example: false
+                              readOnly: true
+                              type: boolean
+                              x-linode-cli-display: 3
+                            rdns:
+                              description: The reverse DNS assigned to this address.
+                              example: null
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            region:
+                              description: __Read-only__ The Region this address resides in.
+                              example: us-east
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 5
+                            subnet_mask:
+                              description: __Read-only__ The mask that separates host bits from network bits for this address.
+                              example: 255.255.128.0
+                              format: ip
+                              readOnly: true
+                              type: string
+                            type:
+                              description: __Read-only__ The type of address this is.
+                              example: ipv4
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 2
+                          type: object
+                          x-akamai:
+                            file-path: schemas/ip-address-private.yaml
+                        readOnly: true
+                        type: array
+                      public:
+                        description: __Read-only__ A list of public IP Address objects belonging to this Linode.
+                        items:
+                          additionalProperties: false
+                          description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                          properties:
+                            address:
+                              description: __Read-only__ The IP address.
+                              example: 97.107.143.141
+                              format: ip
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 1
+                            assigned_entity:
+                              additionalProperties: false
+                              description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                              properties:
+                                id:
+                                  description: The unique identifier for the resource.
+                                  example: 1234
+                                  type: integer
+                                label:
+                                  description: The name of the entity.
+                                  example: demo-linode
+                                  type: string
+                                type:
+                                  description: The type of entity.
+                                  enum:
+                                  - linode
+                                  - nodebalancer
+                                  example: nodebalancer
+                                  type: string
+                                url:
+                                  description: The API URL path you can use to access this entity.
+                                  example: /v4/nodebalancer/1234
+                                  type: string
+                              readOnly: true
+                              type:
+                              - object
+                              - 'null'
+                              x-linode-cli-display: 10
+                            gateway:
+                              description: __Read-only__ The default gateway for this address.
+                              example: 97.107.143.1
+                              format: ip
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                            interface_id:
+                              description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                              example: 456
+                              readOnly: true
+                              type:
+                              - integer
+                              - 'null'
+                              x-linode-cli-display: 7
+                            linode_id:
+                              description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                              example: 123
+                              readOnly: true
+                              type: integer
+                              x-linode-cli-display: 6
+                            prefix:
+                              description: __Read-only__ The number of bits set in the subnet mask.
+                              example: 24
+                              readOnly: true
+                              type: integer
+                            public:
+                              description: __Read-only__ Whether this is a public or private IP address.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-linode-cli-display: 3
+                            rdns:
+                              description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                              example: test.example.org
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            region:
+                              description: __Read-only__ The region this IP address resides in.
+                              example: us-east
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 5
+                            reserved:
+                              description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 8
+                            subnet_mask:
+                              description: __Read-only__ The mask that separates host bits from network bits for this address.
+                              example: 255.255.255.0
+                              format: ip
+                              readOnly: true
+                              type: string
+                            type:
+                              description: __Read-only__ The type of address this is.
+                              enum:
+                              - ipv4
+                              - ipv6
+                              - ipv6/pool
+                              - ipv6/range
+                              example: ipv4
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 2
+                            vpc_nat_1_1:
+                              additionalProperties: false
+                              description: 'IPv4 address configured as a 1:1 NAT for this Interface. The value is `null` if no address is configured as a 1:1 NAT.
+
+
+                                > 📘
+
+                                >
+
+                                > Only allowed for `vpc` type interfaces.'
+                              properties:
+                                address:
+                                  description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                                  example: 192.168.0.42
+                                  format: ipv4
+                                  type: string
+                                subnet_id:
+                                  description: The `id` of the VPC Subnet for this interface.
+                                  example: 101
+                                  type: integer
+                                vpc_id:
+                                  description: __Read-only__ The `id` of the VPC configured for this interface.
+                                  example: 111
+                                  readOnly: true
+                                  type: integer
+                              type:
+                              - object
+                              - 'null'
+                          type: object
+                          x-akamai:
+                            file-path: schemas/linode-ip-address.yaml
+                        readOnly: true
+                        type: array
+                      reserved:
+                        description: __Read-only__ Temporary IP addresses held at a destination data center to facilitate a Linode migration. These differ from permanent reserved IPs and exist only during the migration window.
+                        items:
+                          additionalProperties: false
+                          description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                          properties:
+                            address:
+                              description: __Read-only__ The IP address.
+                              example: 97.107.143.141
+                              format: ip
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 1
+                            assigned_entity:
+                              additionalProperties: false
+                              description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                              properties:
+                                id:
+                                  description: The unique identifier for the resource.
+                                  example: 1234
+                                  type: integer
+                                label:
+                                  description: The name of the entity.
+                                  example: demo-linode
+                                  type: string
+                                type:
+                                  description: The type of entity.
+                                  enum:
+                                  - linode
+                                  - nodebalancer
+                                  example: nodebalancer
+                                  type: string
+                                url:
+                                  description: The API URL path you can use to access this entity.
+                                  example: /v4/nodebalancer/1234
+                                  type: string
+                              readOnly: true
+                              type:
+                              - object
+                              - 'null'
+                              x-linode-cli-display: 10
+                            gateway:
+                              description: __Read-only__ The default gateway for this address.
+                              example: 97.107.143.1
+                              format: ip
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                            interface_id:
+                              description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                              example: 456
+                              readOnly: true
+                              type:
+                              - integer
+                              - 'null'
+                              x-linode-cli-display: 7
+                            linode_id:
+                              description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                              example: 123
+                              readOnly: true
+                              type: integer
+                              x-linode-cli-display: 6
+                            prefix:
+                              description: __Read-only__ The number of bits set in the subnet mask.
+                              example: 24
+                              readOnly: true
+                              type: integer
+                            public:
+                              description: __Read-only__ Whether this is a public or private IP address.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-linode-cli-display: 3
+                            rdns:
+                              description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                              example: test.example.org
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            region:
+                              description: __Read-only__ The region this IP address resides in.
+                              example: us-east
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 5
+                            reserved:
+                              description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 8
+                            subnet_mask:
+                              description: __Read-only__ The mask that separates host bits from network bits for this address.
+                              example: 255.255.255.0
+                              format: ip
+                              readOnly: true
+                              type: string
+                            tags:
+                              description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                              example:
+                              - NB1
+                              - Linode1
+                              items:
+                                type: string
+                              readOnly: true
+                              type: array
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 9
+                            type:
+                              description: __Read-only__ The type of address, either `ipv4`, `ipv6`, `ipv6/pool`, or `ipv6/range`. To learn more about these types, see the [Manage IP addresses on a Linode](https://techdocs.akamai.com/cloud-computing/docs/managing-ip-addresses-on-a-compute-instance) guide.
+                              enum:
+                              - ipv4
+                              - ipv6
+                              - ipv6/pool
+                              - ipv6/range
+                              example: ipv4
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 2
+                            vpc_nat_1_1:
+                              additionalProperties: false
+                              description: 'IPv4 address configured as a 1:1 NAT for this Interface. If no address is configured as a 1:1 NAT, `null` is returned.
+
+
+                                > 📘
+
+                                >
+
+                                > Only allowed for `vpc` type interfaces.'
+                              properties:
+                                address:
+                                  description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                                  example: 192.168.0.42
+                                  format: ipv4
+                                  type: string
+                                subnet_id:
+                                  description: The `id` of the VPC Subnet for this interface.
+                                  example: 101
+                                  type: integer
+                                vpc_id:
+                                  description: __Read-only__ The `id` of the VPC configured for this interface.
+                                  example: 111
+                                  readOnly: true
+                                  type: integer
+                              type: object
+                          type: object
+                          x-akamai:
+                            file-path: schemas/ip-address.yaml
+                        readOnly: true
+                        type: array
+                      shared:
+                        description: __Read-only__ A list of shared IP Address objects assigned to this Linode.
+                        items:
+                          additionalProperties: false
+                          description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                          properties:
+                            address:
+                              description: __Read-only__ The IP address.
+                              example: 97.107.143.141
+                              format: ip
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 1
+                            assigned_entity:
+                              additionalProperties: false
+                              description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                              properties:
+                                id:
+                                  description: The unique identifier for the resource.
+                                  example: 1234
+                                  type: integer
+                                label:
+                                  description: The name of the entity.
+                                  example: demo-linode
+                                  type: string
+                                type:
+                                  description: The type of entity.
+                                  enum:
+                                  - linode
+                                  - nodebalancer
+                                  example: nodebalancer
+                                  type: string
+                                url:
+                                  description: The API URL path you can use to access this entity.
+                                  example: /v4/nodebalancer/1234
+                                  type: string
+                              readOnly: true
+                              type:
+                              - object
+                              - 'null'
+                              x-linode-cli-display: 10
+                            gateway:
+                              description: __Read-only__ The default gateway for this address.
+                              example: 97.107.143.1
+                              format: ip
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                            interface_id:
+                              description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                              example: 456
+                              readOnly: true
+                              type:
+                              - integer
+                              - 'null'
+                              x-linode-cli-display: 7
+                            linode_id:
+                              description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                              example: 123
+                              readOnly: true
+                              type: integer
+                              x-linode-cli-display: 6
+                            prefix:
+                              description: __Read-only__ The number of bits set in the subnet mask.
+                              example: 24
+                              readOnly: true
+                              type: integer
+                            public:
+                              description: __Read-only__ Whether this is a public or private IP address.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-linode-cli-display: 3
+                            rdns:
+                              description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                              example: test.example.org
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            region:
+                              description: __Read-only__ The region this IP address resides in.
+                              example: us-east
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 5
+                            reserved:
+                              description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 8
+                            subnet_mask:
+                              description: __Read-only__ The mask that separates host bits from network bits for this address.
+                              example: 255.255.255.0
+                              format: ip
+                              readOnly: true
+                              type: string
+                            tags:
+                              description: __Filterable__, __Read-only__ A list of tags that apply to this IP.
+                              example:
+                              - NB1
+                              - Linode1
+                              items:
+                                type: string
+                              readOnly: true
+                              type: array
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 9
+                            type:
+                              description: __Read-only__ The type of address, either `ipv4`, `ipv6`, `ipv6/pool`, or `ipv6/range`. To learn more about these types, see the [Manage IP addresses on a Linode](https://techdocs.akamai.com/cloud-computing/docs/managing-ip-addresses-on-a-compute-instance) guide.
+                              enum:
+                              - ipv4
+                              - ipv6
+                              - ipv6/pool
+                              - ipv6/range
+                              example: ipv4
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 2
+                            vpc_nat_1_1:
+                              additionalProperties: false
+                              description: 'IPv4 address configured as a 1:1 NAT for this Interface. If no address is configured as a 1:1 NAT, `null` is returned.
+
+
+                                > 📘
+
+                                >
+
+                                > Only allowed for `vpc` type interfaces.'
+                              properties:
+                                address:
+                                  description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                                  example: 192.168.0.42
+                                  format: ipv4
+                                  type: string
+                                subnet_id:
+                                  description: The `id` of the VPC Subnet for this interface.
+                                  example: 101
+                                  type: integer
+                                vpc_id:
+                                  description: __Read-only__ The `id` of the VPC configured for this interface.
+                                  example: 111
+                                  readOnly: true
+                                  type: integer
+                              type: object
+                          type: object
+                          x-akamai:
+                            file-path: schemas/ip-address.yaml
+                        readOnly: true
+                        type: array
+                      vpc:
+                        description: __Read-only__ A list of Virtual Private Cloud (VPC)-specific addresses or ranges for the Linode.
+                        items:
+                          oneOf:
+                          - additionalProperties: false
+                            description: A VPC IPv4 address that exists in Linode's system, specific to the response for the [List VPC IPv4 addresses](https://techdocs.akamai.com/linode-api/reference/get-vpcs-ips) operation. Returned as an empty set for Linodes that are not part of a VPC.
+                            properties:
+                              active:
+                                description: __Filterable__, __Read-only__ Returns `true` if the VPC interface is in use.
+                                example: true
+                                readOnly: true
+                                type: boolean
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-filterable: true
+                              address:
+                                description: __Read-only__ An IPv4 address configured for this VPC interface. These follow the [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) private address format. Displayed as `null` if an `address_range`.
+                                example: 192.0.2.141
+                                format: ip
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                                x-linode-cli-display: 1
+                              address_range:
+                                description: __Read-only__ A range of IPv4 addresses configured for this VPC interface. Displayed as `null` if a single `address`.
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                              config_id:
+                                description: __Filterable__, __Read-only__ The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                example: 4567
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-filterable: true
+                              database_id:
+                                description: __Filterable__, __Read-only__ Unique identifier for the database resource within the VPC.
+                                example: 55555
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                              gateway:
+                                description: __Read-only__ The default gateway for the VPC subnet that the IP or IP range belongs to.
+                                example: 192.0.2.1
+                                format: ip
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                              interface_id:
+                                description: __Read-only__ The globally general API entity identifier for the Linode interface.
+                                example: 2435
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                              linode_id:
+                                description: __Filterable__, __Read-only__ The identifier for the Linode the VPC interface currently belongs to.
+                                example: 123
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 6
+                                x-linode-filterable: true
+                              nat_1_1:
+                                description: __Read-only__ The public IPv4 address used for NAT 1:1 with the VPC. This is empty if NAT 1:1 isn't used.
+                                example: 192.168.0.42
+                                format: ip
+                                minLength: 0
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                              nodebalancer_id:
+                                description: __Filterable__, __Read-only__ Unique identifier for the NodeBalancer resource within the VPC.
+                                example: 12121
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                              prefix:
+                                description: __Read-only__ The number of bits set in the `subnet_mask`.
+                                example: 24
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                              region:
+                                description: __Filterable__, __Read-only__ The region of the VPC.
+                                example: us-east
+                                readOnly: true
+                                type: string
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 5
+                                x-linode-filterable: true
+                              subnet_id:
+                                description: The `id` of the VPC Subnet for this interface.
+                                example: 101
+                                type: integer
+                                x-linode-cli-display: 7
+                              subnet_mask:
+                                description: __Read-only__ The mask that separates host bits from network bits for the `address` or `address_range`.
+                                example: 255.255.255.0
+                                format: ip
+                                readOnly: true
+                                type: string
+                              vpc_id:
+                                description: __Filterable__, __Read-only__ The unique globally general API entity identifier for the VPC.
+                                example: 7654
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 8
+                                x-linode-filterable: true
+                            title: VPC IPv4 addresses
+                            type: object
+                            x-akamai:
+                              file-path: schemas/ipv4-addresses-vpc.yaml
+                          - additionalProperties: false
+                            description: A VPC IPv6 address that exists in Linode's system, specific to the response for the [List VPC IPv6 addresses](https://techdocs.akamai.com/linode-api/reference/get-vpcs-ipv6s) operation. Returned as an empty set for Linodes that are not part of a VPC.
+                            properties:
+                              active:
+                                description: __Filterable__, __Read-only__ Indicates if the VPC interface is in use.
+                                example: true
+                                readOnly: true
+                                type: boolean
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-filterable: true
+                              address:
+                                description: __Read-only__ An IPv4 address configured for this VPC interface. These follow the [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) private address format. Returns `null` for this operation.
+                                example: null
+                                format: ip
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                                x-linode-cli-display: 1
+                              address_range:
+                                description: __Read-only__ A range of IPv4 addresses configured for this VPC interface. Returns `null` for this operation.
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                              config_id:
+                                description: __Filterable__, __Read-only__ The globally general entity identifier for the Linode configuration profile that includes the VPC. If this is a VPC Linode interface, the value is `null`.
+                                example: 4567
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-filterable: true
+                              database_id:
+                                description: __Filterable__, __Read-only__ Unique identifier for the database resource within the VPC.
+                                example: 55555
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                              gateway:
+                                description: __Read-only__ The default gateway for the VPC subnet that the IP or IP range belongs to. Returns `null` for this operation.
+                                example: null
+                                format: ip
+                                readOnly: true
+                                type:
+                                - string
+                                - 'null'
+                              interface_id:
+                                description: __Beta__, __Read-only__ The globally general API entity identifier for the Linode interface.
+                                example: 2435
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  status: BETA
+                              ipv6_addresses:
+                                description: __Read-only__ A SLAAC or an empty array (`[]`) is returned if the IPv6 address was assigned with the IPv6 range array.
+                                items:
+                                  additionalProperties: false
+                                  properties:
+                                    slaac_address:
+                                      description: __Read-only__ The interfaces auto-configured SLAAC, that is within the prefix.
+                                      example: 2001:db8:abcd:1234::abcd
+                                      format: ipv6
+                                      readOnly: true
+                                      type: string
+                                  type: object
+                                readOnly: true
+                                type: array
+                              ipv6_is_public:
+                                description: '__Beta__, __Read-only__ Indicates whether the IPv6 address for this interface is public.
+
+
+                                  - `false` means that traffic to and from the interface is restricted to the VPC only, with no access to and from the internet.
+
+                                  - `true` means that traffic from the interface to IPv6 addresses outside the VPC, and connections from IPv6 addresses outside the VPC to the interface are permitted.'
+                                example: false
+                                readOnly: true
+                                type: boolean
+                                x-akamai:
+                                  status: BETA
+                              ipv6_range:
+                                description: __Read-only__ The network interface's `/64` prefix assigned from the subnet’s prefix.
+                                example: 2001:db8:abcd:5678::/64
+                                readOnly: true
+                                type: string
+                              linode_id:
+                                description: __Filterable__, __Read-only__ The identifier for the Linode the VPC interface currently belongs to.
+                                example: 123
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 6
+                                x-linode-filterable: true
+                              nat_1_1:
+                                description: __Read-only__ The public IPv4 address used for NAT 1:1 with the VPC. An empty string is returned for this operation.
+                                example: ''
+                                format: ip
+                                minLength: 0
+                                readOnly: true
+                                type: string
+                              nodebalancer_id:
+                                description: __Filterable__, __Read-only__ Unique identifier for the NodeBalancer resource within the VPC.
+                                example: 12121
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                              prefix:
+                                description: __Read-only__ The number of bits set in the `subnet_mask`.
+                                example: 24
+                                readOnly: true
+                                type:
+                                - integer
+                                - 'null'
+                              region:
+                                description: __Filterable__, __Read-only__ The region of the VPC.
+                                example: us-east
+                                readOnly: true
+                                type: string
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 5
+                                x-linode-filterable: true
+                              subnet_id:
+                                description: The `id` of the VPC Subnet for this interface.
+                                example: 101
+                                type: integer
+                                x-linode-cli-display: 7
+                              subnet_mask:
+                                description: __Read-only__ The mask that separates host bits from network bits for the `address` or `address_range`. An empty string is returned for this operation.
+                                example: ''
+                                format: ip
+                                minLength: 0
+                                readOnly: true
+                                type: string
+                              vpc_id:
+                                description: __Filterable__, __Read-only__ The unique globally general API entity identifier for the VPC.
+                                example: 7654
+                                readOnly: true
+                                type: integer
+                                x-akamai:
+                                  labels:
+                                  - Filterable
+                                x-linode-cli-display: 8
+                                x-linode-filterable: true
+                            title: VPC IPv6 addresses
+                            type: object
+                            x-akamai:
+                              file-path: schemas/ipv6-addresses-vpc.yaml
+                        readOnly: true
+                        type: array
+                    readOnly: true
+                    type: object
+                  ipv6:
+                    additionalProperties: false
+                    description: __Read-only__ Information about this Linode's IPv6 addresses.
+                    properties:
+                      global:
+                        description: A list of IPv6 range objects assigned to this Linode.
+                        items:
+                          additionalProperties: false
+                          description: An object representing an IPv6 range.
+                          properties:
+                            prefix:
+                              description: The prefix length of the address. The total number of addresses that can be assigned from this range is calculated as 2<sup>(128 - prefix length)</sup>.
+                              example: 64
+                              type: integer
+                              x-linode-cli-display: 2
+                            range:
+                              description: __Read-only__ The IPv6 address of this range.
+                              example: '2600:3c01::'
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 1
+                            region:
+                              description: __Read-only__ The region for this range of IPv6 addresses.
+                              example: us-east
+                              readOnly: true
+                              type: string
+                              x-linode-cli-display: 3
+                            route_target:
+                              description: The IPv6 SLAAC address.
+                              example: 2600:3c01::ffff:ffff:ffff:ffff
+                              type: string
+                          type: object
+                          x-akamai:
+                            file-path: schemas/ipv6-range.yaml
+                        type: array
+                      link_local:
+                        additionalProperties: false
+                        description: A link-local IPv6 address that exists in Linode's system.
+                        properties:
+                          address:
+                            description: __Read-only__ The IPv6 link-local address.
+                            example: fe80::f03c:91ff:fe24:3a2f
+                            format: ip
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 1
+                          gateway:
+                            description: __Read-only__ The default gateway for this address.
+                            example: fe80::1
+                            readOnly: true
+                            type: string
+                          linode_id:
+                            description: __Read-only__ The ID of the Linode this address currently belongs to.
+                            example: 123
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 6
+                          prefix:
+                            description: __Read-only__ The network prefix.
+                            example: 64
+                            readOnly: true
+                            type: integer
+                          public:
+                            description: __Read-only__ Whether this is a public or private IP address.
+                            example: false
+                            readOnly: true
+                            type: boolean
+                            x-linode-cli-display: 3
+                          rdns:
+                            description: The reverse DNS assigned to this address.
+                            example: null
+                            type:
+                            - string
+                            - 'null'
+                            x-linode-cli-display: 4
+                          region:
+                            description: __Filterable__, __Read-only__ The Region this address resides in.
+                            example: us-east
+                            readOnly: true
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 5
+                            x-linode-filterable: true
+                          subnet_mask:
+                            description: __Read-only__ The subnet mask.
+                            example: 'ffff:ffff:ffff:ffff::'
+                            format: ip
+                            readOnly: true
+                            type: string
+                          type:
+                            description: __Read-only__ The type of address this is.
+                            example: ipv6
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 2
+                        type: object
+                        x-akamai:
+                          file-path: schemas/ip-address-v6-link-local.yaml
+                      slaac:
+                        additionalProperties: false
+                        description: A SLAAC IPv6 address that exists in Linode's system.
+                        properties:
+                          address:
+                            description: __Read-only__ The address.
+                            example: 2600:3c03::f03c:91ff:fe24:3a2f
+                            format: ip
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 1
+                          gateway:
+                            description: __Read-only__ The default gateway for this address.
+                            example: fe80::1
+                            readOnly: true
+                            type: string
+                          linode_id:
+                            description: __Read-only__ The ID of the Linode this address currently belongs to.
+                            example: 123
+                            readOnly: true
+                            type: integer
+                            x-linode-cli-display: 6
+                          prefix:
+                            description: __Read-only__ The network prefix.
+                            example: 64
+                            readOnly: true
+                            type: integer
+                          public:
+                            description: __Read-only__ Whether this is a public or private IP address.
+                            example: true
+                            readOnly: true
+                            type: boolean
+                            x-linode-cli-display: 3
+                          rdns:
+                            description: The reverse DNS assigned to this address.
+                            example: null
+                            type:
+                            - string
+                            - 'null'
+                            x-linode-cli-display: 4
+                          region:
+                            description: __Filterable__, __Read-only__ The Region this address resides in.
+                            example: us-east
+                            readOnly: true
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 5
+                            x-linode-filterable: true
+                          subnet_mask:
+                            description: __Read-only__ The subnet mask.
+                            example: 'ffff:ffff:ffff:ffff::'
+                            format: ip
+                            readOnly: true
+                            type: string
+                          type:
+                            description: __Read-only__ The type of address this is.
+                            example: ipv6
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 2
+                        type: object
+                        x-akamai:
+                          file-path: schemas/ip-address-v6-slaac.yaml
+                    readOnly: true
+                    type: object
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-linode-ips-200.yaml
+              x-linode-cli-subtables:
+              - ipv4.public
+              - ipv4.private
+              - ipv4.shared
+              - ipv4.reserved
+              - ipv4.vpc
+              - ipv6.link_local
+              - ipv6.slaac
+              - ipv6.global
+          description: Requested Linode's networking configuration.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get networking information
+      tags:
+      - Linode IP addresses
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes ips-list 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: ips-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode
+  /{apiVersion}/linode/instances/{linodeId}/ips/{address}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Linode.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-820d9f86.yaml
+    - description: The IP address.
+      example: '{{address}}'
+      in: path
+      name: address
+      required: true
+      schema:
+        example: 192.0.2.49
+        format: ip
+        type: string
+      x-akamai:
+        file-path: parameters/address-path-59ea51e6.yaml
+    x-akamai:
+      file-path: paths/linode-ip-address.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/ips/{address}
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns information about a single IPv4 or IPv6 address associated with this Linode.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes ip-view 123456 192.0.2.164
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-ip
+      operationId: get-linode-ip
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 172.29.32.233
+                gateway: 172.21.143.219
+                interface_id: 456
+                linode_id: 123
+                prefix: 24
+                public: true
+                rdns: test.example.org
+                region: us-east
+                subnet_mask: 255.255.255.0
+                type: ipv4
+                vpc_nat_1_1:
+                  address: 192.168.0.42
+                  subnet_id: 101
+                  vpc_id: 111
+              schema:
+                additionalProperties: false
+                description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                properties:
+                  address:
+                    description: __Read-only__ The IP address.
+                    example: 97.107.143.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 97.107.143.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  type:
+                    description: __Read-only__ The type of address this is.
+                    enum:
+                    - ipv4
+                    - ipv6
+                    - ipv6/pool
+                    - ipv6/range
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: 'IPv4 address configured as a 1:1 NAT for this Interface. The value is `null` if no address is configured as a 1:1 NAT.
+
+
+                      > 📘
+
+                      >
+
+                      > Only allowed for `vpc` type interfaces.'
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC Subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    type:
+                    - object
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/linode-ip-address.yaml
+          description: A single IP address.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: Get a Linode's IP address
+      tags:
+      - Linode IP addresses
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes ip-view 123456 192.0.2.164
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: ip-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_linode
+    put:
+      description: 'Updates the reverse DNS (RDNS) for a Linode''s IP Address. This may be done for both IPv4 and IPv6 addresses.
+
+
+        Setting the RDNS to `null` for a public IPv4 address, resets it to the default `ip.linodeusercontent.com` RDNS value.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes ip-update 123 \
+
+        203.0.113.1 \
+
+        --rdns test.example.org
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-linode-ip
+      operationId: put-linode-ip
+      requestBody:
+        content:
+          application/json:
+            example:
+              rdns: test.example.org
+            schema:
+              additionalProperties: false
+              properties:
+                rdns:
+                  description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                  example: '{{rdns}}'
+                  type:
+                  - string
+                  - 'null'
+              required:
+              - rdns
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-linode-ip.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: 172.29.32.233
+                gateway: 172.21.143.219
+                interface_id: 456
+                linode_id: 123
+                prefix: 24
+                public: true
+                rdns: test.example.org
+                region: us-east
+                subnet_mask: 255.255.255.0
+                type: ipv4
+                vpc_nat_1_1:
+                  address: 192.168.0.42
+                  subnet_id: 101
+                  vpc_id: 111
+              schema:
+                additionalProperties: false
+                description: An IP address that exists in Linode's system, either IPv4 or IPv6.
+                properties:
+                  address:
+                    description: __Read-only__ The IP address.
+                    example: 97.107.143.141
+                    format: ip
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  assigned_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Identifies which resource a specific IP address is currently attached to.
+                    properties:
+                      id:
+                        description: The unique identifier for the resource.
+                        example: 1234
+                        type: integer
+                      label:
+                        description: The name of the entity.
+                        example: demo-linode
+                        type: string
+                      type:
+                        description: The type of entity.
+                        enum:
+                        - linode
+                        - nodebalancer
+                        example: nodebalancer
+                        type: string
+                      url:
+                        description: The API URL path you can use to access this entity.
+                        example: /v4/nodebalancer/1234
+                        type: string
+                    readOnly: true
+                    type:
+                    - object
+                    - 'null'
+                    x-linode-cli-display: 10
+                  gateway:
+                    description: __Read-only__ The default gateway for this address.
+                    example: 97.107.143.1
+                    format: ip
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  interface_id:
+                    description: __Read-only__ The Linode interface ID that this IP address is assigned to. This value is `null` if a Linode interface is not assigned, or if the IP is assigned to a legacy configuration profile interface.
+                    example: 456
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 7
+                  linode_id:
+                    description: __Read-only__ The ID of the Linode this address currently belongs to. For IPv4 addresses, this is by default the Linode that this address was assigned to on creation, and these addresses may be moved using the [Assign IPv4s to Linodes](https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s) operation. For SLAAC and link-local addresses, this value can't be changed.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 6
+                  prefix:
+                    description: __Read-only__ The number of bits set in the subnet mask.
+                    example: 24
+                    readOnly: true
+                    type: integer
+                  public:
+                    description: __Read-only__ Whether this is a public or private IP address.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  rdns:
+                    description: The reverse DNS assigned to this address. For public IPv4 addresses, this will be set to a default value provided by Linode if not explicitly set.
+                    example: test.example.org
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 4
+                  region:
+                    description: __Read-only__ The region this IP address resides in.
+                    example: us-east
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                  reserved:
+                    description: __Filterable__, __Read-only__ Indicates whether this public IPv4 address is a reserved IP. Unlike ephemeral addresses, a reserved IP is a persistent, static address that remains assigned to your account even if the associated resource is deleted.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 8
+                  subnet_mask:
+                    description: __Read-only__ The mask that separates host bits from network bits for this address.
+                    example: 255.255.255.0
+                    format: ip
+                    readOnly: true
+                    type: string
+                  type:
+                    description: __Read-only__ The type of address this is.
+                    enum:
+                    - ipv4
+                    - ipv6
+                    - ipv6/pool
+                    - ipv6/range
+                    example: ipv4
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  vpc_nat_1_1:
+                    additionalProperties: false
+                    description: 'IPv4 address configured as a 1:1 NAT for this Interface. The value is `null` if no address is configured as a 1:1 NAT.
+
+
+                      > 📘
+
+                      >
+
+                      > Only allowed for `vpc` type interfaces.'
+                    properties:
+                      address:
+                        description: The IPv4 address that is configured as a 1:1 NAT for this VPC interface.
+                        example: 192.168.0.42
+                        format: ipv4
+                        type: string
+                      subnet_id:
+                        description: The `id` of the VPC Subnet for this interface.
+                        example: 101
+                        type: integer
+                      vpc_id:
+                        description: __Read-only__ The `id` of the VPC configured for this interface.
+                        example: 111
+                        readOnly: true
+                        type: integer
+                    type:
+                    - object
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/linode-ip-address.yaml
+          description: The updated IP address record.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Update an IP address's RDNS for a Linode
+      tags:
+      - Linode IP addresses
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli linodes ip-update 123 \\\n  203.0.113.1 \\\n  --rdns test.example.org"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: ip-update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_linode
+    delete:
+      description: 'Deletes a public or private IPv4 address assigned to this Linode. Consider these points before deleting an IPv4 address:
+
+
+        - A delete will fail if the target address is the Linode''s last remaining public IPv4 address, or if the address has a 1:1 NAT with an active VPC subnet address.
+
+
+        - You can''t use this operation to delete an IPv4 address assigned to a Linode interface. Run the update the Linode interface operation instead.
+
+
+        - You can''t delete an IPv4 address from a Linode that has a `cannot_delete_with_subresources` resource lock set for it.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_linode`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `linodes:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli linodes ip-delete 97.107.143.141
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-linode-ip
+      operationId: delete-linode-ip
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: IP address successfully removed.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_write
+      summary: Delete an IPv4 address
+      tags:
+      - Linode IP addresses
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes ip-delete 97.107.143.141
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: ip-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_linode
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,0 +1,1584 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Domain records API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to create and manage domain records on your account.
+  name: Domain records
+paths:
+  /{apiVersion}/domains/{domainId}/records:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Domain we are accessing Records for.
+      example: '{{domainId}}'
+      in: path
+      name: domainId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/domain-id-path-eb9ccd41.yaml
+    x-akamai:
+      file-path: paths/domains-records.yaml
+      path-info: /{apiVersion}/domains/{domainId}/records
+    x-linode-cli-command: domains
+    post:
+      description: 'Adds a new domain record to the zonefile this domain represents.
+
+
+        Each domain can have up to 12,000 active records.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `account_domain_creator`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains records-create 123 \
+
+        --type A \
+
+        --name test \
+
+        --target 203.0.113.1 \
+
+        --priority 50 \
+
+        --weight 50 \
+
+        --port 80 \
+
+        --ttl_sec 604800
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-domain-record
+      operationId: post-domain-record
+      requestBody:
+        content:
+          application/json:
+            example:
+              name: test
+              port: 80
+              priority: 50
+              target: 192.0.2.0
+              ttl_sec: 604800
+              type: A
+              weight: 50
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: A single record on a Domain.
+                properties:
+                  created:
+                    description: __Read-only__ When this Domain Record was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ This Record's unique ID.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  name:
+                    description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                      `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                      `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                      `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                      - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                      - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                      - Must be an empty string (`""`) for a Null MX Record.
+
+
+                      `CNAME`: The hostname. Must be unique. Required.
+
+
+                      `TXT`: The hostname.
+
+
+                      `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                      `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                      `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                      (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                    example: test
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  port:
+                    description: The port this Record points to. Only valid and required for SRV record requests.
+                    example: 80
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  priority:
+                    description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                      Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                    example: 50
+                    maximum: 255
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 6
+                  protocol:
+                    description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service:
+                    description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  tag:
+                    description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                    enum:
+                    - issue
+                    - issuewild
+                    - iodef
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  target:
+                    description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                    example: 192.0.2.0
+                    maxLength: 65535
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  ttl_sec:
+                    description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                    example: 604800
+                    type: integer
+                    x-linode-cli-display: 5
+                  type:
+                    description: __Filterable__ The type of Record this is in the DNS system. For example, A records associate a domain name with an IPv4 address, and AAAA records associate a domain name with an IPv6 address. For more information, see the guides on [DNS Record Types](https://www.linode.com/docs/products/networking/dns-manager/guides/#dns-record-types).
+                    enum:
+                    - A
+                    - AAAA
+                    - NS
+                    - MX
+                    - CNAME
+                    - TXT
+                    - SRV
+                    - PTR
+                    - CAA
+                    example: A
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Domain Record was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  weight:
+                    description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                    example: 50
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 7
+                type: object
+                x-akamai:
+                  file-path: schemas/domain-record.yaml
+              required:
+              - type
+              x-akamai:
+                file-path: schemas/added-post-domain-record.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                id: 123456
+                name: test
+                port: 80
+                priority: 50
+                protocol: null
+                service: null
+                tag: null
+                target: 192.0.2.0
+                ttl_sec: 604800
+                type: A
+                updated: '2018-01-01T00:01:01'
+                weight: 50
+              schema:
+                additionalProperties: false
+                description: A single record on a Domain.
+                properties:
+                  created:
+                    description: __Read-only__ When this Domain Record was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ This Record's unique ID.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  name:
+                    description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                      `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                      `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                      `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                      - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                      - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                      - Must be an empty string (`""`) for a Null MX Record.
+
+
+                      `CNAME`: The hostname. Must be unique. Required.
+
+
+                      `TXT`: The hostname.
+
+
+                      `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                      `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                      `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                      (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                    example: test
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  port:
+                    description: The port this Record points to. Only valid and required for SRV record requests.
+                    example: 80
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  priority:
+                    description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                      Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                    example: 50
+                    maximum: 255
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 6
+                  protocol:
+                    description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service:
+                    description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  tag:
+                    description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                    enum:
+                    - issue
+                    - issuewild
+                    - iodef
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  target:
+                    description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                    example: 192.0.2.0
+                    maxLength: 65535
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  ttl_sec:
+                    description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                    example: 604800
+                    type: integer
+                    x-linode-cli-display: 5
+                  type:
+                    description: __Filterable__ The type of Record this is in the DNS system. For example, A records associate a domain name with an IPv4 address, and AAAA records associate a domain name with an IPv6 address. For more information, see the guides on [DNS Record Types](https://www.linode.com/docs/products/networking/dns-manager/guides/#dns-record-types).
+                    enum:
+                    - A
+                    - AAAA
+                    - NS
+                    - MX
+                    - CNAME
+                    - TXT
+                    - SRV
+                    - PTR
+                    - CAA
+                    example: A
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Domain Record was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  weight:
+                    description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                    example: 50
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 7
+                type: object
+                x-akamai:
+                  file-path: schemas/domain-record.yaml
+          description: Domain Record created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Create a domain record
+      tags:
+      - Domain records
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli domains records-create 123 \\\n  --type A \\\n  --name test \\\n  --target 203.0.113.1 \\\n  --priority 50 \\\n  --weight 50 \\\n  --port 80 \\\n  --ttl_sec 604800"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: records-create
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - account_domain_creator
+    get:
+      description: 'Returns a paginated list of Records configured on a Domain in Linode''s DNS Manager.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains records-list 1234
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-domain-records
+      operationId: get-domain-records
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2018-01-01T00:01:01'
+                  id: 123456
+                  name: test
+                  port: 80
+                  priority: 50
+                  protocol: null
+                  service: null
+                  tag: null
+                  target: 192.0.2.0
+                  ttl_sec: 604800
+                  type: A
+                  updated: '2018-01-01T00:01:01'
+                  weight: 50
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: A single record on a Domain.
+                      properties:
+                        created:
+                          description: __Read-only__ When this Domain Record was created.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        id:
+                          description: __Read-only__ This Record's unique ID.
+                          example: 123456
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        name:
+                          description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                            `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                            `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                            `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                            - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                            - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                            - Must be an empty string (`""`) for a Null MX Record.
+
+
+                            `CNAME`: The hostname. Must be unique. Required.
+
+
+                            `TXT`: The hostname.
+
+
+                            `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                            `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                            `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                            (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                          example: test
+                          maxLength: 100
+                          minLength: 1
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        port:
+                          description: The port this Record points to. Only valid and required for SRV record requests.
+                          example: 80
+                          maximum: 65535
+                          minimum: 0
+                          type: integer
+                        priority:
+                          description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                            Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                          example: 50
+                          maximum: 255
+                          minimum: 0
+                          type: integer
+                          x-linode-cli-display: 6
+                        protocol:
+                          description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                          example: null
+                          type:
+                          - string
+                          - 'null'
+                        service:
+                          description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                          example: null
+                          type:
+                          - string
+                          - 'null'
+                        tag:
+                          description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                          enum:
+                          - issue
+                          - issuewild
+                          - iodef
+                          example: null
+                          type:
+                          - string
+                          - 'null'
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        target:
+                          description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                          example: 192.0.2.0
+                          maxLength: 65535
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        ttl_sec:
+                          description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                          example: 604800
+                          type: integer
+                          x-linode-cli-display: 5
+                        type:
+                          description: __Filterable__ The type of Record this is in the DNS system. For example, A records associate a domain name with an IPv4 address, and AAAA records associate a domain name with an IPv6 address. For more information, see the guides on [DNS Record Types](https://www.linode.com/docs/products/networking/dns-manager/guides/#dns-record-types).
+                          enum:
+                          - A
+                          - AAAA
+                          - NS
+                          - MX
+                          - CNAME
+                          - TXT
+                          - SRV
+                          - PTR
+                          - CAA
+                          example: A
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When this Domain Record was last updated.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        weight:
+                          description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                          example: 50
+                          maximum: 65535
+                          minimum: 0
+                          type: integer
+                          x-linode-cli-display: 7
+                      type: object
+                      x-akamai:
+                        file-path: schemas/domain-record.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-domain-records-200.yaml
+          description: A list of Domain Records.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_only
+      summary: List domain records
+      tags:
+      - Domain records
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains records-list 1234
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: records-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - domain_viewer
+  /{apiVersion}/domains/{domainId}/records/{recordId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Domain whose Record you are accessing.
+      example: '{{domainId}}'
+      in: path
+      name: domainId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/domain-id-path-8876155d.yaml
+    - description: The ID of the Record you are accessing.
+      example: '{{recordId}}'
+      in: path
+      name: recordId
+      required: true
+      schema:
+        example: 815
+        type: integer
+      x-akamai:
+        file-path: parameters/record-id-path.yaml
+    x-akamai:
+      file-path: paths/domains-record.yaml
+      path-info: /{apiVersion}/domains/{domainId}/records/{recordId}
+    x-linode-cli-command: domains
+    get:
+      description: 'View a single record on this domain.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains records-view 123 234
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-domain-record
+      operationId: get-domain-record
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                id: 123456
+                name: test
+                port: 80
+                priority: 50
+                protocol: null
+                service: null
+                tag: null
+                target: 192.0.2.0
+                ttl_sec: 604800
+                type: A
+                updated: '2018-01-01T00:01:01'
+                weight: 50
+              schema:
+                additionalProperties: false
+                description: A single record on a Domain.
+                properties:
+                  created:
+                    description: __Read-only__ When this Domain Record was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ This Record's unique ID.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  name:
+                    description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                      `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                      `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                      `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                      - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                      - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                      - Must be an empty string (`""`) for a Null MX Record.
+
+
+                      `CNAME`: The hostname. Must be unique. Required.
+
+
+                      `TXT`: The hostname.
+
+
+                      `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                      `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                      `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                      (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                    example: test
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  port:
+                    description: The port this Record points to. Only valid and required for SRV record requests.
+                    example: 80
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  priority:
+                    description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                      Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                    example: 50
+                    maximum: 255
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 6
+                  protocol:
+                    description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service:
+                    description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  tag:
+                    description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                    enum:
+                    - issue
+                    - issuewild
+                    - iodef
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  target:
+                    description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                    example: 192.0.2.0
+                    maxLength: 65535
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  ttl_sec:
+                    description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                    example: 604800
+                    type: integer
+                    x-linode-cli-display: 5
+                  type:
+                    description: __Filterable__ The type of Record this is in the DNS system. For example, A records associate a domain name with an IPv4 address, and AAAA records associate a domain name with an IPv6 address. For more information, see the guides on [DNS Record Types](https://www.linode.com/docs/products/networking/dns-manager/guides/#dns-record-types).
+                    enum:
+                    - A
+                    - AAAA
+                    - NS
+                    - MX
+                    - CNAME
+                    - TXT
+                    - SRV
+                    - PTR
+                    - CAA
+                    example: A
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Domain Record was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  weight:
+                    description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                    example: 50
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 7
+                type: object
+                x-akamai:
+                  file-path: schemas/domain-record.yaml
+          description: A Domain Record object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_only
+      summary: Get a domain record
+      tags:
+      - Domain records
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains records-view 123 234
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: records-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - domain_viewer
+    put:
+      description: 'Updates a single record on this domain.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains records-update 123 234 \
+
+        --name test \
+
+        --target 203.0.113.1 \
+
+        --priority 50 \
+
+        --weight 50 \
+
+        --port 80 \
+
+        --ttl_sec 604800
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-domain-record
+      operationId: put-domain-record
+      requestBody:
+        content:
+          application/json:
+            example:
+              name: test
+              port: 80
+              priority: 50
+              target: 192.0.2.0
+              ttl_sec: 604800
+              weight: 50
+            schema:
+              additionalProperties: false
+              description: A Domain Record Update request object.
+              properties:
+                name:
+                  description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                    `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                    `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                    `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                    - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                    - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                    - Must be an empty string (`""`) for a Null MX Record.
+
+
+                    `CNAME`: The hostname. Must be unique. Required.
+
+
+                    `TXT`: The hostname.
+
+
+                    `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                    `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                    `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                    (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                  example: '{{name}}'
+                  maxLength: 100
+                  minLength: 1
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 3
+                  x-linode-filterable: true
+                port:
+                  description: The port this Record points to. Only valid and required for SRV record requests.
+                  example: '{{port}}'
+                  maximum: 65535
+                  minimum: 0
+                  type: integer
+                priority:
+                  description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                    Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                  example: '{{priority}}'
+                  maximum: 255
+                  minimum: 0
+                  type: integer
+                  x-linode-cli-display: 6
+                protocol:
+                  description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                  example: '{{protocol}}'
+                  type:
+                  - string
+                  - 'null'
+                service:
+                  description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                  example: '{{service}}'
+                  type:
+                  - string
+                  - 'null'
+                tag:
+                  description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                  enum:
+                  - issue
+                  - issuewild
+                  - iodef
+                  example: '{{tag}}'
+                  type:
+                  - string
+                  - 'null'
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+                target:
+                  description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                  example: '{{target}}'
+                  maxLength: 65535
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 4
+                  x-linode-filterable: true
+                ttl_sec:
+                  description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                  example: '{{ttl_sec}}'
+                  type: integer
+                  x-linode-cli-display: 5
+                weight:
+                  description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                  example: '{{weight}}'
+                  maximum: 65535
+                  minimum: 0
+                  type: integer
+                  x-linode-cli-display: 7
+              type: object
+              x-akamai:
+                file-path: schemas/added-put-domain-record.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-01T00:01:01'
+                id: 123456
+                name: test
+                port: 80
+                priority: 50
+                protocol: null
+                service: null
+                tag: null
+                target: 192.0.2.0
+                ttl_sec: 604800
+                type: A
+                updated: '2018-01-01T00:01:01'
+                weight: 50
+              schema:
+                additionalProperties: false
+                description: A single record on a Domain.
+                properties:
+                  created:
+                    description: __Read-only__ When this Domain Record was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ This Record's unique ID.
+                    example: 123456
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  name:
+                    description: '__Filterable__ The name of this Record. For requests, this property''s actual usage and whether it is required depends on the type of record this represents:
+
+
+                      `A` and `AAAA`: The hostname or FQDN of the Record.
+
+
+                      `NS`: The subdomain, if any, to use with the Domain of the Record. Wildcard NS records (`*`) are not supported.
+
+
+                      `MX`: The mail subdomain. For example, `sub` for the address `user@sub.example.com` under the `example.com` Domain.
+
+
+                      - The left-most subdomain component may be an asterisk (`*`) to designate a wildcard subdomain.
+
+                      - Other subdomain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.
+
+                      - Must be an empty string (`""`) for a Null MX Record.
+
+
+                      `CNAME`: The hostname. Must be unique. Required.
+
+
+                      `TXT`: The hostname.
+
+
+                      `SRV`: Unused. Use the `service` property to set the service name for this record.
+
+
+                      `CAA`: The subdomain. Omit or enter an empty string (`""`) to apply to the entire Domain.
+
+
+                      `PTR`: See our guide on how to [Configure Your Linode for Reverse DNS
+
+                      (rDNS)](https://www.linode.com/docs/guides/configure-rdns/).'
+                    example: test
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  port:
+                    description: The port this Record points to. Only valid and required for SRV record requests.
+                    example: 80
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  priority:
+                    description: 'The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.
+
+
+                      Defaults to `0` for MX record requests. Must be `0` for Null MX records.'
+                    example: 50
+                    maximum: 255
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 6
+                  protocol:
+                    description: The protocol this Record's service communicates with. An underscore (`_`) is prepended automatically to the submitted value for this property. Only valid for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service:
+                    description: The name of the service. An underscore (`_`) is prepended and a period (`.`) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  tag:
+                    description: __Filterable__ The tag portion of a CAA record, either `issue`, `issuewild`, or `iodef`. See [CAA records](https://techdocs.akamai.com/cloud-computing/docs/caa-records) for details on these possible tag values. Only valid and required for CAA record requests.
+                    enum:
+                    - issue
+                    - issuewild
+                    - iodef
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  target:
+                    description: "__Filterable__ The target for this Record. For requests, this property's actual usage and whether it is required depends on the type of record this represents:\n\n`A` and `AAAA`: The IP address. Use `[remote_addr]` to submit the IPv4 address of the request. Required.\n\n`NS`: The name server. Must be a valid domain. Required.\n\n`MX`: The mail server. Must be a valid domain unless creating a Null MX Record. Required.\n\n- Must have less than 254 total characters.\n- The left-most domain component may be an asterisk (`*`) to designate a wildcard domain.\n- Other domain components must only contain letters, digits, and hyphens, start with a letter, end with a letter or digit, and contain less than 64 characters.\n- To create a [Null MX Record](https://datatracker.ietf.org/doc/html/rfc7505), first [remove](https://techdocs.akamai.com/linode-api/reference/delete-domain-record) any additional MX records, then create an MX record with empty strings (`\"\"`) for the `target` and `name`. If a Domain has a Null MX record, new MX records cannot be created.\n\n`CNAME`: The alias. Must be a valid domain. Required.\n\n`TXT`: The value. Required.\n\n`SRV`: The target domain or subdomain. If a subdomain is entered, it is automatically used with the Domain.\nTo configure for a different domain, enter a valid FQDN. For example, the value `www` with a Domain for\n`example.com` results in a target set to `www.example.com`, whereas the value `sample.com` results in a\ntarget set to `sample.com`. Required.\n\n`CAA`: The value. For `issue` or `issuewild` tags, the domain of your certificate issuer. For the `iodef`\ntag, a contact or submission URL (domain, http, https, or mailto). Requirements depend on the tag for this record:\n\n  - `issue`: The domain of your certificate issuer. Must include a valid domain. May include additional parameters separated with semicolons (`;`), for example: `www.example.com; foo=bar`\n  - `issuewild`: The domain of your wildcard certificate issuer. Must be a valid domain and must not start with an asterisk (`*`).\n  - `iodef`: Must be either (1) a valid domain, (2) a valid domain prepended with `http://` or `https://`, or (3) a valid email address prepended with `mailto:`.\n\n`PTR`: Required. See our guide on how to [Configure Your Linode for Reverse DNS\n(rDNS)](https://www.linode.com/docs/guides/configure-rdns/).\n\nWith the exception of A, AAAA, and CAA records, this field accepts a trailing period."
+                    example: 192.0.2.0
+                    maxLength: 65535
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  ttl_sec:
+                    description: '"Time to Live" - the amount of time in seconds that this Domain''s records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.'
+                    example: 604800
+                    type: integer
+                    x-linode-cli-display: 5
+                  type:
+                    description: __Filterable__ The type of Record this is in the DNS system. For example, A records associate a domain name with an IPv4 address, and AAAA records associate a domain name with an IPv6 address. For more information, see the guides on [DNS Record Types](https://www.linode.com/docs/products/networking/dns-manager/guides/#dns-record-types).
+                    enum:
+                    - A
+                    - AAAA
+                    - NS
+                    - MX
+                    - CNAME
+                    - TXT
+                    - SRV
+                    - PTR
+                    - CAA
+                    example: A
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Domain Record was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  weight:
+                    description: The relative weight of this Record used in the case of identical priority. Higher values are preferred. Only valid and required for SRV record requests.
+                    example: 50
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                    x-linode-cli-display: 7
+                type: object
+                x-akamai:
+                  file-path: schemas/domain-record.yaml
+          description: Domain Record updated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Update a domain record
+      tags:
+      - Domain records
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli domains records-update 123 234 \\\n  --name test \\\n  --target 203.0.113.1 \\\n  --priority 50 \\\n  --weight 50 \\\n  --port 80 \\\n  --ttl_sec 604800"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: records-update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+    delete:
+      description: 'Deletes a Record on this Domain.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `domain_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `domains:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli domains records-delete 123 234
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-domain-record
+      operationId: delete-domain-record
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Record deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - domains:read_write
+      summary: Delete a domain record
+      tags:
+      - Domain records
+      x-akamai:
+        tabs:
+        - syntax: linode-cli domains records-delete 123 234
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: records-delete
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - domain_admin
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,22 +1,703 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Profile API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Profile API
+  version: '1.0'
+  description: 'Operations tagged Profile across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Profile
-  description: Manage your user profile settings, SSH keys, authorized applications, personal access tokens, and two-factor authentication.
+- description: View and update your user's profile, including email settings, 2FA, phone number, and timezone.
+  name: Profile
 paths:
+  /{apiVersion}/profile:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/profile.yaml
+      path-info: /{apiVersion}/profile
+    x-linode-cli-command: profile
+    get:
+      description: 'Returns information about the current user. Use this to see who is acting in applications where more than one token is managed, such as a third-party OAuth application.
+
+
+        > 📘
+
+        >
+
+        > A third-party OAuth application accessing a profile with this operation has full access to all aspects of that profile.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_profile`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli profile view
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-profile
+      operationId: get-profile
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                authentication_type: password
+                authorized_keys: null
+                email: jperez@gmail.com
+                email_notifications: true
+                lish_auth_method: keys_only
+                referrals:
+                  code: 871be32f49c1411b14f29f618aaf0c14637fb8d3
+                  completed: 0
+                  credit: 0
+                  pending: 0
+                  total: 0
+                  url: https://www.linode.com/?r=871be32f49c1411b14f29f618aaf0c14637fb8d3
+                restricted: false
+                tfa_enforced: false
+                timezone: US/Eastern
+                two_factor_auth: true
+                uid: 1234
+                username: jdupont
+                verified_phone_number: '+5555555555'
+              schema:
+                additionalProperties: false
+                description: A profile represents your user in our system. This is where you can change information about your user. This information is available to any OAuth client regardless of requested scopes, and you can use it to populate user information in third-party applications.
+                properties:
+                  authentication_type:
+                    description: '__Read-only__ This account''s Cloud Manager authentication type. You choose an authentication type in Cloud Manager and Akamai authorizes it when you log into your account. Authentication types include your user''s password (in conjunction with your username), or the name of your identity provider, such as GitHub. Here are some examples:
+
+
+                      - If a user has never used third-party authentication, the authentication type will be `password`.
+
+
+                      - If a user is using third-party authentication, the name of their identity provider is used for the authentication type, for example, `github`.
+
+
+                      - If a user has used third-party authentication and has since revoked it, the authentication type is `password`.'
+                    enum:
+                    - password
+                    - github
+                    example: password
+                    readOnly: true
+                    type: string
+                  authorized_keys:
+                    description: Your user can use these SSH Keys to access Lish. This value is ignored if `lish_auth_method` is `disabled`.
+                    example: null
+                    items:
+                      format: ssh-key
+                      type: string
+                    type:
+                    - array
+                    - 'null'
+                  email:
+                    description: Your email address. We use this address for Akamai Cloud Computing-related communication.
+                    example: example-user@gmail.com
+                    format: email
+                    type: string
+                    x-linode-cli-display: 2
+                  email_notifications:
+                    description: When set to `true`, you will receive email notifications about account activity. When `false`, you may still receive business-critical communications through email.
+                    example: true
+                    type: boolean
+                  ip_whitelist_enabled:
+                    deprecated: true
+                    description: __Deprecated__ When set to `true`, your user logins are only allowed from whitelisted IPs. This setting is deprecated, and can't be enabled. If you disable this setting, you won't be able to re-enable it.
+                    example: false
+                    type: boolean
+                    x-akamai:
+                      status: DEPRECATED
+                  lish_auth_method:
+                    description: 'The authentication methods that you can use when connecting to the [Linode Shell (Lish)](https://www.linode.com/docs/guides/lish/).
+
+
+                      - `keys_only` is the most secure if you intend to use Lish.
+
+
+                      - `disabled` is recommended if you don''t want to use Lish.
+
+
+                      - If this account''s Cloud Manager authentication type is set to a third-party authentication method, you can''t use `password_keys` as your Lish authentication method. Run the [Get a profile](https://techdocs.akamai.com/linode-api/reference/get-profile) operation to view your account''s Cloud Manager `authentication_type` field.'
+                    enum:
+                    - password_keys
+                    - keys_only
+                    - disabled
+                    example: keys_only
+                    type: string
+                  referrals:
+                    additionalProperties: false
+                    description: __Read-only__ Information about your status in our referral program. The API makes this information available after this profile's account has established at least $25.00 USD of total payments.
+                    properties:
+                      code:
+                        description: __Read-only__ Your referral code. If others use this when signing up for Linode, you receive an account credit.
+                        example: 871be32f49c1411b14f29f618aaf0c14637fb8d3
+                        readOnly: true
+                        type: string
+                      completed:
+                        description: __Read-only__ The number of completed sign-ups that used your referral code.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      credit:
+                        description: __Read-only__ Your referral program account credit in US dollars.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      pending:
+                        description: __Read-only__ The number of pending sign-ups that used your referral code. Akamai gives you credit for these sign-ups once they've completed.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      total:
+                        description: __Read-only__ The number of users who have signed up with your referral code.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      url:
+                        description: __Read-only__ The referral URL that Akamai uses to direct others to sign up for Akamai Cloud Computing with your referral code.
+                        example: https://www.linode.com/?r=871be32f49c1411b14f29f618aaf0c14637fb8d3
+                        format: url
+                        readOnly: true
+                        type: string
+                    readOnly: true
+                    type: object
+                  restricted:
+                    description: When set to `true`, there are restrictions on what your user can access on your account. Run [List grants](https://techdocs.akamai.com/linode-api/reference/get-profile-grants) to get details on what entities and actions you can access and perform.
+                    example: false
+                    type: boolean
+                    x-linode-cli-display: 3
+                  tfa_enforced:
+                    description: '__Read-only__ When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`. '
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  timezone:
+                    description: The time zone you want to display for your Linode assets. This API doesn't directly use this time zone. It's provided for the benefit of clients such as the Akamai Cloud Manager and other clients built on the API. All times returned by the API are in UTC.
+                    example: US/Eastern
+                    type: string
+                  two_factor_auth:
+                    description: When set to `true`, a login from an untrusted computer requires two-factor authentication. You also need to run [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) to enable two-factor authentication.
+                    example: true
+                    type: boolean
+                    x-linode-cli-display: 4
+                  uid:
+                    description: __Read-only__ Your unique ID in our system. This value will never change, and can safely be used to identify your user.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                  username:
+                    description: __Read-only__ Your username, used for logging in to our system.
+                    example: exampleUser
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  verified_phone_number:
+                    description: __Read-only__ The phone number verified for this profile with the [Verify a phone number](https://techdocs.akamai.com/linode-api/reference/post-profile-phone-number-verify) operation. Displayed as `null` if the profile doesn't have a verified phone number.
+                    example: '+5555555555'
+                    format: phone
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/profile.yaml
+          description: Profile response.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: Get a profile
+      tags:
+      - Profile
+      x-akamai:
+        tabs:
+        - syntax: linode-cli profile view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-iam:
+      - permissions:
+        - view_profile
+    put:
+      description: 'Update information in your profile.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, delegate users on a child account can''t change their email address.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_profile`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli profile update \
+
+        --email example-user@gmail.com \
+
+        --timezone US/Eastern \
+
+        --email_notifications true \
+
+        --list_auth_method keys_only \
+
+        --two_factor_auth true \
+
+        --restricted false
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-profile
+      operationId: put-profile
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: jsmith@gmail.com
+              email_notifications: true
+              lish_auth_method: keys_only
+              restricted: false
+              timezone: US/Eastern
+              two_factor_auth: true
+            schema:
+              additionalProperties: false
+              description: A profile represents your user in our system. This is where you can change information about your user. This information is available to any OAuth client regardless of requested scopes, and you can use it to populate user information in third-party applications.
+              properties:
+                authentication_type:
+                  description: '__Read-only__ This account''s Cloud Manager authentication type. You choose an authentication type in Cloud Manager and Akamai authorizes it when you log into your account. Authentication types include your user''s password (in conjunction with your username), or the name of your identity provider, such as GitHub. Here are some examples:
+
+
+                    - If a user has never used third-party authentication, the authentication type will be `password`.
+
+
+                    - If a user is using third-party authentication, the name of their identity provider is used for the authentication type, for example, `github`.
+
+
+                    - If a user has used third-party authentication and has since revoked it, the authentication type is `password`.'
+                  enum:
+                  - password
+                  - github
+                  example: '{{authentication_type}}'
+                  readOnly: true
+                  type: string
+                authorized_keys:
+                  description: Your user can use these SSH Keys to access Lish. This value is ignored if `lish_auth_method` is `disabled`.
+                  example: null
+                  items:
+                    format: ssh-key
+                    type: string
+                  type:
+                  - array
+                  - 'null'
+                email:
+                  description: Your email address. We use this address for Akamai Cloud Computing-related communication.
+                  example: '{{email}}'
+                  format: email
+                  type: string
+                  x-linode-cli-display: 2
+                email_notifications:
+                  description: When set to `true`, you will receive email notifications about account activity. When `false`, you may still receive business-critical communications through email.
+                  example: '{{email_notifications}}'
+                  type: boolean
+                ip_whitelist_enabled:
+                  deprecated: true
+                  description: __Deprecated__ When set to `true`, your user logins are only allowed from whitelisted IPs. This setting is deprecated, and can't be enabled. If you disable this setting, you won't be able to re-enable it.
+                  example: '{{ip_whitelist_enabled}}'
+                  type: boolean
+                  x-akamai:
+                    status: DEPRECATED
+                lish_auth_method:
+                  description: 'The authentication methods that you can use when connecting to the [Linode Shell (Lish)](https://www.linode.com/docs/guides/lish/).
+
+
+                    - `keys_only` is the most secure if you intend to use Lish.
+
+
+                    - `disabled` is recommended if you don''t want to use Lish.
+
+
+                    - If this account''s Cloud Manager authentication type is set to a third-party authentication method, you can''t use `password_keys` as your Lish authentication method. Run the [Get a profile](https://techdocs.akamai.com/linode-api/reference/get-profile) operation to view your account''s Cloud Manager `authentication_type` field.'
+                  enum:
+                  - password_keys
+                  - keys_only
+                  - disabled
+                  example: '{{lish_auth_method}}'
+                  type: string
+                referrals:
+                  additionalProperties: false
+                  description: __Read-only__ Information about your status in our referral program. The API makes this information available after this profile's account has established at least $25.00 USD of total payments.
+                  properties:
+                    code:
+                      description: __Read-only__ Your referral code. If others use this when signing up for Linode, you receive an account credit.
+                      example: 871be32f49c1411b14f29f618aaf0c14637fb8d3
+                      readOnly: true
+                      type: string
+                    completed:
+                      description: __Read-only__ The number of completed sign-ups that used your referral code.
+                      example: 0
+                      readOnly: true
+                      type: integer
+                    credit:
+                      description: __Read-only__ Your referral program account credit in US dollars.
+                      example: 0
+                      readOnly: true
+                      type: integer
+                    pending:
+                      description: __Read-only__ The number of pending sign-ups that used your referral code. Akamai gives you credit for these sign-ups once they've completed.
+                      example: 0
+                      readOnly: true
+                      type: integer
+                    total:
+                      description: __Read-only__ The number of users who have signed up with your referral code.
+                      example: 0
+                      readOnly: true
+                      type: integer
+                    url:
+                      description: __Read-only__ The referral URL that Akamai uses to direct others to sign up for Akamai Cloud Computing with your referral code.
+                      example: https://www.linode.com/?r=871be32f49c1411b14f29f618aaf0c14637fb8d3
+                      format: url
+                      readOnly: true
+                      type: string
+                  readOnly: true
+                  type: object
+                restricted:
+                  description: When set to `true`, there are restrictions on what your user can access on your account. Run [List grants](https://techdocs.akamai.com/linode-api/reference/get-profile-grants) to get details on what entities and actions you can access and perform.
+                  example: '{{restricted}}'
+                  type: boolean
+                  x-linode-cli-display: 3
+                tfa_enforced:
+                  description: '__Read-only__ When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`. '
+                  example: '{{tfa_enforced}}'
+                  readOnly: true
+                  type: boolean
+                timezone:
+                  description: The time zone you want to display for your Linode assets. This API doesn't directly use this time zone. It's provided for the benefit of clients such as the Akamai Cloud Manager and other clients built on the API. All times returned by the API are in UTC.
+                  example: '{{timezone}}'
+                  type: string
+                two_factor_auth:
+                  description: When set to `true`, a login from an untrusted computer requires two-factor authentication. You also need to run [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) to enable two-factor authentication.
+                  example: '{{two_factor_auth}}'
+                  type: boolean
+                  x-linode-cli-display: 4
+                uid:
+                  description: __Read-only__ Your unique ID in our system. This value will never change, and can safely be used to identify your user.
+                  example: '{{uid}}'
+                  readOnly: true
+                  type: integer
+                username:
+                  description: __Read-only__ Your username, used for logging in to our system.
+                  example: '{{username}}'
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 1
+                verified_phone_number:
+                  description: __Read-only__ The phone number verified for this profile with the [Verify a phone number](https://techdocs.akamai.com/linode-api/reference/post-profile-phone-number-verify) operation. Displayed as `null` if the profile doesn't have a verified phone number.
+                  example: '{{verified_phone_number}}'
+                  format: phone
+                  readOnly: true
+                  type:
+                  - string
+                  - 'null'
+              type: object
+              x-akamai:
+                file-path: schemas/profile.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                authentication_type: password
+                authorized_keys: null
+                email: jperez@gmail.com
+                email_notifications: true
+                lish_auth_method: keys_only
+                referrals:
+                  code: 871be32f49c1411b14f29f618aaf0c14637fb8d3
+                  completed: 0
+                  credit: 0
+                  pending: 0
+                  total: 0
+                  url: https://www.linode.com/?r=871be32f49c1411b14f29f618aaf0c14637fb8d3
+                restricted: false
+                tfa_enforced: false
+                timezone: US/Eastern
+                two_factor_auth: true
+                uid: 1234
+                username: jdupont
+                verified_phone_number: '+5555555555'
+              schema:
+                additionalProperties: false
+                description: A profile represents your user in our system. This is where you can change information about your user. This information is available to any OAuth client regardless of requested scopes, and you can use it to populate user information in third-party applications.
+                properties:
+                  authentication_type:
+                    description: '__Read-only__ This account''s Cloud Manager authentication type. You choose an authentication type in Cloud Manager and Akamai authorizes it when you log into your account. Authentication types include your user''s password (in conjunction with your username), or the name of your identity provider, such as GitHub. Here are some examples:
+
+
+                      - If a user has never used third-party authentication, the authentication type will be `password`.
+
+
+                      - If a user is using third-party authentication, the name of their identity provider is used for the authentication type, for example, `github`.
+
+
+                      - If a user has used third-party authentication and has since revoked it, the authentication type is `password`.'
+                    enum:
+                    - password
+                    - github
+                    example: password
+                    readOnly: true
+                    type: string
+                  authorized_keys:
+                    description: Your user can use these SSH Keys to access Lish. This value is ignored if `lish_auth_method` is `disabled`.
+                    example: null
+                    items:
+                      format: ssh-key
+                      type: string
+                    type:
+                    - array
+                    - 'null'
+                  email:
+                    description: Your email address. We use this address for Akamai Cloud Computing-related communication.
+                    example: example-user@gmail.com
+                    format: email
+                    type: string
+                    x-linode-cli-display: 2
+                  email_notifications:
+                    description: When set to `true`, you will receive email notifications about account activity. When `false`, you may still receive business-critical communications through email.
+                    example: true
+                    type: boolean
+                  ip_whitelist_enabled:
+                    deprecated: true
+                    description: __Deprecated__ When set to `true`, your user logins are only allowed from whitelisted IPs. This setting is deprecated, and can't be enabled. If you disable this setting, you won't be able to re-enable it.
+                    example: false
+                    type: boolean
+                    x-akamai:
+                      status: DEPRECATED
+                  lish_auth_method:
+                    description: 'The authentication methods that you can use when connecting to the [Linode Shell (Lish)](https://www.linode.com/docs/guides/lish/).
+
+
+                      - `keys_only` is the most secure if you intend to use Lish.
+
+
+                      - `disabled` is recommended if you don''t want to use Lish.
+
+
+                      - If this account''s Cloud Manager authentication type is set to a third-party authentication method, you can''t use `password_keys` as your Lish authentication method. Run the [Get a profile](https://techdocs.akamai.com/linode-api/reference/get-profile) operation to view your account''s Cloud Manager `authentication_type` field.'
+                    enum:
+                    - password_keys
+                    - keys_only
+                    - disabled
+                    example: keys_only
+                    type: string
+                  referrals:
+                    additionalProperties: false
+                    description: __Read-only__ Information about your status in our referral program. The API makes this information available after this profile's account has established at least $25.00 USD of total payments.
+                    properties:
+                      code:
+                        description: __Read-only__ Your referral code. If others use this when signing up for Linode, you receive an account credit.
+                        example: 871be32f49c1411b14f29f618aaf0c14637fb8d3
+                        readOnly: true
+                        type: string
+                      completed:
+                        description: __Read-only__ The number of completed sign-ups that used your referral code.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      credit:
+                        description: __Read-only__ Your referral program account credit in US dollars.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      pending:
+                        description: __Read-only__ The number of pending sign-ups that used your referral code. Akamai gives you credit for these sign-ups once they've completed.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      total:
+                        description: __Read-only__ The number of users who have signed up with your referral code.
+                        example: 0
+                        readOnly: true
+                        type: integer
+                      url:
+                        description: __Read-only__ The referral URL that Akamai uses to direct others to sign up for Akamai Cloud Computing with your referral code.
+                        example: https://www.linode.com/?r=871be32f49c1411b14f29f618aaf0c14637fb8d3
+                        format: url
+                        readOnly: true
+                        type: string
+                    readOnly: true
+                    type: object
+                  restricted:
+                    description: When set to `true`, there are restrictions on what your user can access on your account. Run [List grants](https://techdocs.akamai.com/linode-api/reference/get-profile-grants) to get details on what entities and actions you can access and perform.
+                    example: false
+                    type: boolean
+                    x-linode-cli-display: 3
+                  tfa_enforced:
+                    description: '__Read-only__ When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`. '
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  timezone:
+                    description: The time zone you want to display for your Linode assets. This API doesn't directly use this time zone. It's provided for the benefit of clients such as the Akamai Cloud Manager and other clients built on the API. All times returned by the API are in UTC.
+                    example: US/Eastern
+                    type: string
+                  two_factor_auth:
+                    description: When set to `true`, a login from an untrusted computer requires two-factor authentication. You also need to run [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) to enable two-factor authentication.
+                    example: true
+                    type: boolean
+                    x-linode-cli-display: 4
+                  uid:
+                    description: __Read-only__ Your unique ID in our system. This value will never change, and can safely be used to identify your user.
+                    example: 1234
+                    readOnly: true
+                    type: integer
+                  username:
+                    description: __Read-only__ Your username, used for logging in to our system.
+                    example: exampleUser
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  verified_phone_number:
+                    description: __Read-only__ The phone number verified for this profile with the [Verify a phone number](https://techdocs.akamai.com/linode-api/reference/post-profile-phone-number-verify) operation. Displayed as `null` if the profile doesn't have a verified phone number.
+                    example: '+5555555555'
+                    format: phone
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/profile.yaml
+          description: Profile updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Update a profile
+      tags:
+      - Profile
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli profile update \\\n  --email example-user@gmail.com \\\n  --timezone US/Eastern \\\n  --email_notifications true \\\n  --list_auth_method keys_only \\\n  --two_factor_auth true \\\n  --restricted false"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-iam:
+      - permissions:
+        - update_profile
+    servers:
+    - url: https://api.linode.com
   /profile:
     get:
       operationId: getProfile
@@ -33,6 +714,9 @@ paths:
                 $ref: '#/components/schemas/Profile'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateProfile
       summary: Update your profile
@@ -56,6 +740,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /profile/tokens:
     get:
       operationId: getPersonalAccessTokens
@@ -75,6 +765,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedTokenList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createPersonalAccessToken
       summary: Create a personal access token
@@ -98,6 +791,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /profile/sshkeys:
     get:
       operationId: getSSHKeys
@@ -117,6 +816,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedSSHKeyList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createSSHKey
       summary: Add an SSH key
@@ -140,22 +842,32 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
-    SSHKeyRequest:
-      type: object
-      required:
-      - label
-      - ssh_key
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 64
-          description: The label for the SSH key.
-        ssh_key:
-          type: string
-          description: The SSH public key content.
     Token:
       type: object
       properties:
@@ -179,6 +891,18 @@ components:
           type: string
           format: date-time
           description: When this token expires.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     TokenRequest:
       type: object
       required:
@@ -197,34 +921,6 @@ components:
           type: string
           format: date-time
           description: When the token should expire.
-    SSHKey:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this SSH key.
-        label:
-          type: string
-          description: The label for this SSH key.
-        ssh_key:
-          type: string
-          description: The SSH public key.
-        created:
-          type: string
-          format: date-time
-          description: When this SSH key was added.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     Profile:
       type: object
       properties:
@@ -255,15 +951,22 @@ components:
           items:
             type: string
           description: SSH keys authorized on the profile.
-    PaginatedTokenList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Token'
+    SSHKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this SSH key.
+        label:
+          type: string
+          description: The label for this SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key.
+        created:
+          type: string
+          format: date-time
+          description: When this SSH key was added.
     PaginatedSSHKeyList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -273,65 +976,79 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/SSHKey'
-  parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
+    SSHKeyRequest:
+      type: object
+      required:
+      - label
+      - ssh_key
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key content.
+    PaginatedTokenList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Token'
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

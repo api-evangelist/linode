@@ -1,22 +1,3497 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Images API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Images API
+  version: '1.0'
+  description: 'Operations tagged Images across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
 tags:
-- name: Images
-  description: Manage custom images for deploying Linode instances, including creating images from disks, uploading images, and managing image metadata.
+- description: The Images service lets you store complete disk images in the cloud for quick access in the future. A disk can be from an existing Linode you have access to, or a custom disk you upload for storage. These operations let you create, upload, view, delete, and replicate an image.
+  name: Images
 paths:
+  /{apiVersion}/images:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/images.yaml
+      path-info: /{apiVersion}/images
+    x-linode-cli-command: images
+    post:
+      description: 'Captures a private, gold image from a Linode disk and stores it for later use.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > This operation has specific requirements for use. Check out its workflow for details.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_write, linodes:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images create \
+
+        --label this_is_a_label \
+
+        --description "A longer description \
+
+        of the image" \
+
+        --disk_id 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-image
+      operationId: post-image
+      requestBody:
+        content:
+          application/json:
+            example:
+              cloud_init: true
+              disk_id: 42
+              label: new-image
+            schema:
+              additionalProperties: false
+              properties:
+                cloud_init:
+                  description: Whether this image supports [cloud-init](https://www.linode.com/docs/guides/write-files-with-cloud-init/).
+                  example: '{{cloud_init}}'
+                  type: boolean
+                description:
+                  description: A detailed description of this image.
+                  example: '{{description}}'
+                  type: string
+                disk_id:
+                  description: The ID of the target Linode disk for this image.
+                  example: '{{disk_id}}'
+                  type: integer
+                label:
+                  description: The short title for this image. If not provided, the disk's current label is used.
+                  example: '{{label}}'
+                  type: string
+                tags:
+                  description: Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                  example:
+                  - repair-image
+                  - fix-1
+                  items:
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                  maxItems: 500
+                  minItems: 0
+                  type: array
+              required:
+              - disk_id
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-image.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                capabilities:
+                - cloud-init
+                - distributed-sites
+                created: '2021-08-14T22:44:02'
+                created_by: linode
+                deprecated: false
+                description: Example image description.
+                eol: '2026-07-01T04:00:00'
+                expiry: null
+                id: private/15
+                image_sharing:
+                  shared_by: null
+                  shared_with:
+                    sharegroup_count: 0
+                    sharegroup_list_url: /images/private/15/sharegroups
+                is_public: false
+                is_shared: false
+                label: Debian 13
+                regions:
+                - region: us-iad
+                  status: available
+                size: 2500
+                status: available
+                tags:
+                - repair-image
+                - fix-1
+                total_size: 1234567
+                type: manual
+                updated: '2021-08-14T22:44:02'
+                vendor: Debian
+              schema:
+                additionalProperties: false
+                description: Image object.
+                properties:
+                  capabilities:
+                    description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                      - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                      - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                    example:
+                    - cloud-init
+                    - distributed-sites
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 8
+                  created:
+                    description: __Read-only__ When this image was created.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                    example: linode
+                    readOnly: true
+                    type: string
+                  deprecated:
+                    description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  description:
+                    description: A detailed description of this image.
+                    example: Example image description.
+                    maxLength: 65000
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 4
+                  eol:
+                    description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                    example: '2026-07-01T04:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  expiry:
+                    description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique identifier for each image.
+                    example: private/15
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  image_sharing:
+                    description: Details about image sharing.
+                    oneOf:
+                    - additionalProperties: false
+                      example:
+                        shared_by: null
+                        shared_with:
+                          sharegroup_count: 0
+                          sharegroup_list_url: /images/private/15/sharegroups
+                      properties:
+                        shared_by:
+                          description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                          type:
+                          - object
+                          - 'null'
+                        shared_with:
+                          additionalProperties: false
+                          description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                          properties:
+                            sharegroup_count:
+                              description: The number of share groups the image is shared with.
+                              type: integer
+                            sharegroup_list_url:
+                              description: A URL to view the list of share groups the image is shared with.
+                              type: string
+                          required:
+                          - sharegroup_count
+                          - sharegroup_list_url
+                          type: object
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_with
+                      type: object
+                    - additionalProperties: false
+                      example:
+                        shared_by:
+                          sharegroup_id: 3
+                          sharegroup_label: label
+                          sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                          source_image_id: null
+                          source_image_label: source image label
+                        shared_with: null
+                      properties:
+                        shared_by:
+                          additionalProperties: false
+                          description: Specifies the details of the share group that is sharing the image.
+                          properties:
+                            sharegroup_id:
+                              description: The share group's identifier.
+                              type: integer
+                            sharegroup_label:
+                              description: The share group's descriptive name.
+                              type: string
+                            sharegroup_uuid:
+                              description: The share group's unique identifier.
+                              format: uuid
+                              type: string
+                            source_image_id:
+                              description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                              type:
+                              - string
+                              - 'null'
+                            source_image_label:
+                              description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                              example: Source Image Label
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                          required:
+                          - sharegroup_id
+                          - sharegroup_uuid
+                          - sharegroup_label
+                          - source_image_id
+                          - source_image_label
+                          type: object
+                        shared_with:
+                          description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                          type:
+                          - object
+                          - 'null'
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_by
+                      type: object
+                  is_public:
+                    description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_shared:
+                    description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                      - `true`: The private image is shared.
+
+                      - `false`: The private image is not shared.
+
+                      - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                    example: false
+                    oneOf:
+                    - title: Boolean
+                      type: boolean
+                    - enum:
+                      - none
+                      title: String
+                      type: string
+                    readOnly: true
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 11
+                    x-linode-filterable: true
+                  label:
+                    description: __Filterable__ A short description of the image.
+                    example: Debian 13
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  regions:
+                    description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        region:
+                          description: The unique identifier for the core compute region where this image is stored.
+                          example: us-iad
+                          type: string
+                        status:
+                          description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                          enum:
+                          - available
+                          - creating
+                          - pending
+                          - pending deletion
+                          - pending replication
+                          - replicating
+                          example: available
+                          type: string
+                      type: object
+                    readOnly: true
+                    type: array
+                    x-linode-cli-format: json
+                  size:
+                    description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                    example: 2500
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                      > 📘
+
+                      >
+
+                      > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                    enum:
+                    - creating
+                    - pending_upload
+                    - available
+                    example: available
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 7
+                    x-linode-filterable: true
+                  tags:
+                    description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                    example:
+                    - repair-image
+                    - fix-1
+                    items:
+                      maxLength: 100
+                      minLength: 3
+                      type: string
+                    maxItems: 500
+                    minItems: 0
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 10
+                    x-linode-filterable: true
+                  total_size:
+                    description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                      > 📘
+
+                      >
+
+                      > This object is empty for existing images. It''s intended for use with future functionality.'
+                    example: 1234567
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                    enum:
+                    - manual
+                    - automatic
+                    - shared
+                    example: manual
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this image was last updated.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  vendor:
+                    description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                    example: Debian
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                required:
+                - id
+                - tags
+                - type
+                - description
+                - label
+                - created
+                - updated
+                - size
+                - status
+                - capabilities
+                - is_public
+                - is_shared
+                - deprecated
+                - regions
+                - total_size
+                - image_sharing
+                - created_by
+                - expiry
+                - eol
+                - vendor
+                type: object
+                x-akamai:
+                  file-path: schemas/image.yaml
+          description: New private image created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_write
+        - linodes:read_only
+      summary: Create an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli images create \\\n  --label this_is_a_label \\\n  --description \"A longer description \\\n    of the image\" \\\n  --disk_id 123"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: create
+      x-linode-grant: add_images
+      x-linode-iam:
+      - permissions:
+        - create_image
+    get:
+      description: 'Returns a paginated list of images. An image can be one of two types:
+
+
+        - **Public image**. The `id` for these images begins with `linode/`. These images are generally available to all users. To limit the response to public images, don''t include authentication when calling this operation.
+
+
+        - **Private image**. The `id` for these images begins with `private/`. These images are account-specific and only accessible to users with appropriate permissions. To view private images, you need to include authentication when calling this operation. The response includes both private and public images.
+
+
+        - **Shared image**. The `id` for these images begins with `shared/`. These are the images that are shared with the user.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `Public images are Internet facing and private images require the view_image permission`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-images
+      operationId: get-images
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - capabilities:
+                  - cloud-init
+                  - distributed-sites
+                  created: '2021-08-14T22:44:02'
+                  created_by: linode
+                  deprecated: false
+                  description: Example image description.
+                  eol: '2026-07-01T04:00:00'
+                  expiry: null
+                  id: private/15
+                  image_sharing:
+                    shared_by: null
+                    shared_with:
+                      sharegroup_count: 0
+                      sharegroup_list_url: /images/private/15/sharegroups
+                  is_public: false
+                  is_shared: false
+                  label: Debian 13
+                  regions:
+                  - region: us-iad
+                    status: available
+                  size: 2500
+                  status: available
+                  tags:
+                  - repair-image
+                  - fix-1
+                  total_size: 1234567
+                  type: manual
+                  updated: '2021-08-14T22:44:02'
+                  vendor: Debian
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Image object.
+                      properties:
+                        capabilities:
+                          description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                            - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                            - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                          example:
+                          - cloud-init
+                          - distributed-sites
+                          items:
+                            type: string
+                          readOnly: true
+                          type: array
+                          x-linode-cli-display: 8
+                        created:
+                          description: __Read-only__ When this image was created.
+                          example: '2021-08-14T22:44:02'
+                          readOnly: true
+                          type: string
+                        created_by:
+                          description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                          example: linode
+                          readOnly: true
+                          type: string
+                        deprecated:
+                          description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                          example: false
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        description:
+                          description: A detailed description of this image.
+                          example: Example image description.
+                          maxLength: 65000
+                          minLength: 1
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-color:
+                            None: black
+                            default_: white
+                          x-linode-cli-display: 4
+                        eol:
+                          description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                          example: '2026-07-01T04:00:00'
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        expiry:
+                          description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                          example: null
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: __Read-only__ The unique identifier for each image.
+                          example: private/15
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        image_sharing:
+                          description: Details about image sharing.
+                          oneOf:
+                          - additionalProperties: false
+                            example:
+                              shared_by: null
+                              shared_with:
+                                sharegroup_count: 0
+                                sharegroup_list_url: /images/private/15/sharegroups
+                            properties:
+                              shared_by:
+                                description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                                type:
+                                - object
+                                - 'null'
+                              shared_with:
+                                additionalProperties: false
+                                description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                                properties:
+                                  sharegroup_count:
+                                    description: The number of share groups the image is shared with.
+                                    type: integer
+                                  sharegroup_list_url:
+                                    description: A URL to view the list of share groups the image is shared with.
+                                    type: string
+                                required:
+                                - sharegroup_count
+                                - sharegroup_list_url
+                                type: object
+                            required:
+                            - shared_with
+                            - shared_by
+                            title: shared_with
+                            type: object
+                          - additionalProperties: false
+                            example:
+                              shared_by:
+                                sharegroup_id: 3
+                                sharegroup_label: label
+                                sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                                source_image_id: null
+                                source_image_label: source image label
+                              shared_with: null
+                            properties:
+                              shared_by:
+                                additionalProperties: false
+                                description: Specifies the details of the share group that is sharing the image.
+                                properties:
+                                  sharegroup_id:
+                                    description: The share group's identifier.
+                                    type: integer
+                                  sharegroup_label:
+                                    description: The share group's descriptive name.
+                                    type: string
+                                  sharegroup_uuid:
+                                    description: The share group's unique identifier.
+                                    format: uuid
+                                    type: string
+                                  source_image_id:
+                                    description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  source_image_label:
+                                    description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                                    example: Source Image Label
+                                    readOnly: true
+                                    type:
+                                    - string
+                                    - 'null'
+                                required:
+                                - sharegroup_id
+                                - sharegroup_uuid
+                                - sharegroup_label
+                                - source_image_id
+                                - source_image_label
+                                type: object
+                              shared_with:
+                                description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                                type:
+                                - object
+                                - 'null'
+                            required:
+                            - shared_with
+                            - shared_by
+                            title: shared_by
+                            type: object
+                        is_public:
+                          description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                          example: false
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 5
+                          x-linode-filterable: true
+                        is_shared:
+                          description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                            - `true`: The private image is shared.
+
+                            - `false`: The private image is not shared.
+
+                            - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                          example: false
+                          oneOf:
+                          - title: Boolean
+                            type: boolean
+                          - enum:
+                            - none
+                            title: String
+                            type: string
+                          readOnly: true
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 11
+                          x-linode-filterable: true
+                        label:
+                          description: __Filterable__ A short description of the image.
+                          example: Debian 13
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        regions:
+                          description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              region:
+                                description: The unique identifier for the core compute region where this image is stored.
+                                example: us-iad
+                                type: string
+                              status:
+                                description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                                enum:
+                                - available
+                                - creating
+                                - pending
+                                - pending deletion
+                                - pending replication
+                                - replicating
+                                example: available
+                                type: string
+                            type: object
+                          readOnly: true
+                          type: array
+                          x-linode-cli-format: json
+                        size:
+                          description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                          example: 2500
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                        status:
+                          description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                            > 📘
+
+                            >
+
+                            > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                          enum:
+                          - creating
+                          - pending_upload
+                          - available
+                          example: available
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 7
+                          x-linode-filterable: true
+                        tags:
+                          description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                          example:
+                          - repair-image
+                          - fix-1
+                          items:
+                            maxLength: 100
+                            minLength: 3
+                            type: string
+                          maxItems: 500
+                          minItems: 0
+                          type: array
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 10
+                          x-linode-filterable: true
+                        total_size:
+                          description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                            > 📘
+
+                            >
+
+                            > This object is empty for existing images. It''s intended for use with future functionality.'
+                          example: 1234567
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 9
+                        type:
+                          description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                          enum:
+                          - manual
+                          - automatic
+                          - shared
+                          example: manual
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When this image was last updated.
+                          example: '2021-08-14T22:44:02'
+                          readOnly: true
+                          type: string
+                        vendor:
+                          description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                          example: Debian
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-color:
+                            None: black
+                            default_: white
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                      required:
+                      - id
+                      - tags
+                      - type
+                      - description
+                      - label
+                      - created
+                      - updated
+                      - size
+                      - status
+                      - capabilities
+                      - is_public
+                      - is_shared
+                      - deprecated
+                      - regions
+                      - total_size
+                      - image_sharing
+                      - created_by
+                      - expiry
+                      - eol
+                      - vendor
+                      type: object
+                      x-akamai:
+                        file-path: schemas/image.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-images-200.yaml
+          description: A paginated list of images.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_only
+      summary: List images
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: linode-cli images list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-iam:
+      - permissions:
+        - Public images are Internet facing and private images require the view_image permission
+      x-linode-redoc-load-ids: true
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/images/upload:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/image-upload.yaml
+      path-info: /{apiVersion}/images/upload
+    x-linode-cli-command: images
+    post:
+      description: 'Creates a new private image container and returns a URL as the `upload_to` object in the response. Use this URL to upload your own disk image to the container.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > This operation has specific requirements for use. Check out its workflow for details.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `upload_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        # Run the operation to just get the upload_to URL
+
+        linode-cli images upload \
+
+        --description "Optional details about the Image" \
+
+        --label "Example Image" \
+
+        --region us-east
+
+
+        # Upload the image file in a single step
+
+        linode-cli image-upload \
+
+        --description "Optional details about the Image" \
+
+        --label "Example Image" \
+
+        --region us-east \
+
+        /path/to/image-file.img.gz
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-upload-image
+      operationId: post-upload-image
+      requestBody:
+        content:
+          application/json:
+            example:
+              cloud_init: true
+              description: This is an example image in the docs.
+              label: my-image-label
+              region: eu-central
+            schema:
+              additionalProperties: false
+              properties:
+                cloud_init:
+                  description: Whether the uploaded Image supports cloud-init.
+                  example: '{{cloud_init}}'
+                  type: boolean
+                description:
+                  description: Description for the uploaded image.
+                  example: '{{description}}'
+                  type: string
+                label:
+                  description: Label for the uploaded image.
+                  example: '{{label}}'
+                  type: string
+                region:
+                  description: 'The region to upload to. Once uploaded, the image can be used in any region.
+
+
+                    > 📘
+
+                    >
+
+                    > Only core regions that support our [Object Storage](https://techdocs.akamai.com/cloud-computing/reference/how-to-choose-a-data-center#product-availability) service can store an uploaded image.'
+                  example: '{{region}}'
+                  type: string
+                tags:
+                  description: Tags you can use to organize images. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                  example:
+                  - repair-image
+                  - fix-1
+                  items:
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                  maxItems: 500
+                  minItems: 0
+                  type: array
+              required:
+              - label
+              - region
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-upload-image.yaml
+        x-linode-cli-allowed-defaults:
+        - region
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                image:
+                  capabilities:
+                  - cloud-init
+                  - distributed-sites
+                  created: '2021-08-14T22:44:02'
+                  created_by: linode
+                  deprecated: false
+                  description: Example image description.
+                  eol: '2026-07-01T04:00:00'
+                  expiry: null
+                  id: private/15
+                  image_sharing:
+                    shared_by: null
+                    shared_with:
+                      sharegroup_count: 0
+                      sharegroup_list_url: /images/private/15/sharegroups
+                  is_public: false
+                  is_shared: false
+                  label: Debian 13
+                  regions:
+                  - region: us-iad
+                    status: available
+                  size: 2500
+                  status: available
+                  tags:
+                  - repair-image
+                  - fix-1
+                  total_size: 1234567
+                  type: manual
+                  updated: '2021-08-14T22:44:02'
+                  vendor: Debian
+                upload_to: string
+              schema:
+                additionalProperties: false
+                properties:
+                  image:
+                    additionalProperties: false
+                    description: Image object.
+                    properties:
+                      capabilities:
+                        description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                          - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                          - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                        example:
+                        - cloud-init
+                        - distributed-sites
+                        items:
+                          type: string
+                        readOnly: true
+                        type: array
+                        x-linode-cli-display: 8
+                      created:
+                        description: __Read-only__ When this image was created.
+                        example: '2021-08-14T22:44:02'
+                        readOnly: true
+                        type: string
+                      created_by:
+                        description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                        example: linode
+                        readOnly: true
+                        type: string
+                      deprecated:
+                        description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                        example: false
+                        readOnly: true
+                        type: boolean
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      description:
+                        description: A detailed description of this image.
+                        example: Example image description.
+                        maxLength: 65000
+                        minLength: 1
+                        type:
+                        - string
+                        - 'null'
+                        x-linode-cli-color:
+                          None: black
+                          default_: white
+                        x-linode-cli-display: 4
+                      eol:
+                        description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                        example: '2026-07-01T04:00:00'
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                      expiry:
+                        description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                        example: null
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                      id:
+                        description: __Read-only__ The unique identifier for each image.
+                        example: private/15
+                        readOnly: true
+                        type: string
+                        x-linode-cli-display: 1
+                      image_sharing:
+                        description: Details about image sharing.
+                        oneOf:
+                        - additionalProperties: false
+                          example:
+                            shared_by: null
+                            shared_with:
+                              sharegroup_count: 0
+                              sharegroup_list_url: /images/private/15/sharegroups
+                          properties:
+                            shared_by:
+                              description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                              type:
+                              - object
+                              - 'null'
+                            shared_with:
+                              additionalProperties: false
+                              description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                              properties:
+                                sharegroup_count:
+                                  description: The number of share groups the image is shared with.
+                                  type: integer
+                                sharegroup_list_url:
+                                  description: A URL to view the list of share groups the image is shared with.
+                                  type: string
+                              required:
+                              - sharegroup_count
+                              - sharegroup_list_url
+                              type: object
+                          required:
+                          - shared_with
+                          - shared_by
+                          title: shared_with
+                          type: object
+                        - additionalProperties: false
+                          example:
+                            shared_by:
+                              sharegroup_id: 3
+                              sharegroup_label: label
+                              sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                              source_image_id: null
+                              source_image_label: source image label
+                            shared_with: null
+                          properties:
+                            shared_by:
+                              additionalProperties: false
+                              description: Specifies the details of the share group that is sharing the image.
+                              properties:
+                                sharegroup_id:
+                                  description: The share group's identifier.
+                                  type: integer
+                                sharegroup_label:
+                                  description: The share group's descriptive name.
+                                  type: string
+                                sharegroup_uuid:
+                                  description: The share group's unique identifier.
+                                  format: uuid
+                                  type: string
+                                source_image_id:
+                                  description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                                  type:
+                                  - string
+                                  - 'null'
+                                source_image_label:
+                                  description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                                  example: Source Image Label
+                                  readOnly: true
+                                  type:
+                                  - string
+                                  - 'null'
+                              required:
+                              - sharegroup_id
+                              - sharegroup_uuid
+                              - sharegroup_label
+                              - source_image_id
+                              - source_image_label
+                              type: object
+                            shared_with:
+                              description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                              type:
+                              - object
+                              - 'null'
+                          required:
+                          - shared_with
+                          - shared_by
+                          title: shared_by
+                          type: object
+                      is_public:
+                        description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                        example: false
+                        readOnly: true
+                        type: boolean
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 5
+                        x-linode-filterable: true
+                      is_shared:
+                        description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                          - `true`: The private image is shared.
+
+                          - `false`: The private image is not shared.
+
+                          - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                        example: false
+                        oneOf:
+                        - title: Boolean
+                          type: boolean
+                        - enum:
+                          - none
+                          title: String
+                          type: string
+                        readOnly: true
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 11
+                        x-linode-filterable: true
+                      label:
+                        description: __Filterable__ A short description of the image.
+                        example: Debian 13
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 2
+                        x-linode-filterable: true
+                      regions:
+                        description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            region:
+                              description: The unique identifier for the core compute region where this image is stored.
+                              example: us-iad
+                              type: string
+                            status:
+                              description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                              enum:
+                              - available
+                              - creating
+                              - pending
+                              - pending deletion
+                              - pending replication
+                              - replicating
+                              example: available
+                              type: string
+                          type: object
+                        readOnly: true
+                        type: array
+                        x-linode-cli-format: json
+                      size:
+                        description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                        example: 2500
+                        readOnly: true
+                        type: integer
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 6
+                        x-linode-filterable: true
+                      status:
+                        description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                          > 📘
+
+                          >
+
+                          > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                        enum:
+                        - creating
+                        - pending_upload
+                        - available
+                        example: available
+                        readOnly: true
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 7
+                        x-linode-filterable: true
+                      tags:
+                        description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                        example:
+                        - repair-image
+                        - fix-1
+                        items:
+                          maxLength: 100
+                          minLength: 3
+                          type: string
+                        maxItems: 500
+                        minItems: 0
+                        type: array
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-display: 10
+                        x-linode-filterable: true
+                      total_size:
+                        description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                          > 📘
+
+                          >
+
+                          > This object is empty for existing images. It''s intended for use with future functionality.'
+                        example: 1234567
+                        readOnly: true
+                        type: integer
+                        x-linode-cli-display: 9
+                      type:
+                        description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                        enum:
+                        - manual
+                        - automatic
+                        - shared
+                        example: manual
+                        readOnly: true
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      updated:
+                        description: __Read-only__ When this image was last updated.
+                        example: '2021-08-14T22:44:02'
+                        readOnly: true
+                        type: string
+                      vendor:
+                        description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                        example: Debian
+                        readOnly: true
+                        type:
+                        - string
+                        - 'null'
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-cli-color:
+                          None: black
+                          default_: white
+                        x-linode-cli-display: 3
+                        x-linode-filterable: true
+                    required:
+                    - id
+                    - tags
+                    - type
+                    - description
+                    - label
+                    - created
+                    - updated
+                    - size
+                    - status
+                    - capabilities
+                    - is_public
+                    - is_shared
+                    - deprecated
+                    - regions
+                    - total_size
+                    - image_sharing
+                    - created_by
+                    - expiry
+                    - eol
+                    - vendor
+                    type: object
+                    x-akamai:
+                      file-path: schemas/image.yaml
+                  upload_to:
+                    description: The URL to upload the Image to.
+                    type: string
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-upload-image-200.yaml
+          description: Image Upload object including the upload URL and image object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_write
+      summary: Upload an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: "# Run the operation to just get the upload_to URL\nlinode-cli images upload \\\n  --description \"Optional details about the Image\" \\\n  --label \"Example Image\" \\\n  --region us-east\n\n# Upload the image file in a single step\nlinode-cli image-upload \\\n  --description \"Optional details about the Image\" \\\n  --label \"Example Image\" \\\n  --region us-east \\\n  /path/to/image-file.img.gz"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: upload
+      x-linode-grant: add_images
+      x-linode-iam:
+      - permissions:
+        - upload_image
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/images/{imageId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier assigned to the image after creation.
+      example: '{{imageId}}'
+      in: path
+      name: imageId
+      required: true
+      schema:
+        example: linode/debian13
+        type: string
+      x-akamai:
+        file-path: parameters/image-id-path.yaml
+    x-akamai:
+      file-path: paths/image.yaml
+      path-info: /{apiVersion}/images/{imageId}
+    x-linode-cli-command: images
+    get:
+      description: 'Get information about a single image. An image can be one of two types:
+
+
+        - **Public image**. The `id` for these images begins with `linode/`. These images are generally available to all users. To limit the response to public images, don''t include authentication when calling this operation.
+
+
+        - **Private image**. The `id` for these images begins with `private/`. These images are account-specific and only accessible to users with appropriate permissions. To view private images, you need to include authentication when calling this operation. The response will also include public images.
+
+
+        - **Shared image**. The `id` for these images begins with `shared/`. These are the images that are shared with the user.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images view linode/debian13
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-image
+      operationId: get-image
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                capabilities:
+                - cloud-init
+                - distributed-sites
+                created: '2021-08-14T22:44:02'
+                created_by: linode
+                deprecated: false
+                description: Example image description.
+                eol: '2026-07-01T04:00:00'
+                expiry: null
+                id: private/15
+                image_sharing:
+                  shared_by: null
+                  shared_with:
+                    sharegroup_count: 0
+                    sharegroup_list_url: /images/private/15/sharegroups
+                is_public: false
+                is_shared: false
+                label: Debian 13
+                regions:
+                - region: us-iad
+                  status: available
+                size: 2500
+                status: available
+                tags:
+                - repair-image
+                - fix-1
+                total_size: 1234567
+                type: manual
+                updated: '2021-08-14T22:44:02'
+                vendor: Debian
+              schema:
+                additionalProperties: false
+                description: Image object.
+                properties:
+                  capabilities:
+                    description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                      - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                      - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                    example:
+                    - cloud-init
+                    - distributed-sites
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 8
+                  created:
+                    description: __Read-only__ When this image was created.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                    example: linode
+                    readOnly: true
+                    type: string
+                  deprecated:
+                    description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  description:
+                    description: A detailed description of this image.
+                    example: Example image description.
+                    maxLength: 65000
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 4
+                  eol:
+                    description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                    example: '2026-07-01T04:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  expiry:
+                    description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique identifier for each image.
+                    example: private/15
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  image_sharing:
+                    description: Details about image sharing.
+                    oneOf:
+                    - additionalProperties: false
+                      example:
+                        shared_by: null
+                        shared_with:
+                          sharegroup_count: 0
+                          sharegroup_list_url: /images/private/15/sharegroups
+                      properties:
+                        shared_by:
+                          description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                          type:
+                          - object
+                          - 'null'
+                        shared_with:
+                          additionalProperties: false
+                          description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                          properties:
+                            sharegroup_count:
+                              description: The number of share groups the image is shared with.
+                              type: integer
+                            sharegroup_list_url:
+                              description: A URL to view the list of share groups the image is shared with.
+                              type: string
+                          required:
+                          - sharegroup_count
+                          - sharegroup_list_url
+                          type: object
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_with
+                      type: object
+                    - additionalProperties: false
+                      example:
+                        shared_by:
+                          sharegroup_id: 3
+                          sharegroup_label: label
+                          sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                          source_image_id: null
+                          source_image_label: source image label
+                        shared_with: null
+                      properties:
+                        shared_by:
+                          additionalProperties: false
+                          description: Specifies the details of the share group that is sharing the image.
+                          properties:
+                            sharegroup_id:
+                              description: The share group's identifier.
+                              type: integer
+                            sharegroup_label:
+                              description: The share group's descriptive name.
+                              type: string
+                            sharegroup_uuid:
+                              description: The share group's unique identifier.
+                              format: uuid
+                              type: string
+                            source_image_id:
+                              description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                              type:
+                              - string
+                              - 'null'
+                            source_image_label:
+                              description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                              example: Source Image Label
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                          required:
+                          - sharegroup_id
+                          - sharegroup_uuid
+                          - sharegroup_label
+                          - source_image_id
+                          - source_image_label
+                          type: object
+                        shared_with:
+                          description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                          type:
+                          - object
+                          - 'null'
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_by
+                      type: object
+                  is_public:
+                    description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_shared:
+                    description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                      - `true`: The private image is shared.
+
+                      - `false`: The private image is not shared.
+
+                      - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                    example: false
+                    oneOf:
+                    - title: Boolean
+                      type: boolean
+                    - enum:
+                      - none
+                      title: String
+                      type: string
+                    readOnly: true
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 11
+                    x-linode-filterable: true
+                  label:
+                    description: __Filterable__ A short description of the image.
+                    example: Debian 13
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  regions:
+                    description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        region:
+                          description: The unique identifier for the core compute region where this image is stored.
+                          example: us-iad
+                          type: string
+                        status:
+                          description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                          enum:
+                          - available
+                          - creating
+                          - pending
+                          - pending deletion
+                          - pending replication
+                          - replicating
+                          example: available
+                          type: string
+                      type: object
+                    readOnly: true
+                    type: array
+                    x-linode-cli-format: json
+                  size:
+                    description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                    example: 2500
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                      > 📘
+
+                      >
+
+                      > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                    enum:
+                    - creating
+                    - pending_upload
+                    - available
+                    example: available
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 7
+                    x-linode-filterable: true
+                  tags:
+                    description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                    example:
+                    - repair-image
+                    - fix-1
+                    items:
+                      maxLength: 100
+                      minLength: 3
+                      type: string
+                    maxItems: 500
+                    minItems: 0
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 10
+                    x-linode-filterable: true
+                  total_size:
+                    description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                      > 📘
+
+                      >
+
+                      > This object is empty for existing images. It''s intended for use with future functionality.'
+                    example: 1234567
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                    enum:
+                    - manual
+                    - automatic
+                    - shared
+                    example: manual
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this image was last updated.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  vendor:
+                    description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                    example: Debian
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                required:
+                - id
+                - tags
+                - type
+                - description
+                - label
+                - created
+                - updated
+                - size
+                - status
+                - capabilities
+                - is_public
+                - is_shared
+                - deprecated
+                - regions
+                - total_size
+                - image_sharing
+                - created_by
+                - expiry
+                - eol
+                - vendor
+                type: object
+                x-akamai:
+                  file-path: schemas/image.yaml
+              x-linode-cli-subtables:
+              - regions
+          description: A single image object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_only
+      summary: Get an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: linode-cli images view linode/debian13
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-iam:
+      - permissions:
+        - view_image
+    put:
+      description: 'Updates a private image.
+
+
+        > 📘
+
+        >
+
+        > You can''t update the `regions` with this operation. Use the Replicate an image operation to modify the existing regions for your image.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images update private/12345 \
+
+        --label "My gold image" \
+
+        --description "The detailed description \
+
+        of my image."
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-image
+      operationId: put-image
+      requestBody:
+        content:
+          application/json:
+            example:
+              description: Example image description.
+              label: Debian 13
+            schema:
+              additionalProperties: false
+              properties:
+                capabilities:
+                  description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                    - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://techdocs.akamai.com/cloud-computing/docs/overview-of-the-metadata-service). This only applies to public images.
+
+
+                    - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                  example:
+                  - cloud-init
+                  - distributed-sites
+                  items:
+                    type: string
+                  readOnly: true
+                  type: array
+                  x-linode-cli-display: 8
+                created:
+                  description: __Read-only__ When this image was created.
+                  example: '{{created}}'
+                  readOnly: true
+                  type: string
+                created_by:
+                  description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                  example: '{{created_by}}'
+                  readOnly: true
+                  type: string
+                deprecated:
+                  description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                  example: '{{deprecated}}'
+                  readOnly: true
+                  type: boolean
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+                description:
+                  description: A detailed description of this image.
+                  example: '{{description}}'
+                  maxLength: 65000
+                  minLength: 1
+                  type:
+                  - string
+                  - 'null'
+                  x-linode-cli-color:
+                    None: black
+                    default_: white
+                  x-linode-cli-display: 4
+                eol:
+                  description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                  example: '{{eol}}'
+                  readOnly: true
+                  type:
+                  - string
+                  - 'null'
+                expiry:
+                  description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                  example: '{{expiry}}'
+                  readOnly: true
+                  type:
+                  - string
+                  - 'null'
+                id:
+                  description: __Read-only__ The unique identifier for each image.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 1
+                is_public:
+                  description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                  example: '{{is_public}}'
+                  readOnly: true
+                  type: boolean
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 5
+                  x-linode-filterable: true
+                is_shared:
+                  description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                    - `true`: The private image is shared.
+
+                    - `false`: The private image is not shared.
+
+                    - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                  example: '{{is_shared}}'
+                  oneOf:
+                  - title: Boolean
+                    type: boolean
+                  - enum:
+                    - none
+                    title: String
+                    type: string
+                  readOnly: true
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+                label:
+                  description: __Filterable__ A short description of the image.
+                  example: '{{label}}'
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+                regions:
+                  description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                  items:
+                    additionalProperties: false
+                    properties:
+                      region:
+                        description: The unique identifier for the core compute region where this image is stored.
+                        example: us-iad
+                        type: string
+                      status:
+                        description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                        enum:
+                        - available
+                        - creating
+                        - pending
+                        - pending deletion
+                        - pending replication
+                        - replicating
+                        example: available
+                        type: string
+                    type: object
+                  readOnly: true
+                  type: array
+                  x-linode-cli-format: json
+                size:
+                  description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                  example: '{{size}}'
+                  readOnly: true
+                  type: integer
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 6
+                  x-linode-filterable: true
+                status:
+                  description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                    > 📘
+
+                    >
+
+                    > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                  enum:
+                  - creating
+                  - pending_upload
+                  - available
+                  example: '{{status}}'
+                  readOnly: true
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 7
+                  x-linode-filterable: true
+                tags:
+                  description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                  example:
+                  - repair-image
+                  - fix-1
+                  items:
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                  maxItems: 500
+                  minItems: 0
+                  type: array
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 10
+                  x-linode-filterable: true
+                total_size:
+                  description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                    > 📘
+
+                    >
+
+                    > This object is empty for existing images. It''s intended for use with future functionality.'
+                  example: '{{total_size}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 9
+                type:
+                  description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance.
+                  enum:
+                  - manual
+                  - automatic
+                  example: '{{type}}'
+                  readOnly: true
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-filterable: true
+                updated:
+                  description: __Read-only__ When this image was last updated.
+                  example: '{{updated}}'
+                  readOnly: true
+                  type: string
+                vendor:
+                  description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                  example: '{{vendor}}'
+                  readOnly: true
+                  type:
+                  - string
+                  - 'null'
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-color:
+                    None: black
+                    default_: white
+                  x-linode-cli-display: 3
+                  x-linode-filterable: true
+              type: object
+              x-akamai:
+                file-path: schemas/put-image.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                capabilities:
+                - cloud-init
+                - distributed-sites
+                created: '2021-08-14T22:44:02'
+                created_by: linode
+                deprecated: false
+                description: Example image description.
+                eol: '2026-07-01T04:00:00'
+                expiry: null
+                id: private/15
+                image_sharing:
+                  shared_by: null
+                  shared_with:
+                    sharegroup_count: 0
+                    sharegroup_list_url: /images/private/15/sharegroups
+                is_public: false
+                is_shared: false
+                label: Debian 13
+                regions:
+                - region: us-iad
+                  status: available
+                size: 2500
+                status: available
+                tags:
+                - repair-image
+                - fix-1
+                total_size: 1234567
+                type: manual
+                updated: '2021-08-14T22:44:02'
+                vendor: Debian
+              schema:
+                additionalProperties: false
+                description: Image object.
+                properties:
+                  capabilities:
+                    description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                      - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                      - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                    example:
+                    - cloud-init
+                    - distributed-sites
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 8
+                  created:
+                    description: __Read-only__ When this image was created.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                    example: linode
+                    readOnly: true
+                    type: string
+                  deprecated:
+                    description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  description:
+                    description: A detailed description of this image.
+                    example: Example image description.
+                    maxLength: 65000
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 4
+                  eol:
+                    description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                    example: '2026-07-01T04:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  expiry:
+                    description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique identifier for each image.
+                    example: private/15
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  image_sharing:
+                    description: Details about image sharing.
+                    oneOf:
+                    - additionalProperties: false
+                      example:
+                        shared_by: null
+                        shared_with:
+                          sharegroup_count: 0
+                          sharegroup_list_url: /images/private/15/sharegroups
+                      properties:
+                        shared_by:
+                          description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                          type:
+                          - object
+                          - 'null'
+                        shared_with:
+                          additionalProperties: false
+                          description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                          properties:
+                            sharegroup_count:
+                              description: The number of share groups the image is shared with.
+                              type: integer
+                            sharegroup_list_url:
+                              description: A URL to view the list of share groups the image is shared with.
+                              type: string
+                          required:
+                          - sharegroup_count
+                          - sharegroup_list_url
+                          type: object
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_with
+                      type: object
+                    - additionalProperties: false
+                      example:
+                        shared_by:
+                          sharegroup_id: 3
+                          sharegroup_label: label
+                          sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                          source_image_id: null
+                          source_image_label: source image label
+                        shared_with: null
+                      properties:
+                        shared_by:
+                          additionalProperties: false
+                          description: Specifies the details of the share group that is sharing the image.
+                          properties:
+                            sharegroup_id:
+                              description: The share group's identifier.
+                              type: integer
+                            sharegroup_label:
+                              description: The share group's descriptive name.
+                              type: string
+                            sharegroup_uuid:
+                              description: The share group's unique identifier.
+                              format: uuid
+                              type: string
+                            source_image_id:
+                              description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                              type:
+                              - string
+                              - 'null'
+                            source_image_label:
+                              description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                              example: Source Image Label
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                          required:
+                          - sharegroup_id
+                          - sharegroup_uuid
+                          - sharegroup_label
+                          - source_image_id
+                          - source_image_label
+                          type: object
+                        shared_with:
+                          description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                          type:
+                          - object
+                          - 'null'
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_by
+                      type: object
+                  is_public:
+                    description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_shared:
+                    description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                      - `true`: The private image is shared.
+
+                      - `false`: The private image is not shared.
+
+                      - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                    example: false
+                    oneOf:
+                    - title: Boolean
+                      type: boolean
+                    - enum:
+                      - none
+                      title: String
+                      type: string
+                    readOnly: true
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 11
+                    x-linode-filterable: true
+                  label:
+                    description: __Filterable__ A short description of the image.
+                    example: Debian 13
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  regions:
+                    description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        region:
+                          description: The unique identifier for the core compute region where this image is stored.
+                          example: us-iad
+                          type: string
+                        status:
+                          description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                          enum:
+                          - available
+                          - creating
+                          - pending
+                          - pending deletion
+                          - pending replication
+                          - replicating
+                          example: available
+                          type: string
+                      type: object
+                    readOnly: true
+                    type: array
+                    x-linode-cli-format: json
+                  size:
+                    description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                    example: 2500
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                      > 📘
+
+                      >
+
+                      > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                    enum:
+                    - creating
+                    - pending_upload
+                    - available
+                    example: available
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 7
+                    x-linode-filterable: true
+                  tags:
+                    description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                    example:
+                    - repair-image
+                    - fix-1
+                    items:
+                      maxLength: 100
+                      minLength: 3
+                      type: string
+                    maxItems: 500
+                    minItems: 0
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 10
+                    x-linode-filterable: true
+                  total_size:
+                    description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                      > 📘
+
+                      >
+
+                      > This object is empty for existing images. It''s intended for use with future functionality.'
+                    example: 1234567
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                    enum:
+                    - manual
+                    - automatic
+                    - shared
+                    example: manual
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this image was last updated.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  vendor:
+                    description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                    example: Debian
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                required:
+                - id
+                - tags
+                - type
+                - description
+                - label
+                - created
+                - updated
+                - size
+                - status
+                - capabilities
+                - is_public
+                - is_shared
+                - deprecated
+                - regions
+                - total_size
+                - image_sharing
+                - created_by
+                - expiry
+                - eol
+                - vendor
+                type: object
+                x-akamai:
+                  file-path: schemas/image.yaml
+              x-linode-cli-subtables:
+              - regions
+          description: The updated image.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_write
+      summary: Update an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli images update private/12345 \\\n  --label \"My gold image\" \\\n  --description \"The detailed description \\\n    of my image.\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_image
+    delete:
+      description: 'Deletes a private image.
+
+
+        > 🚧
+
+        >
+
+        > - You can''t undo this delete action.
+
+        >
+
+        > - When you delete an image, all replicated instances of that image are also deleted.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images delete 12345
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-image
+      operationId: delete-image
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Delete successful.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_write
+      summary: Delete an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: linode-cli images delete 12345
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - delete
+      - rm
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_image
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/images/{imageId}/regions:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier assigned to the image after creation.
+      example: '{{imageId}}'
+      in: path
+      name: imageId
+      required: true
+      schema:
+        example: linode/debian13
+        type: string
+      x-akamai:
+        file-path: parameters/image-id-path.yaml
+    x-akamai:
+      file-path: paths/image-replicate.yaml
+      path-info: /{apiVersion}/images/{imageId}/regions
+    x-linode-cli-command: images
+    post:
+      description: 'Target an existing image and replicate it to another compute region.
+
+
+        > 📘
+
+        >
+
+        > As part of our limited promotional period, image replicas are free of charge until November 1, 2025. After this date, replicas will be subject to our standard monthly rate of $0.10/GB. When replicas become billable, your monthly charge will be calculated using the value returned in `total_size`, divided by 100. Learn more.
+
+
+        - This is only available in a `region` that supports Object Storage, which stores the replicated image. Run the List regions operation to review a region''s `capabilities`.
+
+
+        - To replicate an image, it needs to have a `status` of `available`. Run the List images operation to view an image''s `status`.
+
+
+        - To also keep the target image in its original compute region, you need to include that `region` in the request''s data. If you leave it out, the API removes the image from that region. Run the Get an image operation to see the `regions` where an image currently exists.
+
+
+        - You can''t include an empty array to delete all images. You need to provide at least one compute `region` where the image is `available`. Use the Delete an image operation.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `replicate_image`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `images:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli images replicate private/12345 \
+
+        --regions "us-mia" \
+
+        --regions "us-east"
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-replicate-image
+      operationId: post-replicate-image
+      requestBody:
+        content:
+          application/json:
+            example:
+              regions:
+              - us-iad
+            schema:
+              additionalProperties: false
+              description: List of regions where the image should be replicated to.
+              properties:
+                regions:
+                  description: The unique identifier for each compute `region`. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                  example:
+                  - us-iad
+                  - us-west
+                  items:
+                    type: string
+                  type: array
+              type: object
+              x-akamai:
+                file-path: schemas/image-replicate.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                capabilities:
+                - cloud-init
+                - distributed-sites
+                created: '2021-08-14T22:44:02'
+                created_by: linode
+                deprecated: false
+                description: Example image description.
+                eol: '2026-07-01T04:00:00'
+                expiry: null
+                id: private/15
+                image_sharing:
+                  shared_by: null
+                  shared_with:
+                    sharegroup_count: 0
+                    sharegroup_list_url: /images/private/15/sharegroups
+                is_public: false
+                is_shared: false
+                label: Debian 13
+                regions:
+                - region: us-iad
+                  status: available
+                size: 2500
+                status: available
+                tags:
+                - repair-image
+                - fix-1
+                total_size: 1234567
+                type: manual
+                updated: '2021-08-14T22:44:02'
+                vendor: Debian
+              schema:
+                additionalProperties: false
+                description: Image object.
+                properties:
+                  capabilities:
+                    description: '__Read-only__ A list of the possible capabilities of this image.
+
+
+                      - `cloud-init`. The image supports the cloud-init multi-distribution method with our [Metadata service](https://www.linode.com/docs/products/compute/compute-instances/guides/metadata/#troubleshoot-metadata-and-cloud-init). This only applies to public images.
+
+
+                      - `distributed-sites`. Whether the image can be used in distributed compute regions. Compared to a core compute region, distributed compute regions offer limited functionality, but they''re globally distributed. Your image can be geographically closer to you, potentially letting you deploy it quicker. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for complete details.'
+                    example:
+                    - cloud-init
+                    - distributed-sites
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 8
+                  created:
+                    description: __Read-only__ When this image was created.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The name of the user who created this image, or `linode` for public images.
+                    example: linode
+                    readOnly: true
+                    type: string
+                  deprecated:
+                    description: __Filterable__, __Read-only__ A `true` value indicates a deprecated image. Only public images can be deprecated.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  description:
+                    description: A detailed description of this image.
+                    example: Example image description.
+                    maxLength: 65000
+                    minLength: 1
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 4
+                  eol:
+                    description: __Read-only__ The time of the public image's planned removal from service. This is `null` for private images.
+                    example: '2026-07-01T04:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  expiry:
+                    description: __Read-only__ Only images created automatically from a deleted compute instance (type=automatic) expire. This is `null` for private images.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  id:
+                    description: __Read-only__ The unique identifier for each image.
+                    example: private/15
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  image_sharing:
+                    description: Details about image sharing.
+                    oneOf:
+                    - additionalProperties: false
+                      example:
+                        shared_by: null
+                        shared_with:
+                          sharegroup_count: 0
+                          sharegroup_list_url: /images/private/15/sharegroups
+                      properties:
+                        shared_by:
+                          description: This field is `null` in this case, meaning the image is not shared by any group. See the `shared_with` field for details on the image's share group.
+                          type:
+                          - object
+                          - 'null'
+                        shared_with:
+                          additionalProperties: false
+                          description: Specifies the group that the image is shared with, including the number of share groups and a URL to view the share groups' list.
+                          properties:
+                            sharegroup_count:
+                              description: The number of share groups the image is shared with.
+                              type: integer
+                            sharegroup_list_url:
+                              description: A URL to view the list of share groups the image is shared with.
+                              type: string
+                          required:
+                          - sharegroup_count
+                          - sharegroup_list_url
+                          type: object
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_with
+                      type: object
+                    - additionalProperties: false
+                      example:
+                        shared_by:
+                          sharegroup_id: 3
+                          sharegroup_label: label
+                          sharegroup_uuid: 8003abfe-6b03-41a1-9e4c-a234ae3060c8
+                          source_image_id: null
+                          source_image_label: source image label
+                        shared_with: null
+                      properties:
+                        shared_by:
+                          additionalProperties: false
+                          description: Specifies the details of the share group that is sharing the image.
+                          properties:
+                            sharegroup_id:
+                              description: The share group's identifier.
+                              type: integer
+                            sharegroup_label:
+                              description: The share group's descriptive name.
+                              type: string
+                            sharegroup_uuid:
+                              description: The share group's unique identifier.
+                              format: uuid
+                              type: string
+                            source_image_id:
+                              description: The source image's slug identifier. It's `null` if no specific source image is referenced.
+                              type:
+                              - string
+                              - 'null'
+                            source_image_label:
+                              description: __Read-only__ The source image's label. It's `null` if no specific source image is referenced.
+                              example: Source Image Label
+                              readOnly: true
+                              type:
+                              - string
+                              - 'null'
+                          required:
+                          - sharegroup_id
+                          - sharegroup_uuid
+                          - sharegroup_label
+                          - source_image_id
+                          - source_image_label
+                          type: object
+                        shared_with:
+                          description: This field is `null` in this case, meaning the image is not shared with anyone. See the `shared_by` fields for additional details about this shared image.
+                          type:
+                          - object
+                          - 'null'
+                      required:
+                      - shared_with
+                      - shared_by
+                      title: shared_by
+                      type: object
+                  is_public:
+                    description: __Filterable__, __Read-only__ A `true` value if the image is a public distribution image. A `false` value indicates private, account-specific images.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 5
+                    x-linode-filterable: true
+                  is_shared:
+                    description: '__Filterable__, __Read-only__ Indicates whether this image is shared with other accounts. The available values are:
+
+                      - `true`: The private image is shared.
+
+                      - `false`: The private image is not shared.
+
+                      - `none`: The image is not owned by you, but has been shared with your account via an image share group.'
+                    example: false
+                    oneOf:
+                    - title: Boolean
+                      type: boolean
+                    - enum:
+                      - none
+                      title: String
+                      type: string
+                    readOnly: true
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 11
+                    x-linode-filterable: true
+                  label:
+                    description: __Filterable__ A short description of the image.
+                    example: Debian 13
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  regions:
+                    description: __Read-only__ Details on the regions where this image is stored. See [Regions and images](https://techdocs.akamai.com/cloud-computing/docs/images#regions-and-images) for full details on support for `regions`.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        region:
+                          description: The unique identifier for the core compute region where this image is stored.
+                          example: us-iad
+                          type: string
+                        status:
+                          description: The status of the image in this `region`. Possible values are `available`, `creating`, `pending`, `pending deletion`, `pending replication`, or `replicating`.
+                          enum:
+                          - available
+                          - creating
+                          - pending
+                          - pending deletion
+                          - pending replication
+                          - replicating
+                          example: available
+                          type: string
+                      type: object
+                    readOnly: true
+                    type: array
+                    x-linode-cli-format: json
+                  size:
+                    description: __Filterable__, __Read-only__ The minimum size in MB this image needs to deploy.
+                    example: 2500
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__, __Read-only__ The current status of the image. Possible values are `available`, `creating`, and `pending_upload`.
+
+
+                      > 📘
+
+                      >
+
+                      > The `+order_by` and `+order` operators are not available when [filtering](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) on this key.'
+                    enum:
+                    - creating
+                    - pending_upload
+                    - available
+                    example: available
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 7
+                    x-linode-filterable: true
+                  tags:
+                    description: __Filterable__ Tags used for organizational purposes. A tag can be from 3 to 100 characters long, and an image can have a maximum of 500 total tags.
+                    example:
+                    - repair-image
+                    - fix-1
+                    items:
+                      maxLength: 100
+                      minLength: 3
+                      type: string
+                    maxItems: 500
+                    minItems: 0
+                    type: array
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 10
+                    x-linode-filterable: true
+                  total_size:
+                    description: '__Read-only__ The total size in bytes of all instances of this image, in all `regions`.
+
+
+                      > 📘
+
+                      >
+
+                      > This object is empty for existing images. It''s intended for use with future functionality.'
+                    example: 1234567
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 9
+                  type:
+                    description: __Filterable__, __Read-only__ How the image was created. Create a `manual` image at any time. An `automatic` image is created automatically from a deleted compute instance. Other users within share groups can access a `shared` image.
+                    enum:
+                    - manual
+                    - automatic
+                    - shared
+                    example: manual
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this image was last updated.
+                    example: '2021-08-14T22:44:02'
+                    readOnly: true
+                    type: string
+                  vendor:
+                    description: __Filterable__, __Read-only__ The upstream distribution vendor. This is `null` for private images.
+                    example: Debian
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      None: black
+                      default_: white
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                required:
+                - id
+                - tags
+                - type
+                - description
+                - label
+                - created
+                - updated
+                - size
+                - status
+                - capabilities
+                - is_public
+                - is_shared
+                - deprecated
+                - regions
+                - total_size
+                - image_sharing
+                - created_by
+                - expiry
+                - eol
+                - vendor
+                type: object
+                x-akamai:
+                  file-path: schemas/image.yaml
+          description: Replication details for the image.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - images:read_write
+      summary: Replicate an image
+      tags:
+      - Images
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli images replicate private/12345 \\\n  --regions \"us-mia\" \\\n  --regions \"us-east\""
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: replicate
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - replicate_image
+    servers:
+    - url: https://api.linode.com
   /images:
     get:
       operationId: getImages
@@ -36,6 +3511,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedImageList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createImage
       summary: Create an image
@@ -59,6 +3537,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /images/{imageId}:
     get:
       operationId: getImage
@@ -79,6 +3563,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Image not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     put:
       operationId: updateImage
       summary: Update an image
@@ -106,6 +3593,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Image not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     delete:
       operationId: deleteImage
       summary: Delete an image
@@ -121,8 +3611,89 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Image not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
 components:
+  parameters:
+    imageIdParam:
+      name: imageId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the image.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    ImageUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the image.
+    PaginatedImageList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Image'
+    ImageRequest:
+      type: object
+      required:
+      - disk_id
+      properties:
+        disk_id:
+          type: integer
+          description: The ID of the disk to create the image from.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the new image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the new image.
     Image:
       type: object
       properties:
@@ -169,122 +3740,56 @@ components:
           type: string
           format: date-time
           description: When this image expires. Null for distribution images.
-    ImageUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 128
-          description: The label for the image.
-        description:
-          type: string
-          maxLength: 65000
-          description: A description for the image.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    ImageRequest:
-      type: object
-      required:
-      - disk_id
-      properties:
-        disk_id:
-          type: integer
-          description: The ID of the disk to create the image from.
-        label:
-          type: string
-          minLength: 1
-          maxLength: 128
-          description: The label for the new image.
-        description:
-          type: string
-          maxLength: 65000
-          description: A description for the new image.
-    PaginatedImageList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Image'
-  parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    imageIdParam:
-      name: imageId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The ID of the image.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
-    personalAccessToken:
-      type: http
-      scheme: bearer
-      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
-      type: oauth2
-      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          tokenUrl: https://login.linode.com/oauth/token
           scopes:
-            account:read_only: Read access to account information
-            account:read_write: Read and write access to account information
-            domains:read_only: Read access to domains
-            domains:read_write: Read and write access to domains
-            events:read_only: Read access to events
-            events:read_write: Read and write access to events
-            firewall:read_only: Read access to firewalls
-            firewall:read_write: Read and write access to firewalls
-            images:read_only: Read access to images
-            images:read_write: Read and write access to images
-            ips:read_only: Read access to IP addresses
-            ips:read_write: Read and write access to IP addresses
-            linodes:read_only: Read access to Linodes
-            linodes:read_write: Read and write access to Linodes
-            lke:read_only: Read access to LKE
-            lke:read_write: Read and write access to LKE
-            longview:read_only: Read access to Longview
-            longview:read_write: Read and write access to Longview
-            nodebalancers:read_only: Read access to NodeBalancers
-            nodebalancers:read_write: Read and write access to NodeBalancers
-            object_storage:read_only: Read access to Object Storage
-            object_storage:read_write: Read and write access to Object Storage
-            stackscripts:read_only: Read access to StackScripts
-            stackscripts:read_write: Read and write access to StackScripts
-            volumes:read_only: Read access to Volumes
-            volumes:read_write: Read and write access to Volumes
-            vpc:read_only: Read access to VPCs
-            vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+x-refined-from:
+- linode-api-v4-official-openapi.json
+- linode-api-v4-openapi.yml
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

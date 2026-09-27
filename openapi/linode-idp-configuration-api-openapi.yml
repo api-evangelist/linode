@@ -1,0 +1,2408 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode IDP configuration API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use the Identity Management IDP Configuration endpoints to configure SAML-based Single Sign-On (SSO) for your account. You can create and manage an external identity provider (IDP) configuration, control which users are required to authenticate through SSO, and manage the public certificates used to verify SAML assertions. These endpoints are in Beta and available from the `v4beta` URL.
+  name: IDP configuration
+paths:
+  /{apiVersion}/iam/idp-configs:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/idp-configs.yaml
+      path-info: /{apiVersion}/iam/idp-configs
+    post:
+      description: 'Creates an external identity provider (IDP) configuration for the account. You can have only one configuration per account. To learn more about the single sign-on for Akamai Cloud, including emergency access accounts setup, see Single Sign-On.
+
+
+        **Prerequisite**
+
+
+        You need to have IDP metadata from your identity provider.
+
+
+        To create the IDP configuration:
+
+
+        1. Provide a unique label for the configuration.
+
+        1. To activate the SSO, set `enabled` to `true`.
+
+        1. Enforce SSO for all users of your account with `enforce` set to `true`. The enforcement doesn''t apply to users listed as SSO user exceptions.
+
+
+        > 📘
+
+        >
+
+        > Set the enforcement to `false`, if you want to test SSO on a small subset of users. After you create this configuration, add the SSO-required users and test the login flow. If the test is successful, enforce the SSO login for all users with the Update an IDP configuration operation.
+
+
+        1. Specify the SAML configuration settings with details from the IDP metadata you got from the identity provider.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > We offer an example API workflow you can follow to create an IDP configuration, test it, and configure an account with emergency access.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_idp_config`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-idp-config
+      operationId: post-idp-config
+      requestBody:
+        content:
+          application/json:
+            example:
+              enabled: false
+              enforce: false
+              label: Example IDP
+              saml:
+                entity_id: https://idp.example.com
+                identity_element: USER_ID_ATTRIBUTE
+                idp_url: https://idp.example.com/login
+                public_certificates:
+                - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                user_id_attribute: EmailAddress
+            schema:
+              additionalProperties: false
+              properties:
+                enabled:
+                  default: false
+                  description: Activates the IDP configuration. When `false`, SSO is not enforced even if `enforce` is set to `true`. Defaults to `false`.
+                  example: '{{enabled}}'
+                  type: boolean
+                enforce:
+                  default: false
+                  description: Enforces IDP authentication for all users except those listed as [SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-excluded). When `false`, only users designated as [SSO-required users](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included) are required to use SSO.
+                  example: '{{enforce}}'
+                  type: boolean
+                label:
+                  description: The unique IDP configuration's label.
+                  example: '{{label}}'
+                  type: string
+                saml:
+                  additionalProperties: false
+                  description: The SAML configuration settings provided by an identity provider.
+                  properties:
+                    entity_id:
+                      description: The unique entity identifier (Issuer) of the identity provider.
+                      example: https://idp.example.com
+                      type: string
+                    identity_element:
+                      description: 'Specifies which element in the SAML assertion identifies the user:
+
+
+                        - `NAME_ID`. Uses the SAML `NameID` element.
+
+                        - `USER_ID_ATTRIBUTE`. Uses a specific SAML attribute set in `user_id_attribute`.'
+                      enum:
+                      - NAME_ID
+                      - USER_ID_ATTRIBUTE
+                      example: USER_ID_ATTRIBUTE
+                      type: string
+                    idp_url:
+                      description: The SSO login URL provided by the identity provider.
+                      example: https://idp.example.com/login
+                      format: uri
+                      type: string
+                    public_certificates:
+                      description: Public certificates from the identity provider. You need to provide at least one valid certificate.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          certificate:
+                            description: The public certificate data from the identity provider used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                            example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                            type: string
+                        required:
+                        - certificate
+                        type: object
+                      minItems: 1
+                      type: array
+                    user_id_attribute:
+                      description: The name of the SAML attribute containing the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                      example: EmailAddress
+                      type: string
+                  required:
+                  - idp_url
+                  - entity_id
+                  - identity_element
+                  - public_certificates
+                  type: object
+              required:
+              - label
+              - saml
+              type: object
+              x-akamai:
+                file-path: schemas/post-idp-config.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2026-03-11T12:00:00'
+                created_by: username
+                enabled: false
+                enforce: false
+                excluded_users_count: 0
+                id: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                included_users_count: 0
+                label: Example IDP
+                saml:
+                  entity_id: https://idp.example.com
+                  identity_element: USER_ID_ATTRIBUTE
+                  idp_url: https://idp.example.com/login
+                  public_certificates:
+                  - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    created: '2026-03-11T12:00:00'
+                    created_by: username
+                    id: 1a664bea-993d-4979-b629-858cbbb66aac
+                    not_after: '2027-03-11T12:00:00'
+                    not_before: '2026-03-11T12:00:00'
+                  user_id_attribute: EmailAddress
+                updated: null
+                updated_by: null
+              schema:
+                additionalProperties: false
+                description: An external identity provider configuration for SAML-based SSO on the account.
+                properties:
+                  created:
+                    description: __Read-only__ When this configuration was created, as a UTC timestamp.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The username for who created this configuration.
+                    example: user1
+                    readOnly: true
+                    type: string
+                  enabled:
+                    description: Whether the IDP configuration is active. When `false`, SSO is not enforced even if `enforce` is set to `true`.
+                    example: false
+                    type: boolean
+                  enforce:
+                    description: Enforces the IDP authentication for all users except those listed as [SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) list. When `false`, only users designated as [SSO-required users](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included) are required to use SSO.
+                    example: false
+                    type: boolean
+                  excluded_users_count:
+                    description: __Read-only__ The number of users excluded from logging in with SSO for this configuration. These users are frequently referred to as emergency access accounts and SSO user exceptions. It applies only with `enforce` set to `true`. By default, this list is empty. To update it, run the [Update SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) operation.
+                    example: 0
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ The unique identifier of the IDP configuration.
+                    example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                    format: uuid
+                    readOnly: true
+                    type: string
+                  included_users_count:
+                    description: __Read-only__ The number of users for which the configuration applies when `enforce` is set to `false`. By default, this list is empty. To update it, run the [Update SSO-required users](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included) operation.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                  label:
+                    description: The unique IDP configuration's label.
+                    example: Example IDP
+                    type: string
+                  saml:
+                    additionalProperties: false
+                    description: The SAML configuration settings for an external identity provider.
+                    properties:
+                      entity_id:
+                        description: The unique entity identifier (issuer) of the identity provider, typically a URI.
+                        example: https://idp.example.com
+                        type: string
+                      identity_element:
+                        description: 'The element in the SAML assertion that identifies the user.
+
+
+                          - `NAME_ID`. Uses the SAML `NameID` element.
+
+                          - `USER_ID_ATTRIBUTE`. Uses a specific SAML attribute set in `user_id_attribute`.'
+                        enum:
+                        - NAME_ID
+                        - USER_ID_ATTRIBUTE
+                        example: USER_ID_ATTRIBUTE
+                        type: string
+                      idp_url:
+                        description: The identity provider's SSO login URL. Users are redirected here to authenticate.
+                        example: https://idp.example.com/login
+                        format: uri
+                        type: string
+                      public_certificates:
+                        description: The public certificates from the identity provider used to verify SAML assertion signatures. At least one valid certificate is required.
+                        items:
+                          additionalProperties: false
+                          description: A SAML public certificate associated with an external identity provider configuration.
+                          properties:
+                            certificate:
+                              description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                              example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                              type: string
+                            created:
+                              description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            created_by:
+                              description: __Read-only__ The username of the user who added this certificate.
+                              example: user1
+                              readOnly: true
+                              type: string
+                            id:
+                              description: __Read-only__ The certificate's unique ID.
+                              example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                              format: uuid
+                              readOnly: true
+                              type: string
+                            not_after:
+                              description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                              example: '2025-07-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            not_before:
+                              description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                          type: object
+                          x-akamai:
+                            file-path: schemas/idp-certificate.yaml
+                        minItems: 1
+                        type: array
+                      user_id_attribute:
+                        description: The name of the SAML attribute that contains the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                        example: EmailAddress
+                        type: string
+                    required:
+                    - idp_url
+                    - entity_id
+                    - identity_element
+                    - public_certificates
+                    type: object
+                    x-akamai:
+                      file-path: schemas/idp-saml-config.yaml
+                  updated:
+                    description: __Read-only__ When this configuration was last updated, as a UTC timestamp. It returns `null` if the configuration was never updated.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  updated_by:
+                    description: __Read-only__ The username for who last updated this configuration. This is `null` if the configuration was never updated.
+                    example: user1
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-config.yaml
+          description: IDP configuration created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Create an IDP configuration
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: add_idp_configs
+      x-linode-iam:
+      - permissions:
+        - create_idp_config
+    get:
+      description: 'Returns a list of all external identity provider (IDP) configurations for the account. For the initial release, the list contains only a single item.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_idp_config`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-idp-configs
+      operationId: get-idp-configs
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2026-03-01T12:00:00'
+                  created_by: username
+                  enabled: false
+                  enforce: false
+                  excluded_users_count: 0
+                  id: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                  included_users_count: 2
+                  label: Example IDP
+                  saml:
+                    entity_id: https://idp.example.com
+                    identity_element: USER_ID_ATTRIBUTE
+                    idp_url: https://idp.example.com/login
+                    public_certificates:
+                    - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                      created: '2026-03-01T12:00:00'
+                      created_by: username
+                      id: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                      not_after: '2027-03-01T12:00:00'
+                      not_before: '2026-03-01T12:00:00'
+                    - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                      created: '2026-03-11T12:00:00'
+                      created_by: username
+                      id: 1a664bea-993d-4979-b629-858cbbb66aac
+                      not_after: '2027-03-11T12:00:00'
+                      not_before: '2026-03-11T12:00:00'
+                    user_id_attribute: EmailAddress
+                  updated: '2026-03-01T12:00:00'
+                  updated_by: user1
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                description: A paginated list of external identity provider configurations for the account.
+                properties:
+                  data:
+                    description: The list of IDP configurations.
+                    items:
+                      additionalProperties: false
+                      description: An external identity provider configuration for SAML-based SSO on the account.
+                      properties:
+                        created:
+                          description: __Read-only__ When this configuration was created, as a UTC timestamp.
+                          example: '2025-07-17T12:00:00'
+                          readOnly: true
+                          type: string
+                        created_by:
+                          description: __Read-only__ The username for who created this configuration.
+                          example: user1
+                          readOnly: true
+                          type: string
+                        enabled:
+                          description: Whether the IDP configuration is active. When `false`, SSO is not enforced even if `enforce` is set to `true`.
+                          example: false
+                          type: boolean
+                        enforce:
+                          description: Enforces the IDP authentication for all users except those listed as [SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) list. When `false`, only users designated as [SSO-required users](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included) are required to use SSO.
+                          example: false
+                          type: boolean
+                        excluded_users_count:
+                          description: __Read-only__ The number of users excluded from logging in with SSO for this configuration. These users are frequently referred to as emergency access accounts and SSO user exceptions. It applies only with `enforce` set to `true`. By default, this list is empty. To update it, run the [Update SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) operation.
+                          example: 0
+                          readOnly: true
+                          type: integer
+                        id:
+                          description: __Read-only__ The unique identifier of the IDP configuration.
+                          example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                          format: uuid
+                          readOnly: true
+                          type: string
+                        included_users_count:
+                          description: __Read-only__ The number of users for which the configuration applies when `enforce` is set to `false`. By default, this list is empty. To update it, run the [Update SSO-required users](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included) operation.
+                          example: 2
+                          readOnly: true
+                          type: integer
+                        label:
+                          description: The unique IDP configuration's label.
+                          example: Example IDP
+                          type: string
+                        saml:
+                          additionalProperties: false
+                          description: The SAML configuration settings for an external identity provider.
+                          properties:
+                            entity_id:
+                              description: The unique entity identifier (issuer) of the identity provider, typically a URI.
+                              example: https://idp.example.com
+                              type: string
+                            identity_element:
+                              description: 'The element in the SAML assertion that identifies the user.
+
+
+                                - `NAME_ID`. Uses the SAML `NameID` element.
+
+                                - `USER_ID_ATTRIBUTE`. Uses a specific SAML attribute set in `user_id_attribute`.'
+                              enum:
+                              - NAME_ID
+                              - USER_ID_ATTRIBUTE
+                              example: USER_ID_ATTRIBUTE
+                              type: string
+                            idp_url:
+                              description: The identity provider's SSO login URL. Users are redirected here to authenticate.
+                              example: https://idp.example.com/login
+                              format: uri
+                              type: string
+                            public_certificates:
+                              description: The public certificates from the identity provider used to verify SAML assertion signatures. At least one valid certificate is required.
+                              items:
+                                additionalProperties: false
+                                description: A SAML public certificate associated with an external identity provider configuration.
+                                properties:
+                                  certificate:
+                                    description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                                    example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                                    type: string
+                                  created:
+                                    description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                                    example: '2025-01-24T12:00:00'
+                                    readOnly: true
+                                    type: string
+                                  created_by:
+                                    description: __Read-only__ The username of the user who added this certificate.
+                                    example: user1
+                                    readOnly: true
+                                    type: string
+                                  id:
+                                    description: __Read-only__ The certificate's unique ID.
+                                    example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                                    format: uuid
+                                    readOnly: true
+                                    type: string
+                                  not_after:
+                                    description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                                    example: '2025-07-24T12:00:00'
+                                    readOnly: true
+                                    type: string
+                                  not_before:
+                                    description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                                    example: '2025-01-24T12:00:00'
+                                    readOnly: true
+                                    type: string
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/idp-certificate.yaml
+                              minItems: 1
+                              type: array
+                            user_id_attribute:
+                              description: The name of the SAML attribute that contains the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                              example: EmailAddress
+                              type: string
+                          required:
+                          - idp_url
+                          - entity_id
+                          - identity_element
+                          - public_certificates
+                          type: object
+                          x-akamai:
+                            file-path: schemas/idp-saml-config.yaml
+                        updated:
+                          description: __Read-only__ When this configuration was last updated, as a UTC timestamp. It returns `null` if the configuration was never updated.
+                          example: '2025-07-17T12:00:00'
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        updated_by:
+                          description: __Read-only__ The username for who last updated this configuration. This is `null` if the configuration was never updated.
+                          example: user1
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-config.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-configs.yaml
+          description: A paginated list of external identity provider configurations.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List IDP configurations
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_idp_config
+  /{apiVersion}/iam/idp-configs/{idpConfigId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the external identity provider configuration. This is the `id` value returned by the [List IDP configurations](https://techdocs.akamai.com/linode-api/reference/get-idp-configs) operation.
+      example: '{{idpConfigId}}'
+      in: path
+      name: idpConfigId
+      required: true
+      schema:
+        example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-config-euuid.yaml
+    x-akamai:
+      file-path: paths/idp-config.yaml
+      path-info: /{apiVersion}/iam/idp-configs/{idpConfigId}
+    get:
+      description: 'Returns the external identity provider (IDP) configuration for the account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_idp_config`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-idp-config
+      operationId: get-idp-config
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2026-03-01T12:00:00'
+                created_by: username
+                enabled: false
+                enforce: false
+                excluded_users_count: 0
+                id: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                included_users_count: 2
+                label: Example IDP
+                saml:
+                  entity_id: https://idp.example.com
+                  identity_element: USER_ID_ATTRIBUTE
+                  idp_url: https://idp.example.com/login
+                  public_certificates:
+                  - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    created: '2026-03-01T12:00:00'
+                    created_by: username
+                    id: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                    not_after: '2027-03-01T12:00:00'
+                    not_before: '2026-03-01T12:00:00'
+                  - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    created: '2026-03-11T12:00:00'
+                    created_by: username
+                    id: 1a664bea-993d-4979-b629-858cbbb66aac
+                    not_after: '2027-03-11T12:00:00'
+                    not_before: '2026-03-11T12:00:00'
+                  user_id_attribute: EmailAddress
+                updated: '2026-03-01T12:00:00'
+                updated_by: user1
+              schema:
+                additionalProperties: false
+                description: An external identity provider configuration for SAML-based SSO on the account.
+                properties:
+                  created:
+                    description: __Read-only__ When this configuration was created, as a UTC timestamp.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The username for who created this configuration.
+                    example: user1
+                    readOnly: true
+                    type: string
+                  enabled:
+                    description: Whether the IDP configuration is active. When `false`, SSO is not enforced even if `enforce` is set to `true`.
+                    example: false
+                    type: boolean
+                  enforce:
+                    description: Enforces the IDP authentication for all users except those listed as [SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) list. When `false`, only users designated as [SSO-required users](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included) are required to use SSO.
+                    example: false
+                    type: boolean
+                  excluded_users_count:
+                    description: __Read-only__ The number of users excluded from logging in with SSO for this configuration. These users are frequently referred to as emergency access accounts and SSO user exceptions. It applies only with `enforce` set to `true`. By default, this list is empty. To update it, run the [Update SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) operation.
+                    example: 0
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ The unique identifier of the IDP configuration.
+                    example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                    format: uuid
+                    readOnly: true
+                    type: string
+                  included_users_count:
+                    description: __Read-only__ The number of users for which the configuration applies when `enforce` is set to `false`. By default, this list is empty. To update it, run the [Update SSO-required users](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included) operation.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                  label:
+                    description: The unique IDP configuration's label.
+                    example: Example IDP
+                    type: string
+                  saml:
+                    additionalProperties: false
+                    description: The SAML configuration settings for an external identity provider.
+                    properties:
+                      entity_id:
+                        description: The unique entity identifier (issuer) of the identity provider, typically a URI.
+                        example: https://idp.example.com
+                        type: string
+                      identity_element:
+                        description: 'The element in the SAML assertion that identifies the user.
+
+
+                          - `NAME_ID`. Uses the SAML `NameID` element.
+
+                          - `USER_ID_ATTRIBUTE`. Uses a specific SAML attribute set in `user_id_attribute`.'
+                        enum:
+                        - NAME_ID
+                        - USER_ID_ATTRIBUTE
+                        example: USER_ID_ATTRIBUTE
+                        type: string
+                      idp_url:
+                        description: The identity provider's SSO login URL. Users are redirected here to authenticate.
+                        example: https://idp.example.com/login
+                        format: uri
+                        type: string
+                      public_certificates:
+                        description: The public certificates from the identity provider used to verify SAML assertion signatures. At least one valid certificate is required.
+                        items:
+                          additionalProperties: false
+                          description: A SAML public certificate associated with an external identity provider configuration.
+                          properties:
+                            certificate:
+                              description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                              example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                              type: string
+                            created:
+                              description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            created_by:
+                              description: __Read-only__ The username of the user who added this certificate.
+                              example: user1
+                              readOnly: true
+                              type: string
+                            id:
+                              description: __Read-only__ The certificate's unique ID.
+                              example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                              format: uuid
+                              readOnly: true
+                              type: string
+                            not_after:
+                              description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                              example: '2025-07-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            not_before:
+                              description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                          type: object
+                          x-akamai:
+                            file-path: schemas/idp-certificate.yaml
+                        minItems: 1
+                        type: array
+                      user_id_attribute:
+                        description: The name of the SAML attribute that contains the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                        example: EmailAddress
+                        type: string
+                    required:
+                    - idp_url
+                    - entity_id
+                    - identity_element
+                    - public_certificates
+                    type: object
+                    x-akamai:
+                      file-path: schemas/idp-saml-config.yaml
+                  updated:
+                    description: __Read-only__ When this configuration was last updated, as a UTC timestamp. It returns `null` if the configuration was never updated.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  updated_by:
+                    description: __Read-only__ The username for who last updated this configuration. This is `null` if the configuration was never updated.
+                    example: user1
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-config.yaml
+          description: The external identity provider configuration.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get an IDP configuration
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_idp_config
+    put:
+      description: 'Updates the external identity provider (IDP) configuration for the account. Top-level properties can be passed individually or together. When included, you need to provide the entire IDP config object and it will overwrite existing values. This operation triggers an `update_idp_config` event.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_idp_config`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-idp-config
+      operationId: put-idp-config
+      requestBody:
+        content:
+          application/json:
+            example:
+              enabled: true
+              enforce: false
+              label: Example IDP
+              saml:
+                entity_id: https://idp.example.com
+                identity_element: USER_ID_ATTRIBUTE
+                idp_url: https://idp.example.com/login
+                public_certificates:
+                - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                user_id_attribute: EmailAddress
+            schema:
+              additionalProperties: false
+              properties:
+                enabled:
+                  description: Whether this IDP configuration is active.
+                  example: '{{enabled}}'
+                  type: boolean
+                enforce:
+                  description: Enforces the IDP authentication for all users except those in the [excluded](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) list. When `false`, only users in the [included list](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included) are required to use SSO.
+                  example: '{{enforce}}'
+                  type: boolean
+                label:
+                  description: The unique IDP configuration's label.
+                  example: '{{label}}'
+                  type: string
+                saml:
+                  additionalProperties: false
+                  description: The SAML configuration settings. When included, you need to provide the entire IDP config object and it will overwrite existing values.
+                  properties:
+                    entity_id:
+                      description: The unique entity identifier (issuer) of the identity provider.
+                      example: https://idp.example.com
+                      type: string
+                    identity_element:
+                      description: 'Specifies which element in the SAML assertion identifies the user. Possible values: `NAME_ID` or `USER_ID_ATTRIBUTE`.'
+                      enum:
+                      - NAME_ID
+                      - USER_ID_ATTRIBUTE
+                      example: USER_ID_ATTRIBUTE
+                      type: string
+                    idp_url:
+                      description: The SSO login URL provided by the identity provider.
+                      example: https://idp.example.com/login
+                      format: uri
+                      type: string
+                    public_certificates:
+                      description: One or more public certificates from the identity provider. Replaces the existing certificate list.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          certificate:
+                            description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                            example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                            type: string
+                        required:
+                        - certificate
+                        type: object
+                      minItems: 1
+                      type: array
+                    user_id_attribute:
+                      description: The name of the SAML attribute containing the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                      example: EmailAddress
+                      type: string
+                  required:
+                  - idp_url
+                  - entity_id
+                  - identity_element
+                  - public_certificates
+                  type: object
+              type: object
+              x-akamai:
+                file-path: schemas/put-idp-config.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2026-03-01T12:00:00'
+                created_by: username
+                enabled: true
+                enforce: false
+                excluded_users_count: 0
+                id: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                included_users_count: 2
+                label: Example IDP
+                saml:
+                  entity_id: https://idp.example.com
+                  identity_element: USER_ID_ATTRIBUTE
+                  idp_url: https://idp.example.com/login
+                  public_certificates:
+                  - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    created: '2026-03-11T12:00:00'
+                    created_by: username
+                    id: 1a664bea-993d-4979-b629-858cbbb66aac
+                    not_after: '2027-03-11T12:00:00'
+                    not_before: '2026-03-11T12:00:00'
+                  - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    created: '2026-03-11T12:00:00'
+                    created_by: username
+                    id: f1ad6f2e-5733-4688-94c9-86a56ca3a313
+                    not_after: '2027-03-11T12:00:00'
+                    not_before: '2026-03-11T12:00:00'
+                  user_id_attribute: EmailAddress
+                updated: '2026-03-11T12:00:00'
+                updated_by: user1
+              schema:
+                additionalProperties: false
+                description: An external identity provider configuration for SAML-based SSO on the account.
+                properties:
+                  created:
+                    description: __Read-only__ When this configuration was created, as a UTC timestamp.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The username for who created this configuration.
+                    example: user1
+                    readOnly: true
+                    type: string
+                  enabled:
+                    description: Whether the IDP configuration is active. When `false`, SSO is not enforced even if `enforce` is set to `true`.
+                    example: false
+                    type: boolean
+                  enforce:
+                    description: Enforces the IDP authentication for all users except those listed as [SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) list. When `false`, only users designated as [SSO-required users](https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included) are required to use SSO.
+                    example: false
+                    type: boolean
+                  excluded_users_count:
+                    description: __Read-only__ The number of users excluded from logging in with SSO for this configuration. These users are frequently referred to as emergency access accounts and SSO user exceptions. It applies only with `enforce` set to `true`. By default, this list is empty. To update it, run the [Update SSO user exceptions](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded) operation.
+                    example: 0
+                    readOnly: true
+                    type: integer
+                  id:
+                    description: __Read-only__ The unique identifier of the IDP configuration.
+                    example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+                    format: uuid
+                    readOnly: true
+                    type: string
+                  included_users_count:
+                    description: __Read-only__ The number of users for which the configuration applies when `enforce` is set to `false`. By default, this list is empty. To update it, run the [Update SSO-required users](https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included) operation.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                  label:
+                    description: The unique IDP configuration's label.
+                    example: Example IDP
+                    type: string
+                  saml:
+                    additionalProperties: false
+                    description: The SAML configuration settings for an external identity provider.
+                    properties:
+                      entity_id:
+                        description: The unique entity identifier (issuer) of the identity provider, typically a URI.
+                        example: https://idp.example.com
+                        type: string
+                      identity_element:
+                        description: 'The element in the SAML assertion that identifies the user.
+
+
+                          - `NAME_ID`. Uses the SAML `NameID` element.
+
+                          - `USER_ID_ATTRIBUTE`. Uses a specific SAML attribute set in `user_id_attribute`.'
+                        enum:
+                        - NAME_ID
+                        - USER_ID_ATTRIBUTE
+                        example: USER_ID_ATTRIBUTE
+                        type: string
+                      idp_url:
+                        description: The identity provider's SSO login URL. Users are redirected here to authenticate.
+                        example: https://idp.example.com/login
+                        format: uri
+                        type: string
+                      public_certificates:
+                        description: The public certificates from the identity provider used to verify SAML assertion signatures. At least one valid certificate is required.
+                        items:
+                          additionalProperties: false
+                          description: A SAML public certificate associated with an external identity provider configuration.
+                          properties:
+                            certificate:
+                              description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                              example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                              type: string
+                            created:
+                              description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            created_by:
+                              description: __Read-only__ The username of the user who added this certificate.
+                              example: user1
+                              readOnly: true
+                              type: string
+                            id:
+                              description: __Read-only__ The certificate's unique ID.
+                              example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                              format: uuid
+                              readOnly: true
+                              type: string
+                            not_after:
+                              description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                              example: '2025-07-24T12:00:00'
+                              readOnly: true
+                              type: string
+                            not_before:
+                              description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                              example: '2025-01-24T12:00:00'
+                              readOnly: true
+                              type: string
+                          type: object
+                          x-akamai:
+                            file-path: schemas/idp-certificate.yaml
+                        minItems: 1
+                        type: array
+                      user_id_attribute:
+                        description: The name of the SAML attribute that contains the user's identifier. Required when `identity_element` is `USER_ID_ATTRIBUTE`.
+                        example: EmailAddress
+                        type: string
+                    required:
+                    - idp_url
+                    - entity_id
+                    - identity_element
+                    - public_certificates
+                    type: object
+                    x-akamai:
+                      file-path: schemas/idp-saml-config.yaml
+                  updated:
+                    description: __Read-only__ When this configuration was last updated, as a UTC timestamp. It returns `null` if the configuration was never updated.
+                    example: '2025-07-17T12:00:00'
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  updated_by:
+                    description: __Read-only__ The username for who last updated this configuration. This is `null` if the configuration was never updated.
+                    example: user1
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-config.yaml
+          description: IDP configuration updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update an IDP configuration
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_idp_config
+    delete:
+      description: 'Deletes the external identity provider (IDP) configuration for the account. The configuration object is soft-deleted, while certificates and user lists for both SSO-required or SSO exceptions are permanently deleted.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_idp_config`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-idp-config
+      operationId: delete-idp-config
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: IDP configuration deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Delete an IDP configuration
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_idp_config
+  /{apiVersion}/iam/idp-configs/{idpConfigId}/certificates:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the external identity provider configuration. This is the `id` value returned by the [List IDP configurations](https://techdocs.akamai.com/linode-api/reference/get-idp-configs) operation.
+      example: '{{idpConfigId}}'
+      in: path
+      name: idpConfigId
+      required: true
+      schema:
+        example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-config-euuid.yaml
+    x-akamai:
+      file-path: paths/idp-config-certificates.yaml
+      path-info: /{apiVersion}/iam/idp-configs/{idpConfigId}/certificates
+    post:
+      description: 'Adds a new public certificate to the external identity provider (IDP) configuration. One configuration can have several certificates to support a certificate rotation.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_idp_config_cert`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-idp-config-certificate
+      operationId: post-idp-config-certificate
+      requestBody:
+        content:
+          application/json:
+            example:
+              certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+            schema:
+              additionalProperties: false
+              properties:
+                certificate:
+                  description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                  example: '{{certificate}}'
+                  type: string
+              required:
+              - certificate
+              type: object
+              x-akamai:
+                file-path: schemas/post-idp-certificate.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                created: '2026-03-11T12:00:00'
+                created_by: username
+                id: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                not_after: '2027-03-11T12:00:00'
+                not_before: '2026-03-11T12:00:00'
+              schema:
+                additionalProperties: false
+                description: A SAML public certificate associated with an external identity provider configuration.
+                properties:
+                  certificate:
+                    description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                    example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                    type: string
+                  created:
+                    description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                    example: '2025-01-24T12:00:00'
+                    readOnly: true
+                    type: string
+                  created_by:
+                    description: __Read-only__ The username of the user who added this certificate.
+                    example: user1
+                    readOnly: true
+                    type: string
+                  id:
+                    description: __Read-only__ The certificate's unique ID.
+                    example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                    format: uuid
+                    readOnly: true
+                    type: string
+                  not_after:
+                    description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                    example: '2025-07-24T12:00:00'
+                    readOnly: true
+                    type: string
+                  not_before:
+                    description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                    example: '2025-01-24T12:00:00'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-certificate.yaml
+          description: Certificate added successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Add an IDP certificate
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: add_idp_certificates
+      x-linode-iam:
+      - permissions:
+        - create_idp_config_cert
+    get:
+      description: 'Returns the list of public certificates for the external identity provider (IDP) configuration. The IDP configuration needs to have at least one valid certificate at all times. You can add several certificates or remove the expired ones.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_idp_config_certs`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-idp-config-certificates
+      operationId: get-idp-config-certificates
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                  created: '2026-03-01T12:00:00'
+                  created_by: username
+                  id: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                  not_after: '2027-03-01T12:00:00'
+                  not_before: '2026-03-01T12:00:00'
+                - certificate: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                  created: '2026-03-11T12:00:00'
+                  created_by: username
+                  id: 1a664bea-993d-4979-b629-858cbbb66aac
+                  not_after: '2027-03-11T12:00:00'
+                  not_before: '2026-03-11T12:00:00'
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                description: A paginated list of certificates associated with an external identity provider configuration.
+                properties:
+                  data:
+                    description: The list of certificates.
+                    items:
+                      additionalProperties: false
+                      description: A SAML public certificate associated with an external identity provider configuration.
+                      properties:
+                        certificate:
+                          description: The public certificate data from the identity provider, used to verify SAML assertion signatures. The `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` delimiters are optional.
+                          example: MIICODCCAeagAwIBAgIQqHmpBAv+CY9IJF...
+                          type: string
+                        created:
+                          description: __Read-only__ When this certificate was added, as a UTC timestamp.
+                          example: '2025-01-24T12:00:00'
+                          readOnly: true
+                          type: string
+                        created_by:
+                          description: __Read-only__ The username of the user who added this certificate.
+                          example: user1
+                          readOnly: true
+                          type: string
+                        id:
+                          description: __Read-only__ The certificate's unique ID.
+                          example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+                          format: uuid
+                          readOnly: true
+                          type: string
+                        not_after:
+                          description: __Read-only__ When this certificate is no longer valid, extracted from certificate string.
+                          example: '2025-07-24T12:00:00'
+                          readOnly: true
+                          type: string
+                        not_before:
+                          description: __Read-only__ When this certificate starts to be valid, extracted from certificate string.
+                          example: '2025-01-24T12:00:00'
+                          readOnly: true
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-certificate.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-certificates.yaml
+          description: A paginated list of certificates for this IDP configuration.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List IDP certificates
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_idp_config_certs
+  /{apiVersion}/iam/idp-configs/{idpConfigId}/certificates/{certificateId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the external identity provider configuration. This is the `id` value returned by the [List IDP configurations](https://techdocs.akamai.com/linode-api/reference/get-idp-configs) operation.
+      example: '{{idpConfigId}}'
+      in: path
+      name: idpConfigId
+      required: true
+      schema:
+        example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-config-euuid.yaml
+    - description: The unique identifier of the certificate for the external identity provider configuration. This is the `id` value returned by the [List IDP certificates](https://techdocs.akamai.com/linode-api/reference/get-idp-config-certificates) operation.
+      example: '{{certificateId}}'
+      in: path
+      name: certificateId
+      required: true
+      schema:
+        example: 33a0a159-b649-43e5-9ade-e6182b2d5872
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-certificate-id.yaml
+    x-akamai:
+      file-path: paths/idp-config-certificate.yaml
+      path-info: /{apiVersion}/iam/idp-configs/{idpConfigId}/certificates/{certificateId}
+    delete:
+      description: 'Deletes a specific certificate from the external identity provider (IDP) configuration. The IDP configuration needs to have at least one valid certificate at all times. If all existing certificates are expired, add a new valid one before removing the expired ones.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_idp_config_cert`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-idp-config-certificate
+      operationId: delete-idp-config-certificate
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Certificate deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Delete an IDP certificate
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_idp_config_cert
+  /{apiVersion}/iam/idp-configs/{idpConfigId}/users-excluded:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the external identity provider configuration. This is the `id` value returned by the [List IDP configurations](https://techdocs.akamai.com/linode-api/reference/get-idp-configs) operation.
+      example: '{{idpConfigId}}'
+      in: path
+      name: idpConfigId
+      required: true
+      schema:
+        example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-config-euuid.yaml
+    x-akamai:
+      file-path: paths/idp-config-users-excluded.yaml
+      path-info: /{apiVersion}/iam/idp-configs/{idpConfigId}/users-excluded
+    get:
+      description: 'Returns the users excluded from SSO login. These users are part of the emergency account access (*break-glass user*) setup. They bypass the SSO enforcement and continue to log in with a password regardless if SSO is enabled or enforced for the whole account. To learn more, see Emergency access accounts.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_idp_config_user_excludes`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-excluded
+      operationId: get-idp-config-users-excluded
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: user1
+                  label: user1
+                  type: user
+                  url: /v4/linode/users/user1
+                - id: user2
+                  label: user2
+                  type: user
+                  url: /v4/linode/users/user2
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                description: A paginated list of users determining SSO status.
+                properties:
+                  data:
+                    description: The list of user references.
+                    items:
+                      additionalProperties: false
+                      description: A user in an IDP configuration's included or excluded list.
+                      properties:
+                        id:
+                          description: The user's username.
+                          example: user1
+                          type: string
+                        label:
+                          description: The user's label.
+                          example: user1
+                          type: string
+                        type:
+                          description: The entity type.  For user references this is always `user`.
+                          example: user
+                          type: string
+                        url:
+                          description: The URL to retrieve this user's details.
+                          example: /v4/linode/users/user1
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-user-ref.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-users-list.yaml
+          description: A paginated list of users who log in without SSO even when it's enforced for the account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List SSO user exceptions
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_idp_config_user_excludes
+    put:
+      description: 'Replaces the list of SSO user exceptions. These users are part of the emergency account access (*break-glass user*) setup. They bypass the SSO enforcement and continue to log in with a password. Pass an empty `usernames` array to clear the list. To learn more about emergency access accounts and their recommended setup, see Emergency access accounts.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_idp_config_user_excludes`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-excluded
+      operationId: put-idp-config-users-excluded
+      requestBody:
+        content:
+          application/json:
+            example:
+              usernames:
+              - user1
+              - user2
+            schema:
+              additionalProperties: false
+              properties:
+                usernames:
+                  description: The usernames to set for the SSO user exceptions or SSO-required lists. Pass an empty array to clear the list.
+                  example:
+                  - user1
+                  - user2
+                  items:
+                    example: user1
+                    type: string
+                  type: array
+              required:
+              - usernames
+              type: object
+              x-akamai:
+                file-path: schemas/put-idp-users.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: user1
+                  label: user1
+                  type: user
+                  url: /v4/linode/users/user1
+                - id: user2
+                  label: user2
+                  type: user
+                  url: /v4/linode/users/user2
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                description: A paginated list of users determining SSO status.
+                properties:
+                  data:
+                    description: The list of user references.
+                    items:
+                      additionalProperties: false
+                      description: A user in an IDP configuration's included or excluded list.
+                      properties:
+                        id:
+                          description: The user's username.
+                          example: user1
+                          type: string
+                        label:
+                          description: The user's label.
+                          example: user1
+                          type: string
+                        type:
+                          description: The entity type.  For user references this is always `user`.
+                          example: user
+                          type: string
+                        url:
+                          description: The URL to retrieve this user's details.
+                          example: /v4/linode/users/user1
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-user-ref.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-users-list.yaml
+          description: Successfully updated the SSO user exceptions list.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update SSO user exceptions
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_idp_config_user_excludes
+  /{apiVersion}/iam/idp-configs/{idpConfigId}/users-included:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the external identity provider configuration. This is the `id` value returned by the [List IDP configurations](https://techdocs.akamai.com/linode-api/reference/get-idp-configs) operation.
+      example: '{{idpConfigId}}'
+      in: path
+      name: idpConfigId
+      required: true
+      schema:
+        example: 7368e7af-e333-43b8-8917-4c7cba153d9d
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/idp-config-euuid.yaml
+    x-akamai:
+      file-path: paths/idp-config-users-included.yaml
+      path-info: /{apiVersion}/iam/idp-configs/{idpConfigId}/users-included
+    get:
+      description: 'Returns the list of users who are required to authenticate with SSO when the SSO enforcement is disabled. These users can test the IDP configuration before enforcing it for everyone.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_idp_config_user_includes`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-idp-config-users-included
+      operationId: get-idp-config-users-included
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: user1
+                  label: user1
+                  type: user
+                  url: /v4/linode/users/user1
+                - id: user2
+                  label: user2
+                  type: user
+                  url: /v4/linode/users/user2
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                description: A paginated list of users determining SSO status.
+                properties:
+                  data:
+                    description: The list of user references.
+                    items:
+                      additionalProperties: false
+                      description: A user in an IDP configuration's included or excluded list.
+                      properties:
+                        id:
+                          description: The user's username.
+                          example: user1
+                          type: string
+                        label:
+                          description: The user's label.
+                          example: user1
+                          type: string
+                        type:
+                          description: The entity type.  For user references this is always `user`.
+                          example: user
+                          type: string
+                        url:
+                          description: The URL to retrieve this user's details.
+                          example: /v4/linode/users/user1
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-user-ref.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-users-list.yaml
+          description: A paginated list of users who are required to log in through SSO.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List SSO-required users
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_idp_config_user_includes
+    put:
+      description: 'Replaces the list of users who are required to authenticate with SSO when the SSO enforcement is disabled. These users can test the IDP configuration before enforcing it for everyone. Pass an empty `usernames` array to clear the list.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_idp_config_user_includes`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-idp-config-users-included
+      operationId: put-idp-config-users-included
+      requestBody:
+        content:
+          application/json:
+            example:
+              usernames:
+              - user1
+              - user2
+            schema:
+              additionalProperties: false
+              properties:
+                usernames:
+                  description: The usernames to set for the SSO user exceptions or SSO-required lists. Pass an empty array to clear the list.
+                  example:
+                  - user1
+                  - user2
+                  items:
+                    example: user1
+                    type: string
+                  type: array
+              required:
+              - usernames
+              type: object
+              x-akamai:
+                file-path: schemas/put-idp-users.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: user1
+                  label: user1
+                  type: user
+                  url: /v4/linode/users/user1
+                - id: user2
+                  label: user2
+                  type: user
+                  url: /v4/linode/users/user2
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                description: A paginated list of users determining SSO status.
+                properties:
+                  data:
+                    description: The list of user references.
+                    items:
+                      additionalProperties: false
+                      description: A user in an IDP configuration's included or excluded list.
+                      properties:
+                        id:
+                          description: The user's username.
+                          example: user1
+                          type: string
+                        label:
+                          description: The user's label.
+                          example: user1
+                          type: string
+                        type:
+                          description: The entity type.  For user references this is always `user`.
+                          example: user
+                          type: string
+                        url:
+                          description: The URL to retrieve this user's details.
+                          example: /v4/linode/users/user1
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/idp-user-ref.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/idp-users-list.yaml
+          description: Successfully updated the SSO-required users list.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update SSO-required users
+      tags:
+      - IDP configuration
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_idp_config_user_includes
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

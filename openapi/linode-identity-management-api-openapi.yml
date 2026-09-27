@@ -1,0 +1,1603 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Identity Management API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to manage access to entities and roles on your account.
+  name: Identity Management
+paths:
+  /{apiVersion}/entities:
+    parameters:
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/entities.yaml
+      path-info: /{apiVersion}/entities
+    get:
+      description: 'Lists entities created on the account. An *entity* is an object that has a life-cycle and can be managed by an authorized user within an account, for example: a specific virtual machine or firewall. You can manage an entity over time by performing operations on it, based on your access level.
+
+
+        > 📘 Before you begin
+
+        >
+
+        > Before you run this operation, read Comparison of Linode API for grants and Identity and Access to learn about the new experience and recommended use of the Identity and Access endpoints.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_entities`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-entities
+      operationId: get-entities
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - id: 7
+                  label: linode7
+                  type: linode
+                - id: 10
+                  label: linode10
+                  type: linode
+                - id: 1
+                  label: no_devices
+                  type: firewall
+                - id: 2
+                  label: active_with_nodebalancer
+                  type: firewall
+                - id: 1
+                  label: nodebalancer-active
+                  type: nodebalancer
+                - id: 1
+                  label: active
+                  type: longview
+                - id: 3
+                  label: LongviewClient
+                  type: longview
+                - id: 1
+                  label: linDomain.com
+                  type: domain
+                - id: 1
+                  label: API
+                  type: stackscript
+                - id: 1
+                  label: image - mine
+                  type: image
+                - id: 3
+                  label: image - mine - creating
+                  type: image
+                - id: 1
+                  label: volume1
+                  type: volume
+                - id: 1
+                  label: mongo_cluster
+                  type: database
+                - id: 3
+                  label: empty-vpc
+                  type: vpc
+                page: 1
+                pages: 1
+                results: 14
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Lists entities.
+                    items:
+                      additionalProperties: false
+                      description: An entity object.
+                      properties:
+                        id:
+                          description: __Read-only__ A unique identifier for each entity.
+                          example: 1234
+                          minimum: 1
+                          readOnly: true
+                          type: integer
+                        label:
+                          description: __Read-only__ A unique label for each entity.
+                          example: linode10
+                          minLength: 1
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        type:
+                          description: 'A type of entity, which can be one of the following: `database`, `linode`, `firewall`, `nodebalancer`, `longview`, `domain`, `stackscript`, `image`, `volume`, `vpc`, or `lkecluster`.'
+                          enum:
+                          - database
+                          - linode
+                          - firewall
+                          - nodebalancer
+                          - longview
+                          - domain
+                          - stackscript
+                          - image
+                          - volume
+                          - vpc
+                          - lkecluster
+                          example: linode
+                          type: string
+                          x-linode-cli-display: 2
+                      type: object
+                      x-akamai:
+                        file-path: schemas/entity.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/entities.yaml
+          description: The entities you have access to.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List entities
+      tags:
+      - Identity Management
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_entities
+  /{apiVersion}/iam/role-permissions:
+    parameters:
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-role-permissions.yaml
+      path-info: /{apiVersion}/iam/role-permissions
+    get:
+      description: 'Lists available account access and entity access roles, their descriptions, and included permissions. Use these roles to manage users'' access level to specific services and entities.
+
+
+        - **Account access roles**. These roles give access to account level operations, entities in the account both existing and to be created in the future, and creation of new entities.
+
+
+        - **Entity access roles**. These roles provide access to specific entities that are already available on the account.
+
+
+        To learn more, see the Identity and Access in Cloud Manager terminology.
+
+
+        > 📘 Before you begin
+
+        >
+
+        > Before you run this operation, read Comparison of Linode API for grants and Identity and Access to learn about the new experience and recommended use of the Identity and Access endpoints.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_role_permissions`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-role-permissions
+      operationId: get-role-permissions
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                account_access:
+                - roles:
+                  - description: Access to perform any supported action on all entities of the account
+                    name: account_admin
+                    permissions:
+                    - create_linode
+                    - update_linode
+                    - update_firewall
+                  type: account
+                - roles:
+                  - description: Access to create a firewall instance
+                    name: account_firewall_creator
+                    permissions:
+                    - create_firewall
+                  type: firewall
+                entity_access:
+                - roles:
+                  - description: Access to update a linode instance
+                    name: linode_contributor
+                    permissions:
+                    - update_linode
+                    - view_linode
+                  type: linode
+                - roles:
+                  - description: Access to view a firewall instance
+                    name: firewall_viewer
+                    permissions:
+                    - view_firewall
+                    - list_firewall_rules
+                    - view_firewall_device
+                    - list_firewall_devices
+                    - view_firewall_rule_version
+                    - list_firewall_rule_versions
+                  - description: Access to perform any supported action on a firewall instance
+                    name: firewall_admin
+                    permissions:
+                    - view_firewall
+                    - list_firewall_rules
+                    - view_firewall_device
+                    - update_firewall
+                    - delete_firewall_device
+                    - update_firewall_rules
+                    - list_firewall_devices
+                    - delete_firewall
+                    - view_firewall_rule_version
+                    - list_firewall_rule_versions
+                    - create_firewall_device
+                  type: firewall
+              schema:
+                additionalProperties: false
+                properties:
+                  account_access:
+                    description: Encapsulates available account access roles.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        roles:
+                          description: Encapsulates roles.
+                          items:
+                            additionalProperties: false
+                            description: Specifies a role.
+                            properties:
+                              description:
+                                description: __Read-only__ The description of a role.
+                                example: description
+                                readOnly: true
+                                type: string
+                                x-linode-cli-display: 1
+                              name:
+                                description: __Read-only__ The name of a role. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                                enum:
+                                - account_admin
+                                - account_viewer
+                                - account_billing_admin
+                                - account_billing_viewer
+                                - account_event_viewer
+                                - account_notification_viewer
+                                - account_maintenance_viewer
+                                - account_oauth_client_admin
+                                - account_oauth_client_viewer
+                                - account_linode_creator
+                                - account_linode_admin
+                                - linode_admin
+                                - linode_contributor
+                                - linode_viewer
+                                - account_firewall_creator
+                                - account_firewall_admin
+                                - firewall_viewer
+                                - firewall_contributor
+                                - account_nodebalancer_creator
+                                - nodebalancer_admin
+                                - nodebalancer_viewer
+                                - account_vpc_creator
+                                - vpc_admin
+                                - vpc_viewer
+                                - account_volume_creator
+                                - volume_admin
+                                - volume_viewer
+                                - account_image_creator
+                                - image_admin
+                                - image_viewer
+                                - account_lkecluster_creator
+                                - lkecluster_admin
+                                - lkecluster_viewer
+                                - account_domain_creator
+                                - domain_admin
+                                - domain_viewer
+                                - account_stackscript_creator
+                                - stackscript_admin
+                                - stackscript_viewer
+                                - account_database_creator
+                                - database_admin
+                                - database_viewer
+                                - account_longview_creator
+                                - account_longview_subscription_admin
+                                - longview_admin
+                                - longview_viewer
+                                example: account_admin
+                                readOnly: true
+                                type: string
+                              permissions:
+                                description: Permissions included in a role. Possible permissions are listed by role within the [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles) documentation. Permissions are also listed within the [Grants vs RBAC model comparison](https://techdocs.akamai.com/cloud-computing/docs/cloud-iam-rbac-vs-grant-linodes) guide.
+                                example:
+                                - create_linode
+                                - update_linode
+                                - delete_linode
+                                items:
+                                  enum:
+                                  - accept_service_transfer
+                                  - acknowledge_account_agreement
+                                  - allocate_ip
+                                  - allocate_linode_ip_address
+                                  - answer_profile_security_questions
+                                  - apply_linode_firewalls
+                                  - assign_ips
+                                  - assign_ipv4
+                                  - attach_volume
+                                  - boot_linode
+                                  - cancel_account
+                                  - cancel_linode_backups
+                                  - cancel_service_transfer
+                                  - clone_linode_disk
+                                  - clone_linode
+                                  - clone_volume
+                                  - create_firewall_device
+                                  - create_firewall
+                                  - create_image
+                                  - create_ipv6_range
+                                  - create_linode_backup_snapshot
+                                  - create_linode_config_profile_interface
+                                  - create_linode_config_profile
+                                  - create_linode_disk
+                                  - create_linode
+                                  - create_nodebalancer_config_node
+                                  - create_nodebalancer_config
+                                  - create_nodebalancer
+                                  - create_oauth_client
+                                  - create_payment_method
+                                  - create_profile_pat
+                                  - create_profile_ssh_key
+                                  - create_profile_tfa_secret
+                                  - create_promo_code
+                                  - create_service_transfer
+                                  - create_user
+                                  - create_volume
+                                  - create_vpc_subnet
+                                  - create_vpc
+                                  - delete_firewall_device
+                                  - delete_firewall
+                                  - delete_image
+                                  - delete_ipv6_range
+                                  - delete_linode_config_profile_interface
+                                  - delete_linode_config_profile
+                                  - delete_linode_disk
+                                  - delete_linode_ip_address
+                                  - delete_linode
+                                  - delete_nodebalancer_config_node
+                                  - delete_nodebalancer_config
+                                  - delete_nodebalancer
+                                  - delete_oauth_client
+                                  - delete_payment_method
+                                  - delete_profile_pat
+                                  - delete_profile_phone_number
+                                  - delete_profile_ssh_key
+                                  - delete_user
+                                  - delete_vlan
+                                  - delete_volume
+                                  - delete_vpc_subnet
+                                  - delete_vpc
+                                  - detach_volume
+                                  - disable_profile_tfa
+                                  - enable_linode_backups
+                                  - enable_managed
+                                  - enable_profile_tfa
+                                  - enroll_beta_program
+                                  - is_account_admin
+                                  - list_account_agreements
+                                  - list_account_logins
+                                  - list_available_services
+                                  - list_billing_invoices
+                                  - list_billing_payments
+                                  - list_enrolled_beta_programs
+                                  - list_events
+                                  - list_firewall_devices
+                                  - list_firewall_rule_versions
+                                  - list_firewall_rules
+                                  - list_invoice_items
+                                  - list_ips
+                                  - list_ipv6_pools
+                                  - list_ipv6_ranges
+                                  - list_linode_firewalls
+                                  - list_linode_nodebalancers
+                                  - list_linode_volumes
+                                  - list_maintenances
+                                  - list_nodebalancer_firewalls
+                                  - list_notifications
+                                  - list_oauth_clients
+                                  - list_payment_methods
+                                  - list_profile_apps
+                                  - list_profile_devices
+                                  - list_profile_grants
+                                  - list_profile_logins
+                                  - list_profile_pats
+                                  - list_profile_security_questions
+                                  - list_profile_ssh_keys
+                                  - list_service_transfers
+                                  - list_user_grants
+                                  - list_vlans
+                                  - list_vpc_ip_addresses
+                                  - list_vpcs_ip_addresses
+                                  - make_payment
+                                  - mark_event_seen
+                                  - migrate_linode
+                                  - password_reset_linode
+                                  - reboot_linode
+                                  - rebuild_linode
+                                  - rebuild_nodebalancer_config
+                                  - reorder_linode_config_profile_interfaces
+                                  - replicate_image
+                                  - rescue_linode
+                                  - reset_linode_disk_root_password
+                                  - reset_oauth_client_secret
+                                  - resize_linode_disk
+                                  - resize_linode
+                                  - resize_volume
+                                  - restore_linode_backup
+                                  - revoke_profile_app
+                                  - revoke_profile_device
+                                  - send_profile_phone_number_verification_code
+                                  - set_default_payment_method
+                                  - share_ips
+                                  - share_ipv4
+                                  - shutdown_linode
+                                  - update_account_settings
+                                  - update_account
+                                  - update_firewall_rules
+                                  - update_firewall
+                                  - update_image
+                                  - update_ip_rdns
+                                  - update_linode_config_profile_interface
+                                  - update_linode_config_profile
+                                  - update_linode_disk
+                                  - update_linode_firewalls
+                                  - update_linode_ip_address
+                                  - update_linode
+                                  - update_nodebalancer_config_node
+                                  - update_nodebalancer_config
+                                  - update_nodebalancer_firewalls
+                                  - update_nodebalancer
+                                  - update_oauth_client_thumbnail
+                                  - update_oauth_client
+                                  - update_profile_pat
+                                  - update_profile_ssh_key
+                                  - update_profile
+                                  - update_user_grants
+                                  - update_user_preferences
+                                  - update_user
+                                  - update_volume
+                                  - update_vpc_subnet
+                                  - update_vpc
+                                  - upgrade_linode
+                                  - upload_image
+                                  - verify_profile_phone_number
+                                  - view_account_login
+                                  - view_account_settings
+                                  - view_account
+                                  - view_billing_invoice
+                                  - view_billing_payment
+                                  - view_enrolled_beta_program
+                                  - view_event
+                                  - view_firewall_device
+                                  - view_firewall_rule_version
+                                  - view_firewall
+                                  - view_image
+                                  - view_ip
+                                  - view_ipv6_range
+                                  - view_linode_backup
+                                  - view_linode_config_profile_interface
+                                  - view_linode_config_profile
+                                  - view_linode_disk
+                                  - view_linode_ip_address
+                                  - view_linode_monthly_network_transfer_stats
+                                  - view_linode_monthly_stats
+                                  - view_linode_network_transfer
+                                  - view_linode_networking_info
+                                  - view_linode_stats
+                                  - view_linode
+                                  - view_network_usage
+                                  - view_nodebalancer_config_node
+                                  - view_nodebalancer_config
+                                  - view_nodebalancer_statistics
+                                  - view_nodebalancer
+                                  - view_oauth_client_thumbnail
+                                  - view_oauth_client
+                                  - view_payment_method
+                                  - view_profile_app
+                                  - view_profile_device
+                                  - view_profile_login
+                                  - view_profile_pat
+                                  - view_profile_ssh_key
+                                  - view_profile
+                                  - view_region_available_service
+                                  - view_service_transfer
+                                  - view_user_preferences
+                                  - view_user
+                                  - view_volume
+                                  - view_vpc_subnet
+                                  - view_vpc
+                                  type: string
+                                type: array
+                                x-linode-cli-display: 2
+                            type: object
+                            x-akamai:
+                              file-path: schemas/role-account-access.yaml
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - account
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/role-permissions-account-access.yaml
+                    minItems: 0
+                    type: array
+                  entity_access:
+                    description: Encapsulates available entity access roles.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        roles:
+                          description: Encapsulates roles.
+                          items:
+                            additionalProperties: false
+                            description: Specifies a role.
+                            properties:
+                              description:
+                                description: __Read-only__ The description of a role.
+                                example: description
+                                readOnly: true
+                                type: string
+                                x-linode-cli-display: 1
+                              name:
+                                description: __Read-only__ The name of a role. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                                enum:
+                                - linode_admin
+                                - linode_contributor
+                                - linode_viewer
+                                - account_firewall_creator
+                                - account_firewall_admin
+                                - firewall_admin
+                                - firewall_viewer
+                                - firewall_contributor
+                                - account_nodebalancer_creator
+                                - nodebalancer_admin
+                                - nodebalancer_viewer
+                                - account_vpc_creator
+                                - vpc_admin
+                                - vpc_viewer
+                                - account_volume_creator
+                                - volume_admin
+                                - volume_viewer
+                                - account_image_creator
+                                - image_admin
+                                - image_viewer
+                                - account_lkecluster_creator
+                                - lkecluster_admin
+                                - lkecluster_viewer
+                                - account_domain_creator
+                                - domain_admin
+                                - domain_viewer
+                                - account_stackscript_creator
+                                - stackscript_admin
+                                - stackscript_viewer
+                                - account_database_creator
+                                - database_admin
+                                - database_viewer
+                                - account_longview_creator
+                                - account_longview_subscription_admin
+                                - longview_admin
+                                - longview_viewer
+                                example: linode_admin
+                                readOnly: true
+                                type: string
+                              permissions:
+                                description: Permissions included in a role. Possible permissions are listed by role within the [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles) documentation. Permissions are also listed within the [Grants vs RBAC model comparison](https://techdocs.akamai.com/cloud-computing/docs/cloud-iam-rbac-vs-grant-linodes) guide.
+                                example:
+                                - create_linode
+                                - update_linode
+                                - delete_linode
+                                items:
+                                  enum:
+                                  - accept_service_transfer
+                                  - acknowledge_account_agreement
+                                  - allocate_ip
+                                  - allocate_linode_ip_address
+                                  - answer_profile_security_questions
+                                  - apply_linode_firewalls
+                                  - assign_ips
+                                  - assign_ipv4
+                                  - attach_volume
+                                  - boot_linode
+                                  - cancel_account
+                                  - cancel_linode_backups
+                                  - cancel_service_transfer
+                                  - clone_linode_disk
+                                  - clone_linode
+                                  - clone_volume
+                                  - create_firewall_device
+                                  - create_firewall
+                                  - create_image
+                                  - create_ipv6_range
+                                  - create_linode_backup_snapshot
+                                  - create_linode_config_profile_interface
+                                  - create_linode_config_profile
+                                  - create_linode_disk
+                                  - create_linode
+                                  - create_nodebalancer_config_node
+                                  - create_nodebalancer_config
+                                  - create_nodebalancer
+                                  - create_oauth_client
+                                  - create_payment_method
+                                  - create_profile_pat
+                                  - create_profile_ssh_key
+                                  - create_profile_tfa_secret
+                                  - create_promo_code
+                                  - create_service_transfer
+                                  - create_user
+                                  - create_volume
+                                  - create_vpc_subnet
+                                  - create_vpc
+                                  - delete_firewall_device
+                                  - delete_firewall
+                                  - delete_image
+                                  - delete_ipv6_range
+                                  - delete_linode_config_profile_interface
+                                  - delete_linode_config_profile
+                                  - delete_linode_disk
+                                  - delete_linode_ip_address
+                                  - delete_linode
+                                  - delete_nodebalancer_config_node
+                                  - delete_nodebalancer_config
+                                  - delete_nodebalancer
+                                  - delete_oauth_client
+                                  - delete_payment_method
+                                  - delete_profile_pat
+                                  - delete_profile_phone_number
+                                  - delete_profile_ssh_key
+                                  - delete_user
+                                  - delete_vlan
+                                  - delete_volume
+                                  - delete_vpc_subnet
+                                  - delete_vpc
+                                  - detach_volume
+                                  - disable_profile_tfa
+                                  - enable_linode_backups
+                                  - enable_managed
+                                  - enable_profile_tfa
+                                  - enroll_beta_program
+                                  - is_account_admin
+                                  - list_account_agreements
+                                  - list_account_logins
+                                  - list_available_services
+                                  - list_billing_invoices
+                                  - list_billing_payments
+                                  - list_enrolled_beta_programs
+                                  - list_events
+                                  - list_firewall_devices
+                                  - list_firewall_rule_versions
+                                  - list_firewall_rules
+                                  - list_invoice_items
+                                  - list_ips
+                                  - list_ipv6_pools
+                                  - list_ipv6_ranges
+                                  - list_linode_firewalls
+                                  - list_linode_nodebalancers
+                                  - list_linode_volumes
+                                  - list_maintenances
+                                  - list_nodebalancer_firewalls
+                                  - list_notifications
+                                  - list_oauth_clients
+                                  - list_payment_methods
+                                  - list_profile_apps
+                                  - list_profile_devices
+                                  - list_profile_grants
+                                  - list_profile_logins
+                                  - list_profile_pats
+                                  - list_profile_security_questions
+                                  - list_profile_ssh_keys
+                                  - list_service_transfers
+                                  - list_user_grants
+                                  - list_vlans
+                                  - list_vpc_ip_addresses
+                                  - list_vpcs_ip_addresses
+                                  - make_payment
+                                  - mark_event_seen
+                                  - migrate_linode
+                                  - password_reset_linode
+                                  - reboot_linode
+                                  - rebuild_linode
+                                  - rebuild_nodebalancer_config
+                                  - reorder_linode_config_profile_interfaces
+                                  - replicate_image
+                                  - rescue_linode
+                                  - reset_linode_disk_root_password
+                                  - reset_oauth_client_secret
+                                  - resize_linode_disk
+                                  - resize_linode
+                                  - resize_volume
+                                  - restore_linode_backup
+                                  - revoke_profile_app
+                                  - revoke_profile_device
+                                  - send_profile_phone_number_verification_code
+                                  - set_default_payment_method
+                                  - share_ips
+                                  - share_ipv4
+                                  - shutdown_linode
+                                  - update_account_settings
+                                  - update_account
+                                  - update_firewall_rules
+                                  - update_firewall
+                                  - update_image
+                                  - update_ip_rdns
+                                  - update_linode_config_profile_interface
+                                  - update_linode_config_profile
+                                  - update_linode_disk
+                                  - update_linode_firewalls
+                                  - update_linode_ip_address
+                                  - update_linode
+                                  - update_nodebalancer_config_node
+                                  - update_nodebalancer_config
+                                  - update_nodebalancer_firewalls
+                                  - update_nodebalancer
+                                  - update_oauth_client_thumbnail
+                                  - update_oauth_client
+                                  - update_profile_pat
+                                  - update_profile_ssh_key
+                                  - update_profile
+                                  - update_user_grants
+                                  - update_user_preferences
+                                  - update_user
+                                  - update_volume
+                                  - update_vpc_subnet
+                                  - update_vpc
+                                  - upgrade_linode
+                                  - upload_image
+                                  - verify_profile_phone_number
+                                  - view_account_login
+                                  - view_account_settings
+                                  - view_account
+                                  - view_billing_invoice
+                                  - view_billing_payment
+                                  - view_enrolled_beta_program
+                                  - view_event
+                                  - view_firewall_device
+                                  - view_firewall_rule_version
+                                  - view_firewall
+                                  - view_image
+                                  - view_ip
+                                  - view_ipv6_range
+                                  - view_linode_backup
+                                  - view_linode_config_profile_interface
+                                  - view_linode_config_profile
+                                  - view_linode_disk
+                                  - view_linode_ip_address
+                                  - view_linode_monthly_network_transfer_stats
+                                  - view_linode_monthly_stats
+                                  - view_linode_network_transfer
+                                  - view_linode_networking_info
+                                  - view_linode_stats
+                                  - view_linode
+                                  - view_network_usage
+                                  - view_nodebalancer_config_node
+                                  - view_nodebalancer_config
+                                  - view_nodebalancer_statistics
+                                  - view_nodebalancer
+                                  - view_oauth_client_thumbnail
+                                  - view_oauth_client
+                                  - view_payment_method
+                                  - view_profile_app
+                                  - view_profile_device
+                                  - view_profile_login
+                                  - view_profile_pat
+                                  - view_profile_ssh_key
+                                  - view_profile
+                                  - view_region_available_service
+                                  - view_service_transfer
+                                  - view_user_preferences
+                                  - view_user
+                                  - view_volume
+                                  - view_vpc_subnet
+                                  - view_vpc
+                                  type: string
+                                type: array
+                                x-linode-cli-display: 2
+                            type: object
+                            x-akamai:
+                              file-path: schemas/role-entity-access.yaml
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/role-permissions-entity-access.yaml
+                    minItems: 0
+                    type: array
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-role-permissions.yaml
+          description: Available roles and their details.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: List available roles
+      tags:
+      - Identity Management
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_role_permissions
+  /{apiVersion}/iam/users/{username}/role-permissions:
+    parameters:
+    - description: The username to look up.
+      example: '{{username}}'
+      in: path
+      name: username
+      required: true
+      schema:
+        example: jsmith
+        type: string
+      x-akamai:
+        file-path: parameters/username-path.yaml
+    - description: __Enum__ Call the `v4` URL.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v4-path.yaml
+    x-akamai:
+      file-path: paths/iam-users-role-permissions.yaml
+      path-info: /{apiVersion}/iam/users/{username}/role-permissions
+    get:
+      description: 'Returns a user''s access level on the account. The response includes account access and entity access roles.
+
+
+        - **Account access roles**. These roles give access to account level operations, entities in the account both existing and to be created in the future, and creation of new entities.
+
+
+        - **Entity access roles**. These roles provide access to specific entities that are already available on the account.
+
+
+        To learn more, see the Identity and Access in Cloud Manager terminology.
+
+
+        > 📘 Before you begin
+
+        >
+
+        > Before you run this operation, read Comparison of Linode API for grants and Identity and Access to learn about the new experience and recommended use of the new Identity and Access endpoints.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_user_permissions`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-iam-users-role-permissions
+      operationId: get-iam-users-role-permissions
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                account_access:
+                - account_linode_creator
+                - account_firewall_creator
+                entity_access:
+                - id: 1
+                  roles:
+                  - linode_contributor
+                  type: linode
+                - id: 1
+                  roles:
+                  - firewall_admin
+                  type: firewall
+              schema:
+                additionalProperties: false
+                description: The user's access level.
+                properties:
+                  account_access:
+                    description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                    items:
+                      enum:
+                      - account_admin
+                      - account_idp_admin
+                      - account_idp_viewer
+                      - account_event_viewer
+                      - account_maintenance_viewer
+                      - account_notification_viewer
+                      - account_billing_viewer
+                      - account_billing_admin
+                      - account_billing_admin
+                      - account_linode_creator
+                      - account_oauth_client_viewer
+                      - account_oauth_client_admin
+                      - account_firewall_creator
+                      - account_firewall_admin
+                      - account_image_creator
+                      - account_image_admin
+                      - account_nodebalancer_creator
+                      - account_maintenance_viewer
+                      - account_volume_creator
+                      - account_volume_admin
+                      - volume_contributor
+                      - account_vpc_admin
+                      - account_vpc_viewer
+                      - account_vpc_creator
+                      - account_database_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      - account_lkecluster_creator
+                      - account_longview_subscription_admin
+                      - account_placement_group_creator
+                      - account_stackscript_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      type: string
+                    minItems: 0
+                    type: array
+                  entity_access:
+                    description: Encapsulates assigned entity access roles and entities they apply to.
+                    example:
+                    - id: 1
+                      roles:
+                      - linode_contributor
+                      type: linode
+                    - id: 1
+                      roles:
+                      - firewall_admin
+                      type: firewall
+                    items:
+                      additionalProperties: false
+                      properties:
+                        id:
+                          description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                          example: 1
+                          minimum: 1
+                          type: integer
+                        roles:
+                          description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                          example:
+                          - linode_contributor
+                          items:
+                            enum:
+                            - linode_admin
+                            - linode_contributor
+                            - linode_viewer
+                            - firewall_admin
+                            - firewall_contributor
+                            - firewall_viewer
+                            - nodebalancer_admin
+                            - nodebalancer_viewer
+                            - vpc_admin
+                            - vpc_viewer
+                            - volume_admin
+                            - volume_viewer
+                            - image_admin
+                            - image_viewer
+                            - lkecluster_admin
+                            - lkecluster_viewer
+                            - domain_admin
+                            - domain_viewer
+                            - stackscript_admin
+                            - stackscript_viewer
+                            - database_admin
+                            - database_viewer
+                            - longview_admin
+                            - longview_viewer
+                            type: string
+                          minItems: 0
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          example: linode
+                          type: string
+                      required:
+                      - id
+                      - type
+                      - roles
+                      type: object
+                    minItems: 0
+                    type: array
+                required:
+                - account_access
+                - entity_access
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-users-role-permissions.yaml
+          description: The user's access level on the account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Get a user's access level
+      tags:
+      - Identity Management
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_user_permissions
+    put:
+      description: 'Updates a user''s access level on the account. The request includes account access and entity access roles.
+
+
+        - **Account access roles**. These roles give access to account level operations, entities in the account both existing and to be created in the future, and creation of new entities.
+
+
+        - **Entity access roles**. These roles provide access to specific entities that are already available on the account.
+
+
+        To learn more, see the Identity and Access in Cloud Manager terminology. This operation replaces any existing role assignment. To completely block user''s access to the account, pass an empty list, `[]`. To get the list of available roles, run the List available roles operation.
+
+
+        > 📘 Before you begin
+
+        >
+
+        > Before you run this operation, read Comparison of Linode API for grants and Identity and Access to learn about the new experience and recommended use of the new Identity and Access endpoints.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `update_user_permissions`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-iam-users-role-permissions
+      operationId: put-iam-users-role-permissions
+      requestBody:
+        content:
+          application/json:
+            example:
+              account_access:
+              - account_linode_creator
+              - account_firewall_creator
+              entity_access:
+              - id: 1
+                roles:
+                - linode_contributor
+                type: linode
+              - id: 1
+                roles:
+                - firewall_admin
+                type: firewall
+            schema:
+              additionalProperties: false
+              description: The user's access level.
+              properties:
+                account_access:
+                  description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                  items:
+                    enum:
+                    - account_admin
+                    - account_idp_admin
+                    - account_idp_viewer
+                    - account_event_viewer
+                    - account_maintenance_viewer
+                    - account_notification_viewer
+                    - account_billing_viewer
+                    - account_billing_admin
+                    - account_billing_admin
+                    - account_linode_creator
+                    - account_oauth_client_viewer
+                    - account_oauth_client_admin
+                    - account_firewall_creator
+                    - account_firewall_admin
+                    - account_image_creator
+                    - account_image_admin
+                    - account_nodebalancer_creator
+                    - account_maintenance_viewer
+                    - account_volume_creator
+                    - account_volume_admin
+                    - volume_contributor
+                    - account_vpc_admin
+                    - account_vpc_viewer
+                    - account_vpc_creator
+                    - account_database_creator
+                    - account_domain_creator
+                    - account_longview_creator
+                    - account_lkecluster_creator
+                    - account_longview_subscription_admin
+                    - account_placement_group_creator
+                    - account_stackscript_creator
+                    - account_domain_creator
+                    - account_longview_creator
+                    type: string
+                  minItems: 0
+                  type: array
+                entity_access:
+                  description: Encapsulates assigned entity access roles and entities they apply to.
+                  example:
+                  - id: 1
+                    roles:
+                    - linode_contributor
+                    type: linode
+                  - id: 1
+                    roles:
+                    - firewall_admin
+                    type: firewall
+                  items:
+                    additionalProperties: false
+                    properties:
+                      id:
+                        description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                        example: 1
+                        minimum: 1
+                        type: integer
+                      roles:
+                        description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                        example:
+                        - linode_contributor
+                        items:
+                          enum:
+                          - linode_admin
+                          - linode_contributor
+                          - linode_viewer
+                          - firewall_admin
+                          - firewall_contributor
+                          - firewall_viewer
+                          - nodebalancer_admin
+                          - nodebalancer_viewer
+                          - vpc_admin
+                          - vpc_viewer
+                          - volume_admin
+                          - volume_viewer
+                          - image_admin
+                          - image_viewer
+                          - lkecluster_admin
+                          - lkecluster_viewer
+                          - domain_admin
+                          - domain_viewer
+                          - stackscript_admin
+                          - stackscript_viewer
+                          - database_admin
+                          - database_viewer
+                          - longview_admin
+                          - longview_viewer
+                          type: string
+                        minItems: 0
+                        type: array
+                      type:
+                        description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                        enum:
+                        - linode
+                        - firewall
+                        - database
+                        - domain
+                        - image
+                        - longview
+                        - nodebalancer
+                        - stackscript
+                        - volume
+                        - vpc
+                        example: linode
+                        type: string
+                    required:
+                    - id
+                    - type
+                    - roles
+                    type: object
+                  minItems: 0
+                  type: array
+              required:
+              - account_access
+              - entity_access
+              type: object
+              x-akamai:
+                file-path: schemas/iam-users-role-permissions.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                account_access:
+                - account_linode_creator
+                - account_firewall_creator
+                entity_access:
+                - id: 1
+                  roles:
+                  - linode_contributor
+                  type: linode
+                - id: 1
+                  roles:
+                  - firewall_admin
+                  type: firewall
+              schema:
+                additionalProperties: false
+                description: The user's access level.
+                properties:
+                  account_access:
+                    description: Assigned account access roles. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                    items:
+                      enum:
+                      - account_admin
+                      - account_idp_admin
+                      - account_idp_viewer
+                      - account_event_viewer
+                      - account_maintenance_viewer
+                      - account_notification_viewer
+                      - account_billing_viewer
+                      - account_billing_admin
+                      - account_billing_admin
+                      - account_linode_creator
+                      - account_oauth_client_viewer
+                      - account_oauth_client_admin
+                      - account_firewall_creator
+                      - account_firewall_admin
+                      - account_image_creator
+                      - account_image_admin
+                      - account_nodebalancer_creator
+                      - account_maintenance_viewer
+                      - account_volume_creator
+                      - account_volume_admin
+                      - volume_contributor
+                      - account_vpc_admin
+                      - account_vpc_viewer
+                      - account_vpc_creator
+                      - account_database_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      - account_lkecluster_creator
+                      - account_longview_subscription_admin
+                      - account_placement_group_creator
+                      - account_stackscript_creator
+                      - account_domain_creator
+                      - account_longview_creator
+                      type: string
+                    minItems: 0
+                    type: array
+                  entity_access:
+                    description: Encapsulates assigned entity access roles and entities they apply to.
+                    example:
+                    - id: 1
+                      roles:
+                      - linode_contributor
+                      type: linode
+                    - id: 1
+                      roles:
+                      - firewall_admin
+                      type: firewall
+                    items:
+                      additionalProperties: false
+                      properties:
+                        id:
+                          description: A unique identifier for an entity. To get this value, run the [List entities](https://techdocs.akamai.com/linode-api/reference/get-entities) operation.
+                          example: 1
+                          minimum: 1
+                          type: integer
+                        roles:
+                          description: Entity access roles you want to assign to the entity. For a list of available account access roles and their included permissions, see [Available roles](https://techdocs.akamai.com/cloud-computing/docs/identity-access-cm-available-roles).
+                          example:
+                          - linode_contributor
+                          items:
+                            enum:
+                            - linode_admin
+                            - linode_contributor
+                            - linode_viewer
+                            - firewall_admin
+                            - firewall_contributor
+                            - firewall_viewer
+                            - nodebalancer_admin
+                            - nodebalancer_viewer
+                            - vpc_admin
+                            - vpc_viewer
+                            - volume_admin
+                            - volume_viewer
+                            - image_admin
+                            - image_viewer
+                            - lkecluster_admin
+                            - lkecluster_viewer
+                            - domain_admin
+                            - domain_viewer
+                            - stackscript_admin
+                            - stackscript_viewer
+                            - database_admin
+                            - database_viewer
+                            - longview_admin
+                            - longview_viewer
+                            type: string
+                          minItems: 0
+                          type: array
+                        type:
+                          description: A type of entity. This is the Cloud Manager service or capability that an entity corresponds to. The value is either `linode`, `firewall`, `nodebalancer`, `vpc`, `volume`, `image`, `domain`, `stackscript`, `database`, or `longview`.
+                          enum:
+                          - linode
+                          - firewall
+                          - database
+                          - domain
+                          - image
+                          - longview
+                          - nodebalancer
+                          - stackscript
+                          - volume
+                          - vpc
+                          example: linode
+                          type: string
+                      required:
+                      - id
+                      - type
+                      - roles
+                      type: object
+                    minItems: 0
+                    type: array
+                required:
+                - account_access
+                - entity_access
+                type: object
+                x-akamai:
+                  file-path: schemas/iam-users-role-permissions.yaml
+          description: The user's access level on the account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      summary: Update a user's access level
+      tags:
+      - Identity Management
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - update_user_permissions
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node
