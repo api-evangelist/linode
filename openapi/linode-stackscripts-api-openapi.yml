@@ -1794,31 +1794,6 @@ paths:
     - url: https://api.linode.com/v4
       description: Production Server
 components:
-  parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    stackscriptIdParam:
-      name: stackscriptId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the StackScript.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
   schemas:
     Pagination:
       type: object
@@ -1832,6 +1807,36 @@ components:
         results:
           type: integer
           description: The total number of results.
+    StackScriptRequest:
+      type: object
+      required:
+      - label
+      - images
+      - script
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 128
+          description: The label for the StackScript.
+        description:
+          type: string
+          description: A description of the StackScript.
+        images:
+          type: array
+          items:
+            type: string
+          description: Compatible image IDs.
+        script:
+          type: string
+          description: The script content.
+        rev_note:
+          type: string
+          maxLength: 512
+          description: A revision note.
+        is_public:
+          type: boolean
+          description: Whether to make the StackScript public.
     StackScript:
       type: object
       properties:
@@ -1875,36 +1880,6 @@ components:
           type: string
           format: date-time
           description: When this StackScript was last updated.
-    StackScriptRequest:
-      type: object
-      required:
-      - label
-      - images
-      - script
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 128
-          description: The label for the StackScript.
-        description:
-          type: string
-          description: A description of the StackScript.
-        images:
-          type: array
-          items:
-            type: string
-          description: Compatible image IDs.
-        script:
-          type: string
-          description: The script content.
-        rev_note:
-          type: string
-          maxLength: 512
-          description: A revision note.
-        is_public:
-          type: boolean
-          description: Whether to make the StackScript public.
     PaginatedStackScriptList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -1914,6 +1889,31 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/StackScript'
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    stackscriptIdParam:
+      name: stackscriptId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the StackScript.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   securitySchemes:
     oauth:
       flows:

@@ -99,36 +99,6 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
-    PaginatedManagedIssueList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                created:
-                  type: string
-                  format: date-time
-                services:
-                  type: array
-                  items:
-                    type: integer
-                entity:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    label:
-                      type: string
-                    type:
-                      type: string
-                    url:
-                      type: string
     Pagination:
       type: object
       properties:
@@ -141,47 +111,32 @@ components:
         results:
           type: integer
           description: The total number of results.
-    ManagedServiceRequest:
-      type: object
-      required:
-      - label
-      - service_type
-      - address
-      - timeout
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 64
-          description: The label for the service.
-        service_type:
-          type: string
-          enum:
-          - url
-          description: The type of service monitor.
-        address:
-          type: string
-          description: The URL to monitor.
-        timeout:
-          type: integer
-          minimum: 1
-          maximum: 255
-          description: Timeout in seconds.
-        body:
-          type: string
-          maxLength: 100
-          description: A string to look for in the response body.
-        consultation_group:
-          type: string
-          description: The group of managed contacts to notify.
-        notes:
-          type: string
-          description: Notes about this service.
-        credentials:
-          type: array
-          items:
-            type: integer
-          description: Credential IDs for this service.
+    PaginatedManagedContactList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: object
+                  properties:
+                    primary:
+                      type: string
+                    secondary:
+                      type: string
+                group:
+                  type: string
     ManagedService:
       type: object
       properties:
@@ -235,7 +190,57 @@ components:
           type: string
           format: date-time
           description: When this service was last updated.
-    PaginatedManagedContactList:
+    ManagedServiceRequest:
+      type: object
+      required:
+      - label
+      - service_type
+      - address
+      - timeout
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          description: The label for the service.
+        service_type:
+          type: string
+          enum:
+          - url
+          description: The type of service monitor.
+        address:
+          type: string
+          description: The URL to monitor.
+        timeout:
+          type: integer
+          minimum: 1
+          maximum: 255
+          description: Timeout in seconds.
+        body:
+          type: string
+          maxLength: 100
+          description: A string to look for in the response body.
+        consultation_group:
+          type: string
+          description: The group of managed contacts to notify.
+        notes:
+          type: string
+          description: Notes about this service.
+        credentials:
+          type: array
+          items:
+            type: integer
+          description: Credential IDs for this service.
+    PaginatedManagedServiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ManagedService'
+    PaginatedManagedIssueList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -247,30 +252,33 @@ components:
               properties:
                 id:
                   type: integer
-                name:
+                created:
                   type: string
-                email:
-                  type: string
-                  format: email
-                phone:
+                  format: date-time
+                services:
+                  type: array
+                  items:
+                    type: integer
+                entity:
                   type: object
                   properties:
-                    primary:
+                    id:
+                      type: integer
+                    label:
                       type: string
-                    secondary:
+                    type:
                       type: string
-                group:
-                  type: string
-    PaginatedManagedServiceList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ManagedService'
+                    url:
+                      type: string
   parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -280,14 +288,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
   securitySchemes:
     personalAccessToken:
       type: http

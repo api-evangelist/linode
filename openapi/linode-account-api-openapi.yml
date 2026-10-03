@@ -1514,39 +1514,56 @@ paths:
     - url: https://api.linode.com/v4
       description: Production Server
 components:
-  parameters:
-    eventIdParam:
-      name: eventId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the event.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    usernameParam:
-      name: username
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The username of the user.
   schemas:
+    PaymentRequest:
+      type: object
+      required:
+      - usd
+      properties:
+        usd:
+          type: number
+          minimum: 5
+          maximum: 10000
+          description: The payment amount in US dollars.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    UserRequest:
+      type: object
+      required:
+      - username
+      - email
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user should have restricted access.
+    PaginatedInvoiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Invoice'
     Account:
       type: object
       properties:
@@ -1597,19 +1614,15 @@ components:
           items:
             type: string
           description: A list of capabilities enabled on this account.
-    Payment:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this payment.
-        date:
-          type: string
-          format: date-time
-          description: The date this payment was made.
-        usd:
-          type: number
-          description: The amount in US dollars.
+    PaginatedEventList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Event'
     PaginatedPaymentList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -1619,48 +1632,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Payment'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    PaginatedInvoiceList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Invoice'
-    User:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The user's username.
-        email:
-          type: string
-          format: email
-          description: The user's email address.
-        restricted:
-          type: boolean
-          description: Whether the user has restricted access to account resources.
-        ssh_keys:
-          type: array
-          items:
-            type: string
-          description: A list of SSH key labels associated with the user.
-        tfa_enabled:
-          type: boolean
-          description: Whether two-factor authentication is enabled.
     PaginatedUserList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -1670,46 +1641,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/User'
-    Invoice:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this invoice.
-        date:
-          type: string
-          format: date-time
-          description: The date of this invoice.
-        label:
-          type: string
-          description: The label for this invoice.
-        subtotal:
-          type: number
-          description: The subtotal amount.
-        tax:
-          type: number
-          description: The tax amount.
-        total:
-          type: number
-          description: The total amount.
-    UserRequest:
-      type: object
-      required:
-      - username
-      - email
-      properties:
-        username:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The user's username.
-        email:
-          type: string
-          format: email
-          description: The user's email address.
-        restricted:
-          type: boolean
-          description: Whether the user should have restricted access.
     Event:
       type: object
       properties:
@@ -1793,25 +1724,94 @@ components:
         read:
           type: boolean
           description: Whether the event has been read by the user.
-    PaginatedEventList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Event'
-    PaymentRequest:
+    Invoice:
       type: object
-      required:
-      - usd
       properties:
+        id:
+          type: integer
+          description: The unique ID of this invoice.
+        date:
+          type: string
+          format: date-time
+          description: The date of this invoice.
+        label:
+          type: string
+          description: The label for this invoice.
+        subtotal:
+          type: number
+          description: The subtotal amount.
+        tax:
+          type: number
+          description: The tax amount.
+        total:
+          type: number
+          description: The total amount.
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this payment.
+        date:
+          type: string
+          format: date-time
+          description: The date this payment was made.
         usd:
           type: number
-          minimum: 5
-          maximum: 10000
-          description: The payment amount in US dollars.
+          description: The amount in US dollars.
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user's username.
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        restricted:
+          type: boolean
+          description: Whether the user has restricted access to account resources.
+        ssh_keys:
+          type: array
+          items:
+            type: string
+          description: A list of SSH key labels associated with the user.
+        tfa_enabled:
+          type: boolean
+          description: Whether two-factor authentication is enabled.
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    usernameParam:
+      name: username
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The username of the user.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    eventIdParam:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the event.
   securitySchemes:
     oauth:
       flows:

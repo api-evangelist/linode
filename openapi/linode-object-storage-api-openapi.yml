@@ -133,6 +133,47 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    ObjectStorageKeyRequest:
+      type: object
+      required:
+      - label
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: The label for the new key.
+        bucket_access:
+          type: array
+          items:
+            type: object
+            required:
+            - region
+            - bucket_name
+            - permissions
+            properties:
+              region:
+                type: string
+              bucket_name:
+                type: string
+              permissions:
+                type: string
+                enum:
+                - read_only
+                - read_write
+          description: Specific bucket access permissions.
     ObjectStorageKey:
       type: object
       properties:
@@ -169,27 +210,6 @@ components:
                 - read_write
                 description: The permission level.
           description: Specific bucket access permissions for this key.
-    PaginatedObjectStorageBucketList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ObjectStorageBucket'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     PaginatedObjectStorageKeyList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -199,6 +219,15 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ObjectStorageKey'
+    PaginatedObjectStorageBucketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageBucket'
     ObjectStorageBucket:
       type: object
       properties:
@@ -221,35 +250,6 @@ components:
         size:
           type: integer
           description: The total size of objects in bytes.
-    ObjectStorageKeyRequest:
-      type: object
-      required:
-      - label
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 50
-          description: The label for the new key.
-        bucket_access:
-          type: array
-          items:
-            type: object
-            required:
-            - region
-            - bucket_name
-            - permissions
-            properties:
-              region:
-                type: string
-              bucket_name:
-                type: string
-              permissions:
-                type: string
-                enum:
-                - read_only
-                - read_write
-          description: Specific bucket access permissions.
     ObjectStorageEndpointList:
       type: object
       properties:
@@ -268,6 +268,21 @@ components:
                 type: string
                 description: The S3-compatible endpoint URL.
   parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    bucketParam:
+      name: bucket
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The name of the Object Storage bucket.
     pageSizeParam:
       name: page_size
       in: query
@@ -284,21 +299,6 @@ components:
       schema:
         type: string
       description: The ID of the region.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    bucketParam:
-      name: bucket
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The name of the Object Storage bucket.
   securitySchemes:
     personalAccessToken:
       type: http

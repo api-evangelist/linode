@@ -2723,7 +2723,44 @@ paths:
     - url: https://api.linode.com/v4
       description: Production Server
 components:
+  parameters:
+    volumeIdParam:
+      name: volumeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the volume.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     PaginatedVolumeList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -2761,18 +2798,6 @@ components:
           items:
             type: string
           description: Tags for the new volume.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     VolumeUpdateRequest:
       type: object
       properties:
@@ -2831,31 +2856,6 @@ components:
           type: string
           format: date-time
           description: When this volume was last updated.
-  parameters:
-    volumeIdParam:
-      name: volumeId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the volume.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
   securitySchemes:
     oauth:
       flows:

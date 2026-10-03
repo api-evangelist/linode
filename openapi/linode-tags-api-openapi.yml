@@ -1849,12 +1849,6 @@ paths:
       description: Production Server
 components:
   schemas:
-    Tag:
-      type: object
-      properties:
-        label:
-          type: string
-          description: The tag label.
     Pagination:
       type: object
       properties:
@@ -1906,7 +1900,21 @@ components:
           items:
             type: integer
           description: NodeBalancer IDs to tag.
+    Tag:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The tag label.
   parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -1916,14 +1924,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
   securitySchemes:
     oauth:
       flows:

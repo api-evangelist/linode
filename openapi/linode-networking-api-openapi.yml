@@ -195,6 +195,37 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/IPAddress'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    FirewallUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          description: The status of the firewall.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
     Firewall:
       type: object
       properties:
@@ -250,18 +281,69 @@ components:
           type: string
           format: date-time
           description: When this firewall was last updated.
-    Pagination:
+    IPAddress:
       type: object
       properties:
-        page:
+        address:
+          type: string
+          description: The IP address.
+        gateway:
+          type: string
+          description: The default gateway.
+        subnet_mask:
+          type: string
+          description: The subnet mask.
+        prefix:
           type: integer
-          description: The current page number.
-        pages:
+          description: The network prefix length.
+        type:
+          type: string
+          enum:
+          - ipv4
+          - ipv6
+          description: The type of IP address.
+        public:
+          type: boolean
+          description: Whether this is a public IP address.
+        rdns:
+          type: string
+          description: The reverse DNS entry for this address.
+        linode_id:
           type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
+          description: The ID of the Linode this IP is assigned to.
+        region:
+          type: string
+          description: The region for this IP address.
+    PaginatedFirewallList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Firewall'
+    PaginatedVLANList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                label:
+                  type: string
+                linodes:
+                  type: array
+                  items:
+                    type: integer
+                region:
+                  type: string
+                created:
+                  type: string
+                  format: date-time
     FirewallRule:
       type: object
       properties:
@@ -302,79 +384,6 @@ components:
         description:
           type: string
           description: A description for this rule.
-    PaginatedVLANList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                label:
-                  type: string
-                linodes:
-                  type: array
-                  items:
-                    type: integer
-                region:
-                  type: string
-                created:
-                  type: string
-                  format: date-time
-    IPAddress:
-      type: object
-      properties:
-        address:
-          type: string
-          description: The IP address.
-        gateway:
-          type: string
-          description: The default gateway.
-        subnet_mask:
-          type: string
-          description: The subnet mask.
-        prefix:
-          type: integer
-          description: The network prefix length.
-        type:
-          type: string
-          enum:
-          - ipv4
-          - ipv6
-          description: The type of IP address.
-        public:
-          type: boolean
-          description: Whether this is a public IP address.
-        rdns:
-          type: string
-          description: The reverse DNS entry for this address.
-        linode_id:
-          type: integer
-          description: The ID of the Linode this IP is assigned to.
-        region:
-          type: string
-          description: The region for this IP address.
-    FirewallUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the firewall.
-        status:
-          type: string
-          enum:
-          - enabled
-          - disabled
-          description: The status of the firewall.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the firewall.
     FirewallRequest:
       type: object
       required:
@@ -413,25 +422,7 @@ components:
           items:
             type: string
           description: Tags for the firewall.
-    PaginatedFirewallList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Firewall'
   parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
     pageParam:
       name: page
       in: query
@@ -447,6 +438,15 @@ components:
       schema:
         type: integer
       description: The ID of the firewall.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

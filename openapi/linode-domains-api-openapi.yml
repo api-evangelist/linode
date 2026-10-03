@@ -2481,6 +2481,121 @@ paths:
       description: Production Server
 components:
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this domain record.
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN for this record.
+        target:
+          type: string
+          description: The target for this record.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds for this record.
+        tag:
+          type: string
+          description: The tag for CAA records.
+    DomainRecordRequest:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN.
+        target:
+          type: string
+          description: The target value.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds.
+    DomainRequest:
+      type: object
+      required:
+      - domain
+      - type
+      properties:
+        domain:
+          type: string
+          description: The domain name.
+        type:
+          type: string
+          enum:
+          - master
+          - slave
+          description: Whether this is a master or slave zone.
+        soa_email:
+          type: string
+          format: email
+          description: The SOA email address.
+        description:
+          type: string
+          description: A description for this domain.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this domain.
     Domain:
       type: object
       properties:
@@ -2535,130 +2650,6 @@ components:
         expire_sec:
           type: integer
           description: The expiry time in seconds.
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    DomainRecordRequest:
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - A
-          - AAAA
-          - NS
-          - MX
-          - CNAME
-          - TXT
-          - SRV
-          - PTR
-          - CAA
-          description: The type of DNS record.
-        name:
-          type: string
-          description: The hostname or FQDN.
-        target:
-          type: string
-          description: The target value.
-        priority:
-          type: integer
-          description: The priority for MX and SRV records.
-        weight:
-          type: integer
-          description: The weight for SRV records.
-        port:
-          type: integer
-          description: The port for SRV records.
-        ttl_sec:
-          type: integer
-          description: The TTL in seconds.
-    PaginatedDomainList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Domain'
-    DomainRequest:
-      type: object
-      required:
-      - domain
-      - type
-      properties:
-        domain:
-          type: string
-          description: The domain name.
-        type:
-          type: string
-          enum:
-          - master
-          - slave
-          description: Whether this is a master or slave zone.
-        soa_email:
-          type: string
-          format: email
-          description: The SOA email address.
-        description:
-          type: string
-          description: A description for this domain.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for this domain.
-    DomainRecord:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this domain record.
-        type:
-          type: string
-          enum:
-          - A
-          - AAAA
-          - NS
-          - MX
-          - CNAME
-          - TXT
-          - SRV
-          - PTR
-          - CAA
-          description: The type of DNS record.
-        name:
-          type: string
-          description: The hostname or FQDN for this record.
-        target:
-          type: string
-          description: The target for this record.
-        priority:
-          type: integer
-          description: The priority for MX and SRV records.
-        weight:
-          type: integer
-          description: The weight for SRV records.
-        port:
-          type: integer
-          description: The port for SRV records.
-        ttl_sec:
-          type: integer
-          description: The TTL in seconds for this record.
-        tag:
-          type: string
-          description: The tag for CAA records.
     PaginatedDomainRecordList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -2668,7 +2659,24 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/DomainRecord'
+    PaginatedDomainList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Domain'
   parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -2678,14 +2686,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     domainIdParam:
       name: domainId
       in: path

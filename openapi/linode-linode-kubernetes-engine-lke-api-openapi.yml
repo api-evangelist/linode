@@ -215,56 +215,6 @@ paths:
                       $ref: '#/components/schemas/KubernetesVersion'
 components:
   schemas:
-    PaginatedNodePoolList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/NodePool'
-    LKECluster:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this LKE cluster.
-        label:
-          type: string
-          description: The label for this cluster.
-        region:
-          type: string
-          description: The region where this cluster is located.
-        k8s_version:
-          type: string
-          description: The Kubernetes version for this cluster.
-        status:
-          type: string
-          enum:
-          - ready
-          - not_ready
-          description: The current status of the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for this cluster.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether the control plane is highly available.
-          description: Control plane configuration for this cluster.
-        created:
-          type: string
-          format: date-time
-          description: When this cluster was created.
-        updated:
-          type: string
-          format: date-time
-          description: When this cluster was last updated.
     Pagination:
       type: object
       properties:
@@ -277,95 +227,7 @@ components:
         results:
           type: integer
           description: The total number of results.
-    KubernetesVersion:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The Kubernetes version string.
-    LKEClusterRequest:
-      type: object
-      required:
-      - label
-      - region
-      - k8s_version
-      - node_pools
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the new cluster.
-        region:
-          type: string
-          description: The region for the cluster.
-        k8s_version:
-          type: string
-          description: The Kubernetes version for the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the cluster.
-        node_pools:
-          type: array
-          items:
-            $ref: '#/components/schemas/NodePoolRequest'
-          description: Node pool configurations for the cluster.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether to enable high availability for the control plane.
-    LKEClusterUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the cluster.
-        k8s_version:
-          type: string
-          description: The target Kubernetes version.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether to enable high availability.
-    NodePoolRequest:
-      type: object
-      required:
-      - type
-      - count
-      properties:
-        type:
-          type: string
-          description: The Linode type for nodes in this pool.
-        count:
-          type: integer
-          minimum: 1
-          description: The number of nodes in this pool.
-        autoscaler:
-          type: object
-          properties:
-            enabled:
-              type: boolean
-              description: Whether to enable the autoscaler.
-            min:
-              type: integer
-              description: The minimum number of nodes.
-            max:
-              type: integer
-              description: The maximum number of nodes.
-    PaginatedLKEClusterList:
+    PaginatedNodePoolList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -373,7 +235,7 @@ components:
           data:
             type: array
             items:
-              $ref: '#/components/schemas/LKECluster'
+              $ref: '#/components/schemas/NodePool'
     NodePool:
       type: object
       properties:
@@ -417,14 +279,153 @@ components:
               type: integer
               description: The maximum number of nodes.
           description: Autoscaler configuration for this pool.
+    PaginatedLKEClusterList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/LKECluster'
+    LKECluster:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this LKE cluster.
+        label:
+          type: string
+          description: The label for this cluster.
+        region:
+          type: string
+          description: The region where this cluster is located.
+        k8s_version:
+          type: string
+          description: The Kubernetes version for this cluster.
+        status:
+          type: string
+          enum:
+          - ready
+          - not_ready
+          description: The current status of the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether the control plane is highly available.
+          description: Control plane configuration for this cluster.
+        created:
+          type: string
+          format: date-time
+          description: When this cluster was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this cluster was last updated.
+    KubernetesVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The Kubernetes version string.
+    LKEClusterRequest:
+      type: object
+      required:
+      - label
+      - region
+      - k8s_version
+      - node_pools
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the new cluster.
+        region:
+          type: string
+          description: The region for the cluster.
+        k8s_version:
+          type: string
+          description: The Kubernetes version for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the cluster.
+        node_pools:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodePoolRequest'
+          description: Node pool configurations for the cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether to enable high availability for the control plane.
+    NodePoolRequest:
+      type: object
+      required:
+      - type
+      - count
+      properties:
+        type:
+          type: string
+          description: The Linode type for nodes in this pool.
+        count:
+          type: integer
+          minimum: 1
+          description: The number of nodes in this pool.
+        autoscaler:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: Whether to enable the autoscaler.
+            min:
+              type: integer
+              description: The minimum number of nodes.
+            max:
+              type: integer
+              description: The maximum number of nodes.
+    LKEClusterUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the cluster.
+        k8s_version:
+          type: string
+          description: The target Kubernetes version.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether to enable high availability.
   parameters:
-    clusterIdParam:
-      name: clusterId
-      in: path
-      required: true
+    pageParam:
+      name: page
+      in: query
       schema:
         type: integer
-      description: The ID of the LKE cluster.
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -434,14 +435,13 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
+    clusterIdParam:
+      name: clusterId
+      in: path
+      required: true
       schema:
         type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
+      description: The ID of the LKE cluster.
   securitySchemes:
     personalAccessToken:
       type: http

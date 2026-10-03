@@ -849,25 +849,19 @@ paths:
     - url: https://api.linode.com/v4
       description: Production Server
 components:
-  parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     Token:
       type: object
       properties:
@@ -891,18 +885,20 @@ components:
           type: string
           format: date-time
           description: When this token expires.
-    Pagination:
+    SSHKeyRequest:
       type: object
+      required:
+      - label
+      - ssh_key
       properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The label for the SSH key.
+        ssh_key:
+          type: string
+          description: The SSH public key content.
     TokenRequest:
       type: object
       required:
@@ -967,29 +963,6 @@ components:
           type: string
           format: date-time
           description: When this SSH key was added.
-    PaginatedSSHKeyList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/SSHKey'
-    SSHKeyRequest:
-      type: object
-      required:
-      - label
-      - ssh_key
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 64
-          description: The label for the SSH key.
-        ssh_key:
-          type: string
-          description: The SSH public key content.
     PaginatedTokenList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -999,6 +972,33 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Token'
+    PaginatedSSHKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/SSHKey'
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   securitySchemes:
     oauth:
       flows:
