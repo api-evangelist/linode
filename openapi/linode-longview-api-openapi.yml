@@ -60,28 +60,25 @@ paths:
         '401':
           description: Unauthorized - invalid or missing authentication
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
-    PaginatedLongviewClientList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/LongviewClient'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     LongviewClient:
       type: object
       properties:
@@ -108,6 +105,27 @@ components:
           type: string
           format: date-time
           description: When this client was last updated.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    PaginatedLongviewClientList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/LongviewClient'
     LongviewClientRequest:
       type: object
       required:
@@ -118,24 +136,6 @@ components:
           minLength: 3
           maxLength: 32
           description: The label for the Longview client.
-  parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

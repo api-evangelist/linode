@@ -185,7 +185,72 @@ paths:
         '401':
           description: Unauthorized - invalid or missing authentication
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    firewallIdParam:
+      name: firewallId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the firewall.
   schemas:
+    FirewallRule:
+      type: object
+      properties:
+        ports:
+          type: string
+          description: The ports this rule applies to, such as 22 or 443-445.
+        protocol:
+          type: string
+          enum:
+          - TCP
+          - UDP
+          - ICMP
+          - IPENCAP
+          description: The network protocol.
+        addresses:
+          type: object
+          properties:
+            ipv4:
+              type: array
+              items:
+                type: string
+              description: IPv4 addresses or CIDRs.
+            ipv6:
+              type: array
+              items:
+                type: string
+              description: IPv6 addresses or CIDRs.
+          description: The addresses this rule applies to.
+        action:
+          type: string
+          enum:
+          - ACCEPT
+          - DROP
+          description: The action for matching traffic.
+        label:
+          type: string
+          description: The label for this rule.
+        description:
+          type: string
+          description: A description for this rule.
     PaginatedIPAddressList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -281,6 +346,27 @@ components:
           type: string
           format: date-time
           description: When this firewall was last updated.
+    PaginatedVLANList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                label:
+                  type: string
+                linodes:
+                  type: array
+                  items:
+                    type: integer
+                region:
+                  type: string
+                created:
+                  type: string
+                  format: date-time
     IPAddress:
       type: object
       properties:
@@ -323,67 +409,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Firewall'
-    PaginatedVLANList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                label:
-                  type: string
-                linodes:
-                  type: array
-                  items:
-                    type: integer
-                region:
-                  type: string
-                created:
-                  type: string
-                  format: date-time
-    FirewallRule:
-      type: object
-      properties:
-        ports:
-          type: string
-          description: The ports this rule applies to, such as 22 or 443-445.
-        protocol:
-          type: string
-          enum:
-          - TCP
-          - UDP
-          - ICMP
-          - IPENCAP
-          description: The network protocol.
-        addresses:
-          type: object
-          properties:
-            ipv4:
-              type: array
-              items:
-                type: string
-              description: IPv4 addresses or CIDRs.
-            ipv6:
-              type: array
-              items:
-                type: string
-              description: IPv6 addresses or CIDRs.
-          description: The addresses this rule applies to.
-        action:
-          type: string
-          enum:
-          - ACCEPT
-          - DROP
-          description: The action for matching traffic.
-        label:
-          type: string
-          description: The label for this rule.
-        description:
-          type: string
-          description: A description for this rule.
     FirewallRequest:
       type: object
       required:
@@ -422,31 +447,6 @@ components:
           items:
             type: string
           description: Tags for the firewall.
-  parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    firewallIdParam:
-      name: firewallId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the firewall.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

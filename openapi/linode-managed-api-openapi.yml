@@ -99,44 +99,6 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    PaginatedManagedContactList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-                email:
-                  type: string
-                  format: email
-                phone:
-                  type: object
-                  properties:
-                    primary:
-                      type: string
-                    secondary:
-                      type: string
-                group:
-                  type: string
     ManagedService:
       type: object
       properties:
@@ -190,6 +152,53 @@ components:
           type: string
           format: date-time
           description: When this service was last updated.
+    PaginatedManagedContactList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: object
+                  properties:
+                    primary:
+                      type: string
+                    secondary:
+                      type: string
+                group:
+                  type: string
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    PaginatedManagedServiceList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ManagedService'
     ManagedServiceRequest:
       type: object
       required:
@@ -231,15 +240,6 @@ components:
           items:
             type: integer
           description: Credential IDs for this service.
-    PaginatedManagedServiceList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ManagedService'
     PaginatedManagedIssueList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -271,14 +271,6 @@ components:
                     url:
                       type: string
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -288,6 +280,14 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
     personalAccessToken:
       type: http

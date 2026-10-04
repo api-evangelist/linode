@@ -60,7 +60,68 @@ paths:
         '401':
           description: Unauthorized - invalid or missing authentication
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
+    PaginatedSupportTicketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/SupportTicket'
+    SupportTicketRequest:
+      type: object
+      required:
+      - summary
+      - description
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The summary for the ticket.
+        description:
+          type: string
+          minLength: 1
+          maxLength: 65000
+          description: The full description.
+        linode_id:
+          type: integer
+          description: The ID of the related Linode.
+        domain_id:
+          type: integer
+          description: The ID of the related domain.
+        nodebalancer_id:
+          type: integer
+          description: The ID of the related NodeBalancer.
+        volume_id:
+          type: integer
+          description: The ID of the related volume.
+        lke_cluster_id:
+          type: integer
+          description: The ID of the related LKE cluster.
+        database_id:
+          type: integer
+          description: The ID of the related database.
     Pagination:
       type: object
       properties:
@@ -73,15 +134,6 @@ components:
         results:
           type: integer
           description: The total number of results.
-    PaginatedSupportTicketList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/SupportTicket'
     SupportTicket:
       type: object
       properties:
@@ -125,58 +177,6 @@ components:
             url:
               type: string
           description: The entity related to this ticket.
-    SupportTicketRequest:
-      type: object
-      required:
-      - summary
-      - description
-      properties:
-        summary:
-          type: string
-          minLength: 1
-          maxLength: 64
-          description: The summary for the ticket.
-        description:
-          type: string
-          minLength: 1
-          maxLength: 65000
-          description: The full description.
-        linode_id:
-          type: integer
-          description: The ID of the related Linode.
-        domain_id:
-          type: integer
-          description: The ID of the related domain.
-        nodebalancer_id:
-          type: integer
-          description: The ID of the related NodeBalancer.
-        volume_id:
-          type: integer
-          description: The ID of the related volume.
-        lke_cluster_id:
-          type: integer
-          description: The ID of the related LKE cluster.
-        database_id:
-          type: integer
-          description: The ID of the related database.
-  parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

@@ -2481,18 +2481,6 @@ paths:
       description: Production Server
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     DomainRecord:
       type: object
       properties:
@@ -2533,42 +2521,6 @@ components:
         tag:
           type: string
           description: The tag for CAA records.
-    DomainRecordRequest:
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - A
-          - AAAA
-          - NS
-          - MX
-          - CNAME
-          - TXT
-          - SRV
-          - PTR
-          - CAA
-          description: The type of DNS record.
-        name:
-          type: string
-          description: The hostname or FQDN.
-        target:
-          type: string
-          description: The target value.
-        priority:
-          type: integer
-          description: The priority for MX and SRV records.
-        weight:
-          type: integer
-          description: The weight for SRV records.
-        port:
-          type: integer
-          description: The port for SRV records.
-        ttl_sec:
-          type: integer
-          description: The TTL in seconds.
     DomainRequest:
       type: object
       required:
@@ -2596,6 +2548,36 @@ components:
           items:
             type: string
           description: Tags for this domain.
+    PaginatedDomainRecordList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/DomainRecord'
+    PaginatedDomainList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Domain'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     Domain:
       type: object
       properties:
@@ -2650,33 +2632,43 @@ components:
         expire_sec:
           type: integer
           description: The expiry time in seconds.
-    PaginatedDomainRecordList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/DomainRecord'
-    PaginatedDomainList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Domain'
+    DomainRecordRequest:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - A
+          - AAAA
+          - NS
+          - MX
+          - CNAME
+          - TXT
+          - SRV
+          - PTR
+          - CAA
+          description: The type of DNS record.
+        name:
+          type: string
+          description: The hostname or FQDN.
+        target:
+          type: string
+          description: The target value.
+        priority:
+          type: integer
+          description: The priority for MX and SRV records.
+        weight:
+          type: integer
+          description: The weight for SRV records.
+        port:
+          type: integer
+          description: The port for SRV records.
+        ttl_sec:
+          type: integer
+          description: The TTL in seconds.
   parameters:
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -2693,6 +2685,14 @@ components:
       schema:
         type: integer
       description: The ID of the domain.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   securitySchemes:
     oauth:
       flows:

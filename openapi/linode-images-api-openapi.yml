@@ -3619,18 +3619,6 @@ paths:
       description: Production Server
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
     ImageUpdateRequest:
       type: object
       properties:
@@ -3643,15 +3631,6 @@ components:
           type: string
           maxLength: 65000
           description: A description for the image.
-    PaginatedImageList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Image'
     ImageRequest:
       type: object
       required:
@@ -3669,6 +3648,18 @@ components:
           type: string
           maxLength: 65000
           description: A description for the new image.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     Image:
       type: object
       properties:
@@ -3715,7 +3706,25 @@ components:
           type: string
           format: date-time
           description: When this image expires. Null for distribution images.
+    PaginatedImageList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Image'
   parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
     pageParam:
       name: page
       in: query
@@ -3731,15 +3740,6 @@ components:
       schema:
         type: string
       description: The ID of the image.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     oauth:
       flows:

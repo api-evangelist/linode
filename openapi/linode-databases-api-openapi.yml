@@ -140,7 +140,55 @@ paths:
         '404':
           description: Database not found
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    databaseEngineParam:
+      name: databaseEngine
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - mysql
+        - postgresql
+      description: The database engine type.
+    databaseIdParam:
+      name: databaseId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the Managed Database instance.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
+    DatabaseRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the database.
+        allow_list:
+          type: array
+          items:
+            type: string
+          description: IP addresses or CIDRs allowed to connect.
     Pagination:
       type: object
       properties:
@@ -245,19 +293,6 @@ components:
           type: string
           format: date-time
           description: When this database was last updated.
-    DatabaseRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the database.
-        allow_list:
-          type: array
-          items:
-            type: string
-          description: IP addresses or CIDRs allowed to connect.
     PaginatedDatabaseTypeList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -280,41 +315,6 @@ components:
                   type: integer
                 disk:
                   type: integer
-  parameters:
-    databaseIdParam:
-      name: databaseId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the Managed Database instance.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    databaseEngineParam:
-      name: databaseEngine
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - mysql
-        - postgresql
-      description: The database engine type.
   securitySchemes:
     personalAccessToken:
       type: http
