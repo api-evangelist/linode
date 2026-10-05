@@ -1,0 +1,614 @@
+slug: linode
+provider: Linode
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 61
+edges:
+- tag: Linode instances
+  spec_file: linode-linode-instances-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.95
+  evidence: POST /{apiVersion}/linode/instances  'Create a Linode'; POST .../boot 'Boot a Linode'; POST
+    .../migrate 'Migrate a Linode'; schema Linode
+  reason: Full lifecycle of virtual compute instances (create, boot, reboot, clone, migrate, resize) —
+    unambiguously cloud compute infrastructure management.
+- tag: Linode IP addresses
+  spec_file: linode-linode-ip-addresses-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.9
+  evidence: POST .../instances/{linodeId}/ips  'Allocate an IPv4 address'; PUT .../ips/{address} 'Update
+    an IP address's RDNS for a Linode'
+  reason: Allocation and management of IP addressing/RDNS for virtual machines — network infrastructure
+    management.
+- tag: Linode Kubernetes Engine (LKE)
+  spec_file: linode-linode-kubernetes-engine-lke-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.9
+  evidence: POST /lke/clusters  'Create a Kubernetes cluster'; POST /lke/clusters/{clusterId}/pools 'Create
+    a node pool'; schema LKECluster
+  reason: Create/update/delete of managed Kubernetes clusters and node pools — provisioning of cloud compute
+    infrastructure.
+- tag: Linode disks
+  spec_file: linode-linode-disks-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.9
+  evidence: POST /{apiVersion}/linode/instances/{linodeId}/disks  'Create a disk'; POST .../disks/{diskId}/resize
+    'Resize a disk'
+  reason: CRUD and resize/clone of virtual machine storage disks — compute/storage infrastructure management.
+- tag: Identity Management
+  spec_file: linode-identity-management-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.85
+  evidence: GET /{apiVersion}/iam/role-permissions — "List available roles"; PUT /{apiVersion}/iam/users/{username}/role-permissions
+    — "Update a user's access level"
+  reason: IAM roles and per-user access levels are plainly identity and access management; the /iam/ paths
+    and role-permission operations ground this.
+- tag: LKE clusters
+  spec_file: linode-lke-clusters-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: POST /{apiVersion}/lke/clusters — "Create a Kubernetes cluster"; "Recycle cluster nodes"
+  reason: Lifecycle management of managed Kubernetes clusters (create, update, delete, recycle) is cloud
+    compute infrastructure provisioning.
+- tag: LKE node pools
+  spec_file: linode-lke-node-pools-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: POST /{apiVersion}/lke/clusters/{clusterId}/pools — "Create a node pool"; "Recycle a node
+    pool"
+  reason: Node pool CRUD for managed Kubernetes clusters is provisioning and stewardship of cloud compute
+    capacity — IT infrastructure management.
+- tag: LKE nodes
+  spec_file: linode-lke-nodes-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: GET /{apiVersion}/lke/clusters/{clusterId}/nodes/{nodeId} 'Get a node'; DELETE 'Delete a node';
+    POST .../recycle 'Recycle a node'
+  reason: Lifecycle operations on Kubernetes cluster worker nodes in a managed cloud service — provisioning
+    and stewardship of compute infrastructure, i.e. IT Infrastructure Management.
+- tag: Linode interfaces
+  spec_file: linode-linode-interfaces-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: '"Add a Linode interface", "List a Linode''s network interface history", "List Linode interface
+    firewalls"'
+  reason: Operations create and manage network interfaces attached to cloud compute instances — provisioning
+    and stewardship of network/cloud infrastructure, i.e. IT Infrastructure Management.
+- tag: NodeBalancers
+  spec_file: linode-nodebalancers-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: POST /{apiVersion}/nodebalancers "Create a NodeBalancer"; schema NodeBalancerRequest, PaginatedNodeBalancerConfigList
+  reason: Full CRUD over managed load balancers — provisioning and configuring cloud network infrastructure
+    components. Clearly IT infrastructure management for a cloud provider's control plane.
+- tag: Object Storage
+  spec_file: linode-object-storage-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: GET /object-storage/buckets "List Object Storage buckets"; POST /object-storage/keys "Create
+    an Object Storage key"
+  reason: Provisioning and management of S3-compatible storage buckets, access keys and endpoints — cloud
+    storage infrastructure management, not data governance or content management.
+- tag: Replies
+  spec_file: linode-replies-api-openapi.yml
+  capability_id: BC-430.10
+  capability_id_l1: BC-430
+  capability_name: Customer Inquiry Management
+  confidence: 0.85
+  evidence: POST /{apiVersion}/support/tickets/{ticketId}/replies 'Create a reply'; GET .../replies 'List
+    replies'
+  reason: Replies on support tickets are inbound/outbound correspondence on customer support cases — customer
+    inquiry handling.
+- tag: Two-factor authentication (2FA)
+  spec_file: linode-two-factor-authentication-2fa-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.85
+  evidence: post-tfa-enable  Generate a secret key for two-factor authentication; get-tfa-optional-users  List
+    optional 2FA users
+  reason: Enabling, confirming and disabling two-factor authentication and governing which account users
+    may opt out is authentication strength management — squarely Identity & Access Management.
+- tag: VPCs
+  spec_file: linode-vpcs-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: 'POST /vpcs  createVPC  Create a VPC; schemas: VPC, Subnet, VPCUpdateRequest'
+  reason: Create/list/update/delete virtual private clouds and their NodeBalancer configurations — cloud
+    network infrastructure management.
+- tag: Volumes
+  spec_file: linode-volumes-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.85
+  evidence: 'POST /{apiVersion}/volumes/{volumeId}/attach  Attach a volume; post-resize-volume  Resize
+    a volume; schemas: Volume, VolumeRequest'
+  reason: Block storage volume lifecycle — create, attach, detach, clone, resize. This is cloud storage
+    infrastructure management, not inventory or product management.
+- tag: Networking
+  spec_file: linode-networking-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.82
+  evidence: GET /networking/ips "List IP addresses"; POST /networking/firewalls "Create a firewall"; GET
+    /networking/vlans "List VLANs"
+  reason: Operations provision and manage cloud network infrastructure objects — IP addresses, cloud firewalls
+    and VLANs — which is network/cloud infrastructure management, not security governance or any industry-specific
+    capability.
+- tag: Payments
+  spec_file: linode-payments-api-openapi.yml
+  capability_id: BC-4250.40
+  capability_id_l1: BC-4250
+  capability_name: Payment Collection & Dunning
+  confidence: 0.82
+  evidence: POST /{apiVersion}/account/credit-card 'Add or edit a credit card'; POST /{apiVersion}/account/payments
+    'Make a payment'; 'Stage a PayPal payment'
+  reason: Operations manage payment methods and collect customer payments against the cloud account —
+    payment-method management and payment authorisation in the recurring/usage billing model.
+- tag: Support tickets
+  spec_file: linode-support-tickets-api-openapi.yml
+  capability_id: BC-430.10
+  capability_id_l1: BC-430
+  capability_name: Customer Inquiry Management
+  confidence: 0.82
+  evidence: POST /{apiVersion}/support/tickets "Open a support ticket"; POST .../close "Close a support
+    ticket"
+  reason: Full open/list/get/close lifecycle of customer support tickets — customer inquiry handling and
+    resolution.
+- tag: Alerts
+  spec_file: linode-alerts-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/monitor/services/{serviceType}/alert-definitions  Create an alert definition;
+    GET /{apiVersion}/monitor/alert-channels  List notification channels
+  reason: All paths sit under /monitor and manage alert definitions plus notification channels for running
+    services — this is observability/monitoring configuration, not financial-crime or business alerting.
+    Some ambiguity between Observability and Incident Response sub-capabilities.
+- tag: Buckets
+  spec_file: linode-buckets-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/object-storage/buckets  post-object-storage-bucket  Create an Object Storage
+    bucket
+  reason: Operations provision and govern access to S3-compatible object storage buckets — cloud storage
+    infrastructure provisioning, i.e. IT infrastructure management.
+- tag: Delegation for parent and child accounts
+  spec_file: linode-delegation-for-parent-and-child-accounts-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/iam/delegation/default-role-permissions  Get the default role assignment
+    for delegate users; PUT .../child-accounts/{euuid}/users  Update the account delegation for a child
+    account
+  reason: Explicit /iam/ paths managing delegated user access, role assignments and delegate tokens across
+    accounts — identity and access management.
+- tag: IDP configuration
+  spec_file: linode-idp-configuration-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/iam/idp-configs/{idpConfigId}/users-included  get-idp-config-users-included  List
+    SSO-required users
+  reason: Configures identity-provider federation, SSO certificates and which users are SSO-required/excluded
+    under an /iam path — plainly identity federation and access management.
+- tag: IPv4 addresses
+  spec_file: linode-ipv4-addresses-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/networking/ipv4/assign — "Assign IPv4s to Linodes"; "Configure IPv4 sharing"
+  reason: Operations assign and share IPv4 addresses to cloud compute instances — network address provisioning,
+    i.e. cloud/network infrastructure management, not a business-domain capability.
+- tag: IPv6 ranges
+  spec_file: linode-ipv6-ranges-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/networking/ipv6/ranges — "Create an IPv6 range"
+  reason: Full CRUD over IPv6 network ranges in a cloud provider's networking surface — network infrastructure
+    provisioning.
+- tag: Legacy clusters
+  spec_file: linode-legacy-clusters-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/object-storage/clusters  'List clusters'
+  reason: Enumerates object-storage clusters (storage infrastructure regions) of the cloud provider —
+    cloud storage infrastructure, not a business-domain capability.
+- tag: Linode NodeBalancers
+  spec_file: linode-linode-nodebalancers-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/linode/instances/{linodeId}/nodebalancers  'List Linode NodeBalancers'
+  reason: Lists load balancers attached to a compute instance — cloud network infrastructure component
+    management.
+- tag: Linode volumes
+  spec_file: linode-linode-volumes-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/linode/instances/{linodeId}/volumes "List a Linode's volumes"
+  reason: Lists block storage volumes attached to a compute instance — cloud storage infrastructure management.
+- tag: Metrics
+  spec_file: linode-metrics-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.8
+  evidence: GET /{apiVersion}/monitor/services/{serviceType}/metric-definitions  List metrics for a service
+    type ... POST .../metrics  post-read-metric  Get an entity's metrics
+  reason: Monitoring dashboards, metric definitions and metric reads for cloud service entities — squarely
+    metrics-based observability of running services, not business KPI reporting.
+- tag: Payment Methods
+  spec_file: linode-payment-methods-api-openapi.yml
+  capability_id: BC-4250.40
+  capability_id_l1: BC-4250
+  capability_name: Payment Collection & Dunning
+  confidence: 0.8
+  evidence: POST /{apiVersion}/account/payment-methods "Add a payment method"; "Set a default payment
+    method"
+  reason: Operations manage the account's stored payment instruments for the cloud service's recurring/usage
+    billing, which is payment-method management within subscription payment collection. Alternative framing
+    as generic accounts-receivable keeps it below 0.95.
+- tag: Support
+  spec_file: linode-support-api-openapi.yml
+  capability_id: BC-430.10
+  capability_id_l1: BC-430
+  capability_name: Customer Inquiry Management
+  confidence: 0.8
+  evidence: GET /support/tickets "List support tickets"; POST /support/tickets "Open a support ticket";
+    schema "SupportTicket"
+  reason: Customer support ticket intake and listing — inbound customer contact capture and routing for
+    resolution.
+- tag: Users
+  spec_file: linode-users-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/account/users  Create a user; PUT /{apiVersion}/account/users/{username}/grants  Update
+    a user's grants
+  reason: Cloud account user lifecycle plus permission grants. These are platform account users with access
+    grants, not HR employee records, so Identity & Access Management rather than Human Capital Management.
+- tag: VPC subnets
+  spec_file: linode-vpc-subnets-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: POST /{apiVersion}/vpcs/{vpcId}/subnets  Create a VPC subnet
+  reason: CRUD over subnets within virtual private clouds is cloud network infrastructure provisioning,
+    which falls under IT Infrastructure Management (compute, storage, network, cloud).
+- tag: IP Addresses
+  spec_file: linode-ip-addresses-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.78
+  evidence: POST /{apiVersion}/networking/ips  post-allocate-ip  Allocate an IP address
+  reason: Allocation, assignment and sharing of IPv4/IPv6 addresses and VPC ranges — cloud network infrastructure
+    management.
+- tag: Nodes
+  spec_file: linode-nodes-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.78
+  evidence: POST /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes — "Create a node"
+  reason: Despite the generic tag, the paths show these are backend nodes attached to a NodeBalancer config
+    — load-balancer backend pool configuration, i.e. cloud network infrastructure management.
+- tag: VLANs
+  spec_file: linode-vlans-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.78
+  evidence: GET /{apiVersion}/networking/vlans  List VLANs; DELETE ... delete-vlan  Delete a VLAN
+  reason: Virtual LAN network segment listing and deletion on a cloud provider — network infrastructure
+    provisioning, mapped to IT Infrastructure Management.
+- tag: Domains
+  spec_file: linode-domains-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: 'POST /{apiVersion}/domains  post-domain  Create a domain; schemas: Domain, DomainRecord,
+    PaginatedDomainList'
+  reason: Managed DNS domain lifecycle (create, import, clone, delete) on an IaaS platform — network/DNS
+    infrastructure management, not a domain/brand business capability.
+- tag: Images
+  spec_file: linode-images-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/images/upload — "Upload an image"; POST /{apiVersion}/images/{imageId}/regions
+    — "Replicate an image"
+  reason: These are virtual machine disk images (schemas Image, ImageRequest) created, uploaded and replicated
+    across regions — compute infrastructure asset management, not marketing/product imagery.
+- tag: MySQL
+  spec_file: linode-mysql-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/databases/mysql/instances  Create or restore a MySQL Managed Database
+  reason: Provisioning, updating, suspending, patching and deleting managed MySQL database instances is
+    cloud infrastructure lifecycle management. It is platform provisioning rather than data governance
+    or analytics, so Information & Data Management would be the wrong read.
+- tag: OAuth clients
+  spec_file: linode-oauth-clients-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/account/oauth-clients "Create an OAuth client"; "Reset an OAuth client
+    secret"
+  reason: Issuance, update and secret rotation of OAuth clients used by developers to integrate with the
+    Linode API — this matches developer identity and credential management on the platform's API ecosystem.
+    Some overlap with generic IAM keeps confidence below 0.8.
+- tag: Personal Access Tokens
+  spec_file: linode-personal-access-tokens-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/profile/tokens 'Create a personal access token' ... DELETE 'Revoke a personal
+    access token'
+  reason: Issuance, update and revocation of API credentials used by developers to call the public cloud
+    API — developer credential stewardship, not enterprise workforce IAM.
+- tag: Reserved IPs
+  spec_file: linode-reserved-ips-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/networking/reserved/ips — "Reserve a public IPv4 address"; "List reserved
+    IP addresses"
+  reason: Operations reserve and manage public IPv4 addresses on cloud infrastructure — network address
+    resource management, i.e. IT infrastructure (compute, storage, network, cloud). No business-domain
+    reading fits.
+- tag: Valkey
+  spec_file: linode-valkey-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.75
+  evidence: POST /{apiVersion}/databases/valkey/instances  Create or restore a Valkey Managed Database
+  reason: Provisioning, patching, suspending and credential rotation of managed database instances — cloud
+    platform infrastructure services, best fit IT Infrastructure Management. Not data governance or MDM;
+    these operations manage the database service, not the data content.
+- tag: Domain records
+  spec_file: linode-domain-records-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.72
+  evidence: POST /{apiVersion}/domains/{domainId}/records  post-domain-record  Create a domain record
+  reason: DNS resource-record CRUD on a cloud provider's hosted DNS service — network infrastructure configuration,
+    realising IT Infrastructure Management for whoever operates it. No business-domain capability applies.
+- tag: PostgreSQL
+  spec_file: linode-postgresql-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.72
+  evidence: '''Create or restore a PostgreSQL Managed Database''; ''Create a PostgreSQL connection pool'';
+    ''Get PostgreSQL Managed Database credentials'''
+  reason: Provisioning and lifecycle of managed database instances — cloud infrastructure (storage/compute)
+    provisioning rather than data governance or analytics.
+- tag: Attachments
+  spec_file: linode-attachments-api-openapi.yml
+  capability_id: BC-430.10
+  capability_id_l1: BC-430
+  capability_name: Customer Inquiry Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/support/tickets/{ticketId}/attachments  post-ticket-attachment  Create
+    a support ticket attachment
+  reason: The one operation attaches files to a support ticket, part of the vendor's support-request handling
+    surface; narrow single-operation evidence keeps confidence moderate.
+- tag: Configuration profile interfaces
+  spec_file: linode-configuration-profile-interfaces-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/linode/instances/{linodeId}/configs/{configId}/interfaces  Add a configuration
+    profile interface
+  reason: Manages network interfaces attached to a compute instance's boot configuration — provisioning/configuring
+    cloud compute and network infrastructure.
+- tag: Configuration profiles
+  spec_file: linode-configuration-profiles-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/linode/instances/{linodeId}/configs  post-add-linode-config  Create a configuration
+    profile
+  reason: CRUD over boot configuration profiles of virtual compute instances — cloud compute infrastructure
+    configuration, not product feature configuration.
+- tag: Configurations
+  spec_file: linode-configurations-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/nodebalancers/{nodeBalancerId}/configs  post-node-balancer-config  Create
+    a config
+  reason: Generic tag name, but paths show NodeBalancer (load balancer) port configuration lifecycle —
+    network infrastructure management.
+- tag: Databases
+  spec_file: linode-databases-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: 'GET /databases/instances  getDatabaseInstances  List Managed Databases; schemas: Database,
+    DatabaseRequest, PaginatedDatabaseTypeList'
+  reason: Lifecycle of managed MySQL/PostgreSQL database instances and their engine/type catalogue — provisioning
+    of cloud data infrastructure rather than data governance or analytics.
+- tag: IPv6 pools
+  spec_file: linode-ipv6-pools-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: GET /{apiVersion}/networking/ipv6/pools — "List IPv6 pools"
+  reason: Read-only listing of network address pools for cloud instances; maps to compute/network/cloud
+    infrastructure management. Thin surface, so moderate confidence.
+- tag: Invoices
+  spec_file: linode-invoices-api-openapi.yml
+  capability_id: BC-4250.30
+  capability_id_l1: BC-4250
+  capability_name: Invoicing & Statement Management
+  confidence: 0.7
+  evidence: GET /{apiVersion}/account/invoices — "List invoices"; GET /{apiVersion}/account/invoices/{invoiceId}/items
+    — "List invoice items"
+  reason: Account invoices and invoice line items for a usage-based cloud service expose the provider's
+    invoicing/statement surface. Read-only only, so moderate confidence.
+- tag: Linode disk backups
+  spec_file: linode-linode-disk-backups-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST .../instances/{linodeId}/backups 'Create a snapshot'; POST .../backups/{backupId}/restore
+    'Restore a backup'
+  reason: Snapshot/backup/restore of virtual machine disks offered as a cloud infrastructure feature;
+    closest fit is infrastructure management (a DR reading is possible, hence moderate confidence).
+- tag: Linode kernels
+  spec_file: linode-linode-kernels-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: GET /{apiVersion}/linode/kernels "List kernels"
+  reason: Read-only catalogue of kernels selectable for virtual machines; part of configuring cloud compute
+    infrastructure. Thin surface, so moderate confidence.
+- tag: Logs
+  spec_file: linode-logs-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/monitor/streams "Create a stream", "Create a destination"
+  reason: Configures monitoring log streams and their delivery destinations — log pipeline configuration,
+    i.e. observability management. Alternative reading as generic IT operations monitoring keeps confidence
+    moderate.
+- tag: Longview
+  spec_file: linode-longview-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: '"List Longview clients", schema LongviewClient'
+  reason: Longview is Linode's system metrics/monitoring agent service; clients are monitoring agents
+    registered to collect host metrics — observability instrumentation.
+- tag: Longview clients
+  spec_file: linode-longview-clients-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/longview/clients "Create a Longview client"
+  reason: CRUD over Longview monitoring agent registrations used to collect server metrics — observability/monitoring
+    management.
+- tag: Managed credentials
+  spec_file: linode-managed-credentials-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/managed/credentials/{credentialId}/revoke ... post-managed-credential-username-password  Update
+    a managed credential's username and password
+  reason: Full lifecycle of stored access credentials (create, update username/password, revoke) used
+    by the managed service to log into customer systems. That is credential/access administration, not
+    a commercial or customer-facing capability.
+- tag: Managed service monitors
+  spec_file: linode-managed-service-monitors-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/managed/services/{serviceId}/enable  post-enable-managed-service  Enable
+    a managed service monitor
+  reason: Creating, enabling and disabling monitors that probe customer services is synthetic monitoring
+    of running services, matching Observability Management. Not business service management despite the
+    word 'service'.
+- tag: Placement groups
+  spec_file: linode-placement-groups-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/placement/groups 'Create a placement group'; 'Assign a placement group'
+    (post-group-add-linode)
+  reason: Placement groups control how compute instances are distributed across the cloud infrastructure
+    — compute/cloud infrastructure management.
+- tag: SSH Keys
+  spec_file: linode-ssh-keys-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: POST /{apiVersion}/profile/sshkeys — "Add an SSH key"; "List SSH keys"
+  reason: Issuance and stewardship of SSH access credentials held on the user profile and deployed to
+    instances — access credential management.
+- tag: Trusted devices
+  spec_file: linode-trusted-devices-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: GET /{apiVersion}/profile/devices  List trusted devices; DELETE ... delete-trusted-device  Revoke
+    a trusted device
+  reason: Operations list and revoke trusted devices bound to a user profile — device trust/session credential
+    management, a standard identity & access management function. Not a business-domain noun; it is account
+    security plumbing but IAM is the honest capability. Moderate confidence as the surface is thin.
