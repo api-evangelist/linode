@@ -5569,7 +5569,81 @@ paths:
     - url: https://api.linode.com/v4
       description: Production Server
 components:
+  parameters:
+    vpcIdParam:
+      name: vpcId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the VPC.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   schemas:
+    PaginatedVPCList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/VPC'
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    VPC:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this VPC.
+        label:
+          type: string
+          description: The label for this VPC.
+        description:
+          type: string
+          description: A description for this VPC.
+        region:
+          type: string
+          description: The region where this VPC is located.
+        subnets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subnet'
+          description: The subnets in this VPC.
+        created:
+          type: string
+          format: date-time
+          description: When this VPC was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this VPC was last updated.
     VPCRequest:
       type: object
       required:
@@ -5593,6 +5667,27 @@ components:
           items:
             $ref: '#/components/schemas/SubnetRequest'
           description: Initial subnets to create.
+    VPCUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The new label for the VPC.
+        description:
+          type: string
+          maxLength: 255
+          description: The new description for the VPC.
+    PaginatedSubnetList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Subnet'
     Subnet:
       type: object
       properties:
@@ -5631,64 +5726,6 @@ components:
           type: string
           format: date-time
           description: When this subnet was last updated.
-    VPC:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this VPC.
-        label:
-          type: string
-          description: The label for this VPC.
-        description:
-          type: string
-          description: A description for this VPC.
-        region:
-          type: string
-          description: The region where this VPC is located.
-        subnets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subnet'
-          description: The subnets in this VPC.
-        created:
-          type: string
-          format: date-time
-          description: When this VPC was created.
-        updated:
-          type: string
-          format: date-time
-          description: When this VPC was last updated.
-    PaginatedSubnetList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Subnet'
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    PaginatedVPCList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/VPC'
     SubnetRequest:
       type: object
       required:
@@ -5703,43 +5740,6 @@ components:
         ipv4:
           type: string
           description: The IPv4 CIDR range for the subnet.
-    VPCUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 64
-          description: The new label for the VPC.
-        description:
-          type: string
-          maxLength: 255
-          description: The new description for the VPC.
-  parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    vpcIdParam:
-      name: vpcId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the VPC.
   securitySchemes:
     oauth:
       flows:

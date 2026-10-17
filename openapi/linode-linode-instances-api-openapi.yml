@@ -7718,7 +7718,7 @@ paths:
       description: Production Server
 components:
   schemas:
-    PaginatedLinodeTypeList:
+    PaginatedLinodeList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -7726,111 +7726,7 @@ components:
           data:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                label:
-                  type: string
-                class:
-                  type: string
-                  enum:
-                  - nanode
-                  - standard
-                  - dedicated
-                  - gpu
-                  - highmem
-                  - premium
-                disk:
-                  type: integer
-                memory:
-                  type: integer
-                vcpus:
-                  type: integer
-                gpus:
-                  type: integer
-                transfer:
-                  type: integer
-                network_out:
-                  type: integer
-                price:
-                  type: object
-                  properties:
-                    hourly:
-                      type: number
-                    monthly:
-                      type: number
-    LinodeRebuildRequest:
-      type: object
-      required:
-      - image
-      - root_pass
-      properties:
-        image:
-          type: string
-          description: The image to rebuild with.
-        root_pass:
-          type: string
-          description: The root password for the rebuilt instance.
-        authorized_keys:
-          type: array
-          items:
-            type: string
-          description: A list of public SSH keys.
-        authorized_users:
-          type: array
-          items:
-            type: string
-          description: A list of usernames whose SSH keys to deploy.
-        stackscript_id:
-          type: integer
-          description: A StackScript ID to deploy with.
-        stackscript_data:
-          type: object
-          additionalProperties:
-            type: string
-          description: UDF data for the StackScript.
-        booted:
-          type: boolean
-          default: true
-          description: Whether to boot after rebuild.
-    LinodeIPAddresses:
-      type: object
-      properties:
-        ipv4:
-          type: object
-          properties:
-            public:
-              type: array
-              items:
-                $ref: '#/components/schemas/IPAddress'
-              description: Public IPv4 addresses.
-            private:
-              type: array
-              items:
-                $ref: '#/components/schemas/IPAddress'
-              description: Private IPv4 addresses.
-            shared:
-              type: array
-              items:
-                $ref: '#/components/schemas/IPAddress'
-              description: Shared IPv4 addresses.
-            reserved:
-              type: array
-              items:
-                $ref: '#/components/schemas/IPAddress'
-              description: Reserved IPv4 addresses.
-        ipv6:
-          type: object
-          properties:
-            slaac:
-              $ref: '#/components/schemas/IPv6Address'
-            link_local:
-              $ref: '#/components/schemas/IPv6Address'
-            global:
-              type: array
-              items:
-                $ref: '#/components/schemas/IPv6Range'
+              $ref: '#/components/schemas/Linode'
     Pagination:
       type: object
       properties:
@@ -7879,6 +7775,162 @@ components:
                 updated:
                   type: string
                   format: date-time
+    LinodeRebuildRequest:
+      type: object
+      required:
+      - image
+      - root_pass
+      properties:
+        image:
+          type: string
+          description: The image to rebuild with.
+        root_pass:
+          type: string
+          description: The root password for the rebuilt instance.
+        authorized_keys:
+          type: array
+          items:
+            type: string
+          description: A list of public SSH keys.
+        authorized_users:
+          type: array
+          items:
+            type: string
+          description: A list of usernames whose SSH keys to deploy.
+        stackscript_id:
+          type: integer
+          description: A StackScript ID to deploy with.
+        stackscript_data:
+          type: object
+          additionalProperties:
+            type: string
+          description: UDF data for the StackScript.
+        booted:
+          type: boolean
+          default: true
+          description: Whether to boot after rebuild.
+    PaginatedKernelList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+                version:
+                  type: string
+                architecture:
+                  type: string
+                  enum:
+                  - x86_64
+                  - i386
+    PaginatedLinodeTypeList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+                class:
+                  type: string
+                  enum:
+                  - nanode
+                  - standard
+                  - dedicated
+                  - gpu
+                  - highmem
+                  - premium
+                disk:
+                  type: integer
+                memory:
+                  type: integer
+                vcpus:
+                  type: integer
+                gpus:
+                  type: integer
+                transfer:
+                  type: integer
+                network_out:
+                  type: integer
+                price:
+                  type: object
+                  properties:
+                    hourly:
+                      type: number
+                    monthly:
+                      type: number
+    BackupResponse:
+      type: object
+      properties:
+        automatic:
+          type: array
+          items:
+            $ref: '#/components/schemas/Backup'
+          description: Automatic backups.
+        snapshot:
+          type: object
+          properties:
+            current:
+              $ref: '#/components/schemas/Backup'
+            in_progress:
+              $ref: '#/components/schemas/Backup'
+          description: Snapshot backups.
+    IPv6Range:
+      type: object
+      properties:
+        range:
+          type: string
+          description: The IPv6 range.
+        prefix:
+          type: integer
+          description: The prefix length.
+        region:
+          type: string
+          description: The region for this range.
+    PaginatedConfigList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                label:
+                  type: string
+                kernel:
+                  type: string
+                run_level:
+                  type: string
+                  enum:
+                  - default
+                  - single
+                  - binbash
+                virt_mode:
+                  type: string
+                  enum:
+                  - paravirt
+                  - fullvirt
+                root_device:
+                  type: string
+                memory_limit:
+                  type: integer
     Linode:
       type: object
       properties:
@@ -8002,207 +8054,6 @@ components:
         watchdog_enabled:
           type: boolean
           description: Whether Lassie the watchdog is enabled to restart this Linode if it crashes.
-    Backup:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this backup.
-        type:
-          type: string
-          enum:
-          - auto
-          - snapshot
-          description: The type of backup.
-        status:
-          type: string
-          enum:
-          - paused
-          - pending
-          - running
-          - needsPostProcessing
-          - successful
-          - failed
-          - userAborted
-          description: The status of this backup.
-        created:
-          type: string
-          format: date-time
-          description: When this backup was created.
-        updated:
-          type: string
-          format: date-time
-          description: When this backup was last updated.
-        finished:
-          type: string
-          format: date-time
-          description: When this backup finished.
-        label:
-          type: string
-          description: The label for snapshot backups.
-        disks:
-          type: array
-          items:
-            type: object
-            properties:
-              label:
-                type: string
-              size:
-                type: integer
-              filesystem:
-                type: string
-          description: Disk information for this backup.
-    PaginatedConfigList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                label:
-                  type: string
-                kernel:
-                  type: string
-                run_level:
-                  type: string
-                  enum:
-                  - default
-                  - single
-                  - binbash
-                virt_mode:
-                  type: string
-                  enum:
-                  - paravirt
-                  - fullvirt
-                root_device:
-                  type: string
-                memory_limit:
-                  type: integer
-    PaginatedKernelList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                label:
-                  type: string
-                version:
-                  type: string
-                architecture:
-                  type: string
-                  enum:
-                  - x86_64
-                  - i386
-    IPAddress:
-      type: object
-      properties:
-        address:
-          type: string
-          description: The IP address.
-        gateway:
-          type: string
-          description: The default gateway.
-        subnet_mask:
-          type: string
-          description: The subnet mask.
-        prefix:
-          type: integer
-          description: The network prefix length.
-        type:
-          type: string
-          enum:
-          - ipv4
-          - ipv6
-          description: The type of IP address.
-        public:
-          type: boolean
-          description: Whether this is a public IP address.
-        rdns:
-          type: string
-          description: The reverse DNS entry for this address.
-        linode_id:
-          type: integer
-          description: The ID of the Linode this IP is assigned to.
-        region:
-          type: string
-          description: The region for this IP address.
-    BackupResponse:
-      type: object
-      properties:
-        automatic:
-          type: array
-          items:
-            $ref: '#/components/schemas/Backup'
-          description: Automatic backups.
-        snapshot:
-          type: object
-          properties:
-            current:
-              $ref: '#/components/schemas/Backup'
-            in_progress:
-              $ref: '#/components/schemas/Backup'
-          description: Snapshot backups.
-    PaginatedLinodeList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Linode'
-    LinodeUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 64
-          description: The label for the Linode instance.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the Linode.
-        watchdog_enabled:
-          type: boolean
-          description: Whether to enable Lassie the watchdog.
-        alerts:
-          type: object
-          properties:
-            cpu:
-              type: integer
-            io:
-              type: integer
-            network_in:
-              type: integer
-            network_out:
-              type: integer
-            transfer_quota:
-              type: integer
-    IPv6Range:
-      type: object
-      properties:
-        range:
-          type: string
-          description: The IPv6 range.
-        prefix:
-          type: integer
-          description: The prefix length.
-        region:
-          type: string
-          description: The region for this range.
     LinodeRequest:
       type: object
       required:
@@ -8263,6 +8114,122 @@ components:
           type: boolean
           default: true
           description: Whether the new Linode should be booted after creation.
+    LinodeUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 64
+          description: The label for the Linode instance.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the Linode.
+        watchdog_enabled:
+          type: boolean
+          description: Whether to enable Lassie the watchdog.
+        alerts:
+          type: object
+          properties:
+            cpu:
+              type: integer
+            io:
+              type: integer
+            network_in:
+              type: integer
+            network_out:
+              type: integer
+            transfer_quota:
+              type: integer
+    Backup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this backup.
+        type:
+          type: string
+          enum:
+          - auto
+          - snapshot
+          description: The type of backup.
+        status:
+          type: string
+          enum:
+          - paused
+          - pending
+          - running
+          - needsPostProcessing
+          - successful
+          - failed
+          - userAborted
+          description: The status of this backup.
+        created:
+          type: string
+          format: date-time
+          description: When this backup was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this backup was last updated.
+        finished:
+          type: string
+          format: date-time
+          description: When this backup finished.
+        label:
+          type: string
+          description: The label for snapshot backups.
+        disks:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              size:
+                type: integer
+              filesystem:
+                type: string
+          description: Disk information for this backup.
+    LinodeIPAddresses:
+      type: object
+      properties:
+        ipv4:
+          type: object
+          properties:
+            public:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: Public IPv4 addresses.
+            private:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: Private IPv4 addresses.
+            shared:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: Shared IPv4 addresses.
+            reserved:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPAddress'
+              description: Reserved IPv4 addresses.
+        ipv6:
+          type: object
+          properties:
+            slaac:
+              $ref: '#/components/schemas/IPv6Address'
+            link_local:
+              $ref: '#/components/schemas/IPv6Address'
+            global:
+              type: array
+              items:
+                $ref: '#/components/schemas/IPv6Range'
     IPv6Address:
       type: object
       properties:
@@ -8281,16 +8248,40 @@ components:
         region:
           type: string
           description: The region for this address.
+    IPAddress:
+      type: object
+      properties:
+        address:
+          type: string
+          description: The IP address.
+        gateway:
+          type: string
+          description: The default gateway.
+        subnet_mask:
+          type: string
+          description: The subnet mask.
+        prefix:
+          type: integer
+          description: The network prefix length.
+        type:
+          type: string
+          enum:
+          - ipv4
+          - ipv6
+          description: The type of IP address.
+        public:
+          type: boolean
+          description: Whether this is a public IP address.
+        rdns:
+          type: string
+          description: The reverse DNS entry for this address.
+        linode_id:
+          type: integer
+          description: The ID of the Linode this IP is assigned to.
+        region:
+          type: string
+          description: The region for this IP address.
   parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
     linodeIdParam:
       name: linodeId
       in: path
@@ -8306,6 +8297,15 @@ components:
         minimum: 1
         default: 1
       description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   securitySchemes:
     oauth:
       flows:

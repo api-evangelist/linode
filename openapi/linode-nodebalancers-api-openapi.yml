@@ -2850,60 +2850,6 @@ paths:
       description: Production Server
 components:
   schemas:
-    PaginatedNodeBalancerConfigList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                port:
-                  type: integer
-                protocol:
-                  type: string
-                algorithm:
-                  type: string
-                stickiness:
-                  type: string
-                check:
-                  type: string
-    PaginatedNodeBalancerList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/NodeBalancer'
-    NodeBalancerRequest:
-      type: object
-      required:
-      - region
-      properties:
-        region:
-          type: string
-          description: The region for the new NodeBalancer.
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the new NodeBalancer.
-        client_conn_throttle:
-          type: integer
-          minimum: 0
-          maximum: 20
-          description: Throttle connections per second.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the new NodeBalancer.
     Pagination:
       type: object
       properties:
@@ -2916,6 +2862,15 @@ components:
         results:
           type: integer
           description: The total number of results.
+    PaginatedNodeBalancerList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/NodeBalancer'
     NodeBalancerUpdateRequest:
       type: object
       properties:
@@ -2987,7 +2942,67 @@ components:
           type: string
           format: date-time
           description: When this NodeBalancer was last updated.
+    PaginatedNodeBalancerConfigList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                port:
+                  type: integer
+                protocol:
+                  type: string
+                algorithm:
+                  type: string
+                stickiness:
+                  type: string
+                check:
+                  type: string
+    NodeBalancerRequest:
+      type: object
+      required:
+      - region
+      properties:
+        region:
+          type: string
+          description: The region for the new NodeBalancer.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the new NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: Throttle connections per second.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new NodeBalancer.
   parameters:
+    nodeBalancerIdParam:
+      name: nodeBalancerId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the NodeBalancer.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -2997,21 +3012,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    nodeBalancerIdParam:
-      name: nodeBalancerId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the NodeBalancer.
   securitySchemes:
     oauth:
       flows:

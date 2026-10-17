@@ -185,32 +185,77 @@ paths:
         '401':
           description: Unauthorized - invalid or missing authentication
 components:
-  parameters:
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    firewallIdParam:
-      name: firewallId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the firewall.
   schemas:
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    PaginatedVLANList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                label:
+                  type: string
+                linodes:
+                  type: array
+                  items:
+                    type: integer
+                region:
+                  type: string
+                created:
+                  type: string
+                  format: date-time
+    FirewallUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          description: The status of the firewall.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
+    PaginatedFirewallList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Firewall'
+    PaginatedIPAddressList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/IPAddress'
     FirewallRule:
       type: object
       properties:
@@ -251,46 +296,77 @@ components:
         description:
           type: string
           description: A description for this rule.
-    PaginatedIPAddressList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/IPAddress'
-    Pagination:
+    FirewallRequest:
       type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    FirewallUpdateRequest:
-      type: object
+      required:
+      - label
+      - rules
       properties:
         label:
           type: string
           minLength: 3
           maxLength: 32
           description: The label for the firewall.
-        status:
-          type: string
-          enum:
-          - enabled
-          - disabled
-          description: The status of the firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            inbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            outbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+          description: The firewall rules.
         tags:
           type: array
           items:
             type: string
           description: Tags for the firewall.
+    IPAddress:
+      type: object
+      properties:
+        address:
+          type: string
+          description: The IP address.
+        gateway:
+          type: string
+          description: The default gateway.
+        subnet_mask:
+          type: string
+          description: The subnet mask.
+        prefix:
+          type: integer
+          description: The network prefix length.
+        type:
+          type: string
+          enum:
+          - ipv4
+          - ipv6
+          description: The type of IP address.
+        public:
+          type: boolean
+          description: Whether this is a public IP address.
+        rdns:
+          type: string
+          description: The reverse DNS entry for this address.
+        linode_id:
+          type: integer
+          description: The ID of the Linode this IP is assigned to.
+        region:
+          type: string
+          description: The region for this IP address.
     Firewall:
       type: object
       properties:
@@ -346,107 +422,31 @@ components:
           type: string
           format: date-time
           description: When this firewall was last updated.
-    PaginatedVLANList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                label:
-                  type: string
-                linodes:
-                  type: array
-                  items:
-                    type: integer
-                region:
-                  type: string
-                created:
-                  type: string
-                  format: date-time
-    IPAddress:
-      type: object
-      properties:
-        address:
-          type: string
-          description: The IP address.
-        gateway:
-          type: string
-          description: The default gateway.
-        subnet_mask:
-          type: string
-          description: The subnet mask.
-        prefix:
-          type: integer
-          description: The network prefix length.
-        type:
-          type: string
-          enum:
-          - ipv4
-          - ipv6
-          description: The type of IP address.
-        public:
-          type: boolean
-          description: Whether this is a public IP address.
-        rdns:
-          type: string
-          description: The reverse DNS entry for this address.
-        linode_id:
-          type: integer
-          description: The ID of the Linode this IP is assigned to.
-        region:
-          type: string
-          description: The region for this IP address.
-    PaginatedFirewallList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Firewall'
-    FirewallRequest:
-      type: object
-      required:
-      - label
-      - rules
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the firewall.
-        rules:
-          type: object
-          properties:
-            inbound:
-              type: array
-              items:
-                $ref: '#/components/schemas/FirewallRule'
-            inbound_policy:
-              type: string
-              enum:
-              - ACCEPT
-              - DROP
-            outbound:
-              type: array
-              items:
-                $ref: '#/components/schemas/FirewallRule'
-            outbound_policy:
-              type: string
-              enum:
-              - ACCEPT
-              - DROP
-          description: The firewall rules.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the firewall.
+  parameters:
+    firewallIdParam:
+      name: firewallId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the firewall.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

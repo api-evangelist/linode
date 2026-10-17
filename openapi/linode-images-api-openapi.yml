@@ -3619,35 +3619,6 @@ paths:
       description: Production Server
 components:
   schemas:
-    ImageUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 128
-          description: The label for the image.
-        description:
-          type: string
-          maxLength: 65000
-          description: A description for the image.
-    ImageRequest:
-      type: object
-      required:
-      - disk_id
-      properties:
-        disk_id:
-          type: integer
-          description: The ID of the disk to create the image from.
-        label:
-          type: string
-          minLength: 1
-          maxLength: 128
-          description: The label for the new image.
-        description:
-          type: string
-          maxLength: 65000
-          description: A description for the new image.
     Pagination:
       type: object
       properties:
@@ -3706,6 +3677,18 @@ components:
           type: string
           format: date-time
           description: When this image expires. Null for distribution images.
+    ImageUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the image.
     PaginatedImageList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -3715,7 +3698,39 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Image'
+    ImageRequest:
+      type: object
+      required:
+      - disk_id
+      properties:
+        disk_id:
+          type: integer
+          description: The ID of the disk to create the image from.
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The label for the new image.
+        description:
+          type: string
+          maxLength: 65000
+          description: A description for the new image.
   parameters:
+    imageIdParam:
+      name: imageId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the image.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
     pageSizeParam:
       name: page_size
       in: query
@@ -3725,21 +3740,6 @@ components:
         maximum: 500
         default: 100
       description: The number of items per page.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    imageIdParam:
-      name: imageId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The ID of the image.
   securitySchemes:
     oauth:
       flows:
