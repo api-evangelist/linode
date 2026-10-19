@@ -1,0 +1,432 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Two-factor authentication API'
+  version: 4.215.0
+servers:
+- url: https://api.linode.com
+tags:
+- description: Enable or disable two-factor authentication (2FA) on your user account to prevent unauthorized logins.
+  name: Two-factor authentication
+paths:
+  /{apiVersion}/profile/tfa-disable:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/profile-tfa-disable.yaml
+      path-info: /{apiVersion}/profile/tfa-disable
+    x-linode-cli-command: profile
+    post:
+      description: 'Disables two-factor authentication (2FA) for your user. Once successful, login attempts from untrusted computers will only require a password. Keep 2FA enabled to protect your account.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli profile tfa-disable
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-tfa-disable
+      operationId: post-tfa-disable
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-tfa-disable-200.json
+          description: TFA disabled.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Disable two-factor authentication
+      tags:
+      - Two-factor authentication
+      x-akamai:
+        tabs:
+        - syntax: linode-cli profile tfa-disable
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: tfa-disable
+  /{apiVersion}/profile/tfa-enable:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/profile-tfa-enable.yaml
+      path-info: /{apiVersion}/profile/tfa-enable
+    x-linode-cli-command: profile
+    post:
+      description: 'Generates a secret key for your user. To enable two-factor authentication (2FA), enter this secret into your third-party authenticator application. To complete the 2FA setup, use the Enable two-factor authentication operation to enter a one-time passcode (OTP) from your authenticator app. Once enabled, logins from untrusted computers are required to provide an OTP before they are successful.
+
+
+        Run the Answer security questions operation.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli profile tfa-enable
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-tfa-enable
+      operationId: post-tfa-enable
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  expiry:
+                    description: When this Two Factor secret expires.
+                    example: '2018-03-01T00:01:01'
+                    format: date-time
+                    type: string
+                  secret:
+                    description: Your Two Factor secret. This is used to generate time-based two factor codes required for logging in. Doing this will be required to confirm TFA an actually enable it.
+                    example: 5FXX6KLACOC33GTC
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/post-tfa-enable-200.yaml
+              x-example:
+                x-ref: ../examples/post-tfa-enable-200.json
+          description: Secret key generated.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Generate a secret key for two-factor authentication
+      tags:
+      - Two-factor authentication
+      x-akamai:
+        tabs:
+        - syntax: linode-cli profile tfa-enable
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: tfa-enable
+  /{apiVersion}/profile/tfa-enable-confirm:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/profile-tfa-enable-confirm.yaml
+      path-info: /{apiVersion}/profile/tfa-enable-confirm
+    x-linode-cli-command: profile
+    post:
+      description: 'Confirms that you can successfully generate one-time codes. Once confirmed, 2FA is enabled on your account. Login attempts from untrusted computers will be required to provide a one-time code before they are successful.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli profile tfa-confirm \
+
+        --tfa_code 213456
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-tfa-confirm
+      operationId: post-tfa-confirm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                tfa_code:
+                  description: The Two Factor code you generated with your Two Factor secret. These codes are time-based, so be sure it is current.
+                  example: '{{tfa_code}}'
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/post-tfa-confirm.yaml
+            x-example:
+              x-ref: ../examples/post-tfa-confirm.json
+        description: The one-time code you generated with your 2FA secret key.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  scratch:
+                    description: A one-use code that can be used in place of your Two Factor code, in case you are unable to generate one.  Keep this in a safe place to avoid being locked out of your Account.
+                    example: sample two factor scratch
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/post-tfa-confirm-200.yaml
+              x-example:
+                x-ref: ../examples/post-tfa-confirm-200.json
+          description: TFA enabled successfully.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Enable two-factor authentication
+      tags:
+      - Two-factor authentication
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli profile tfa-confirm \\\n  --tfa_code 213456"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: tfa-confirm
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Users API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,45 +35,44 @@ paths:
       path-info: /{apiVersion}/account/users
     x-linode-cli-command: users
     post:
-      description: 'Creates a user on your account. You determine the new user''s account access by setting it to restricted or unrestricted:
+      description: 'Creates a user on your account. You determine the new user''s account access by setting it to restricted or unrestricted and by defining its grants. After completion, the API sends a confirmation message containing password creation and login instructions to the user''s `email` address.
 
 
-        - **Unrestricted access**. These users can access everything on an account.
-
-
-        - **Restricted access**. These users can only access entities or perform actions they''ve been given specific grants to.
-
-
-        After completion, the API sends a confirmation message containing password creation and login instructions to the user''s `email` address.
-
-
-        > 🚧 RBAC Identity and Access
+        > 📘
 
         >
 
-        > If Identity and Access is enabled on your account, the *restricted* user is assigned the `account_admin` role and for *restricted* users you need follow this operation with assigning roles to the user. To learn more, see Identity and Access for Akamai Cloud.
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
-        **Permissions and scopes**
+        __Parent and child accounts__
 
 
-        To call this operation, you need the following:
+        In a parent and child account environment, the following apply:
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_user`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - A parent account user can create new parent account users.
 
 
-        - Scopes: `account:read_write`
+        - A child account can update the child account parent user (proxy user) to `unrestricted`. This gives the proxy user access to create new child account users.
 
 
-        **CLI**
+        - A child account user can create new child account users.
 
 
-        ```shell
+        - You can''t create a proxy user. The proxy user in a child account is predefined when you initially provision the parent-child relationship.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
 
         linode-cli users create \
 
@@ -83,7 +85,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-user
@@ -91,10 +106,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              email: asingh@linode.com
-              restricted: true
-              username: alfulani
             schema:
               allOf:
               - additionalProperties: false
@@ -117,7 +128,7 @@ paths:
                         readOnly: true
                         type: string
                       status:
-                        description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                        description: __Read-only__ The result of this user's most recent login attempt.
                         enum:
                         - successful
                         - failed
@@ -137,7 +148,7 @@ paths:
                     - string
                     - 'null'
                   restricted:
-                    description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                    description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                     example: true
                     type: boolean
                     x-linode-cli-display: 3
@@ -163,10 +174,6 @@ paths:
                     description: __Read-only__ Whether this user has Two Factor Authentication (TFA) enabled. Run the [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) operation to enable TFA.
                     example: true
                     readOnly: true
-                    type: boolean
-                  tfa_enforced:
-                    description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                    example: true
                     type: boolean
                   username:
                     description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
@@ -194,27 +201,15 @@ paths:
               required:
               - username
               - email
-              type: object
               x-akamai:
                 file-path: schemas/added-post-user.yaml
+            x-example:
+              x-ref: ../examples/post-user.json
+        description: Information about the User to create.
       responses:
         '200':
           content:
             application/json:
-              example:
-                email: mrossi@linode.com
-                last_login:
-                  login_datetime: '2018-01-01T01:01:01'
-                  status: successful
-                password_created: '2018-01-01T01:01:01'
-                restricted: true
-                ssh_keys:
-                - home-pc
-                - laptop
-                tfa_enabled: true
-                tfa_enforced: false
-                username: mrossi
-                verified_phone_number: '+5555555555'
               schema:
                 additionalProperties: false
                 description: A user on your account. Unrestricted users can log in and access information about your account, while restricted users may only access entities or perform actions they've been granted access to.
@@ -236,7 +231,7 @@ paths:
                         readOnly: true
                         type: string
                       status:
-                        description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                        description: __Read-only__ The result of this user's most recent login attempt.
                         enum:
                         - successful
                         - failed
@@ -256,7 +251,7 @@ paths:
                     - string
                     - 'null'
                   restricted:
-                    description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                    description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                     example: true
                     type: boolean
                     x-linode-cli-display: 3
@@ -283,10 +278,6 @@ paths:
                     example: true
                     readOnly: true
                     type: boolean
-                  tfa_enforced:
-                    description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                    example: true
-                    type: boolean
                   username:
                     description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
                     example: example_user
@@ -310,18 +301,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/user.yaml
+              x-example:
+                x-ref: ../examples/post-user-200.json
           description: New User created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -352,55 +341,61 @@ paths:
         - syntax: "linode-cli users create \\\n  --username example_user \\\n  --email example_user@linode.com \\\n  --restricted true"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: create
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - create_user
     get:
-      description: 'Returns a paginated list of all users on your account. A user can access all or part of an account based on their role assignment:
+      description: 'Returns a paginated list of all users on your account.
 
 
-        - **Unrestricted access**. These users can access everything on an account.
-
-
-        - **Restricted access**. These users can only access entities or perform actions they''ve been given specific grants to.
-
-
-        > 🚧 RBAC Identity and Access
+        > 📘
 
         >
 
-        > If Identity and Access is enabled on your account, the *restricted* users have the `account_admin` role and *restricted* users have specific roles assigned to them. To learn more, see Identity and Access for Akamai Cloud.
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
-        **Permissions and scopes**
+        A user can access all or part of an account based on their access status and grants:
 
 
-        To call this operation, you need the following:
+        - __Unrestricted access__. These users can access everything on an account.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_user`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __Restricted access__. These users can only access entities or perform actions they''ve been given specific grants to.
 
 
-        - Scopes: `account:read_only`
+        >
 
 
-        **CLI**
+        ---
 
 
-        ```shell
+        - __CLI__.
+
+
+        ```
 
         linode-cli users list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-users
@@ -446,7 +441,6 @@ paths:
                   - home-pc
                   - laptop
                   tfa_enabled: true
-                  tfa_enforced: false
                   user_type: parent
                   username: jsmith
                   verified_phone_number: '+5555555555'
@@ -457,7 +451,6 @@ paths:
                 additionalProperties: false
                 properties:
                   data:
-                    description: A list of objects returned for a response.
                     items:
                       allOf:
                       - additionalProperties: false
@@ -480,7 +473,7 @@ paths:
                                 readOnly: true
                                 type: string
                               status:
-                                description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                                description: __Read-only__ The result of this user's most recent login attempt.
                                 enum:
                                 - successful
                                 - failed
@@ -500,7 +493,7 @@ paths:
                             - string
                             - 'null'
                           restricted:
-                            description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                            description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                             example: true
                             type: boolean
                             x-linode-cli-display: 3
@@ -526,10 +519,6 @@ paths:
                             description: __Read-only__ Whether this user has Two Factor Authentication (TFA) enabled. Run the [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) operation to enable TFA.
                             example: true
                             readOnly: true
-                            type: boolean
-                          tfa_enforced:
-                            description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                            example: true
                             type: boolean
                           username:
                             description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
@@ -558,23 +547,23 @@ paths:
                         description: The type of user on an account. Mostly applies to the use of the parent and child accounts for Akamai partners functionality.
                         properties:
                           user_type:
-                            description: '__Read-only__ If the user belongs to a [parent or child account](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) relationship, this defines the user type in the respective account. Possible values include:
+                            description: '__Read-only__ If the user belongs to a [parent or child account](https://www.linode.com/docs/guides/parent-child-accounts/) relationship, this defines the user type in the respective account. Possible values include:
 
 
-                              - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services.
+                              - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services. This user can either have full access (a parent account admin user) or limited access. Limited users don''t have access to manage child accounts, but they can be granted this access by an admin user.
 
 
-                              - `child`. This is an Akamai partner''s end customer user, in a child account.
+                              - `child`. This is an Akamai partner''s end customer user, in a child account. A child user can have either full or limited access. Full access lets the user manage other child users and the proxy user in a child account.
 
 
-                              - `delegate`. This is a user on a child account that an admin of a parent account added to the account delegation for your account.
+                              - `proxy`. This is a user on a child account that gives parent account users access to that child account. A parent account user with the `child_account_access` grant can [Create a proxy user token](https://techdocs.akamai.com/linode-api/reference/post-child-account-token) from the parent account. The parent user can use this token to run API operations from the child account, as if they were a child user.
 
 
                               - `default`. This applies to all regular, non-parent-child account users.'
                             enum:
                             - parent
                             - child
-                            - delegate
+                            - proxy
                             - default
                             example: parent
                             readOnly: true
@@ -605,14 +594,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -643,13 +628,13 @@ paths:
         - syntax: linode-cli users list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - list
       - ls
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - view_user
   /{apiVersion}/account/users/{username}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -661,7 +646,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -671,7 +655,6 @@ paths:
       name: username
       required: true
       schema:
-        example: jsmith
         type: string
       x-akamai:
         file-path: parameters/username-path.yaml
@@ -683,33 +666,43 @@ paths:
       description: 'Returns information about a single user on your account.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_user`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `account:read_only`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli users view example_user
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-user
@@ -719,19 +712,7 @@ paths:
           content:
             application/json:
               example:
-                email: mrossi@linode.com
-                last_login:
-                  login_datetime: '2021-09-10T15:00:00'
-                  status: successful
-                password_created: null
-                restricted: false
-                ssh_keys:
-                - id
-                tfa_enabled: true
-                tfa_enforced: false
-                user_type: default
-                username: mrossi
-                verified_phone_number: '+11234567890'
+                ref: ../examples/get-user-200.json
               schema:
                 allOf:
                 - additionalProperties: false
@@ -754,7 +735,7 @@ paths:
                           readOnly: true
                           type: string
                         status:
-                          description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                          description: __Read-only__ The result of this user's most recent login attempt.
                           enum:
                           - successful
                           - failed
@@ -774,7 +755,7 @@ paths:
                       - string
                       - 'null'
                     restricted:
-                      description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                      description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                       example: true
                       type: boolean
                       x-linode-cli-display: 3
@@ -800,10 +781,6 @@ paths:
                       description: __Read-only__ Whether this user has Two Factor Authentication (TFA) enabled. Run the [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) operation to enable TFA.
                       example: true
                       readOnly: true
-                      type: boolean
-                    tfa_enforced:
-                      description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                      example: true
                       type: boolean
                     username:
                       description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
@@ -832,23 +809,23 @@ paths:
                   description: The type of user on an account. Mostly applies to the use of the parent and child accounts for Akamai partners functionality.
                   properties:
                     user_type:
-                      description: '__Read-only__ If the user belongs to a [parent or child account](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) relationship, this defines the user type in the respective account. Possible values include:
+                      description: '__Read-only__ If the user belongs to a [parent or child account](https://www.linode.com/docs/guides/parent-child-accounts/) relationship, this defines the user type in the respective account. Possible values include:
 
 
-                        - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services.
+                        - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services. This user can either have full access (a parent account admin user) or limited access. Limited users don''t have access to manage child accounts, but they can be granted this access by an admin user.
 
 
-                        - `child`. This is an Akamai partner''s end customer user, in a child account.
+                        - `child`. This is an Akamai partner''s end customer user, in a child account. A child user can have either full or limited access. Full access lets the user manage other child users and the proxy user in a child account.
 
 
-                        - `delegate`. This is a user on a child account that an admin of a parent account added to the account delegation for your account.
+                        - `proxy`. This is a user on a child account that gives parent account users access to that child account. A parent account user with the `child_account_access` grant can [Create a proxy user token](https://techdocs.akamai.com/linode-api/reference/post-child-account-token) from the parent account. The parent user can use this token to run API operations from the child account, as if they were a child user.
 
 
                         - `default`. This applies to all regular, non-parent-child account users.'
                       enum:
                       - parent
                       - child
-                      - delegate
+                      - proxy
                       - default
                       example: parent
                       readOnly: true
@@ -862,14 +839,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -900,48 +873,47 @@ paths:
         - syntax: linode-cli users view example_user
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: view
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - view_user
     put:
       description: 'Update information about a user on your account, including its restricted status. When setting a user to `restricted`, the API sets no grants for it. You need to set grants so that user can access things on the account.
 
 
-        > 🚧 RBAC Identity and Access
+        > 📘
 
         >
 
-        > If Identity and Access is enabled on your account, the *restricted* users have the `account_admin` role and *restricted* users have specific roles assigned to them. To update the role assignment, run the Update a user''s access level operation instead. To learn more, see Identity and Access for Akamai Cloud.
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
         __Parent and child accounts__
 
 
-        In the context of the parent and child accounts feature, on a child account, you can''t edit the `username` or `email` values for delegate users.
+        In a parent and child account environment, the following apply:
 
 
-        **Permissions and scopes**
+        - You can''t edit the `username` or `email` values for the child account parent user (proxy user). These are predefined for the proxy user when you initially provision the parent-child relationship. Only a proxy user''s `restricted` status can be modified. This can only be done by an unrestricted child account user.
 
 
-        To call this operation, you need the following:
+        - A parent account using an unrestricted proxy user in a child account can modify the `username`, `email`, and `restricted` status for an existing child account user.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_user`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - A restricted account user--parent or child--can''t change their user to `unrestricted`.
 
 
-        - Scopes: `account:read_write`
+        >
 
 
-        **CLI**
+        ---
 
 
-        ```shell
+        - __CLI__.
+
+
+        ```
 
         linode-cli users update example_user \
 
@@ -954,7 +926,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-user
@@ -962,20 +947,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              email: mrossi@linode.com
-              last_login:
-                login_datetime: '2021-09-10T15:00:00'
-                status: successful
-              password_created: null
-              restricted: false
-              ssh_keys:
-              - id
-              tfa_enabled: true
-              tfa_enforced: false
-              user_type: default
-              username: mrossi
-              verified_phone_number: '+11234567890'
             schema:
               additionalProperties: false
               description: A user on your account. Unrestricted users can log in and access information about your account, while restricted users may only access entities or perform actions they've been granted access to.
@@ -997,7 +968,7 @@ paths:
                       readOnly: true
                       type: string
                     status:
-                      description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                      description: __Read-only__ The result of this user's most recent login attempt.
                       enum:
                       - successful
                       - failed
@@ -1017,7 +988,7 @@ paths:
                   - string
                   - 'null'
                 restricted:
-                  description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                  description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                   example: '{{restricted}}'
                   type: boolean
                   x-linode-cli-display: 3
@@ -1044,10 +1015,6 @@ paths:
                   example: '{{tfa_enabled}}'
                   readOnly: true
                   type: boolean
-                tfa_enforced:
-                  description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                  example: '{{tfa_enforced}}'
-                  type: boolean
                 username:
                   description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
                   example: '{{username}}'
@@ -1071,24 +1038,27 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/user.yaml
+            x-example:
+              x-ref: ../examples/put-user.json
+        description: The information to update.
       responses:
         '200':
           content:
             application/json:
               example:
-                email: mrossi@linode.com
+                email: jkowalski@linode.com
                 last_login:
-                  login_datetime: '2021-09-10T15:00:00'
+                  login_datetime: '2018-01-01T01:01:01'
                   status: successful
-                password_created: null
-                restricted: false
+                password_created: '2018-01-01T01:01:01'
+                restricted: true
                 ssh_keys:
-                - id
+                - home-pc
+                - laptop
                 tfa_enabled: true
-                tfa_enforced: false
-                user_type: default
-                username: mrossi
-                verified_phone_number: '+11234567890'
+                user_type: parent
+                username: adevi
+                verified_phone_number: '+5555555555'
               schema:
                 allOf:
                 - additionalProperties: false
@@ -1111,7 +1081,7 @@ paths:
                           readOnly: true
                           type: string
                         status:
-                          description: __Read-only__ The result of this user's most recent login attempt, either `successful` or `failed`.
+                          description: __Read-only__ The result of this user's most recent login attempt.
                           enum:
                           - successful
                           - failed
@@ -1131,7 +1101,7 @@ paths:
                       - string
                       - 'null'
                     restricted:
-                      description: Defines user access to account. If `false`, the user is assigned the `account_admin` role. If `true`, the user's access is limited to selected roles.
+                      description: If `true`, this user needs specific access granted to perform actions or access entities on your account. Run [List a user's grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for details on how to configure grants for a restricted user.
                       example: true
                       type: boolean
                       x-linode-cli-display: 3
@@ -1157,10 +1127,6 @@ paths:
                       description: __Read-only__ Whether this user has Two Factor Authentication (TFA) enabled. Run the [Create a two factor secret](https://techdocs.akamai.com/linode-api/reference/post-tfa-enable) operation to enable TFA.
                       example: true
                       readOnly: true
-                      type: boolean
-                    tfa_enforced:
-                      description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List TFA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                      example: true
                       type: boolean
                     username:
                       description: __Filterable__ The name of this user. This user needs to use this value to log in. It may also display alongside actions this user performs, including events or public StackScripts.
@@ -1189,23 +1155,23 @@ paths:
                   description: The type of user on an account. Mostly applies to the use of the parent and child accounts for Akamai partners functionality.
                   properties:
                     user_type:
-                      description: '__Read-only__ If the user belongs to a [parent or child account](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) relationship, this defines the user type in the respective account. Possible values include:
+                      description: '__Read-only__ If the user belongs to a [parent or child account](https://www.linode.com/docs/guides/parent-child-accounts/) relationship, this defines the user type in the respective account. Possible values include:
 
 
-                        - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services.
+                        - `parent`. This is a user in an Akamai partner account. Akamai partners have a contractual relationship with their end customers, to sell Akamai services. This user can either have full access (a parent account admin user) or limited access. Limited users don''t have access to manage child accounts, but they can be granted this access by an admin user.
 
 
-                        - `child`. This is an Akamai partner''s end customer user, in a child account.
+                        - `child`. This is an Akamai partner''s end customer user, in a child account. A child user can have either full or limited access. Full access lets the user manage other child users and the proxy user in a child account.
 
 
-                        - `delegate`. This is a user on a child account that an admin of a parent account added to the account delegation for your account.
+                        - `proxy`. This is a user on a child account that gives parent account users access to that child account. A parent account user with the `child_account_access` grant can [Create a proxy user token](https://techdocs.akamai.com/linode-api/reference/post-child-account-token) from the parent account. The parent user can use this token to run API operations from the child account, as if they were a child user.
 
 
                         - `default`. This applies to all regular, non-parent-child account users.'
                       enum:
                       - parent
                       - child
-                      - delegate
+                      - proxy
                       - default
                       example: parent
                       readOnly: true
@@ -1219,14 +1185,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1257,48 +1219,64 @@ paths:
         - syntax: "linode-cli users update example_user \\\n  --username example_user \\\n  --email example@linode.com \\\n  --restricted true"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: update
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - update_user
     delete:
-      description: 'Deletes a user. The API immediately logs the user out and removes their access to all Akamai Cloud services.
+      description: 'Deletes a user. The API immediately logs the user out and removes all of its `grants`.
+
+
+        > 📘
+
+        >
+
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
         __Parent and child accounts__
 
 
-        In the context of the parent and child accounts feature, you can''t delete a user with the `delegate` user type on a child account.
+        In a parent and child account environment, the following apply:
 
 
-        **Permissions and scopes**
+        - You can''t delete a child account parent user (proxy user). The API returns a 403 error if you target a proxy user with this operation.
 
 
-        To call this operation, you need the following:
+        - A parent account using an unrestricted proxy user can use this operation to delete a child account user.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_user`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        >
 
 
-        - Scopes: `account:read_write`
+        ---
 
 
-        **CLI**
+        - __CLI__.
 
 
-        ```shell
+        ```
 
         linode-cli users delete example_user
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-user
@@ -1307,25 +1285,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-user-200.json
           description: User deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1356,13 +1331,13 @@ paths:
         - syntax: linode-cli users delete example_user
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - delete
       - rm
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - delete_user
   /{apiVersion}/account/users/{username}/grants:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -1374,7 +1349,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1384,7 +1358,6 @@ paths:
       name: username
       required: true
       schema:
-        example: jsmith
         type: string
       x-akamai:
         file-path: parameters/username-path.yaml
@@ -1393,31 +1366,36 @@ paths:
       path-info: /{apiVersion}/account/users/{username}/grants
     x-linode-cli-command: users
     get:
-      deprecated: true
-      description: '__Deprecated__ Returns the full grants structure for an account username you specify. This includes all entities on the account, and the level of access this user has to each of them. This doesn''t apply to the account owner or the current authenticated user. You can run the List grants operation to view those grants.
+      description: 'Returns the full grants structure for an account username you specify. This includes all entities on the account, and the level of access this user has to each of them.
 
 
-        > 🚧 RBAC Identity and Access
+        This doesn''t apply to the account owner or the current authenticated user. You can run the List grants operation to view those grants. However, this doesn''t show the entities that they _don''t_ have access to.
+
+
+        > 📘
 
         >
 
-        > Grants are now replaced with RBAC Identity and Access. Use the Get a user''s access level operation instead. To learn more, see Identity and Access for Akamai Cloud.
+        > This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_user_grants`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `account:read_only`'
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-user-grants
@@ -1426,61 +1404,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                database:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                domain:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                firewall:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                global:
-                  account_access: read_only
-                  add_databases: true
-                  add_domains: true
-                  add_firewalls: true
-                  add_images: true
-                  add_linodes: true
-                  add_longview: true
-                  add_nodebalancers: true
-                  add_stackscripts: true
-                  add_volumes: true
-                  add_vpcs: true
-                  cancel_account: false
-                  longview_subscription: true
-                image:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                linode:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                longview:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                nodebalancer:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                stackscript:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                volume:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                vpc:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
               schema:
                 additionalProperties: false
                 properties:
@@ -1500,7 +1423,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1528,7 +1451,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1556,7 +1479,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1586,7 +1509,7 @@ paths:
                           __Parent and child accounts__
 
 
-                          In the context of the [parent and child accounts](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) feature, use the [Update a user''s access level](https://techdocs.akamai.com/linode-api/reference/put-iam-users-role-permissions) to manage delegate user''s access.'
+                          In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this grant can be added to a child account user, to give the user `read-write` access. This gives the child user unrestricted access to expected management operations, such as creating other child users. However, child users don''t have write access to billing operations. The API issues a specific error message if a write operation is attempted by a child user.'
                         enum:
                         - read_only
                         - read_write
@@ -1639,14 +1562,11 @@ paths:
                         example: false
                         type: boolean
                       child_account_access:
-                        deprecated: true
-                        description: __Deprecated__ In order to provide a parent account user access to a child account, [add them to an account delegation](https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-child-account-users). This is `null` for all non-parent accounts.
+                        description: In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this gives a parent account access to operations that can be used to manage child accounts. Unrestricted parent account users have access to this grant, while restricted parent users don't. An unrestricted parent user can set this to `true` to add this grant to a restricted parent user. Displayed as `null` for all non-parent accounts.
                         example: true
                         type:
                         - boolean
                         - 'null'
-                        x-akamai:
-                          status: DEPRECATED
                       longview_subscription:
                         description: Whether this user can manage your account's Longview subscription.
                         example: true
@@ -1668,7 +1588,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1696,7 +1616,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1724,7 +1644,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1752,7 +1672,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1780,7 +1700,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1808,7 +1728,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1836,7 +1756,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -1851,6 +1771,8 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/grants-response.yaml
+              x-example:
+                x-ref: ../examples/get-user-grants-200.json
           description: The User's grants.
         '204':
           content: {}
@@ -1858,14 +1780,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1892,39 +1810,60 @@ paths:
       tags:
       - Users
       x-akamai:
-        status: DEPRECATED
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: grants
       x-linode-cli-skip: true
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - list_user_grants
     put:
-      deprecated: true
-      description: '__Deprecated__ Update the grants for a restricted user. This can be used to give a user access to new entities or actions, or take access away. Omit a grant object from the request to keep its current setting.
+      description: 'Update the grants for a restricted user. This can be used to give a user access to new entities or actions, or take access away. Omit a grant object from the request to keep its current setting.
 
 
-        > 🚧 RBAC Identity and Access
+        > 📘
 
         >
 
-        > Grants are now replaced with RBAC Identity and Access. Use the Update a user''s access level operation instead. To learn more, see Identity and Access for Akamai Cloud.
+        > - This operation can only be accessed by account users with _unrestricted_ access. Talk to your local account administrator about access management.
+
+        >
+
+        > - This operation only applies to _restricted_ users. An unrestricted user has access to everything and doesn''t use grants.
 
 
-        **Permissions and scopes**
+        __Parent and child accounts__
 
 
-        To call this operation, you need the following:
+        In a parent and child account environment, the following apply:
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_user_grants`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - No child account user can modify the `account_access` grant for the child account parent user (proxy user).
 
 
-        - Scopes: `account:read_write`'
+        - An unrestricted child account user can configure all other grants for the proxy user, with the `global` object.
+
+
+        - An unrestricted child account user can enable the `account_access` grant for other child account users. However, enabled child users are still subject to child user restrictions--they can''t perform write operations for any billing or account information.
+
+
+        >
+
+
+        ---
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-user-grants
@@ -1932,10 +1871,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              firewall:
-              - id: 123
-                permissions: read_write
             schema:
               additionalProperties: false
               properties:
@@ -1955,7 +1890,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -1983,7 +1918,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2011,7 +1946,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2041,7 +1976,7 @@ paths:
                         __Parent and child accounts__
 
 
-                        In the context of the [parent and child accounts](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) feature, use the [Update a user''s access level](https://techdocs.akamai.com/linode-api/reference/put-iam-users-role-permissions) to manage delegate user''s access.'
+                        In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this grant can be added to a child account user, to give the user `read-write` access. This gives the child user unrestricted access to expected management operations, such as creating other child users. However, child users don''t have write access to billing operations. The API issues a specific error message if a write operation is attempted by a child user.'
                       enum:
                       - read_only
                       - read_write
@@ -2094,14 +2029,11 @@ paths:
                       example: false
                       type: boolean
                     child_account_access:
-                      deprecated: true
-                      description: __Deprecated__ In order to provide a parent account user access to a child account, [add them to an account delegation](https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-child-account-users). This is `null` for all non-parent accounts.
+                      description: In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this gives a parent account access to operations that can be used to manage child accounts. Unrestricted parent account users have access to this grant, while restricted parent users don't. An unrestricted parent user can set this to `true` to add this grant to a restricted parent user. Displayed as `null` for all non-parent accounts.
                       example: true
                       type:
                       - boolean
                       - 'null'
-                      x-akamai:
-                        status: DEPRECATED
                     longview_subscription:
                       description: Whether this user can manage your account's Longview subscription.
                       example: true
@@ -2123,7 +2055,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2151,7 +2083,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2179,7 +2111,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2207,7 +2139,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2235,7 +2167,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2263,7 +2195,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2291,7 +2223,7 @@ paths:
                         readOnly: true
                         type: string
                       permissions:
-                        description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                        description: The level of access this user has to this entity. If `null`, this user has no access.
                         enum:
                         - read_only
                         - read_write
@@ -2306,66 +2238,13 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/grants-response.yaml
+            x-example:
+              x-ref: ../examples/put-user-grants.json
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                database:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                domain:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                firewall:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                global:
-                  account_access: read_only
-                  add_databases: true
-                  add_domains: true
-                  add_firewalls: true
-                  add_images: true
-                  add_linodes: true
-                  add_longview: true
-                  add_nodebalancers: true
-                  add_stackscripts: true
-                  add_volumes: true
-                  add_vpcs: true
-                  cancel_account: false
-                  longview_subscription: true
-                image:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                linode:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                longview:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                nodebalancer:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                stackscript:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                volume:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                vpc:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
               schema:
                 additionalProperties: false
                 properties:
@@ -2385,7 +2264,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2413,7 +2292,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2441,7 +2320,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2471,7 +2350,7 @@ paths:
                           __Parent and child accounts__
 
 
-                          In the context of the [parent and child accounts](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) feature, use the [Update a user''s access level](https://techdocs.akamai.com/linode-api/reference/put-iam-users-role-permissions) to manage delegate user''s access.'
+                          In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this grant can be added to a child account user, to give the user `read-write` access. This gives the child user unrestricted access to expected management operations, such as creating other child users. However, child users don''t have write access to billing operations. The API issues a specific error message if a write operation is attempted by a child user.'
                         enum:
                         - read_only
                         - read_write
@@ -2524,14 +2403,11 @@ paths:
                         example: false
                         type: boolean
                       child_account_access:
-                        deprecated: true
-                        description: __Deprecated__ In order to provide a parent account user access to a child account, [add them to an account delegation](https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-child-account-users). This is `null` for all non-parent accounts.
+                        description: In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this gives a parent account access to operations that can be used to manage child accounts. Unrestricted parent account users have access to this grant, while restricted parent users don't. An unrestricted parent user can set this to `true` to add this grant to a restricted parent user. Displayed as `null` for all non-parent accounts.
                         example: true
                         type:
                         - boolean
                         - 'null'
-                        x-akamai:
-                          status: DEPRECATED
                       longview_subscription:
                         description: Whether this user can manage your account's Longview subscription.
                         example: true
@@ -2553,7 +2429,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2581,7 +2457,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2609,7 +2485,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2637,7 +2513,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2665,7 +2541,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2693,7 +2569,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2721,7 +2597,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -2736,18 +2612,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/grants-response.yaml
+              x-example:
+                x-ref: ../examples/get-user-grants-200.json
           description: Grants updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2774,13 +2648,13 @@ paths:
       tags:
       - Users
       x-akamai:
-        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: update-grants
       x-linode-cli-skip: true
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - update_user_grants
 components:
   securitySchemes:
     oauth:
@@ -2790,10 +2664,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -2810,8 +2680,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -2830,7 +2700,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

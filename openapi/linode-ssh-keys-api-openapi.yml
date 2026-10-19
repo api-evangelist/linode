@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode SSH keys API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,26 +38,16 @@ paths:
       description: 'Adds an SSH Key to your Account profile.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_profile_ssh_key`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli sshkeys create \
 
@@ -65,7 +58,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-add-ssh-key
@@ -73,16 +79,14 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: Example SSH Key
-              ssh_key: ssh-rsa AAAA_valid_public_ssh_key_123456785== user@hostname
             schema:
               additionalProperties: false
-              description: An SSH key that serves as a credential to authenticate a user's secure shell connection to a Linode.
+              description: A credential object for authenticating a User's secure shell connection to a Linode.
               properties:
                 created:
                   description: __Read-only__ The date this key was added.
                   example: '{{created}}'
+                  format: date-time
                   readOnly: true
                   type: string
                 id:
@@ -91,15 +95,11 @@ paths:
                   readOnly: true
                   type: integer
                 label:
-                  description: __Filterable__ A label for the SSH Key.
+                  description: A label for the SSH Key.
                   example: '{{label}}'
                   maxLength: 64
                   minLength: 0
                   type: string
-                  x-akamai:
-                    labels:
-                    - Filterable
-                  x-linode-filterable: true
                 ssh_key:
                   description: 'The public SSH Key, which is used to authenticate to the root user of the Linodes you deploy.
 
@@ -122,22 +122,21 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/ssh-key.yaml
+            x-example:
+              x-ref: ../examples/post-add-ssh-key.json
+        description: Add SSH Key.
       responses:
         '200':
           content:
             application/json:
-              example:
-                created: '2024-01-01T00:01:01'
-                id: 42
-                label: Example SSH Key
-                ssh_key: ssh-rsa AAAA_valid_public_ssh_key_123456785== user@hostname
               schema:
                 additionalProperties: false
-                description: An SSH key that serves as a credential to authenticate a user's secure shell connection to a Linode.
+                description: A credential object for authenticating a User's secure shell connection to a Linode.
                 properties:
                   created:
                     description: __Read-only__ The date this key was added.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   id:
@@ -146,15 +145,11 @@ paths:
                     readOnly: true
                     type: integer
                   label:
-                    description: __Filterable__ A label for the SSH Key.
+                    description: A label for the SSH Key.
                     example: My SSH Key
                     maxLength: 64
                     minLength: 0
                     type: string
-                    x-akamai:
-                      labels:
-                      - Filterable
-                    x-linode-filterable: true
                   ssh_key:
                     description: 'The public SSH Key, which is used to authenticate to the root user of the Linodes you deploy.
 
@@ -177,18 +172,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/ssh-key.yaml
+              x-example:
+                x-ref: ../examples/post-add-ssh-key-200.json
           description: SSH Key associated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -219,41 +212,44 @@ paths:
         - syntax: "linode-cli sshkeys create \\\n  --label \"My SSH Key\" \\\n  --ssh_key \"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer\""
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: create
-      x-linode-iam:
-      - permissions:
-        - create_profile_ssh_key
     get:
       description: 'Returns a collection of SSH Keys you''ve added to your Profile.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_profile_ssh_keys`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli sshkeys list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-ssh-keys
@@ -287,27 +283,18 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - created: '2024-01-01T00:01:01'
-                  id: 42
-                  label: Example SSH Key
-                  ssh_key: ssh-rsa AAAA_valid_public_ssh_key_123456785== user@hostname
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: SSH keys that have been added to the user's account.
                     items:
                       additionalProperties: false
-                      description: An SSH key that serves as a credential to authenticate a user's secure shell connection to a Linode.
+                      description: A credential object for authenticating a User's secure shell connection to a Linode.
                       properties:
                         created:
                           description: __Read-only__ The date this key was added.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                         id:
@@ -316,15 +303,11 @@ paths:
                           readOnly: true
                           type: integer
                         label:
-                          description: __Filterable__ A label for the SSH Key.
+                          description: A label for the SSH Key.
                           example: My SSH Key
                           maxLength: 64
                           minLength: 0
                           type: string
-                          x-akamai:
-                            labels:
-                            - Filterable
-                          x-linode-filterable: true
                         ssh_key:
                           description: 'The public SSH Key, which is used to authenticate to the root user of the Linodes you deploy.
 
@@ -366,18 +349,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-ssh-keys-200.yaml
+              x-example:
+                x-ref: ../examples/get-ssh-keys-200.json
           description: Returns a paginated list of SSH Key objects.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -408,13 +389,13 @@ paths:
         - syntax: linode-cli sshkeys list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - list
       - ls
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_profile_ssh_keys
   /{apiVersion}/profile/sshkeys/{sshKeyId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -426,7 +407,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -448,33 +428,36 @@ paths:
       description: 'Returns a single SSH Key object identified by `id` that you have access to view.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_profile_ssh_key`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli sshkeys view 42
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-ssh-key
@@ -483,18 +466,14 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2024-01-01T00:01:01'
-                id: 42
-                label: Example SSH Key
-                ssh_key: ssh-rsa AAAA_valid_public_ssh_key_123456785== user@hostname
               schema:
                 additionalProperties: false
-                description: An SSH key that serves as a credential to authenticate a user's secure shell connection to a Linode.
+                description: A credential object for authenticating a User's secure shell connection to a Linode.
                 properties:
                   created:
                     description: __Read-only__ The date this key was added.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   id:
@@ -503,15 +482,11 @@ paths:
                     readOnly: true
                     type: integer
                   label:
-                    description: __Filterable__ A label for the SSH Key.
+                    description: A label for the SSH Key.
                     example: My SSH Key
                     maxLength: 64
                     minLength: 0
                     type: string
-                    x-akamai:
-                      labels:
-                      - Filterable
-                    x-linode-filterable: true
                   ssh_key:
                     description: 'The public SSH Key, which is used to authenticate to the root user of the Linodes you deploy.
 
@@ -534,18 +509,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/ssh-key.yaml
+              x-example:
+                x-ref: ../examples/get-ssh-key-200.json
           description: An SSH Key object.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -576,34 +549,27 @@ paths:
         - syntax: linode-cli sshkeys view 42
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: view
-      x-linode-iam:
-      - permissions:
-        - view_profile_ssh_key
     put:
-      description: 'Updates an SSH Key. Only SSH key labels can be updated.
+      description: 'Updates an SSH Key that you have permission to `read_write`.
 
 
-        **Permissions and scopes**
+        Only SSH key labels can be updated.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_profile_ssh_key`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `account:read_write`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli sshkeys update 42 \
 
@@ -612,7 +578,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-ssh-key
@@ -620,41 +599,34 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: Example SSH Key
             schema:
               additionalProperties: false
               properties:
                 label:
-                  description: __Filterable__ A label for the SSH Key.
+                  description: A label for the SSH Key.
                   example: '{{label}}'
                   maxLength: 64
                   minLength: 0
                   type: string
-                  x-akamai:
-                    labels:
-                    - Filterable
-                  x-linode-filterable: true
               type: object
               x-akamai:
                 file-path: schemas/put-ssh-key.yaml
+            x-example:
+              x-ref: ../examples/put-ssh-key.json
+        description: The fields to update.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                created: '2024-01-01T00:01:01'
-                id: 42
-                label: Example SSH Key
-                ssh_key: ssh-rsa AAAA_valid_public_ssh_key_123456785== user@hostname
               schema:
                 additionalProperties: false
-                description: An SSH key that serves as a credential to authenticate a user's secure shell connection to a Linode.
+                description: A credential object for authenticating a User's secure shell connection to a Linode.
                 properties:
                   created:
                     description: __Read-only__ The date this key was added.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   id:
@@ -663,15 +635,11 @@ paths:
                     readOnly: true
                     type: integer
                   label:
-                    description: __Filterable__ A label for the SSH Key.
+                    description: A label for the SSH Key.
                     example: My SSH Key
                     maxLength: 64
                     minLength: 0
                     type: string
-                    x-akamai:
-                      labels:
-                      - Filterable
-                    x-linode-filterable: true
                   ssh_key:
                     description: 'The public SSH Key, which is used to authenticate to the root user of the Linodes you deploy.
 
@@ -694,18 +662,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/ssh-key.yaml
+              x-example:
+                x-ref: ../examples/get-ssh-key-200.json
           description: SSH Key updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -736,10 +702,10 @@ paths:
         - syntax: "linode-cli sshkeys update 42 \\\n  --label \"my laptop\""
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: update
-      x-linode-iam:
-      - permissions:
-        - update_profile_ssh_key
     delete:
       description: 'Deletes an SSH Key you have access to.
 
@@ -751,33 +717,36 @@ paths:
         > This operation only deletes a key''s association from your profile. It doesn''t remove it from any Linode or disk that was deployed with `authorized_keys`. You need to manually delete the key on the Linode or disk.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_profile_ssh_key`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli sshkeys delete 42
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-ssh-key
@@ -786,25 +755,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-ssh-key-200.json
           description: SSH Key deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -835,12 +801,12 @@ paths:
         - syntax: linode-cli sshkeys delete 42
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - delete
       - rm
-      x-linode-iam:
-      - permissions:
-        - delete_profile_ssh_key
 components:
   securitySchemes:
     oauth:
@@ -850,10 +816,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -870,8 +832,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -890,7 +852,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

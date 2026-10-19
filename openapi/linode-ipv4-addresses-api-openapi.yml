@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode IPv4 addresses API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -22,7 +26,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -66,16 +69,25 @@ paths:
         - Update a Linode''s managed settings
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `ips:read_write, linodes:read_write`'
+        ```
+
+        ips:read_write
+
+        linodes:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-assign-ipv4s
@@ -83,11 +95,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              assignments:
-              - address: 192.0.2.1
-                linode_id: 123
-              region: us-east
             schema:
               additionalProperties: false
               description: Request object for IP Addresses Assign (POST /networking/ips/assign).
@@ -101,7 +108,7 @@ paths:
                         description: 'The IPv4 address or IPv6 range for this assignment.
 
 
-                          - Must be an IPv4 address or an IPv6 range you can access in the region specified.
+                          - Must be an IPv4 address or an IPv6 range you can access in the Region specified.
 
                           - IPv6 ranges must include a prefix length of `/56` or `/64`, for example: `2001:db8:3c4d:15::/64`.
 
@@ -114,14 +121,7 @@ paths:
                         format: ipv4|ipv6/prefix_length
                         type: string
                       linode_id:
-                        description: 'The ID of the Linode to assign this address to.
-
-
-                          - If the address is currently assigned to another Linode, that Linode will lose the address.
-
-                          - If the address is an unassigned reserved IP, it will be moved from your account''s unassigned pool to the target Linode.
-
-                          - All Linodes involved must end up with at least one public address and no more than one private address once all assignments have been made.'
+                        description: The ID of the Linode to assign this address to. The IP's previous Linode will lose this address, and must end up with at least one public address and no more than one private address once all assignments have been made.
                         example: 123
                         type: integer
                     required:
@@ -130,7 +130,7 @@ paths:
                     type: object
                   type: array
                 region:
-                  description: The ID of the region in which these assignments are to take place. All IPs and Linodes must exist in this region.
+                  description: The ID of the Region in which these assignments are to take place. All IPs and Linodes must exist in this Region.
                   example: '{{region}}'
                   type: string
               required:
@@ -139,30 +139,30 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/ip-addresses-assign-request.yaml
+            x-example:
+              x-ref: ../examples/post-assign-ipv4s.json
+        description: Information about what IPv4 address to assign, and to which Linode.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-assign-ipv4s-200.json
           description: All assignments completed successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -209,7 +209,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -237,16 +236,25 @@ paths:
         > A public IPv4 address can''t be shared if it''s configured for a 1:1 NAT on a legacy configuration profile VPC interface or on a Linode VPC interface.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `ips:read_write, linodes:read_write`'
+        ```
+
+        ips:read_write
+
+        linodes:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-share-ipv4s
@@ -254,10 +262,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              ips:
-              - 192.0.2.1
-              linode_id: 123
             schema:
               additionalProperties: false
               description: A request object IP Addresses Share (POST /networking/ips/share).
@@ -290,30 +294,30 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/ip-addresses-share-request.yaml
+            x-example:
+              x-ref: ../examples/post-share-ipv4s.json
+        description: Information about what IPs to share with which Linode.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-share-ipv4s-200.json
           description: Sharing configured successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -358,10 +362,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -378,8 +378,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -398,7 +398,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

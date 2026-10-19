@@ -1,18 +1,12 @@
 openapi: 3.2.0
 info:
-  title: Linode API v4 Object Storage API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
-  version: 4.189.0
-  contact:
-    name: Linode Support
-    url: https://www.linode.com/support/
-  termsOfService: https://www.linode.com/legal-tos/
+  title: Linode Object Storage API
+  version: '1.0'
+  description: 'Operations tagged Object Storage across 2 of this provider''s published API definitions: linode-api-v4-openapi.yml, linode-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.linode.com/v4
   description: Production Server
-security:
-- personalAccessToken: []
-- oauth: []
+- url: https://api.linode.com
 tags:
 - name: Object Storage
   description: Manage Object Storage buckets, access keys, clusters, and endpoints for S3-compatible object storage.
@@ -36,6 +30,12 @@ paths:
                 $ref: '#/components/schemas/PaginatedObjectStorageBucketList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /object-storage/buckets/{regionId}/{bucket}:
     get:
       operationId: getObjectStorageBucket
@@ -57,6 +57,9 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Bucket not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
     delete:
       operationId: deleteObjectStorageBucket
       summary: Delete an Object Storage bucket
@@ -73,6 +76,12 @@ paths:
           description: Unauthorized - invalid or missing authentication
         '404':
           description: Bucket not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /object-storage/keys:
     get:
       operationId: getObjectStorageKeys
@@ -92,6 +101,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedObjectStorageKeyList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
     post:
       operationId: createObjectStorageKey
       summary: Create an Object Storage key
@@ -115,6 +127,12 @@ paths:
           description: Bad request - invalid parameters
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
   /object-storage/endpoints:
     get:
       operationId: getObjectStorageEndpoints
@@ -131,8 +149,1069 @@ paths:
                 $ref: '#/components/schemas/ObjectStorageEndpointList'
         '401':
           description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
+  /{apiVersion}/object-storage/cancel:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-cancel.yaml
+      path-info: /{apiVersion}/object-storage/cancel
+    x-linode-cli-command: object-storage
+    post:
+      description: 'Cancel Object Storage on an Account.
+
+
+        > 🚧
+
+        >
+
+        > This removes all buckets and their contents from your Account. This data is irretrievable once removed.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage cancel
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-cancel-object-storage
+      operationId: post-cancel-object-storage
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-cancel-object-storage-200.json
+          description: Object Storage cancellation successful.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_write
+      summary: Cancel Object Storage
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage cancel
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: cancel
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/object-storage/quotas:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quotas.yaml
+      path-info: /{apiVersion}/object-storage/quotas
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns the active Object Storage-related quotas applied to your account. For example, you may have a quota maximum for the number of buckets you can have on a single endpoint. The operation includes any quota overrides in the response.
+
+
+        > 📘
+
+        >
+
+        > You can''t combine parameters when filtering with this operation. Only a single filterable parameter can be used.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage quotas-list
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quotas
+      operationId: get-object-storage-quotas
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - description: Current number of buckets per account, per endpoint
+                  endpoint_type: E1
+                  quota_id: obj-buckets-eu-central-1.linodeobjects.com
+                  quota_limit: 50
+                  quota_name: Number of Buckets
+                  resource_metric: bucket
+                  s3_endpoint: us-sea-9.linodeobjects.com
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - properties:
+                    data:
+                      items:
+                        additionalProperties: false
+                        description: The current Object Storage-related quotas on your account.
+                        properties:
+                          description:
+                            description: A description for the Object Storage-related quota.
+                            example: Current number of buckets per account, per endpoint
+                            type: string
+                            x-linode-cli-display: 3
+                          endpoint_type:
+                            description: The type of `s3_endpoint`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
+                            enum:
+                            - E0
+                            - E1
+                            - E2
+                            - E3
+                            example: E1
+                            type: string
+                            x-linode-cli-display: 6
+                          quota_id:
+                            description: 'Identifies the Object Storage-related quota. Formatted as `obj-<quota_type>-<s3_endpoint>`, where `<quota_type>` is the `resource_metric` in use: `buckets`, `objects` or `bytes`.'
+                            example: obj-buckets-eu-central-1.linodeobjects.com
+                            type: string
+                            x-linode-cli-display: 1
+                          quota_limit:
+                            description: The maximum quantity of the `resource_metric` allowed by the quota.
+                            example: 50
+                            type: integer
+                            x-linode-cli-display: 5
+                          quota_name:
+                            description: __Filterable__ The name of the Object Storage-related quota. This is how the quota displays in Akamai Cloud Manager. This can be `Number of Buckets`, `Number of Objects`, or `Total Capacity`.
+                            enum:
+                            - Number of Objects
+                            - Number of Buckets
+                            - Total Capacity
+                            example: Number of Buckets
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 2
+                            x-linode-filterable: true
+                          resource_metric:
+                            description: 'The specific Object Storage-based resource for the quota. A quota maximum may apply as follows:
+
+
+                              - The Object Storage `bucket` quota for a single `s3_endpoint`
+
+
+                              - The `object` quota for a single `s3_endpoint`
+
+
+                              - The `byte` count quota for content in a single `s3_endpoint`'
+                            enum:
+                            - bucket
+                            - object
+                            - byte
+                            example: bucket
+                            type: string
+                            x-linode-cli-display: 4
+                          s3_endpoint:
+                            description: __Filterable__ The URL for the s3 endpoint where the quota applies. Every `s3_endpoint` exists in a specific Akamai Cloud Computing data center (`region`). Run the [List Object Storage endpoints](https://techdocs.akamai.com/linode-api/reference/get-object-storage-endpoints) operation to see more specifics on this `s3_endpoint`.
+                            example: us-sea-9.linodeobjects.com
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 7
+                            x-linode-filterable: true
+                        type: object
+                        x-akamai:
+                          file-path: schemas/object-storage-quota.yaml
+                      type: array
+                  type: object
+                - additionalProperties: false
+                  description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                x-akamai:
+                  file-path: schemas/object-storage-quotas.yaml
+          description: A paginated list of Object Storage-related quotas applied to your account.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: List Object Storage quotas
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quotas-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quotas-list
+      - get-object-storage-quotas
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/object-storage/quotas/{objQuotaId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique string that identifies the specific Object Storage-related quota to look up. This follows the pattern, `obj-<quota_type>-<s3_endpoint>`, for example, `obj-buckets-eu-central-1.linodeobjects.com`.
+      example: '{{objQuotaId}}'
+      in: path
+      name: objQuotaId
+      required: true
+      schema:
+        example: obj-buckets-eu-central-1.linodeobjects.com
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quota.yaml
+      path-info: /{apiVersion}/object-storage/quotas/{objQuotaId}
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns information about a specific Object Storage-related quota on your account. The operation includes any quota overrides in the response.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage quota-view obj-objects-us-ord-1
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota
+      operationId: get-object-storage-quota
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                description: Current number of buckets per account, per endpoint
+                endpoint_type: E1
+                quota_id: obj-buckets-eu-central-1.linodeobjects.com
+                quota_limit: 50
+                quota_name: Number of Buckets
+                resource_metric: bucket
+                s3_endpoint: us-sea-9.linodeobjects.com
+              schema:
+                additionalProperties: false
+                description: The current Object Storage-related quotas on your account.
+                properties:
+                  description:
+                    description: A description for the Object Storage-related quota.
+                    example: Current number of buckets per account, per endpoint
+                    type: string
+                    x-linode-cli-display: 3
+                  endpoint_type:
+                    description: The type of `s3_endpoint`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
+                    enum:
+                    - E0
+                    - E1
+                    - E2
+                    - E3
+                    example: E1
+                    type: string
+                    x-linode-cli-display: 6
+                  quota_id:
+                    description: 'Identifies the Object Storage-related quota. Formatted as `obj-<quota_type>-<s3_endpoint>`, where `<quota_type>` is the `resource_metric` in use: `buckets`, `objects` or `bytes`.'
+                    example: obj-buckets-eu-central-1.linodeobjects.com
+                    type: string
+                    x-linode-cli-display: 1
+                  quota_limit:
+                    description: The maximum quantity of the `resource_metric` allowed by the quota.
+                    example: 50
+                    type: integer
+                    x-linode-cli-display: 5
+                  quota_name:
+                    description: __Filterable__ The name of the Object Storage-related quota. This is how the quota displays in Akamai Cloud Manager. This can be `Number of Buckets`, `Number of Objects`, or `Total Capacity`.
+                    enum:
+                    - Number of Objects
+                    - Number of Buckets
+                    - Total Capacity
+                    example: Number of Buckets
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  resource_metric:
+                    description: 'The specific Object Storage-based resource for the quota. A quota maximum may apply as follows:
+
+
+                      - The Object Storage `bucket` quota for a single `s3_endpoint`
+
+
+                      - The `object` quota for a single `s3_endpoint`
+
+
+                      - The `byte` count quota for content in a single `s3_endpoint`'
+                    enum:
+                    - bucket
+                    - object
+                    - byte
+                    example: bucket
+                    type: string
+                    x-linode-cli-display: 4
+                  s3_endpoint:
+                    description: __Filterable__ The URL for the s3 endpoint where the quota applies. Every `s3_endpoint` exists in a specific Akamai Cloud Computing data center (`region`). Run the [List Object Storage endpoints](https://techdocs.akamai.com/linode-api/reference/get-object-storage-endpoints) operation to see more specifics on this `s3_endpoint`.
+                    example: us-sea-9.linodeobjects.com
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 7
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-quota.yaml
+          description: A single Object Storage-related quota for your account.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get an Object Storage quota
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quota-view obj-objects-us-ord-1
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quota-view
+      - get-object-storage-quota
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/object-storage/quotas/{objQuotaId}/usage:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique string that identifies the specific Object Storage-related quota to look up. This follows the pattern, `obj-<quota_type>-<s3_endpoint>`, for example, `obj-buckets-eu-central-1.linodeobjects.com`.
+      example: '{{objQuotaId}}'
+      in: path
+      name: objQuotaId
+      required: true
+      schema:
+        example: obj-buckets-eu-central-1.linodeobjects.com
+        type: string
+      x-akamai:
+        file-path: parameters/object-storage-quota-id-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-quota-usage.yaml
+      path-info: /{apiVersion}/object-storage/quotas/{objQuotaId}/usage
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns usage data for a specific `objQuotaId`. This includes the maximum number of `objQuotaId` resources you can have for a single endpoint and the current usage for that resource.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage quota-usage-view obj-objects-us-ord-1
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-quota-usage
+      operationId: get-object-storage-quota-usage
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                quota_limit: 100
+                usage: 10
+              schema:
+                additionalProperties: false
+                description: Usage data for a specific Object Storage-related quota on your account.
+                properties:
+                  quota_limit:
+                    description: The availability limit for a specific Object Storage resource (`objQuotaId`) for a single endpoint.
+                    example: 100
+                    type: integer
+                    x-linode-cli-display: 1
+                  usage:
+                    description: The quantity of the Object Storage resource currently in use on an endpoint. Displayed as `null` if no resources are in use.
+                    example: 10
+                    type:
+                    - integer
+                    - 'null'
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/object-storage-quota-usage.yaml
+          description: Usage data for the specified `objQuotaId`.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get Object Storage quota usage data
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage quota-usage-view obj-objects-us-ord-1
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - quota-usage-view
+      - get-object-storage-quota-usage
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/object-storage/transfer:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-transfer.yaml
+      path-info: /{apiVersion}/object-storage/transfer
+    x-linode-cli-command: object-storage
+    get:
+      description: 'The amount of outbound data transfer used by your account''s Object Storage buckets. Object Storage adds 1 terabyte of outbound data transfer to your data transfer pool. See the Object Storage Overview guide for details on Object Storage transfer quotas.
+
+
+        >
+
+
+        ---
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage transfer-view
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-transfer
+      operationId: get-object-storage-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  used:
+                    description: __Read-only__ The amount of outbound data transfer used by your account's Object Storage buckets, in bytes, for the current month's billing cycle.
+                    example: 12956600198
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/get-object-storage-transfer-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-transfer-200.json
+          description: Returns the amount of outbound data transfer used by your account's Object Storage buckets.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - object_storage:read_only
+      summary: Get Object Storage transfer data
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: object_storage:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+        - syntax: linode-cli object-storage transfer-view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - transfer-view
+      - get-object-storage-transfer
+    servers:
+    - url: https://api.linode.com
+  /{apiVersion}/object-storage/types:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/object-storage-types.yaml
+      path-info: /{apiVersion}/object-storage/types
+    x-linode-cli-command: object-storage
+    get:
+      description: 'Returns Object Storage types and prices, including any region-specific rates.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli object-storage types
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-types
+      operationId: get-object-storage-types
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: The Object Storage types.
+                    items:
+                      additionalProperties: false
+                      description: Returns collection of Object Storage types and prices, including any region-specific rates.
+                      properties:
+                        id:
+                          description: __Read-only__ The ID representing the Object Storage type.
+                          example: objectstorage
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        label:
+                          description: __Filterable__, __Read-only__ The Object Storage type label is for display purposes only.
+                          example: Object Storage
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        price:
+                          additionalProperties: false
+                          description: '__Read-only__ The default cost of this Object Storage type. Prices are in US dollars, broken down into hourly and monthly charges.
+
+
+                            Certain regions have different prices from the default. For region-specific prices, see `region_prices`.'
+                          properties:
+                            hourly:
+                              description: __Filterable__ Cost (in US dollars) per hour.
+                              example: 0.0015
+                              type: number
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 3
+                              x-linode-filterable: true
+                            monthly:
+                              description: __Filterable__ Cost per month, in US dollars.
+                              example: 0.1
+                              type: number
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-cli-display: 4
+                              x-linode-filterable: true
+                          readOnly: true
+                          type: object
+                        region_prices:
+                          items:
+                            additionalProperties: false
+                            properties:
+                              hourly:
+                                description: Cost per hour for this region, in US dollars.
+                                example: 0.00018
+                                type: number
+                                x-linode-cli-display: 6
+                              id:
+                                description: The Region ID for these prices.
+                                example: us-east
+                                type: string
+                                x-linode-cli-display: 5
+                              monthly:
+                                description: Cost per month for this region, in US dollars.
+                                example: 0.12
+                                type: number
+                                x-linode-cli-display: 7
+                            type: object
+                          type: array
+                        transfer:
+                          description: __Filterable__, __Read-only__ The monthly outbound transfer amount, in MB.
+                          example: 0
+                          minimum: 0
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 8
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/object-storage-type.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-object-storage-types-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-types-200.json
+          description: A collection of Object Storage types.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List Object Storage types
+      tags:
+      - Object Storage
+      x-akamai:
+        tabs:
+        - syntax: linode-cli object-storage types
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: types
+      x-linode-redoc-load-ids: true
+    servers:
+    - url: https://api.linode.com
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    regionIdParam:
+      name: regionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the region.
+    bucketParam:
+      name: bucket
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The name of the Object Storage bucket.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
+    ObjectStorageBucket:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The name of this bucket.
+        region:
+          type: string
+          description: The region where this bucket is located.
+        created:
+          type: string
+          format: date-time
+          description: When this bucket was created.
+        hostname:
+          type: string
+          description: The hostname for accessing this bucket.
+        objects:
+          type: integer
+          description: The number of objects in this bucket.
+        size:
+          type: integer
+          description: The total size of objects in bytes.
+    PaginatedObjectStorageKeyList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageKey'
     Pagination:
       type: object
       properties:
@@ -145,6 +1224,32 @@ components:
         results:
           type: integer
           description: The total number of results.
+    ObjectStorageEndpointList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+                description: The region ID.
+              endpoint_type:
+                type: string
+                description: The type of endpoint.
+              s3_endpoint:
+                type: string
+                description: The S3-compatible endpoint URL.
+    PaginatedObjectStorageBucketList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/ObjectStorageBucket'
     ObjectStorageKey:
       type: object
       properties:
@@ -181,63 +1286,6 @@ components:
                 - read_write
                 description: The permission level.
           description: Specific bucket access permissions for this key.
-    PaginatedObjectStorageBucketList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ObjectStorageBucket'
-    PaginatedObjectStorageKeyList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/ObjectStorageKey'
-    ObjectStorageBucket:
-      type: object
-      properties:
-        label:
-          type: string
-          description: The name of this bucket.
-        region:
-          type: string
-          description: The region where this bucket is located.
-        created:
-          type: string
-          format: date-time
-          description: When this bucket was created.
-        hostname:
-          type: string
-          description: The hostname for accessing this bucket.
-        objects:
-          type: integer
-          description: The number of objects in this bucket.
-        size:
-          type: integer
-          description: The total size of objects in bytes.
-    ObjectStorageEndpointList:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              region:
-                type: string
-                description: The region ID.
-              endpoint_type:
-                type: string
-                description: The type of endpoint.
-              s3_endpoint:
-                type: string
-                description: The S3-compatible endpoint URL.
     ObjectStorageKeyRequest:
       type: object
       required:
@@ -267,38 +1315,6 @@ components:
                 - read_only
                 - read_write
           description: Specific bucket access permissions.
-  parameters:
-    regionIdParam:
-      name: regionId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The ID of the region.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    bucketParam:
-      name: bucket
-      in: path
-      required: true
-      schema:
-        type: string
-      description: The name of the Object Storage bucket.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http
@@ -340,6 +1356,6 @@ components:
             volumes:read_write: Read and write access to Volumes
             vpc:read_only: Read access to VPCs
             vpc:read_write: Read and write access to VPCs
-externalDocs:
-  description: Linode API v4 Documentation
-  url: https://techdocs.akamai.com/linode-api/reference/api
+x-refined-from:
+- linode-api-v4-openapi.yml
+- linode-openapi.json

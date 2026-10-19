@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Phone number API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -47,26 +50,16 @@ paths:
         Once a verification code is received, verify your phone number with the Verify a phone number operation.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `send_profile_phone_number_verification_code`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli phone sms-code-send \
 
@@ -77,7 +70,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-profile-phone-number
@@ -85,14 +91,11 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              iso_code: US
-              phone_number: 555-555-5555
             schema:
               additionalProperties: false
               properties:
                 iso_code:
-                  description: The two-letter [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country code for the phone number.
+                  description: The two-letter ISO 3166 country code associated with the phone number.
                   example: '{{iso_code}}'
                   type: string
                 phone_number:
@@ -106,29 +109,29 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/post-profile-phone-number.yaml
+            x-example:
+              x-ref: ../examples/post-profile-phone-number.json
+        description: Enter a phone number and country code for verification.
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-profile-phone-number-200.json
           description: Phone number verification code request successful.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -159,11 +162,11 @@ paths:
         - syntax: "linode-cli phone sms-code-send \\\n  --iso-code US \\\n  --phone-number 555-555-5555"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: sms-code-send
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - send_profile_phone_number_verification_code
     delete:
       description: 'Delete the verified phone number for the User making this request.
 
@@ -171,33 +174,36 @@ paths:
         Use this operation to opt out of SMS messages for the requesting User after a phone number has been verified with the Verify a phone number operation.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_profile_phone_number`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli phone delete
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-profile-phone-number
@@ -206,25 +212,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-profile-phone-number-200.json
           description: Phone number deletion request successful.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -255,11 +258,11 @@ paths:
         - syntax: linode-cli phone delete
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: delete
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - delete_profile_phone_number
   /{apiVersion}/profile/phone-number/verify:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -271,7 +274,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -292,26 +294,16 @@ paths:
         Once completed, the verified phone number is assigned to the User making the request. To change the verified phone number for a User, first run the Delete a phone number operation, then begin the verification process again with the Send a phone number verification code operation.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `verify_profile_phone_number`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli phone verify \
 
@@ -320,7 +312,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-profile-phone-number-verify
@@ -328,8 +333,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              otp_code: '318745'
             schema:
               additionalProperties: false
               properties:
@@ -342,29 +345,29 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/post-profile-phone-number-verify.yaml
+            x-example:
+              x-ref: ../examples/post-profile-phone-number-verify.json
+        description: Enter a phone verification code for confirmation.
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-profile-phone-number-verify-200.json
           description: Phone number verification successful.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -395,11 +398,11 @@ paths:
         - syntax: "linode-cli phone verify \\\n  --otp_code 123456"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: verify
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - verify_profile_phone_number
 components:
   securitySchemes:
     oauth:
@@ -409,10 +412,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -429,8 +428,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -449,7 +448,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

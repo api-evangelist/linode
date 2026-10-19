@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode OAuth apps API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,33 +38,36 @@ paths:
       description: 'This is a collection of OAuth apps that you''ve given access to your account, and includes the level of access granted.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_profile_apps`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile apps-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-profile-apps
@@ -95,30 +101,18 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - created: '2018-01-01T00:01:01'
-                  expiry: '2018-01-15T00:01:01'
-                  id: 123
-                  label: example-app
-                  scopes: linodes:read_only
-                  thumbnail_url: null
-                  website: example.org
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: Applications that have been authorized to access your account through OAuth.
                     items:
                       additionalProperties: false
-                      description: An application that's authorized to access your account through OAuth.
+                      description: An application you have authorized access to your Account through OAuth.
                       properties:
                         created:
                           description: __Filterable__, __Read-only__ When this app was authorized.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-akamai:
@@ -129,6 +123,7 @@ paths:
                         expiry:
                           description: __Filterable__, __Read-only__ When the app's access to your account expires. If `null`, the app's access must be revoked manually.
                           example: '2018-01-15T00:01:01'
+                          format: date-time
                           readOnly: true
                           type:
                           - string
@@ -172,6 +167,7 @@ paths:
                         website:
                           description: __Read-only__ The website where you can get more information about this app.
                           example: example.org
+                          format: url
                           readOnly: true
                           type: string
                           x-linode-cli-display: 4
@@ -197,18 +193,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-profile-apps-200.yaml
+              x-example:
+                x-ref: ../examples/get-profile-apps-200.json
           description: A paginated list of apps you've authorized.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -239,10 +233,10 @@ paths:
         - syntax: linode-cli profile apps-list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: apps-list
-      x-linode-iam:
-      - permissions:
-        - list_profile_apps
   /{apiVersion}/profile/apps/{appId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -254,7 +248,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -276,33 +269,36 @@ paths:
       description: 'Returns information about a single app you''ve authorized to access your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_profile_app`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile app-view 1234
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-profile-app
@@ -311,21 +307,14 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2018-01-01T00:01:01'
-                expiry: '2018-01-15T00:01:01'
-                id: 123
-                label: example-app
-                scopes: linodes:read_only
-                thumbnail_url: null
-                website: example.org
               schema:
                 additionalProperties: false
-                description: An application that's authorized to access your account through OAuth.
+                description: An application you have authorized access to your Account through OAuth.
                 properties:
                   created:
                     description: __Filterable__, __Read-only__ When this app was authorized.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -336,6 +325,7 @@ paths:
                   expiry:
                     description: __Filterable__, __Read-only__ When the app's access to your account expires. If `null`, the app's access must be revoked manually.
                     example: '2018-01-15T00:01:01'
+                    format: date-time
                     readOnly: true
                     type:
                     - string
@@ -379,24 +369,23 @@ paths:
                   website:
                     description: __Read-only__ The website where you can get more information about this app.
                     example: example.org
+                    format: url
                     readOnly: true
                     type: string
                     x-linode-cli-display: 4
                 type: object
                 x-akamai:
                   file-path: schemas/authorized-app.yaml
+              x-example:
+                x-ref: ../examples/get-profile-app-200.json
           description: The app requested.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -427,41 +416,44 @@ paths:
         - syntax: linode-cli profile app-view 1234
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: app-view
-      x-linode-iam:
-      - permissions:
-        - view_profile_app
     delete:
       description: 'Expires this app token. This token can no longer be used to access your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `revoke_profile_app`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile app-delete 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-profile-app
@@ -470,25 +462,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-profile-app-200.json
           description: App's authorization has been revoked.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -519,10 +508,10 @@ paths:
         - syntax: linode-cli profile app-delete 123
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: app-delete
-      x-linode-iam:
-      - permissions:
-        - revoke_profile_app
 components:
   securitySchemes:
     oauth:
@@ -532,10 +521,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -552,8 +537,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -572,7 +557,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Invoices API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,120 +38,106 @@ paths:
       description: 'Returns a paginated list of invoices against your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_billing_invoices`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account invoices-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-invoices
       operationId: get-invoices
       parameters:
-      - content:
-          application/json:
-            schema:
-              description: Specifies the `X-Filter` header JSON object's filtering and sort criteria.
-              oneOf:
-              - additionalProperties:
-                  type: string
-                description: Specify the name of the data field and the accompanying value.
-                example:
-                  region: us-east
-                title: Simple filter
-                type: object
-                x-akamai:
-                  file-path: schemas/x-filter-criteria.yaml
-              - example:
-                  +or:
-                  - region: us-east
-                  - label: linode123
-                properties:
-                  +and:
-                    description: All conditions need to be true.
-                    items:
-                      additionalProperties:
-                        type: string
-                      description: Specify the name of the data field and the accompanying value.
-                      example:
-                        region: us-east
-                      title: Simple filter
-                      type: object
-                      x-akamai:
-                        file-path: schemas/x-filter-criteria.yaml
-                    type: array
-                  +contains:
-                    description: The provided string needs to be in the value.
-                    type: string
-                  +gt:
-                    description: The value needs to be greater than the provided number.
-                    type: number
-                  +gte:
-                    description: The value needs to be greater than or equal to the provided number.
-                    type: number
-                  +lt:
-                    description: The value needs to be less than the provided number.
-                    type: number
-                  +lte:
-                    description: The value needs to be less than or equal to the provided number.
-                    type: number
-                  +neq:
-                    description: The provided string is left out of the results.
-                    type: string
-                  +or:
-                    description: At least one condition needs to be true.
-                    items:
-                      additionalProperties:
-                        type: string
-                      description: Specify the name of the data field and the accompanying value.
-                      example:
-                        region: us-east
-                      title: Simple filter
-                      type: object
-                      x-akamai:
-                        file-path: schemas/x-filter-criteria.yaml
-                    type: array
-                  +order:
-                    default: asc
-                    description: Sort in ascending (`asc`) or descending (`desc`) order. This defaults to `asc`. Requires `+order_by`.
-                    enum:
-                    - asc
-                    - desc
-                    type: string
-                  +order_by:
-                    description: Order results based on the provided attribute. The attribute needs to be filterable.
-                    type: string
-                title: Filter and sort criteria
-                type: object
-              x-akamai:
-                file-path: schemas/x-filter.yaml
-        description: Specifies a JSON object to filter down the results. See [Filtering and sorting](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) for details.
+      - description: Specifies a JSON object to filter down the results. See [Filtering and sorting](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) for details.
         example: '{{X-Filter}}'
         in: header
         name: X-Filter
         required: false
+        schema:
+          description: Specifies the `X-Filter` header JSON object's filtering and sort criteria.
+          oneOf:
+          - description: Specify the name of the data field and the accompanying value.
+            title: Simple filter
+            type: object
+            x-akamai:
+              file-path: schemas/x-filter-criteria.yaml
+          - additionalProperties: false
+            properties:
+              +and:
+                description: All conditions need to be true.
+                items:
+                  description: Specify the name of the data field and the accompanying value.
+                  title: Simple filter
+                  type: object
+                  x-akamai:
+                    file-path: schemas/x-filter-criteria.yaml
+                type: array
+              +contains:
+                description: The provided string needs to be in the value.
+                type: string
+              +gt:
+                description: The value needs to be greater than the provided number.
+                type: number
+              +gte:
+                description: The value needs to be greater than or equal to the provided number.
+                type: number
+              +lt:
+                description: The value needs to be less than the provided number.
+                type: number
+              +lte:
+                description: The value needs to be less than or equal to the provided number.
+                type: number
+              +neq:
+                description: The provided string is left out of the results.
+                type: string
+              +or:
+                description: At least one condition needs to be true.
+                items:
+                  description: Specify the name of the data field and the accompanying value.
+                  title: Simple filter
+                  type: object
+                  x-akamai:
+                    file-path: schemas/x-filter-criteria.yaml
+                type: array
+              +order:
+                default: asc
+                description: Sort in ascending (`asc`) or descending (`desc`) order. This defaults to `asc`. Requires `+order_by`.
+                enum:
+                - asc
+                - desc
+                type: string
+              +order_by:
+                description: Order results based on the provided attribute. The attribute needs to be filterable.
+                type: string
+            title: Filter and sort criteria
+            type: object
+          x-akamai:
+            file-path: schemas/x-filter.yaml
         x-akamai:
           file-path: parameters/x-filter-header.yaml
       - description: The page of a collection to return.
@@ -179,21 +168,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - billing_source: linode
-                  date: '2018-01-01T00:01:01'
-                  id: 123
-                  label: Invoice
-                  subtotal: 120.25
-                  tax: 12.25
-                  tax_summary:
-                  - name: PA STATE TAX
-                    tax: 12.25
-                  total: 132.5
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -302,18 +276,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-invoices-200.yaml
+              x-example:
+                x-ref: ../examples/get-invoices-200.json
           description: Returns a paginated list of Invoice objects.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -344,11 +316,11 @@ paths:
         - syntax: linode-cli account invoices-list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: invoices-list
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_billing_invoices
   /{apiVersion}/account/invoices/{invoiceId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -360,7 +332,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -382,33 +353,36 @@ paths:
       description: 'Returns a single Invoice object.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_billing_invoice`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account invoice-view 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-invoice
@@ -417,17 +391,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                billing_source: linode
-                date: '2018-01-01T00:01:01'
-                id: 123
-                label: Invoice
-                subtotal: 120.25
-                tax: 12.25
-                tax_summary:
-                - name: PA STATE TAX
-                  tax: 12.25
-                total: 132.5
               schema:
                 additionalProperties: false
                 description: Account Invoice object.
@@ -513,18 +476,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/invoice.yaml
+              x-example:
+                x-ref: ../examples/get-invoice-200.json
           description: An Invoice object.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -555,11 +516,11 @@ paths:
         - syntax: linode-cli account invoice-view 123
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: invoice-view
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_billing_invoice
   /{apiVersion}/account/invoices/{invoiceId}/items:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -571,7 +532,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -586,40 +546,43 @@ paths:
       x-akamai:
         file-path: parameters/invoice-id-path.yaml
     x-akamai:
-      file-path: paths/invoice-items.yaml
+      file-path: paths/items.yaml
       path-info: /{apiVersion}/account/invoices/{invoiceId}/items
     x-linode-cli-command: account
     get:
       description: 'Returns a paginated list of Invoice items.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_invoice_items`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account invoice-items 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-invoice-items
@@ -653,21 +616,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - amount: 20.2
-                  from: '2018-01-01T00:01:01'
-                  label: Linode 123
-                  quantity: 4
-                  region: us-west
-                  tax: 1.25
-                  to: '2018-01-31T11:59:59'
-                  total: 21.45
-                  type: hourly
-                  unit_price: 5.05
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -765,18 +713,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-invoice-items-200.yaml
+              x-example:
+                x-ref: ../examples/get-invoice-items-200.json
           description: A paginated list of InvoiceItem objects.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -807,11 +753,11 @@ paths:
         - syntax: linode-cli account invoice-items 123
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: invoice-items
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_invoice_items
 components:
   securitySchemes:
     oauth:
@@ -821,10 +767,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -841,8 +783,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -861,7 +803,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

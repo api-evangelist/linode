@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Linode API v4 Linode Kubernetes Engine (LKE) API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -215,88 +215,7 @@ paths:
                       $ref: '#/components/schemas/KubernetesVersion'
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
-    LKECluster:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this LKE cluster.
-        label:
-          type: string
-          description: The label for this cluster.
-        region:
-          type: string
-          description: The region where this cluster is located.
-        k8s_version:
-          type: string
-          description: The Kubernetes version for this cluster.
-        status:
-          type: string
-          enum:
-          - ready
-          - not_ready
-          description: The current status of the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for this cluster.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether the control plane is highly available.
-          description: Control plane configuration for this cluster.
-        created:
-          type: string
-          format: date-time
-          description: When this cluster was created.
-        updated:
-          type: string
-          format: date-time
-          description: When this cluster was last updated.
-    LKEClusterUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the cluster.
-        k8s_version:
-          type: string
-          description: The target Kubernetes version.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether to enable high availability.
-    KubernetesVersion:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The Kubernetes version string.
-    PaginatedLKEClusterList:
+    PaginatedNodePoolList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -304,7 +223,7 @@ components:
           data:
             type: array
             items:
-              $ref: '#/components/schemas/LKECluster'
+              $ref: '#/components/schemas/NodePool'
     NodePoolRequest:
       type: object
       required:
@@ -330,7 +249,41 @@ components:
             max:
               type: integer
               description: The maximum number of nodes.
-    PaginatedNodePoolList:
+    LKEClusterUpdateRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the cluster.
+        k8s_version:
+          type: string
+          description: The target Kubernetes version.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether to enable high availability.
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
+    PaginatedLKEClusterList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
       - type: object
@@ -338,42 +291,7 @@ components:
           data:
             type: array
             items:
-              $ref: '#/components/schemas/NodePool'
-    LKEClusterRequest:
-      type: object
-      required:
-      - label
-      - region
-      - k8s_version
-      - node_pools
-      properties:
-        label:
-          type: string
-          minLength: 1
-          maxLength: 32
-          description: The label for the new cluster.
-        region:
-          type: string
-          description: The region for the cluster.
-        k8s_version:
-          type: string
-          description: The Kubernetes version for the cluster.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the cluster.
-        node_pools:
-          type: array
-          items:
-            $ref: '#/components/schemas/NodePoolRequest'
-          description: Node pool configurations for the cluster.
-        control_plane:
-          type: object
-          properties:
-            high_availability:
-              type: boolean
-              description: Whether to enable high availability for the control plane.
+              $ref: '#/components/schemas/LKECluster'
     NodePool:
       type: object
       properties:
@@ -417,7 +335,98 @@ components:
               type: integer
               description: The maximum number of nodes.
           description: Autoscaler configuration for this pool.
+    LKECluster:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this LKE cluster.
+        label:
+          type: string
+          description: The label for this cluster.
+        region:
+          type: string
+          description: The region where this cluster is located.
+        k8s_version:
+          type: string
+          description: The Kubernetes version for this cluster.
+        status:
+          type: string
+          enum:
+          - ready
+          - not_ready
+          description: The current status of the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for this cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether the control plane is highly available.
+          description: Control plane configuration for this cluster.
+        created:
+          type: string
+          format: date-time
+          description: When this cluster was created.
+        updated:
+          type: string
+          format: date-time
+          description: When this cluster was last updated.
+    LKEClusterRequest:
+      type: object
+      required:
+      - label
+      - region
+      - k8s_version
+      - node_pools
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: The label for the new cluster.
+        region:
+          type: string
+          description: The region for the cluster.
+        k8s_version:
+          type: string
+          description: The Kubernetes version for the cluster.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the cluster.
+        node_pools:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodePoolRequest'
+          description: Node pool configurations for the cluster.
+        control_plane:
+          type: object
+          properties:
+            high_availability:
+              type: boolean
+              description: Whether to enable high availability for the control plane.
+    KubernetesVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The Kubernetes version string.
   parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
     clusterIdParam:
       name: clusterId
       in: path
@@ -433,15 +442,6 @@ components:
         minimum: 1
         default: 1
       description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

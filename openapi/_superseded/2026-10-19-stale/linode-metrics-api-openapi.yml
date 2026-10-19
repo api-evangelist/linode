@@ -1,0 +1,2743 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Metrics API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Akamai Cloud Pulse automatically collects and stores performance metrics for your cloud services. You can view them through dashboards and inspect them at the entity level. Metrics data provides insights into the health, behavior, and performance of your cloud resources.
+  name: Metrics
+paths:
+  /{apiVersion}/monitor/dashboards:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/aclp-get-all-dashboards.yaml
+      path-info: /{apiVersion}/monitor/dashboards
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns all available dashboards.
+
+
+        > 📘
+
+        >
+
+        > This operation has a specific rate limit.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor dashboards-list-all
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-dashboards-all
+      operationId: get-dashboards-all
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2024-10-10T05:01:58'
+                  group_by:
+                  - entity_id
+                  - node_type
+                  id: 1
+                  label: Resource Usage
+                  service_type: dbaas
+                  type: standard
+                  updated: '2024-10-10T05:01:58'
+                  widgets:
+                  - aggregate_function: sum
+                    chart_type: area
+                    color: default
+                    description: Percentage of the available CPU capacity used by the Linode hosting the database
+                    group_by:
+                    - entity_id
+                    label: CPU Usage
+                    metric: cpu_usage
+                    size: 12
+                    unit: '%'
+                    widget_grouping: CPU
+                    y_label: cpu_usage
+                  - aggregate_function: sum
+                    chart_type: area
+                    color: default
+                    description: Number of write operations a storage disk can perform per second
+                    label: Disk I/O Write
+                    metric: write_iops
+                    size: 6
+                    unit: IOPS
+                    y_label: write_iops
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - additionalProperties: false
+                  properties:
+                    data:
+                      description: A list of objects returned for a response.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          created:
+                            description: __Read-only__ When the dashboard was created.
+                            example: '2026-05-10T05:01:58Z'
+                            format: date-time
+                            readOnly: true
+                            type: string
+                          description:
+                            description: A brief description of the dashboard.
+                            example: Percentage of the available CPU capacity used by the Linode hosting the database
+                            type: string
+                          group_by:
+                            description: '__Read-only__ This dashboard''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension supported for a specific `service_type`, or a combination of the two. For example, if this lists `[“entity_id”, "node_type"]`, all `widget` data in the dashboard is aggregated based on the `entity_id` as well as the `node_type` dimension, which is available for a `service_type` of `dbaas`.
+
+
+                              Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                            example:
+                            - entity_id
+                            items:
+                              type: string
+                            readOnly: true
+                            type: array
+                          id:
+                            description: The unique identifier for the dashboard.
+                            example: 1
+                            type: integer
+                          label:
+                            description: The name of the dashboard. This is used for display purposes in Akamai Cloud Manager.
+                            example: Resource Usage
+                            type: string
+                          service_type:
+                            description: The Akamai Cloud Computing service used by this dashboard.
+                            example: dbaas
+                            type: string
+                          type:
+                            description: The type of dashboard. Currently, this can only be `standard` for a dashboard that uses default formatting.
+                            enum:
+                            - standard
+                            example: standard
+                            type: string
+                          updated:
+                            description: __Read-only__ When the dashboard was last updated.
+                            example: '2026-05-12T08:15:37Z'
+                            format: date-time
+                            readOnly: true
+                            type: string
+                          widgets:
+                            description: The widgets used in the dashboard.
+                            items:
+                              additionalProperties: false
+                              properties:
+                                aggregate_function:
+                                  default: avg
+                                  description: The aggregate function for the metric. This can be `min` for minimum, `max` for maximum, `avg` for average, `sum` for the sum total, or `rate` for the individual rate.
+                                  enum:
+                                  - min
+                                  - max
+                                  - avg
+                                  - sum
+                                  - rate
+                                  example: avg
+                                  type: string
+                                chart_type:
+                                  description: The type of chart used in the widget. This can be `line` for a line chart or `area` for an area chart.
+                                  enum:
+                                  - line
+                                  - area
+                                  example: line
+                                  type: string
+                                color:
+                                  description: The color used in the widget.
+                                  example: red
+                                  type: string
+                                description:
+                                  description: A brief description of the widget.
+                                  example: Percentage of the available CPU capacity used by the Linode hosting the database
+                                  type: string
+                                group_by:
+                                  description: '__Read-only__ This widget''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension for a specific `service_type` that apply to the widget, or a combination of the two. For example, if this lists `["node_type"]`, all `widget` data in the dashboard is aggregated based on the the specific `node_type` for each entity. This `group_by` works in conjunction with a `group_by` set for the entire `dashboard`.
+
+
+                                    Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                                  example:
+                                  - entity_id
+                                  items:
+                                    type: string
+                                  readOnly: true
+                                  type: array
+                                label:
+                                  description: The name of the widget. This is used for display purposes in Akamai Cloud Manager.
+                                  example: CPU Usage
+                                  type: string
+                                metric:
+                                  description: The metric that the widget queries.
+                                  example: cpu_usage
+                                  type: string
+                                size:
+                                  description: The size of the widget. This can be `6` or `12` grid units, expressed as strings.
+                                  enum:
+                                  - '6'
+                                  - '12'
+                                  example: '6'
+                                  type: string
+                                unit:
+                                  description: The unit of the metric. This can be `%` for percentage, `Bytes` for individual bytes, `sec` for time in seconds, `bps` for bits per second, `msec` for milliseconds, `Bps` for bytes per second, `KB` for kilobytes, `MB` for megabytes, `GB` for gigabyte, `rate` for a specific rate, `percentile` for a relative rank compared to a group, `ratio` for a comparison of two quantities, `OPS` for operations per second, or `IOPS` for input/output operations per second.
+                                  enum:
+                                  - '%'
+                                  - Bytes
+                                  - sec
+                                  - bps
+                                  - msec
+                                  - Bps
+                                  - KB
+                                  - MB
+                                  - GB
+                                  - rate
+                                  - percentile
+                                  - ratio
+                                  - OPS
+                                  - IOPS
+                                  example: Bps
+                                  type: string
+                                widget_grouping:
+                                  description: 'The name of the group that the `widget` belongs to. A `widget_group` gathers related widgets into named sections within a dashboard. These points apply:
+
+
+                                    - Currently, widget groups are preset by Akamai.
+
+
+                                    - This field only applies if the `service_type` has `widget_grouping` configured for its widgets. Otherwise, this field is left out of the response.
+
+
+                                    - If a `service_type` supports `widget_grouping`, all of its widgets are either grouped or ungrouped. The API response never contains a mix of grouped and ungrouped widgets for a single `service_type`.'
+                                  example: CPU
+                                  type: string
+                                y_label:
+                                  description: The label for the y-axis in the widget's chart.
+                                  example: Usage
+                                  type: string
+                              type: object
+                            type: array
+                        required:
+                        - id
+                        - type
+                        - service_type
+                        - label
+                        - created
+                        - updated
+                        - widgets
+                        type: object
+                        x-akamai:
+                          file-path: schemas/aclp-dashboard.yaml
+                      type: array
+                  type: object
+                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                x-akamai:
+                  file-path: schemas/aclp-dashboards.yaml
+          description: Returns a paginated list of dashboards.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: List dashboards
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor dashboards-list-all
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: dashboards-list-all
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/dashboards/{dashboardId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The unique identifier of the dashboard.
+      example: '{{dashboardId}}'
+      in: path
+      name: dashboardId
+      required: true
+      schema:
+        example: 12345
+        type: integer
+      x-akamai:
+        file-path: parameters/aclp-dashboard-id.yaml
+    x-akamai:
+      file-path: paths/aclp-get-dashboard-by-id.yaml
+      path-info: /{apiVersion}/monitor/dashboards/{dashboardId}
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns a specific dashboard, based on its unique identifier.
+
+
+        > 📘
+
+        >
+
+        > This operation has a specific rate limit.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor dashboards-view 1
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-dashboards-by-id
+      operationId: get-dashboards-by-id
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2024-10-10T05:01:58'
+                group_by:
+                - entity_id
+                - node_type
+                id: 1
+                label: Resource Usage
+                service_type: dbaas
+                type: standard
+                updated: '2024-10-10T05:01:58'
+                widgets:
+                - aggregate_function: sum
+                  chart_type: area
+                  color: default
+                  description: Percentage of the available CPU capacity used by the Linode hosting the database
+                  group_by:
+                  - entity_id
+                  label: CPU Usage
+                  metric: cpu_usage
+                  size: 12
+                  unit: '%'
+                  widget_grouping: CPU
+                  y_label: cpu_usage
+                - aggregate_function: sum
+                  chart_type: area
+                  color: default
+                  description: Amount of memory available to be allocated to new or existing processes
+                  label: Available Memory
+                  metric: available_memory
+                  size: 6
+                  unit: GB
+                  y_label: available_memory
+              schema:
+                additionalProperties: false
+                properties:
+                  created:
+                    description: __Read-only__ When the dashboard was created.
+                    example: '2026-05-10T05:01:58Z'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  description:
+                    description: A brief description of the dashboard.
+                    example: Percentage of the available CPU capacity used by the Linode hosting the database
+                    type: string
+                  group_by:
+                    description: '__Read-only__ This dashboard''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension supported for a specific `service_type`, or a combination of the two. For example, if this lists `[“entity_id”, "node_type"]`, all `widget` data in the dashboard is aggregated based on the `entity_id` as well as the `node_type` dimension, which is available for a `service_type` of `dbaas`.
+
+
+                      Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                    example:
+                    - entity_id
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                  id:
+                    description: The unique identifier for the dashboard.
+                    example: 1
+                    type: integer
+                  label:
+                    description: The name of the dashboard. This is used for display purposes in Akamai Cloud Manager.
+                    example: Resource Usage
+                    type: string
+                  service_type:
+                    description: The Akamai Cloud Computing service used by this dashboard.
+                    example: dbaas
+                    type: string
+                  type:
+                    description: The type of dashboard. Currently, this can only be `standard` for a dashboard that uses default formatting.
+                    enum:
+                    - standard
+                    example: standard
+                    type: string
+                  updated:
+                    description: __Read-only__ When the dashboard was last updated.
+                    example: '2026-05-12T08:15:37Z'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  widgets:
+                    description: The widgets used in the dashboard.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        aggregate_function:
+                          default: avg
+                          description: The aggregate function for the metric. This can be `min` for minimum, `max` for maximum, `avg` for average, `sum` for the sum total, or `rate` for the individual rate.
+                          enum:
+                          - min
+                          - max
+                          - avg
+                          - sum
+                          - rate
+                          example: avg
+                          type: string
+                        chart_type:
+                          description: The type of chart used in the widget. This can be `line` for a line chart or `area` for an area chart.
+                          enum:
+                          - line
+                          - area
+                          example: line
+                          type: string
+                        color:
+                          description: The color used in the widget.
+                          example: red
+                          type: string
+                        description:
+                          description: A brief description of the widget.
+                          example: Percentage of the available CPU capacity used by the Linode hosting the database
+                          type: string
+                        group_by:
+                          description: '__Read-only__ This widget''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension for a specific `service_type` that apply to the widget, or a combination of the two. For example, if this lists `["node_type"]`, all `widget` data in the dashboard is aggregated based on the the specific `node_type` for each entity. This `group_by` works in conjunction with a `group_by` set for the entire `dashboard`.
+
+
+                            Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                          example:
+                          - entity_id
+                          items:
+                            type: string
+                          readOnly: true
+                          type: array
+                        label:
+                          description: The name of the widget. This is used for display purposes in Akamai Cloud Manager.
+                          example: CPU Usage
+                          type: string
+                        metric:
+                          description: The metric that the widget queries.
+                          example: cpu_usage
+                          type: string
+                        size:
+                          description: The size of the widget. This can be `6` or `12` grid units, expressed as strings.
+                          enum:
+                          - '6'
+                          - '12'
+                          example: '6'
+                          type: string
+                        unit:
+                          description: The unit of the metric. This can be `%` for percentage, `Bytes` for individual bytes, `sec` for time in seconds, `bps` for bits per second, `msec` for milliseconds, `Bps` for bytes per second, `KB` for kilobytes, `MB` for megabytes, `GB` for gigabyte, `rate` for a specific rate, `percentile` for a relative rank compared to a group, `ratio` for a comparison of two quantities, `OPS` for operations per second, or `IOPS` for input/output operations per second.
+                          enum:
+                          - '%'
+                          - Bytes
+                          - sec
+                          - bps
+                          - msec
+                          - Bps
+                          - KB
+                          - MB
+                          - GB
+                          - rate
+                          - percentile
+                          - ratio
+                          - OPS
+                          - IOPS
+                          example: Bps
+                          type: string
+                        widget_grouping:
+                          description: 'The name of the group that the `widget` belongs to. A `widget_group` gathers related widgets into named sections within a dashboard. These points apply:
+
+
+                            - Currently, widget groups are preset by Akamai.
+
+
+                            - This field only applies if the `service_type` has `widget_grouping` configured for its widgets. Otherwise, this field is left out of the response.
+
+
+                            - If a `service_type` supports `widget_grouping`, all of its widgets are either grouped or ungrouped. The API response never contains a mix of grouped and ungrouped widgets for a single `service_type`.'
+                          example: CPU
+                          type: string
+                        y_label:
+                          description: The label for the y-axis in the widget's chart.
+                          example: Usage
+                          type: string
+                      type: object
+                    type: array
+                required:
+                - id
+                - type
+                - service_type
+                - label
+                - created
+                - updated
+                - widgets
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-dashboard.yaml
+          description: Returns a dashboard.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: Get a dashboard
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor dashboards-view 1
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: dashboards-view
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/services:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/aclp-get-metric-definitions.yaml
+      path-info: /{apiVersion}/monitor/services
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns a paginated list of all current supported service types.
+
+
+        > 📘
+
+        >
+
+        > This operation has a specific rate limit.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor service-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-monitor-services
+      operationId: get-monitor-services
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - label: Databases
+                  service_type: dbaas
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        label:
+                          description: The full name of Akamai Cloud Computing service. This is used for display purposes in Akamai Cloud Manager.
+                          example: Databases
+                          type: string
+                        service_type:
+                          description: The identifier for the Akamai Cloud Computing service. Use this value to call out the service in other Monitor operations in the API.
+                          example: dbaas
+                          type: string
+                      type: object
+                    type: array
+                  page:
+                    description: The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  pages:
+                    description: The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  results:
+                    description: The total number of results.
+                    example: 1
+                    type: integer
+                required:
+                - data
+                - page
+                - pages
+                - results
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-monitor-services.yaml
+          description: Returns a paginated list of metric definitions.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: List supported service types
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor service-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-list
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/services/{serviceType}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The Akamai Cloud Computing service being monitored. To see your currently supported services, run the [List supported service types](https://techdocs.akamai.com/linode-api/reference/get-monitor-services) operation and store the appropriate `service_type`.
+      example: '{{serviceType}}'
+      in: path
+      name: serviceType
+      required: true
+      schema:
+        example: dbaas
+        type: string
+      x-akamai:
+        file-path: parameters/aclp-service-type.yaml
+    x-akamai:
+      file-path: paths/aclp-get-metric-definition-for-service-type.yaml
+      path-info: /{apiVersion}/monitor/services/{serviceType}
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns details for a specific service type.
+
+
+        > 📘
+
+        >
+
+        > - This operation has a specific rate limit.
+
+        >
+
+        > - For more details on the metrics available for each service, see the Metrics reference.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor service-view dbaas
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-monitor-services-for-service-type
+      operationId: get-monitor-services-for-service-type
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - label: Databases
+                  service_type: dbaas
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        label:
+                          description: The full name of Akamai Cloud Computing service. This is used for display purposes in Akamai Cloud Manager.
+                          example: Databases
+                          type: string
+                        service_type:
+                          description: The identifier for the Akamai Cloud Computing service. Use this value to call out the service in other Monitor operations in the API.
+                          example: dbaas
+                          type: string
+                      type: object
+                    type: array
+                  page:
+                    description: The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  pages:
+                    description: The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  results:
+                    description: The total number of results.
+                    example: 1
+                    type: integer
+                required:
+                - data
+                - page
+                - pages
+                - results
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-monitor-services-for-service-type.yaml
+          description: Returns a paginated list of metric definitions.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: Get details for a supported service type
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor service-view dbaas
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-view
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/services/{serviceType}/dashboards:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The Akamai Cloud Computing service being monitored. To see your currently supported services, run the [List supported service types](https://techdocs.akamai.com/linode-api/reference/get-monitor-services) operation and store the appropriate `service_type`.
+      example: '{{serviceType}}'
+      in: path
+      name: serviceType
+      required: true
+      schema:
+        example: dbaas
+        type: string
+      x-akamai:
+        file-path: parameters/aclp-service-type.yaml
+    x-akamai:
+      file-path: paths/aclp-get-dashboards-by-service-type.yaml
+      path-info: /{apiVersion}/monitor/services/{serviceType}/dashboards
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns all available dashboards for a given service type.
+
+
+        > 📘
+
+        >
+
+        > This operation has a specific rate limit.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor dashboards-list dbaas
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-dashboards
+      operationId: get-dashboards
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2024-10-10T05:01:58'
+                  group_by:
+                  - entity_id
+                  - node_type
+                  id: 1
+                  label: Resource Usage
+                  service_type: dbaas
+                  type: standard
+                  updated: '2024-10-10T05:01:58'
+                  widgets:
+                  - aggregate_function: sum
+                    chart_type: area
+                    color: default
+                    description: Percentage of the available CPU capacity used by the Linode hosting the database
+                    group_by:
+                    - entity_id
+                    label: CPU Usage
+                    metric: cpu_usage
+                    size: 12
+                    unit: '%'
+                    widget_grouping: CPU
+                    y_label: cpu_usage
+                  - aggregate_function: sum
+                    chart_type: area
+                    color: default
+                    label: Memory Usage
+                    metric: memory_usage
+                    size: 6
+                    unit: '%'
+                    y_label: memory_usage
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        created:
+                          description: __Read-only__ When the dashboard was created.
+                          example: '2026-05-10T05:01:58Z'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        group_by:
+                          description: '__Read-only__ This dashboard''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension supported for a specific `service_type`, or a combination of the two. For example, if this lists `[“entity_id”, "node_type"]`, all `widget` data in the dashboard is aggregated based on the `entity_id` as well as the `node_type` dimension, which is available for a `service_type` of `dbaas`.
+
+
+                            Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                          example:
+                          - entity_id
+                          items:
+                            type: string
+                          readOnly: true
+                          type: array
+                        id:
+                          description: The unique identifier for the dashboard.
+                          example: 1
+                          type: integer
+                        label:
+                          description: The name of the dashboard. This is used for display purposes in Akamai Cloud Manager.
+                          example: Resource Usage
+                          type: string
+                        service_type:
+                          description: The Akamai Cloud Computing service used by this dashboard.
+                          example: dbaas
+                          type: string
+                        type:
+                          description: The type of dashboard. Currently, this can only be `standard` for a dashboard that uses default formatting.
+                          enum:
+                          - standard
+                          example: standard
+                          type: string
+                        updated:
+                          description: __Read-only__ When the dashboard was last updated.
+                          example: '2026-05-12T08:15:37Z'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        widgets:
+                          description: The widgets used in the dashboard.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              aggregate_function:
+                                default: avg
+                                description: The aggregate function for the metric. This can be `min` for minimum, `max` for maximum, `avg` for average, `sum` for the sum total, `rate` for the individual rate, or `increase` to measure a specific gain.
+                                enum:
+                                - min
+                                - max
+                                - avg
+                                - sum
+                                - rate
+                                - increase
+                                example: avg
+                                type: string
+                              chart_type:
+                                description: The type of chart used in the widget. This can be `line` for a line chart or `area` for an area chart.
+                                enum:
+                                - line
+                                - area
+                                example: line
+                                type: string
+                              color:
+                                description: The color used in the widget.
+                                example: red
+                                type: string
+                              description:
+                                description: A brief description of the widget.
+                                example: Percentage of the available CPU capacity used by the Linode hosting the database
+                                type: string
+                              group_by:
+                                description: '__Read-only__ This widget''s data is evaluated and aggregated based on listed values. This can be `entity_id` to aggregate based on each individual entity, any dimension for a specific `service_type` that apply to the widget, or a combination of the two. For example, if this lists `["node_type"]`, all `widget` data in the dashboard is aggregated based on the the specific `node_type` for each entity. This `group_by` works in conjunction with a `group_by` set for the entire `dashboard`.
+
+
+                                  Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation for information on available `dimension_label` values for each supported `service_type`.'
+                                example:
+                                - entity_id
+                                items:
+                                  type: string
+                                readOnly: true
+                                type: array
+                              label:
+                                description: The name of the widget. This is used for display purposes in Akamai Cloud Manager.
+                                example: CPU Usage
+                                type: string
+                              metric:
+                                description: The metric that the widget queries.
+                                example: cpu_usage
+                                type: string
+                              size:
+                                description: The size of the widget. This can be `6` or `12` grid units, expressed as strings.
+                                enum:
+                                - '6'
+                                - '12'
+                                example: '6'
+                                type: string
+                              unit:
+                                description: The unit of the metric. This can be `%` for percentage, `Bytes` for individual bytes, `sec` for time in seconds, `bps` for bits per second, `msec` for milliseconds, `Bps` for bytes per second, `KB` for kilobytes, `MB` for megabytes, `GB` for gigabyte, `rate` for a specific rate, `percentile` for a relative rank compared to a group, `ratio` for a comparison of two quantities, `OPS` for operations per second, or `IOPS` for input/output operations per second.
+                                enum:
+                                - '%'
+                                - Bytes
+                                - sec
+                                - bps
+                                - msec
+                                - Bps
+                                - KB
+                                - MB
+                                - GB
+                                - rate
+                                - percentile
+                                - ratio
+                                - OPS
+                                - IOPS
+                                example: Bps
+                                type: string
+                              widget_grouping:
+                                description: 'The name of the group that the `widget` belongs to. A `widget_group` gathers related widgets into named sections within a dashboard. These points apply:
+
+
+                                  - Currently, widget groups are preset by Akamai.
+
+
+                                  - This field only applies if the `service_type` has `widget_grouping` configured for its widgets. Otherwise, this field is left out of the response.
+
+
+                                  - If a `service_type` supports `widget_grouping`, all of its widgets are either grouped or ungrouped. The API response never contains a mix of grouped and ungrouped widgets for a single `service_type`.'
+                                example: CPU
+                                type: string
+                              y_label:
+                                description: The label for the y-axis in the widget's chart.
+                                example: Usage
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                required:
+                - data
+                - page
+                - pages
+                - results
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-dashboards-service-type.yaml
+          description: Returns a paginated list of dashboards.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: List dashboards for a service type
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor dashboards-list dbaas
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: dashboards-list
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/services/{serviceType}/metric-definitions:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The Akamai Cloud Computing service being monitored. To see your currently supported services, run the [List supported service types](https://techdocs.akamai.com/linode-api/reference/get-monitor-services) operation and store the appropriate `service_type`.
+      example: '{{serviceType}}'
+      in: path
+      name: serviceType
+      required: true
+      schema:
+        example: dbaas
+        type: string
+      x-akamai:
+        file-path: parameters/aclp-service-type.yaml
+    x-akamai:
+      file-path: paths/aclp-get-metrics-info.yaml
+      path-info: /{apiVersion}/monitor/services/{serviceType}/metric-definitions
+    x-linode-cli-command: monitor
+    get:
+      description: '__Limited availability__ Returns metrics for a specific service type.
+
+
+        > 📘
+
+        >
+
+        > - This operation has a specific rate limit.
+
+        >
+
+        > - For more details on the metrics available for each service, see the Metrics reference.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor metrics-list dbaas
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-monitor-information
+      operationId: get-monitor-information
+      parameters:
+      - content:
+          application/json:
+            schema:
+              additionalProperties: false
+              description: Specifies the optional `X-Filter` header JSON object's filtering and sort criteria.
+              example:
+                +and:
+                - metric_type: counter
+                - is_alertable: true
+              properties:
+                +and:
+                  description: 'Include this to filter using both the `is_alertable` and `metric_type` parameters. All conditions need to be true. For example, if you include this and specify `"is_alertable": true` and `"metric_type": "counter"`, the response includes only metrics that are both `"metric_type": "counter"` and `"is_alertable": true`, for the specified `serviceType`.'
+                  items:
+                    additionalProperties: false
+                    properties:
+                      is_alertable:
+                        description: Filter by whether the metric is alertable.
+                        example: true
+                        type: boolean
+                      metric_type:
+                        description: Filter by the metric type. Available values are `counter`, `histogram`, `gauge`, or `summary`.
+                        enum:
+                        - counter
+                        - histogram
+                        - gauge
+                        - summary
+                        example: counter
+                        type: string
+                    type: object
+                  type: array
+                +or:
+                  description: 'Include this to filter using both the `is_alertable` and `metric_type` parameters. At least one condition needs to be true. For example, if you include this and specify `"is_alertable": false` and `"metric_type": "gauge"`, the response includes all metrics that are `"is_alertable": false`, `"metric_type": "gauge"`, or both, for the specified `serviceType`.'
+                  items:
+                    additionalProperties: false
+                    properties:
+                      is_alertable:
+                        description: Filter by whether the metric is alertable.
+                        example: false
+                        type: boolean
+                      metric_type:
+                        description: Filter by the metric type. Available values are `counter`, `histogram`, `gauge`, or `summary`.
+                        enum:
+                        - counter
+                        - histogram
+                        - gauge
+                        - summary
+                        example: gauge
+                        type: string
+                    type: object
+                  type: array
+                is_alertable:
+                  description: Filter by whether the metric is alertable.
+                  type: boolean
+                metric_type:
+                  description: Filter by the metric type. Available values are `counter`, `histogram`, `gauge`, or `summary`.
+                  enum:
+                  - counter
+                  - histogram
+                  - gauge
+                  - summary
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/x-filter-aclp.yaml
+        description: Specifies a JSON object to filter down the results. See [Filtering and sorting](filtering-and-sorting) for details.
+        example: '{{X-Filter}}'
+        in: header
+        name: X-Filter
+        required: false
+        x-akamai:
+          file-path: parameters/x-filter-header-aclp.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - available_aggregate_functions:
+                  - max
+                  - avg
+                  - min
+                  - sum
+                  dimensions:
+                  - dimension_label: node_type
+                    label: Node Type
+                    values:
+                    - primary
+                    - secondary
+                  is_alertable: true
+                  label: CPU Usage
+                  metric: cpu_usage
+                  metric_type: gauge
+                  scrape_interval: 60s
+                  unit: percent
+                - available_aggregate_functions:
+                  - max
+                  - avg
+                  - min
+                  - sum
+                  dimensions:
+                  - dimension_label: node_type
+                    label: Node Type
+                    values:
+                    - primary
+                    - secondary
+                  is_alertable: true
+                  label: Disk I/O Read
+                  metric: read_iops
+                  metric_type: gauge
+                  scrape_interval: 60s
+                  unit: iops
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: A list of objects returned for a response.
+                    items:
+                      additionalProperties: false
+                      properties:
+                        available_aggregate_functions:
+                          description: Available aggregate functions for the metric. This can be `min` for minimum, `max` for maximum, `avg` for average, `sum` for the sum total, `rate` for the individual rate, or `increase` to measure a specific gain.
+                          example: increase
+                          items:
+                            enum:
+                            - min
+                            - max
+                            - avg
+                            - sum
+                            - rate
+                            - increase
+                            type: string
+                          type: array
+                        dimensions:
+                          description: Dimensions for the metric.
+                          items:
+                            additionalProperties: false
+                            properties:
+                              dimension_label:
+                                description: The label used to represent the dimension in metrics. Use this value to call out the service in other Monitor operations in the API.
+                                example: node_type
+                                type: string
+                              label:
+                                description: The label of the dimension. This is used for display purposes in Akamai Cloud Manager.
+                                example: Node Type
+                                type: string
+                              values:
+                                description: Available values for the `dimension_label`.
+                                example: primary
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          type: array
+                        is_alertable:
+                          description: Whether the metric is alertable.
+                          example: false
+                          type: boolean
+                        label:
+                          description: The name of the metric. This is used for display purposes in Akamai Cloud Manager.
+                          example: CPU Usage
+                          type: string
+                        metric:
+                          description: The identifier for the metric. This is how the metric is called out in other Monitor operations in the API.
+                          example: cpu_usage
+                          type: string
+                        metric_type:
+                          description: The type of metric. A value of `counter` represents variable values and a set target for the count. A `histogram` represents the frequency distribution of data points across a continuous range of numerical values. A `gauge` represents the performance against a target goal, and `summary` presents and summarizes data from multiple sources.
+                          enum:
+                          - counter
+                          - histogram
+                          - gauge
+                          - summary
+                          example: histogram
+                          type: string
+                        scrape_interval:
+                          description: How frequently a metric is scraped to gather data, using `s` for seconds, `m` for minutes, or `h` for hours. Set to `60s`, the metric would be scraped every 60 seconds. Set to `2m`, the scrape occurs every two minutes.
+                          example: 60s
+                          type: string
+                        unit:
+                          description: The unit of measurement for the metric. This can be `%` for percentage, `Bytes` for individual bytes, `sec` for time in seconds, `bps` for bits per second, `msec` for milliseconds, `Bps` for bytes per second, `KB` for kilobytes, `MB` for megabytes, `GB` for gigabyte, `rate` for a specific rate, `percentile` for a relative rank compared to a group, `ratio` for a comparison of two quantities, `OPS` for operations per second, or `IOPS` for input/output operations per second.
+                          enum:
+                          - '%'
+                          - Bytes
+                          - sec
+                          - bps
+                          - msec
+                          - Bps
+                          - KB
+                          - MB
+                          - GB
+                          - rate
+                          - percentile
+                          - ratio
+                          - OPS
+                          - IOPS
+                          example: Bps
+                          type: string
+                      type: object
+                    type: array
+                  page:
+                    description: The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  pages:
+                    description: The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    type: integer
+                  results:
+                    description: The total number of results.
+                    example: 1
+                    type: integer
+                required:
+                - data
+                - page
+                - pages
+                - results
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-monitor-services-get-metrics-info.yaml
+          description: Returns a paginated list of metric information.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: List metrics for a service type
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: linode-cli monitor metrics-list dbaas
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: metrics-list
+      x-linode-grant: read_only
+  /{apiVersion}/monitor/services/{serviceType}/metrics:
+    parameters:
+    - description: The Akamai Cloud Computing service being monitored. To see your currently supported services, run the [List supported service types](https://techdocs.akamai.com/linode-api/reference/get-monitor-services) operation and store the appropriate `service_type`.
+      example: '{{serviceType}}'
+      in: path
+      name: serviceType
+      required: true
+      schema:
+        example: dbaas
+        type: string
+      x-akamai:
+        file-path: parameters/aclp-service-type.yaml
+    - description: __Enum__ For this specific operation, you can call either the `v2` URL, or `v2beta`.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v2
+        - v2beta
+        example: v2
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-v2-path.yaml
+    x-akamai:
+      auth-type: JWT
+      file-path: paths/aclp-metric-read.yaml
+      path-info: /{apiVersion}/monitor/services/{serviceType}/metrics
+    x-linode-cli-command: metric
+    post:
+      description: '__Limited availability__ Returns metrics information for the individual entities within a specific service type. This operation also requires an `authorization: Bearer` token you''ve created for this `serviceType`.
+
+
+        > 📘
+
+        >
+
+        > - This operation uses a different URL and version from standard Linode API operations. Verify you''re using the URL with the `monitor-api.linode.com` hostname and include `v2` (or `v2beta`) as the version in the URL.
+
+        >
+
+        > - For more details on the metrics available for each service, see the Metrics reference.
+
+        >
+
+        > - This operation has a specific rate limit.'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-read-metric
+      operationId: post-read-metric
+      requestBody:
+        content:
+          application/json:
+            example:
+              absolute_time_duration:
+                end: '2024-10-16T02:00:00Z'
+                start: '2024-10-14T01:00:00Z'
+              entity_ids:
+              - 13116
+              - 13217
+              - 13331
+              filters:
+              - dimension_label: node_type
+                operator: eq
+                value: primary
+              group_by:
+              - entity_id
+              - node_type
+              metrics:
+              - aggregate_function: avg
+                name: read_iops
+              - aggregate_function: avg
+                name: cpu_usage
+              time_granularity:
+                unit: sec
+                value: 700
+            schema:
+              additionalProperties: false
+              description: Settings used for data queries.
+              oneOf:
+              - additionalProperties: false
+                allOf:
+                - additionalProperties: false
+                  description: Settings used for data queries.
+                  properties:
+                    entity_region:
+                      description: 'The slug value for the Akamai Cloud Computing region, where the target Object Storage buckets live. You can run the [List regions](https://techdocs.akamai.com/linode-api/reference/get-regions) operation to view all slugs and their full region name.
+
+
+                        > 📘
+
+                        >
+
+                        > If the [bearer token](https://techdocs.akamai.com/linode-api/reference/post-get-token) you created for this operation includes `entity_ids` for specific buckets, and any of those buckets exist outside of this `entity_region`, they''re _not included_ in the metrics.'
+                      example: us-lax
+                      type: string
+                    filters:
+                      description: Individual objects that define dimension filters for the query.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          dimension_label:
+                            description: The name of the dimension label to filter on.
+                            example: node_type
+                            type: string
+                          operator:
+                            description: The operator to apply to the dimension label. Available values are `eq` for equal, `neq` for not equal, `startswith`, and `endswith`.
+                            enum:
+                            - eq
+                            - neq
+                            - startswith
+                            - endswith
+                            example: eq
+                            type: string
+                          value:
+                            description: The value to compare the dimension label against.
+                            example: primary
+                            type: string
+                        type: object
+                      type: array
+                    group_by:
+                      description: 'Separates metric data by dimension so that alert conditions are evaluated independently for each dimension value. For example, if you group CPU usage by node type, CPU usage is evaluated separately for each node category, instead of evaluating all node types together. This array supports these values:
+
+
+                        * `entity_id`. Include this by name to group the response data using the `entity_id` values included in the request.
+
+
+                        * `dimension_label`. This represents the desired dimension from a monitoring metric. To get a `dimension_label`, run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation, review the available `dimensions` for the specified `serviceType`, and store the applicable `dimension_label` values.
+
+
+                        You can group these fields using these combinations:
+
+
+                        * Group by `entity_id` values and one or more `dimensions_label` values. For example, `[entity_id, node_type]` groups response data based on values set for the `entity_id` parameter and the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        * Group by only the `entity_id` values. For example, `["entity_id"]` exclusively groups response data based on values set for the `entity_id` parameter.
+
+
+                        * Group by one or more `dimension_label` values. For example, `["node_type"]` groups response data based on the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        If you leave this out of a request, data is aggregated across all series.'
+                      example:
+                      - entity_id
+                      - node_type
+                      items:
+                        type: string
+                      type: array
+                    metrics:
+                      description: A list of metric objects, each specifying a metric name and its corresponding aggregation function.
+                      example:
+                      - aggregate_function: avg
+                        name: cpu_usage
+                      - aggregate_function: sum
+                        name: cpu_usage
+                      items:
+                        additionalProperties: false
+                        properties:
+                          aggregate_function:
+                            description: The aggregation function applied to the metric. Available values are `min`, `max`, `avg`, and `sum`.
+                            enum:
+                            - min
+                            - max
+                            - avg
+                            - sum
+                            example: avg
+                            type: string
+                          name:
+                            description: The metric to query. Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) to see the metrics available for a specific `serviceType`.
+                            example: cpu_usage
+                            type: string
+                        type: object
+                      minItems: 1
+                      type: array
+                    time_granularity:
+                      additionalProperties: false
+                      description: Allows for an optional time granularity setting for metric data.
+                      properties:
+                        unit:
+                          description: The unit of time granularity for the metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `10` with a `unit` of `hr` for 10 hours.
+                          example: 5
+                          type: integer
+                      type: object
+                  required:
+                  - metrics
+                  - entity_region
+                  type: object
+                  x-akamai:
+                    file-path: schemas/aclp-metric-common-obj.yaml
+                - additionalProperties: false
+                  properties:
+                    relative_time_duration:
+                      additionalProperties: false
+                      description: Specifies a relative time duration for data queries. Queries begin immediately for the specified amount of time. You can specify a `relative_time_duration` or an `absolute_time_duration`, but not both.
+                      properties:
+                        unit:
+                          description: The unit of time used for the relative duration to query metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `30` with a `unit` of `min` for 30 minutes.
+                          example: 30
+                          type: integer
+                      type: object
+                  type: object
+                description: Settings applied to specify a relative time range for data queries.
+                required:
+                - relative_time_duration
+                title: Relative Time - Object Storage
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-metric-relative-time-obj.yaml
+              - additionalProperties: false
+                allOf:
+                - additionalProperties: false
+                  description: Settings used for data queries.
+                  properties:
+                    entity_region:
+                      description: 'The slug value for the Akamai Cloud Computing region, where the target Object Storage buckets live. You can run the [List regions](https://techdocs.akamai.com/linode-api/reference/get-regions) operation to view all slugs and their full region name.
+
+
+                        > 📘
+
+                        >
+
+                        > If the [bearer token](https://techdocs.akamai.com/linode-api/reference/post-get-token) you created for this operation includes `entity_ids` for specific buckets, and any of those buckets exist outside of this `entity_region`, they''re _not included_ in the metrics.'
+                      example: us-lax
+                      type: string
+                    filters:
+                      description: Individual objects that define dimension filters for the query.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          dimension_label:
+                            description: The name of the dimension label to filter on.
+                            example: node_type
+                            type: string
+                          operator:
+                            description: The operator to apply to the dimension label. Available values are `eq` for equal, `neq` for not equal, `startswith`, and `endswith`.
+                            enum:
+                            - eq
+                            - neq
+                            - startswith
+                            - endswith
+                            example: eq
+                            type: string
+                          value:
+                            description: The value to compare the dimension label against.
+                            example: primary
+                            type: string
+                        type: object
+                      type: array
+                    group_by:
+                      description: 'Separates metric data by dimension so that alert conditions are evaluated independently for each dimension value. For example, if you group CPU usage by node type, CPU usage is evaluated separately for each node category, instead of evaluating all node types together. This array supports these values:
+
+
+                        * `entity_id`. Include this by name to group the response data using the `entity_id` values included in the request.
+
+
+                        * `dimension_label`. This represents the desired dimension from a monitoring metric. To get a `dimension_label`, run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation, review the available `dimensions` for the specified `serviceType`, and store the applicable `dimension_label` values.
+
+
+                        You can group these fields using these combinations:
+
+
+                        * Group by `entity_id` values and one or more `dimensions_label` values. For example, `[entity_id, node_type]` groups response data based on values set for the `entity_id` parameter and the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        * Group by only the `entity_id` values. For example, `["entity_id"]` exclusively groups response data based on values set for the `entity_id` parameter.
+
+
+                        * Group by one or more `dimension_label` values. For example, `["node_type"]` groups response data based on the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        If you leave this out of a request, data is aggregated across all series.'
+                      example:
+                      - entity_id
+                      - node_type
+                      items:
+                        type: string
+                      type: array
+                    metrics:
+                      description: A list of metric objects, each specifying a metric name and its corresponding aggregation function.
+                      example:
+                      - aggregate_function: avg
+                        name: cpu_usage
+                      - aggregate_function: sum
+                        name: cpu_usage
+                      items:
+                        additionalProperties: false
+                        properties:
+                          aggregate_function:
+                            description: The aggregation function applied to the metric. Available values are `min`, `max`, `avg`, and `sum`.
+                            enum:
+                            - min
+                            - max
+                            - avg
+                            - sum
+                            example: avg
+                            type: string
+                          name:
+                            description: The metric to query. Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) to see the metrics available for a specific `serviceType`.
+                            example: cpu_usage
+                            type: string
+                        type: object
+                      minItems: 1
+                      type: array
+                    time_granularity:
+                      additionalProperties: false
+                      description: Allows for an optional time granularity setting for metric data.
+                      properties:
+                        unit:
+                          description: The unit of time granularity for the metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `10` with a `unit` of `hr` for 10 hours.
+                          example: 5
+                          type: integer
+                      type: object
+                  required:
+                  - metrics
+                  - entity_region
+                  type: object
+                  x-akamai:
+                    file-path: schemas/aclp-metric-common-obj.yaml
+                - additionalProperties: false
+                  properties:
+                    absolute_time_duration:
+                      additionalProperties: false
+                      description: 'Specifies an absolute time range for data queries. Queries begin and end at a specific time.
+
+
+                        > 📘
+
+                        >
+
+                        > - You can query data for up to 31 days.
+
+                        >
+
+                        > - You can specify a `relative_time_duration` or an `absolute_time_duration`, but not both.'
+                      properties:
+                        end:
+                          description: The end time for querying data, in ISO 8601 format, using the UTC time zone.
+                          example: '2026-05-10T23:59:59Z'
+                          format: date-time
+                          type: string
+                        start:
+                          description: The start time for querying data, in ISO 8601 format, using the UTC time zone.
+                          example: '2026-05-10T00:00:01Z'
+                          format: date-time
+                          type: string
+                      type: object
+                  type: object
+                description: Settings applied to specify an absolute time range for data queries.
+                required:
+                - absolute_time_duration
+                title: Absolute Time - Object Storage
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-metric-absolute-time-obj.yaml
+              - additionalProperties: false
+                allOf:
+                - additionalProperties: false
+                  description: Settings used for data queries.
+                  properties:
+                    entity_ids:
+                      description: The `id` for each individual entity from a `service_type`. Get this value by running the list operation for the appropriate entity. For example, if your entity is one of your PostgreSQL databases, run the [List PostgreSQL Managed Databases](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instances) operation and store the `id` for the appropriate database from the response.
+                      example:
+                      - 13116
+                      - 13217
+                      - 13331
+                      items:
+                        type: integer
+                      minItems: 1
+                      type: array
+                    filters:
+                      description: Individual objects that define dimension filters for the query.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          dimension_label:
+                            description: The name of the dimension label to filter on.
+                            example: node_type
+                            type: string
+                          operator:
+                            description: The operator to apply to the dimension label. Available values are `eq` for equal, `neq` for not equal, `startswith`, and `endswith`.
+                            enum:
+                            - eq
+                            - neq
+                            - startswith
+                            - endswith
+                            example: eq
+                            type: string
+                          value:
+                            description: The value to compare the dimension label against.
+                            example: primary
+                            type: string
+                        type: object
+                      type: array
+                    group_by:
+                      description: 'Separates metric data by dimension so that alert conditions are evaluated independently for each dimension value. For example, if you group CPU usage by node type, CPU usage is evaluated separately for each node category, instead of evaluating all node types together. This array supports these values:
+
+
+                        * `entity_id`. Include this by name to group the response data using the `entity_id` values included in the request.
+
+
+                        * `dimension_label`. This represents the desired dimension from a monitoring metric. To get a `dimension_label`, run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation, review the available `dimensions`, and store the applicable `dimension_label` values.
+
+
+                        You can group these fields using these combinations:
+
+
+                        * Group by `entity_id` values and one or more `dimensions_label` values. For example, `[entity_id, node_type]` groups response data based on values set for the `entity_id` parameter and the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        * Group by only the `entity_id` values. For example, `["entity_id"]` exclusively groups response data based on values set for the `entity_id` parameter.
+
+
+                        * Group by one or more `dimension_label` values. For example, `["node_type"]` groups response data based on the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        If you leave this out of a request, data is aggregated across all series.'
+                      example:
+                      - entity_id
+                      - node_type
+                      items:
+                        type: string
+                      type: array
+                    metrics:
+                      description: A list of metric objects, each specifying a metric name and its corresponding aggregation function.
+                      example:
+                      - aggregate_function: avg
+                        name: cpu_usage
+                      - aggregate_function: sum
+                        name: cpu_usage
+                      items:
+                        additionalProperties: false
+                        properties:
+                          aggregate_function:
+                            description: The aggregation function applied to the metric. Available values are `min`, `max`, `avg`, and `sum`.
+                            enum:
+                            - min
+                            - max
+                            - avg
+                            - sum
+                            example: avg
+                            type: string
+                          name:
+                            description: The metric to query. Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) to see the metrics available for a specific `serviceType`.
+                            example: cpu_usage
+                            type: string
+                        type: object
+                      minItems: 1
+                      type: array
+                    time_granularity:
+                      additionalProperties: false
+                      description: Allows for an optional time granularity setting for metric data.
+                      properties:
+                        unit:
+                          description: The unit of time granularity for the metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `10` with a `unit` of `hr` for 10 hours.
+                          example: 5
+                          type: integer
+                      type: object
+                  required:
+                  - metrics
+                  - entity_ids
+                  type: object
+                  x-akamai:
+                    file-path: schemas/aclp-metric-common.yaml
+                - additionalProperties: false
+                  properties:
+                    relative_time_duration:
+                      additionalProperties: false
+                      description: Specifies a relative time duration for data queries. Queries begin immediately for the specified amount of time. You can specify a `relative_time_duration` or an `absolute_time_duration`, but not both.
+                      properties:
+                        unit:
+                          description: The unit of time used for the relative duration to query metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `30` with a `unit` of `min` for 30 minutes.
+                          example: 30
+                          type: integer
+                      type: object
+                  type: object
+                description: Settings applied to specify a relative time range for data queries.
+                required:
+                - relative_time_duration
+                title: Relative Time - All other services
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-metric-relative-time.yaml
+              - additionalProperties: false
+                allOf:
+                - additionalProperties: false
+                  description: Settings used for data queries.
+                  properties:
+                    entity_ids:
+                      description: The `id` for each individual entity from a `service_type`. Get this value by running the list operation for the appropriate entity. For example, if your entity is one of your PostgreSQL databases, run the [List PostgreSQL Managed Databases](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instances) operation and store the `id` for the appropriate database from the response.
+                      example:
+                      - 13116
+                      - 13217
+                      - 13331
+                      items:
+                        type: integer
+                      minItems: 1
+                      type: array
+                    filters:
+                      description: Individual objects that define dimension filters for the query.
+                      items:
+                        additionalProperties: false
+                        properties:
+                          dimension_label:
+                            description: The name of the dimension label to filter on.
+                            example: node_type
+                            type: string
+                          operator:
+                            description: The operator to apply to the dimension label. Available values are `eq` for equal, `neq` for not equal, `startswith`, and `endswith`.
+                            enum:
+                            - eq
+                            - neq
+                            - startswith
+                            - endswith
+                            example: eq
+                            type: string
+                          value:
+                            description: The value to compare the dimension label against.
+                            example: primary
+                            type: string
+                        type: object
+                      type: array
+                    group_by:
+                      description: 'Separates metric data by dimension so that alert conditions are evaluated independently for each dimension value. For example, if you group CPU usage by node type, CPU usage is evaluated separately for each node category, instead of evaluating all node types together. This array supports these values:
+
+
+                        * `entity_id`. Include this by name to group the response data using the `entity_id` values included in the request.
+
+
+                        * `dimension_label`. This represents the desired dimension from a monitoring metric. To get a `dimension_label`, run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) operation, review the available `dimensions`, and store the applicable `dimension_label` values.
+
+
+                        You can group these fields using these combinations:
+
+
+                        * Group by `entity_id` values and one or more `dimensions_label` values. For example, `[entity_id, node_type]` groups response data based on values set for the `entity_id` parameter and the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        * Group by only the `entity_id` values. For example, `["entity_id"]` exclusively groups response data based on values set for the `entity_id` parameter.
+
+
+                        * Group by one or more `dimension_label` values. For example, `["node_type"]` groups response data based on the `node_type` dimension that''s available for a `service_type` of `dbaas`.
+
+
+                        If you leave this out of a request, data is aggregated across all series.'
+                      example:
+                      - entity_id
+                      - node_type
+                      items:
+                        type: string
+                      type: array
+                    metrics:
+                      description: A list of metric objects, each specifying a metric name and its corresponding aggregation function.
+                      example:
+                      - aggregate_function: avg
+                        name: cpu_usage
+                      - aggregate_function: sum
+                        name: cpu_usage
+                      items:
+                        additionalProperties: false
+                        properties:
+                          aggregate_function:
+                            description: The aggregation function applied to the metric. Available values are `min`, `max`, `avg`, and `sum`.
+                            enum:
+                            - min
+                            - max
+                            - avg
+                            - sum
+                            example: avg
+                            type: string
+                          name:
+                            description: The metric to query. Run the [List metrics for a service type](https://techdocs.akamai.com/linode-api/reference/get-monitor-information) to see the metrics available for a specific `serviceType`.
+                            example: cpu_usage
+                            type: string
+                        type: object
+                      minItems: 1
+                      type: array
+                    time_granularity:
+                      additionalProperties: false
+                      description: Allows for an optional time granularity setting for metric data.
+                      properties:
+                        unit:
+                          description: The unit of time granularity for the metric data. Available values are `sec`, `min`, `hr`, and `days`.
+                          enum:
+                          - sec
+                          - min
+                          - hr
+                          - days
+                          example: min
+                          type: string
+                        value:
+                          description: The value that corresponds to the `unit`. Set to `10` with a `unit` of `hr` for 10 hours.
+                          example: 5
+                          type: integer
+                      type: object
+                  required:
+                  - metrics
+                  - entity_ids
+                  type: object
+                  x-akamai:
+                    file-path: schemas/aclp-metric-common.yaml
+                - additionalProperties: false
+                  properties:
+                    absolute_time_duration:
+                      additionalProperties: false
+                      description: 'Specifies an absolute time range for data queries. Queries begin and end at a specific time.
+
+
+                        > 📘
+
+                        >
+
+                        > - You can query data for up to 31 days.
+
+                        >
+
+                        > - You can specify a `relative_time_duration` or an `absolute_time_duration`, but not both.'
+                      properties:
+                        end:
+                          description: The end time for querying data, in ISO 8601 format, using the UTC time zone.
+                          example: '2026-05-10T23:59:59Z'
+                          format: date-time
+                          type: string
+                        start:
+                          description: The start time for querying data, in ISO 8601 format, using the UTC time zone.
+                          example: '2026-05-10T00:00:01Z'
+                          format: date-time
+                          type: string
+                      type: object
+                  type: object
+                description: Settings applied to specify an absolute time range for data queries.
+                required:
+                - absolute_time_duration
+                title: Absolute Time - All other services
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-metric-absolute-time.yaml
+              type: object
+              x-akamai:
+                file-path: schemas/aclp-metric-read-request.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                  result:
+                  - metric:
+                      entity_id: 13316
+                      metric_name: avg_read_iops
+                      node_id: primary-9
+                    values:
+                    - - 1728996500
+                      - '90.55555555555556'
+                    - - 1729043400
+                      - '14890.583333333334'
+                  - metric:
+                      entity_id: 13217
+                      metric_name: avg_cpu_usage
+                      node_id: primary-0
+                    values:
+                    - - 1728996500
+                      - '12.45'
+                    - - 1729043400
+                      - '18.67'
+                  resultType: matrix
+                isPartial: false
+                stats:
+                  executionTimeMsec: 21
+                  seriesFetched: '2'
+                status: success
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    additionalProperties: false
+                    description: A collection of information for the metric.
+                    properties:
+                      result:
+                        description: Pairs of a specific `metric` and its corresponding `values`.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            metric:
+                              additionalProperties:
+                                type: string
+                              description: A mapping of labels where keys and values are strings representing details for the metric.
+                              example:
+                              - cluster_id: '11150'
+                              type: object
+                            values:
+                              description: Pairs that consist of an epoch timestamp and a corresponding metric value.
+                              example:
+                              - - 1696886400
+                                - '75.533333'
+                              - - 1729043400
+                                - '14890.583333333334'
+                              items:
+                                items:
+                                  oneOf:
+                                  - title: Epoch timestamp
+                                    type: integer
+                                  - title: Metric value
+                                    type: string
+                                type: array
+                              minItems: 1
+                              type: array
+                          type: object
+                        minItems: 1
+                        type: array
+                      resultType:
+                        description: The type of result, which will always be `matrix` in this context.
+                        enum:
+                        - matrix
+                        example: matrix
+                        type: string
+                    type: object
+                  isPartial:
+                    description: Indicates whether the result is partial. A result of `false` indicates the response is complete, while `true` indicates a partial response.
+                    example: false
+                    type: boolean
+                  stats:
+                    additionalProperties: false
+                    description: Statistics for a query against a `metric`.
+                    properties:
+                      executionTimeMsec:
+                        description: The time taken to execute the query, in milliseconds.
+                        example: 21
+                        minimum: 0
+                        type: integer
+                      seriesFetched:
+                        description: The number of metric series fetched in the query.
+                        example: '1'
+                        minLength: 1
+                        type: string
+                    type: object
+                  status:
+                    description: The status of the query execution, such as `success`.
+                    example: success
+                    type: string
+                required:
+                - data
+                - isPartial
+                - stats
+                - status
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-metric-read-response.yaml
+          description: Metrics returned.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: Get an entity's metrics
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+      x-linode-cli-action: metric-read
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+  /{apiVersion}/monitor/services/{serviceType}/token:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The Akamai Cloud Computing service being monitored. To see your currently supported services, run the [List supported service types](https://techdocs.akamai.com/linode-api/reference/get-monitor-services) operation and store the appropriate `service_type`.
+      example: '{{serviceType}}'
+      in: path
+      name: serviceType
+      required: true
+      schema:
+        example: dbaas
+        type: string
+      x-akamai:
+        file-path: parameters/aclp-service-type.yaml
+    x-akamai:
+      file-path: paths/aclp-get-token.yaml
+      path-info: /{apiVersion}/monitor/services/{serviceType}/token
+    x-linode-cli-command: monitor
+    post:
+      description: '__Limited availability__ Returns a token that authenticates requests for the entities within a specific service type. To see your currently supported services, run the List supported service types operation. The token has a lifetime of six hours after you create it.
+
+
+        > 📘
+
+        >
+
+        > When creating this token for Object Storage metrics, the token is accessible to all users on your account.
+
+
+        > 👍 There''s a tutorial
+
+        >
+
+        > We offer an example you can follow to generate this token.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `monitor:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli monitor token-get dbaas \
+
+        --entity_ids 189690 \
+
+        --entity_ids 188020 --json
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-get-token
+      operationId: post-get-token
+      requestBody:
+        content:
+          application/json:
+            example:
+              entity_ids:
+              - 13166
+              - 13122
+              - 13245
+            schema:
+              additionalProperties: false
+              description: Name the specific entities you want to include in this token.
+              oneOf:
+              - additionalProperties: false
+                properties:
+                  entity_ids:
+                    description: 'The `id` for individual Object Storage buckets you want to specifically target for metrics gathering with this token. Run the [List Object Storage buckets](https://techdocs.akamai.com/linode-api/reference/get-object-storage-buckets) operation and store the `hostname` values for the applicable ones. To have the token apply to all of your Object Storage buckets, leave this array out of the request, and just send an empty object (`{ }`).
+
+
+                      > 📘
+
+                      >
+
+                      > - This field supports up to 100 total entries.
+
+                      >
+
+                      > - You need read access permission to all Object Storage buckets you want to access with this token. Run the [List a user''s grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) operation to see the permission level for each Object Storage bucket in your account.'
+                    example:
+                    - primary-bucket-1.us-east-12.linodeobjects.com
+                    - backup-bucket-1.us-east-12.linodeobjects.com
+                    items:
+                      type: string
+                    maxItems: 100
+                    minItems: 1
+                    type: array
+                title: Token - Object Storage
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-token-request-obj.yaml
+              - additionalProperties: false
+                properties:
+                  entity_ids:
+                    description: 'The `id` for each individual entity from a `service_type`. Get this value by running the list operation for the appropriate entity. For example, if your entity is one of your PostgreSQL databases, run the [List PostgreSQL Managed Databases](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instances) operation and store the `id` for the appropriate database from the response.
+
+
+                      > 📘
+
+                      >
+
+                      > - This field supports up to 100 total entries.
+
+                      >
+
+                      > - You need read access permission to all of the entities you include in the token. Run the [List a user''s grants](https://techdocs.akamai.com/linode-api/reference/get-user-grants) operation to see the permission level for each entity in your account.'
+                    example:
+                    - 13166
+                    - 13217
+                    items:
+                      type: integer
+                    maxItems: 100
+                    minItems: 1
+                    type: array
+                required:
+                - entity_ids
+                title: Token - All other services
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-token-request-others.yaml
+              type: object
+              x-akamai:
+                file-path: schemas/aclp-token-request.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                token: abcdef1234567890
+              schema:
+                additionalProperties: false
+                properties:
+                  token:
+                    description: A string representing the authentication token. This token is required for subsequent requests.
+                    example: abcdef1234567890
+                    type: string
+                required:
+                - token
+                type: object
+                x-akamai:
+                  file-path: schemas/aclp-token-response.yaml
+          description: The response provides the token.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - monitor:read_only
+      summary: Create a token for a service type
+      tags:
+      - Metrics
+      x-akamai:
+        status: LA
+        tabs:
+        - syntax: 'linode-cli monitor token-get dbaas \
+
+            --entity_ids 189690 \
+
+            --entity_ids 188020 --json'
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: monitor:read_only, <service_type>:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: token-get
+      x-linode-grant: read_only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

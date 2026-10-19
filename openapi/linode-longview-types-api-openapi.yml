@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Longview types API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,28 +38,23 @@ paths:
       description: 'Returns Longview types and prices, including any region-specific rates.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
-
-        - Roles: `longview_viewer`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli longview types
 
         ```
 
 
-        Learn more'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-longview-types
@@ -65,44 +63,11 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - id: longview-3
-                  label: Longview Pro 3 pack
-                  price:
-                    hourly: 0.03
-                    monthly: 20
-                  region_prices: []
-                  transfer: 0
-                - id: longview-10
-                  label: Longview Pro 10 pack
-                  price:
-                    hourly: 0.06
-                    monthly: 40
-                  region_prices: []
-                  transfer: 0
-                - id: longview-40
-                  label: Longview Pro 40 pack
-                  price:
-                    hourly: 0.15
-                    monthly: 100
-                  region_prices: []
-                  transfer: 0
-                - id: longview-100
-                  label: Longview Pro 100 pack
-                  price:
-                    hourly: 0.3
-                    monthly: 200
-                  region_prices: []
-                  transfer: 0
-                page: 1
-                pages: 1
-                results: 4
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: Longview types.
+                    description: The Longview types.
                     items:
                       additionalProperties: false
                       description: Returns collection of Longview types and prices, including any region-specific rates.
@@ -204,18 +169,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-longview-types-200.yaml
+              x-example:
+                x-ref: ../examples/get-longview-types-200.json
           description: A collection of Longview types.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -243,9 +206,6 @@ paths:
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
       x-linode-cli-action: types
-      x-linode-iam:
-      - roles:
-        - longview_viewer
       x-linode-redoc-load-ids: true
 components:
   securitySchemes:
@@ -256,10 +216,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -276,8 +232,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -296,7 +252,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

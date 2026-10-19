@@ -1,16 +1,19 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode LKE API endpoints API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
-- description: View the API endpoints for your LKE clusters.
-  name: LKE API endpoints
+- name: LKE API endpoints
 paths:
   /{apiVersion}/lke/clusters/{clusterId}/api-endpoints:
     parameters:
@@ -23,7 +26,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -33,7 +35,6 @@ paths:
       name: clusterId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/cluster-id-path.yaml
@@ -45,33 +46,36 @@ paths:
       description: 'List the Kubernetes API server endpoints for this cluster. Please note that it often takes 2-5 minutes before the endpoint is ready after first creating a new cluster.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
-
-        - Roles: `lkecluster_viewer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `lke:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli lke api-endpoints-list 12345
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        lke:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-api-endpoints
@@ -80,13 +84,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - endpoint: https://e994a260-1c32-4eb7-bd93-fec8e05ceaca.us-east-2-gw.linodelke.net:443
-                - endpoint: https://e994a260-1c32-4eb7-bd93-fec8e05ceaca.us-east-2-gw.linodelke.net:6443
-                page: 1
-                pages: 1
-                results: 2
               schema:
                 additionalProperties: false
                 properties:
@@ -120,18 +117,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-lke-cluster-api-endpoints-200.yaml
+              x-example:
+                x-ref: ../examples/get-lke-cluster-api-endpoints-200.json
           description: Returns the Kubernetes API server endpoints for this cluster.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -162,10 +157,10 @@ paths:
         - syntax: linode-cli lke api-endpoints-list 12345
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: lke:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: api-endpoints-list
-      x-linode-iam:
-      - roles:
-        - lkecluster_viewer
 components:
   securitySchemes:
     oauth:
@@ -175,10 +170,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -195,8 +186,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -215,7 +206,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

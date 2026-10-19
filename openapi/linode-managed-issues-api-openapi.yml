@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Managed issues API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -38,29 +41,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed issues-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-issues
@@ -94,20 +104,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - created: '2018-01-01T00:01:01'
-                  entity:
-                    id: 98765
-                    label: Managed Issue opened!
-                    type: ticket
-                    url: /support/tickets/98765
-                  id: 823
-                  services:
-                  - 654
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -119,6 +115,7 @@ paths:
                         created:
                           description: __Read-only__ When this Issue was created. Issues are created in response to issues detected with Managed Services, so this is also when the Issue was detected.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-linode-cli-display: 2
@@ -137,7 +134,7 @@ paths:
                               readOnly: true
                               type: string
                             type:
-                              description: __Read-only__ The type of entity this is. This value is always `ticket`.
+                              description: __Read-only__ The type of entity this is. In this case, it is always a Ticket.
                               enum:
                               - ticket
                               example: ticket
@@ -146,6 +143,7 @@ paths:
                             url:
                               description: __Read-only__ The relative URL where you can access this Ticket.
                               example: /support/tickets/98765
+                              format: url
                               readOnly: true
                               type: string
                           readOnly: true
@@ -187,18 +185,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-managed-issues-200.yaml
+              x-example:
+                x-ref: ../examples/get-managed-issues-200.json
           description: A paginated list of open or ongoing Managed Issues.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -245,7 +241,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -270,29 +265,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed issue-view 823
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-issue
@@ -301,16 +303,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2018-01-01T00:01:01'
-                entity:
-                  id: 98765
-                  label: Managed Issue opened!
-                  type: ticket
-                  url: /support/tickets/98765
-                id: 823
-                services:
-                - 654
               schema:
                 additionalProperties: false
                 description: An Issue that was detected with a service Linode is managing.
@@ -318,6 +310,7 @@ paths:
                   created:
                     description: __Read-only__ When this Issue was created. Issues are created in response to issues detected with Managed Services, so this is also when the Issue was detected.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-linode-cli-display: 2
@@ -336,7 +329,7 @@ paths:
                         readOnly: true
                         type: string
                       type:
-                        description: __Read-only__ The type of entity this is. This value is always `ticket`.
+                        description: __Read-only__ The type of entity this is. In this case, it is always a Ticket.
                         enum:
                         - ticket
                         example: ticket
@@ -345,6 +338,7 @@ paths:
                       url:
                         description: __Read-only__ The relative URL where you can access this Ticket.
                         example: /support/tickets/98765
+                        format: url
                         readOnly: true
                         type: string
                     readOnly: true
@@ -367,18 +361,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/managed-issue.yaml
+              x-example:
+                x-ref: ../examples/get-managed-issue-200.json
           description: The requested issue.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -423,10 +415,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -443,8 +431,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -463,7 +451,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

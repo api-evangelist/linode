@@ -1,15 +1,19 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Child accounts API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
-- description: Child accounts let you, as an Akamai partner (a parent account holder), switch between and manage your end customers' accounts (child accounts). Talk to your account team about setting up a parent-child account relationship. Once in place, you can use these operations to review your child accounts and create tokens for your use as a parent, on a child account.
+- description: Child accounts let you, as an Akamai partner (a parent account holder), switch between and manage your end customers' accounts (child accounts). Talk to your account team about setting up a parent-child account environment. Once in place, you can use these operations to review your child accounts and create tokens for your use as a parent, on a child account.
   name: Child accounts
 paths:
   /{apiVersion}/account/child-accounts:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,40 +35,46 @@ paths:
       path-info: /{apiVersion}/account/child-accounts
     x-linode-cli-command: child-account
     get:
-      deprecated: true
-      description: '__Deprecated__ Returns a paginated list of child accounts you''re part of the account delegations for.
+      description: 'Returns a paginated list of basic information for the child accounts that exist for your parent account. See Parent and Child Accounts for Akamai Partners for details on these accounts.
 
 
-        > 🚧 Parent and child accounts feature in Identity and Access
+        > 📘
 
         >
 
-        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is now deprecated, so use the List child accounts operation instead. To learn more about the changes, see Changes to the parent and child accounts feature for migrated partners.
+        > This operation can only be accessed by an unrestricted parent user, or restricted parent user with the `child_account_access` grant.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `child_account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli child-account list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        child_account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-child-accounts
@@ -99,36 +108,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - active_since: '2018-01-01T00:01:01'
-                  address_1: 123 Main Street
-                  address_2: Suite A
-                  balance: 200
-                  balance_uninvoiced: 145
-                  billing_source: external
-                  capabilities:
-                  - Linodes
-                  - NodeBalancers
-                  - Block Storage
-                  - Object Storage
-                  city: San Diego
-                  company: Acme
-                  country: US
-                  credit_card:
-                    expiry: 11/2024
-                    last_four: 1111
-                  email: asingh@linode.com
-                  euuid: A1BC2DEF-34GH-567I-J890KLMN12O34P56
-                  first_name: John
-                  last_name: Smith
-                  phone: 858-555-1212
-                  state: CA
-                  tax_id: ATU99999999
-                  zip: 92111-1234
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -244,6 +223,7 @@ paths:
                         euuid:
                           description: __Read-only__ An external, unique identifier that Akamai assigned to the child account.
                           example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                          format: uuid
                           readOnly: true
                           type: string
                         first_name:
@@ -297,14 +277,13 @@ paths:
                           maxLength: 25
                           type: string
                         zip:
-                          description: '__Filterable__ The postal code of this account''s billing address. The following restrictions apply:
+                          description: '__Filterable__ The zip code of this Account''s billing address. The following restrictions apply:
 
 
-                            - Can only contain ASCII letters, numbers, and dashes (`-`).
+                            - Can only contain ASCII letters, numbers, and hyphens (`-`).
 
-                            - Can''t contain more than 10 letter or number characters.'
+                            - Can''t contain more than 9 letter or number characters.'
                           example: 92111-1234
-                          maxLength: 10
                           type: string
                           x-akamai:
                             labels:
@@ -332,18 +311,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-child-accounts-200.yaml
+              x-example:
+                x-ref: ../examples/get-child-accounts-200.json
           description: Returns child-level accounts.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -366,11 +343,10 @@ paths:
       - personalAccessToken: []
       - oauth:
         - child_account:read_only
-      summary: List child accounts (Deprecated)
+      summary: List child accounts
       tags:
       - Child accounts
       x-akamai:
-        status: DEPRECATED
         tabs:
         - syntax: linode-cli child-account list
           title: CLI
@@ -393,7 +369,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -403,7 +378,6 @@ paths:
       name: euuId
       required: true
       schema:
-        example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
         type: string
       x-akamai:
         file-path: parameters/eeuid.yaml
@@ -412,40 +386,46 @@ paths:
       path-info: /{apiVersion}/account/child-accounts/{euuId}
     x-linode-cli-command: child-account
     get:
-      deprecated: true
-      description: '__Deprecated__ Returns details of a specific child account that you''re part of the account delegation for.
+      description: 'View a specific child account. See Parent and Child Accounts for Akamai Partners for details on these accounts.
 
 
-        > 🚧 Parent and child accounts feature in Identity and Access
+        > 📘
 
         >
 
-        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is now deprecated, so use the Get a child account operation instead. To learn more about the changes to the parent and child accounts feature, see Changes for migrated partners.
+        > This operation can only be accessed by an unrestricted user, or restricted user with the `child_account_access` grant.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `child_account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli child-account view A1BC2DEF-34GH-567I-J890KLMN12O34P56
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        child_account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-child-account
@@ -454,32 +434,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                active_since: '2018-01-01T00:01:01'
-                address_1: 123 Main Street
-                address_2: Suite A
-                balance: 200
-                balance_uninvoiced: 145
-                billing_source: external
-                capabilities:
-                - Linodes
-                - NodeBalancers
-                - Block Storage
-                - Object Storage
-                city: San Diego
-                company: Acme
-                country: US
-                credit_card:
-                  expiry: 11/2024
-                  last_four: 1111
-                email: jkowalski@linode.com
-                euuid: A1BC2DEF-34GH-567I-J890KLMN12O34P56
-                first_name: John
-                last_name: Smith
-                phone: 858-555-1212
-                state: CA
-                tax_id: ATU99999999
-                zip: 92111-1234
               schema:
                 additionalProperties: false
                 description: Child account object.
@@ -591,6 +545,7 @@ paths:
                   euuid:
                     description: __Read-only__ An external, unique identifier that Akamai assigned to the child account.
                     example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                    format: uuid
                     readOnly: true
                     type: string
                   first_name:
@@ -644,14 +599,13 @@ paths:
                     maxLength: 25
                     type: string
                   zip:
-                    description: '__Filterable__ The postal code of this account''s billing address. The following restrictions apply:
+                    description: '__Filterable__ The zip code of this Account''s billing address. The following restrictions apply:
 
 
-                      - Can only contain ASCII letters, numbers, and dashes (`-`).
+                      - Can only contain ASCII letters, numbers, and hyphens (`-`).
 
-                      - Can''t contain more than 10 letter or number characters.'
+                      - Can''t contain more than 9 letter or number characters.'
                     example: 92111-1234
-                    maxLength: 10
                     type: string
                     x-akamai:
                       labels:
@@ -660,18 +614,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/child-account.yaml
+              x-example:
+                x-ref: ../examples/get-child-account-200.json
           description: Returns the specified child-level account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -694,11 +646,10 @@ paths:
       - personalAccessToken: []
       - oauth:
         - child_account:read_only
-      summary: Get a child account (Deprecated)
+      summary: Get a child account
       tags:
       - Child accounts
       x-akamai:
-        status: DEPRECATED
         tabs:
         - syntax: linode-cli child-account view A1BC2DEF-34GH-567I-J890KLMN12O34P56
           title: CLI
@@ -720,7 +671,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -730,7 +680,6 @@ paths:
       name: euuId
       required: true
       schema:
-        example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
         type: string
       x-akamai:
         file-path: parameters/eeuid.yaml
@@ -739,40 +688,74 @@ paths:
       path-info: /{apiVersion}/account/child-accounts/{euuId}/token
     x-linode-cli-command: child-account
     post:
-      deprecated: true
-      description: '__Deprecated__ Creates a short-lived bearer token for a parent user on a specific child account.
+      description: 'Create a short-lived bearer token for a parent user on a specific child account. In the context of the API, a parent user on a child account is referred to as a "proxy user." When Akamai provisions your parent-child account environment, a proxy user is automatically set in the child account. It follows a specific naming convention:
 
 
-        > 🚧 Parent and child accounts feature in Identity and Access
+        _
+
+
+        > 📘
 
         >
 
-        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is no longer available. Use the Create a delegate user token operation instead. To learn more about the changes to the parent and child accounts feature, see Changes for migrated partners.
+        > These variables only use the first 15 and 16 characters of these values, respectively.
 
 
-        **Permissions and scopes**
+        The token lets a parent account run API operations through the proxy user, as if they are a child user in the child account.
 
 
-        To call this operation, you need the following:
+        These points apply to the use of this operation:
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - To create a token, a parent account user needs the `child_account_access` grant. This lets them use the proxy user on the child account. You can run List a user''s grants on a parent account user to check its `child_account_access` setting. To add this access, you can update the parent account user.
 
 
-        - Scopes: `child_account:read_write`
+        - The created token inherits the permissions of the proxy user. It will never have less.
 
 
-        **CLI**
+        - The API returns the raw token in the response. You can''t get it again, so be sure to store it.
 
 
-        ```shell
+        Example workflow:
+
+
+        1. List child accounts and store the `euuid` for the applicable one.
+
+        2. Run this operation and store the `token` that''s created for the proxy user.
+
+        3. As a parent account user with access to the proxy user in the child account, use this `token` to authenticate API operations, as if you were a child user.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
 
         linode-cli child-account create A1BC2DEF-34GH-567I-J890KLMN12O34P56
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        child_account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-child-account-token
@@ -781,13 +764,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2024-05-01T00:01:01'
-                expiry: '2024-05-01T00:16:01'
-                id: 918
-                label: parent1_1234_2024-05-01T00:01:01
-                scopes: '*'
-                token: abcdefghijklmnop
               schema:
                 additionalProperties: false
                 description: The token generated manually for a child account so its proxy user can access the API and CLI without going through an OAuth login.
@@ -804,7 +780,7 @@ paths:
                     x-linode-cli-display: 4
                     x-linode-filterable: true
                   expiry:
-                    description: __Read-only__ When this token expires, which is 15 minutes from the time of creation. Proxy user tokens can't be renewed. After this time, Akamai revokes the token and you need to generate a new one.
+                    description: __Read-only__ When this token expires. This is default set to 15 minutes from the time of creation. Proxy user tokens can't be renewed. After this time, Akamai revokes the token and you need to generate a new one.
                     example: '2024-05-01T00:16:01'
                     format: date-time
                     readOnly: true
@@ -843,18 +819,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/proxy-user-token.yaml
+              x-example:
+                x-ref: ../examples/post-child-account-token-200.json
           description: Token created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -881,7 +855,6 @@ paths:
       tags:
       - Child accounts
       x-akamai:
-        status: DEPRECATED
         tabs:
         - syntax: linode-cli child-account create A1BC2DEF-34GH-567I-J890KLMN12O34P56
           title: CLI
@@ -901,10 +874,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -921,8 +890,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -941,7 +910,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

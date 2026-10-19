@@ -1,0 +1,455 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Kernels API'
+  version: 4.215.0
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to review information for the Linux kernels on your Linodes.
+  name: Kernels
+paths:
+  /{apiVersion}/linode/kernels:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/kernels.yaml
+      path-info: /{apiVersion}/linode/kernels
+    x-linode-cli-command: kernels
+    get:
+      description: 'Lists available Kernels.
+
+
+        Due to the extensive list of available kernels, please keep pagination controls in mind when managing responses to this operation.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli kernels list
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-kernels
+      operationId: get-kernels
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Linux kernel object.
+                      properties:
+                        architecture:
+                          description: __Filterable__, __Read-only__ The architecture of this Kernel.
+                          enum:
+                          - x86_64
+                          - i386
+                          example: x86_64
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 4
+                          x-linode-filterable: true
+                        built:
+                          description: __Read-only__ The date on which this Kernel was built.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        deprecated:
+                          description: __Filterable__, __Read-only__ If this Kernel is marked as deprecated, this field has a value of `true`; otherwise, this field is `false`.
+                          example: false
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        id:
+                          description: __Read-only__ The unique ID of this Kernel.
+                          example: linode/latest-64bit
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 1
+                        kvm:
+                          description: __Filterable__, __Read-only__ If this Kernel is suitable for KVM Linodes.
+                          example: true
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        label:
+                          description: __Filterable__, __Read-only__ The friendly name of this Kernel.
+                          example: Latest 64 bit (4.15.7-x86_64-linode102)
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        pvops:
+                          description: __Filterable__, __Read-only__ If this Kernel is suitable for paravirtualized operations.
+                          example: false
+                          readOnly: true
+                          type: boolean
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        version:
+                          description: __Filterable__, __Read-only__ Linux Kernel version.
+                          example: 4.15.7
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/kernel.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-kernels-200.yaml
+              x-example:
+                x-ref: ../examples/get-kernels-200.json
+          description: Returns an array of Kernels.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List kernels
+      tags:
+      - Kernels
+      x-akamai:
+        tabs:
+        - syntax: linode-cli kernels list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+  /{apiVersion}/linode/kernels/{kernelId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Kernel to look up.
+      example: '{{kernelId}}'
+      in: path
+      name: kernelId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/kernel-id-path.yaml
+    x-akamai:
+      file-path: paths/kernel.yaml
+      path-info: /{apiVersion}/linode/kernels/{kernelId}
+    x-linode-cli-command: kernels
+    get:
+      description: 'Returns information about a single Kernel.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli kernels view latest-64bit
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-kernel
+      operationId: get-kernel
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: Linux kernel object.
+                properties:
+                  architecture:
+                    description: __Filterable__, __Read-only__ The architecture of this Kernel.
+                    enum:
+                    - x86_64
+                    - i386
+                    example: x86_64
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  built:
+                    description: __Read-only__ The date on which this Kernel was built.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  deprecated:
+                    description: __Filterable__, __Read-only__ If this Kernel is marked as deprecated, this field has a value of `true`; otherwise, this field is `false`.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ The unique ID of this Kernel.
+                    example: linode/latest-64bit
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  kvm:
+                    description: __Filterable__, __Read-only__ If this Kernel is suitable for KVM Linodes.
+                    example: true
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  label:
+                    description: __Filterable__, __Read-only__ The friendly name of this Kernel.
+                    example: Latest 64 bit (4.15.7-x86_64-linode102)
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  pvops:
+                    description: __Filterable__, __Read-only__ If this Kernel is suitable for paravirtualized operations.
+                    example: false
+                    readOnly: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  version:
+                    description: __Filterable__, __Read-only__ Linux Kernel version.
+                    example: 4.15.7
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/kernel.yaml
+              x-example:
+                x-ref: ../examples/get-kernel-200.json
+          description: A single Kernel object.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: Get a kernel
+      tags:
+      - Kernels
+      x-akamai:
+        tabs:
+        - syntax: linode-cli kernels view latest-64bit
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Managed Linode settings API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -38,29 +41,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed linode-settings-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-linode-settings
@@ -94,18 +104,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - id: 123
-                  label: linode123
-                  ssh:
-                    access: true
-                    ip: 203.0.113.1
-                    port: 22
-                    user: jkowalski
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -116,12 +114,10 @@ paths:
                       properties:
                         group:
                           deprecated: true
-                          description: __Deprecated__, __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
+                          description: __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
                           example: linodes
                           readOnly: true
                           type: string
-                          x-akamai:
-                            status: DEPRECATED
                           x-linode-cli-display: 3
                         id:
                           description: __Read-only__ The ID of the Linode these Settings are for.
@@ -201,18 +197,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-managed-linode-settings-200.yaml
+              x-example:
+                x-ref: ../examples/get-managed-linode-settings-200.json
           description: A paginated list of Managed settings for your Linodes.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -259,7 +253,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -284,29 +277,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed linode-setting-view 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-linode-setting
@@ -315,26 +315,16 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                id: 123
-                label: linode123
-                ssh:
-                  access: true
-                  ip: 203.0.113.1
-                  port: 22
-                  user: hgildong
               schema:
                 additionalProperties: false
                 description: Settings for a specific Linode related to Managed Services. There is one ManagedLinodeSettings object for each Linode on your Account.
                 properties:
                   group:
                     deprecated: true
-                    description: __Deprecated__, __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
+                    description: __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
                     example: linodes
                     readOnly: true
                     type: string
-                    x-akamai:
-                      status: DEPRECATED
                     x-linode-cli-display: 3
                   id:
                     description: __Read-only__ The ID of the Linode these Settings are for.
@@ -395,18 +385,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/managed-linode-settings.yaml
+              x-example:
+                x-ref: ../examples/get-managed-linode-setting-200.json
           description: The requested Linode's Managed settings.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -449,22 +437,16 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed linode-setting-update \
 
@@ -481,7 +463,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-managed-linode-setting
@@ -489,24 +484,16 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              ssh:
-                access: true
-                ip: 203.0.113.1
-                port: 22
-                user: adevi
             schema:
               additionalProperties: false
               description: Settings for a specific Linode related to Managed Services. There is one ManagedLinodeSettings object for each Linode on your Account.
               properties:
                 group:
                   deprecated: true
-                  description: __Deprecated__, __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
+                  description: __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
                   example: '{{group}}'
                   readOnly: true
                   type: string
-                  x-akamai:
-                    status: DEPRECATED
                   x-linode-cli-display: 3
                 id:
                   description: __Read-only__ The ID of the Linode these Settings are for.
@@ -567,31 +554,24 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/managed-linode-settings.yaml
+            x-example:
+              x-ref: ../examples/put-managed-linode-setting.json
+        description: The settings to update.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                id: 123
-                label: linode123
-                ssh:
-                  access: true
-                  ip: 203.0.113.1
-                  port: 22
-                  user: hgildong
               schema:
                 additionalProperties: false
                 description: Settings for a specific Linode related to Managed Services. There is one ManagedLinodeSettings object for each Linode on your Account.
                 properties:
                   group:
                     deprecated: true
-                    description: __Deprecated__, __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
+                    description: __Read-only__ The group of the Linode these Settings are for. This is for display purposes only.
                     example: linodes
                     readOnly: true
                     type: string
-                    x-akamai:
-                      status: DEPRECATED
                     x-linode-cli-display: 3
                   id:
                     description: __Read-only__ The ID of the Linode these Settings are for.
@@ -652,18 +632,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/managed-linode-settings.yaml
+              x-example:
+                x-ref: ../examples/get-managed-linode-setting-200.json
           description: Settings updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -708,10 +686,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -728,8 +702,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -748,7 +722,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

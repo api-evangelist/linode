@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Grants API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -38,18 +41,7 @@ paths:
         For example, if they do not have `global.add_linodes`, you might not display a button to deploy a new Linode.
 
 
-        Any client may run this operation; no OAuth scopes are required.
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_profile_grants`'
+        Any client may run this operation; no OAuth scopes are required.'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-profile-grants
@@ -58,61 +50,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                database:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                domain:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                firewall:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                global:
-                  account_access: read_only
-                  add_databases: true
-                  add_domains: true
-                  add_firewalls: true
-                  add_images: true
-                  add_linodes: true
-                  add_longview: true
-                  add_nodebalancers: true
-                  add_stackscripts: true
-                  add_volumes: true
-                  add_vpcs: true
-                  cancel_account: false
-                  longview_subscription: true
-                image:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                linode:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                longview:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                nodebalancer:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                stackscript:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                volume:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
-                vpc:
-                - id: 123
-                  label: example-entity
-                  permissions: read_only
               schema:
                 additionalProperties: false
                 properties:
@@ -132,7 +69,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -160,7 +97,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -188,7 +125,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -218,7 +155,7 @@ paths:
                           __Parent and child accounts__
 
 
-                          In the context of the [parent and child accounts](https://techdocs.akamai.com/cloud-computing/docs/parent-and-child-accounts-for-akamai-partners) feature, use the [Update a user''s access level](https://techdocs.akamai.com/linode-api/reference/put-iam-users-role-permissions) to manage delegate user''s access.'
+                          In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this grant can be added to a child account user, to give the user `read-write` access. This gives the child user unrestricted access to expected management operations, such as creating other child users. However, child users don''t have write access to billing operations. The API issues a specific error message if a write operation is attempted by a child user.'
                         enum:
                         - read_only
                         - read_write
@@ -271,14 +208,11 @@ paths:
                         example: false
                         type: boolean
                       child_account_access:
-                        deprecated: true
-                        description: __Deprecated__ In order to provide a parent account user access to a child account, [add them to an account delegation](https://techdocs.akamai.com/linode-api/reference/put-iam-delegation-child-account-users). This is `null` for all non-parent accounts.
+                        description: In a [parent and child account](https://www.linode.com/docs/guides/parent-child-accounts/) environment, this gives a parent account access to operations that can be used to manage child accounts. Unrestricted parent account users have access to this grant, while restricted parent users don't. An unrestricted parent user can set this to `true` to add this grant to a restricted parent user. Displayed as `null` for all non-parent accounts.
                         example: true
                         type:
                         - boolean
                         - 'null'
-                        x-akamai:
-                          status: DEPRECATED
                       longview_subscription:
                         description: Whether this user can manage your account's Longview subscription.
                         example: true
@@ -300,7 +234,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -328,7 +262,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -356,7 +290,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -384,7 +318,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -412,7 +346,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -440,7 +374,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -468,7 +402,7 @@ paths:
                           readOnly: true
                           type: string
                         permissions:
-                          description: The level of access this user has to this entity, either `read_only` or `read_write`. If `null`, this user has no access.
+                          description: The level of access this user has to this entity. If `null`, this user has no access.
                           enum:
                           - read_only
                           - read_write
@@ -483,6 +417,8 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/grants-response.yaml
+              x-example:
+                x-ref: ../examples/get-profile-grants-200.json
           description: GrantsResponse.
         '204':
           content: {}
@@ -490,14 +426,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -524,9 +456,6 @@ paths:
       - Grants
       x-linode-cli-action: grants
       x-linode-cli-skip: true
-      x-linode-iam:
-      - permissions:
-        - list_profile_grants
 components:
   securitySchemes:
     oauth:
@@ -536,10 +465,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -556,8 +481,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -576,7 +501,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

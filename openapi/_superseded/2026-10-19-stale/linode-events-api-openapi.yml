@@ -1,0 +1,1622 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Events API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: An event represents an action you've taken on your account, over the last 90 days. Use these operations to review your current events.
+  name: Events
+paths:
+  /{apiVersion}/account/events:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/events.yaml
+      path-info: /{apiVersion}/account/events
+    x-linode-cli-command: events
+    get:
+      description: 'Returns a collection of event objects that represent actions you''ve taken on your account, over the last 90 days. The events returned depend on your user permissions.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_events`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `events:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli events list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-events
+      operationId: get-events
+      parameters:
+      - content:
+          application/json:
+            schema:
+              description: Specifies the `X-Filter` header JSON object's filtering and sort criteria.
+              oneOf:
+              - additionalProperties:
+                  type: string
+                description: Specify the name of the data field and the accompanying value.
+                example:
+                  region: us-east
+                title: Simple filter
+                type: object
+                x-akamai:
+                  file-path: schemas/x-filter-criteria.yaml
+              - example:
+                  +or:
+                  - region: us-east
+                  - label: linode123
+                properties:
+                  +and:
+                    description: All conditions need to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +contains:
+                    description: The provided string needs to be in the value.
+                    type: string
+                  +gt:
+                    description: The value needs to be greater than the provided number.
+                    type: number
+                  +gte:
+                    description: The value needs to be greater than or equal to the provided number.
+                    type: number
+                  +lt:
+                    description: The value needs to be less than the provided number.
+                    type: number
+                  +lte:
+                    description: The value needs to be less than or equal to the provided number.
+                    type: number
+                  +neq:
+                    description: The provided string is left out of the results.
+                    type: string
+                  +or:
+                    description: At least one condition needs to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +order:
+                    default: asc
+                    description: Sort in ascending (`asc`) or descending (`desc`) order. This defaults to `asc`. Requires `+order_by`.
+                    enum:
+                    - asc
+                    - desc
+                    type: string
+                  +order_by:
+                    description: Order results based on the provided attribute. The attribute needs to be filterable.
+                    type: string
+                title: Filter and sort criteria
+                type: object
+              x-akamai:
+                file-path: schemas/x-filter.yaml
+        description: Specifies a JSON object to filter down the results. See [Filtering and sorting](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) for details.
+        example: '{{X-Filter}}'
+        in: header
+        name: X-Filter
+        required: false
+        x-akamai:
+          file-path: parameters/x-filter-header.yaml
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - action: ticket_create
+                  created: '2018-01-01T00:01:01'
+                  duration: 300.56
+                  entity:
+                    id: 11111
+                    label: Problem booting my Linode
+                    type: ticket
+                    url: /v4/support/tickets/11111
+                  id: 123
+                  message: None
+                  percent_complete: null
+                  rate: null
+                  read: false
+                  secondary_entity:
+                    id: linode/debian13
+                    label: linode1234
+                    type: linode
+                    url: /v4/linode/instances/1234
+                  seen: true
+                  status: failed
+                  time_remaining: null
+                  username: adevi
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: A specific event object. An event is an action taken against an entity related to your account. For example, if you boot a Linode, the system creates an event. The events returned depend on your user grants.
+                      properties:
+                        action:
+                          description: __Filterable__, __Read-only__ The action that caused this event. New actions may be added in the future.
+                          enum:
+                          - account_agreement_eu_model
+                          - account_promo_apply
+                          - account_update
+                          - account_settings_update
+                          - backups_enable
+                          - backups_cancel
+                          - backups_restore
+                          - community_question_reply
+                          - community_like
+                          - community_mention
+                          - credit_card_updated
+                          - database_create
+                          - database_delete
+                          - database_update
+                          - database_create_failed
+                          - database_update_failed
+                          - database_backup_create
+                          - database_backup_restore
+                          - database_backup_delete
+                          - database_credentials_reset
+                          - database_low_disk_space
+                          - database_scale
+                          - database_resize
+                          - database_resize_create
+                          - database_migrate
+                          - database_upgrade
+                          - database_suspend
+                          - database_resume
+                          - disk_create
+                          - disk_delete
+                          - disk_update
+                          - disk_duplicate
+                          - disk_imagize
+                          - disk_resize
+                          - dns_record_create
+                          - dns_record_delete
+                          - dns_record_update
+                          - dns_zone_create
+                          - dns_zone_delete
+                          - dns_zone_import
+                          - dns_zone_update
+                          - entity_transfer_accept
+                          - entity_transfer_accept_recipient
+                          - entity_transfer_cancel
+                          - entity_transfer_create
+                          - entity_transfer_fail
+                          - entity_transfer_stale
+                          - firewall_apply
+                          - firewall_create
+                          - firewall_delete
+                          - firewall_disable
+                          - firewall_enable
+                          - firewall_update
+                          - firewall_device_add
+                          - firewall_device_remove
+                          - firewall_rules_update
+                          - firewall_ruleset_create
+                          - firewall_ruleset_firewall_update
+                          - firewall_ruleset_update
+                          - firewall_ruleset_delete
+                          - host_reboot
+                          - image_delete
+                          - image_update
+                          - image_upload
+                          - interface_create
+                          - interface_delete
+                          - interface_update
+                          - ipaddress_update
+                          - ipv6pool_add
+                          - ipv6pool_delete
+                          - lassie_reboot
+                          - lish_boot
+                          - linode_addip
+                          - linode_boot
+                          - linode_clone
+                          - linode_create
+                          - linode_delete
+                          - linode_update
+                          - linode_deleteip
+                          - linode_kvmify
+                          - linode_migrate
+                          - linode_migrate_datacenter
+                          - linode_migrate_datacenter_create
+                          - linode_mutate
+                          - linode_mutate_create
+                          - linode_poweroff_on
+                          - linode_reboot
+                          - linode_rebuild
+                          - linode_resize
+                          - linode_resize_create
+                          - linode_resize_warm_create
+                          - linode_shutdown
+                          - linode_snapshot
+                          - linode_config_create
+                          - linode_config_delete
+                          - linode_config_update
+                          - lke_cluster_create
+                          - lke_cluster_update
+                          - lke_cluster_delete
+                          - lke_cluster_recycle
+                          - lke_cluster_regenerate
+                          - lke_control_plane_acl_create
+                          - lke_control_plane_acl_update
+                          - lke_control_plane_acl_delete
+                          - lke_node_create
+                          - lke_node_delete
+                          - lke_node_recycle
+                          - lke_pool_create
+                          - lke_pool_delete
+                          - lke_pool_recycle
+                          - lke_kubeconfig_regenerate
+                          - lke_token_rotate
+                          - longviewclient_create
+                          - longviewclient_delete
+                          - longviewclient_update
+                          - managed_disabled
+                          - managed_enabled
+                          - managed_service_create
+                          - managed_service_delete
+                          - nodebalancer_create
+                          - nodebalancer_delete
+                          - nodebalancer_update
+                          - nodebalancer_config_create
+                          - nodebalancer_config_delete
+                          - nodebalancer_config_update
+                          - nodebalancer_node_create
+                          - nodebalancer_node_delete
+                          - nodebalancer_node_update
+                          - oauth_client_create
+                          - oauth_client_delete
+                          - oauth_client_secret_reset
+                          - oauth_client_update
+                          - obj_access_key_create
+                          - obj_access_key_delete
+                          - obj_access_key_update
+                          - password_reset
+                          - payment_method_add
+                          - payment_submitted
+                          - placement_group_assign
+                          - placement_group_became_compliant
+                          - placement_group_became_non_compliant
+                          - placement_group_create
+                          - placement_group_delete
+                          - placement_group_unassign
+                          - placement_group_update
+                          - profile_update
+                          - reserved_ip_assign
+                          - reserved_ip_create
+                          - reserved_ip_delete
+                          - reserved_ip_unassign
+                          - reserved_ip_update
+                          - stackscript_create
+                          - stackscript_delete
+                          - stackscript_update
+                          - stackscript_publicize
+                          - stackscript_revise
+                          - subnet_create
+                          - subnet_delete
+                          - subnet_update
+                          - tag_create
+                          - tag_delete
+                          - tag_update
+                          - tax_id_valid
+                          - tax_id_invalid
+                          - tfa_disabled
+                          - tfa_enabled
+                          - ticket_attachment_upload
+                          - ticket_create
+                          - ticket_update
+                          - token_create
+                          - token_delete
+                          - token_update
+                          - user_create
+                          - user_update
+                          - user_delete
+                          - user_ssh_key_add
+                          - user_ssh_key_delete
+                          - user_ssh_key_update
+                          - vlan_attach
+                          - vlan_detach
+                          - volume_attach
+                          - volume_clone
+                          - volume_create
+                          - volume_delete
+                          - volume_update
+                          - volume_detach
+                          - volume_resize
+                          - volume_migrate
+                          - volume_migrate_scheduled
+                          - vpc_create
+                          - vpc_delete
+                          - vpc_update
+                          example: ticket_create
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        created:
+                          description: __Filterable__, __Read-only__ When the system created this event.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                        details:
+                          additionalProperties: false
+                          description: __Beta__, __Read-only__ Maintenance details for this event, if any.
+                          properties:
+                            complete_time:
+                              description: '__Filterable__ The time the maintenance completed. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                                - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                                - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                              example: '2020-07-09T00:01:01'
+                              format: date-time
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            description:
+                              description: __Filterable__ Indicates either `scheduled` maintenance events or `emergency` maintenance.
+                              enum:
+                              - scheduled
+                              - emergency
+                              example: scheduled
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            maintenance_policy_set:
+                              description: __Filterable__ The maintenance policy the user configures for this event.
+                              example: linode/migrate
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            not_before:
+                              description: '__Filterable__ The scheduled start time for the event. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                                - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                                - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                              example: '2020-07-09T00:01:01'
+                              format: date-time
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            source:
+                              description: __Filterable__ The origin of the event. A `platform` source indicates that the event was initiated by Akamai. A `user` source indicates that the event was initiated by the user.
+                              enum:
+                              - platform
+                              - user
+                              example: platform
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            start_time:
+                              description: '__Filterable__ The actual start time for the event. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                                - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                                - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                              example: '2020-07-09T00:01:01'
+                              format: date-time
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                          readOnly: true
+                          type: object
+                          x-akamai:
+                            status: BETA
+                        duration:
+                          description: __Read-only__ The number of seconds that it takes for the event to complete. Displayed as `null` for an event that doesn't have a duration.
+                          example: 300.56
+                          readOnly: true
+                          type:
+                          - number
+                          - 'null'
+                          x-linode-cli-display: 7
+                        entity:
+                          additionalProperties: false
+                          description: __Read-only__ Detailed information about the entity that triggered this event.
+                          properties:
+                            cpc:
+                              deprecated: true
+                              description: __Deprecated__ This field is deprecated.
+                              example: null
+                              type:
+                              - integer
+                              - 'null'
+                              x-akamai:
+                                status: DEPRECATED
+                            id:
+                              description: '__Filterable__ The unique identifier assigned to the entity.
+
+
+                                > 📘
+
+                                >
+
+                                > Consider these points when filtering by `id`:
+
+                                >
+
+                                > - The `disks` and `backups` entities use the `id` of their parent Linode when filtering for events.
+
+                                >
+
+                                > - The `account` and `profile` entities don''t have an `id`. To filter these entities, use the `type` object instead.
+
+                                >
+
+                                > - The `tag` entity uses the tag''s name as its `id`. Set this value to the tag''s name to filter.'
+                              example: 11111
+                              type: integer
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            label:
+                              description: The name of the entity. The label may reflect changes that occur with this event.
+                              example: Problem booting my Linode
+                              type: string
+                              x-linode-cli-display: 5
+                            node:
+                              description: The ID of the node referenced by the event. This field is only returned for events with an entity type of `lkecluster`.
+                              example: 123456-03aaf8b30000
+                              type:
+                              - string
+                              - 'null'
+                            pool:
+                              description: The ID of the node pool referenced by the event. This field is only returned for events with an entity type of `lkecluster`.
+                              example: 123456
+                              type:
+                              - integer
+                              - 'null'
+                            type:
+                              description: __Filterable__, __Read-only__ The type of entity that is being referenced by the event. Values include `account`, `backups`, `community`, `database`, `disks`, `domain`, `entity_transfer`, `firewall`, `image`, `ipaddress`, `linode`, `lkecluster`, `longview`, `loadbalancer`, `managed_service`, `nodebalancer`, `oauth_client`, `placement_group`, `profile`, `stackscript`, `subnet`, `tag`, `ticket`, `token`, `user`, `user_ssh_key`, `volume`, and `vpc`. New entity types may be added in the future.
+                              enum:
+                              - account
+                              - backups
+                              - community
+                              - database
+                              - disks
+                              - domain
+                              - entity_transfer
+                              - firewall
+                              - image
+                              - ipaddress
+                              - linode
+                              - lkecluster
+                              - longview
+                              - loadbalancer
+                              - managed_service
+                              - nodebalancer
+                              - oauth_client
+                              - placement_group
+                              - profile
+                              - stackscript
+                              - subnet
+                              - tag
+                              - ticket
+                              - token
+                              - user
+                              - user_ssh_key
+                              - volume
+                              - vpc
+                              example: ticket
+                              readOnly: true
+                              type: string
+                              x-akamai:
+                                labels:
+                                - Filterable
+                              x-linode-filterable: true
+                            url:
+                              description: The URL where you can access this event's entity. If it's a relative URL, it's relative to the domain where you retrieved the event.
+                              example: /v4/support/tickets/11111
+                              type: string
+                          readOnly: true
+                          type: object
+                        id:
+                          description: __Filterable__, __Read-only__ The unique ID of this event.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                        message:
+                          description: Additional information about the event. This can be a more detailed representation of an event that can help you diagnose non-obvious failures.
+                          example: None
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 9
+                        percent_complete:
+                          description: __Read-only__ A percentage estimating the amount of time remaining for an event. Returned as `null` for notification events.
+                          example: null
+                          readOnly: true
+                          type:
+                          - integer
+                          - 'null'
+                        rate:
+                          description: __Read-only__ The rate of completion of the event. Only some events return a `rate`, such as the `migration` and `resize` events.
+                          example: null
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        read:
+                          deprecated: true
+                          description: __Deprecated__ The operation that applied to this field has been decommissioned. It's always displayed as `false` in responses.
+                          example: false
+                          type: boolean
+                          x-akamai:
+                            status: DEPRECATED
+                        secondary_entity:
+                          additionalProperties: false
+                          description: __Read-only__ Detailed information about the event's secondary entity, if applicable.
+                          properties:
+                            id:
+                              description: The identifier for the secondary entity object.
+                              example: linode/debian13
+                              type: string
+                            label:
+                              description: The name of the secondary entity object.
+                              example: linode1234
+                              type: string
+                            type:
+                              description: __Read-only__ The type of secondary entity object that's being referenced by the event.
+                              example: linode
+                              readOnly: true
+                              type: string
+                            url:
+                              description: The URL where you can access this event's secondary entity object. If it's a relative URL, it's relative to the domain where you retrieved the event.
+                              example: /v4/linode/instances/1234
+                              type: string
+                          readOnly: true
+                          type: object
+                        seen:
+                          description: __Read-only__ If a user on your account has [marked an event as seen](https://techdocs.akamai.com/linode-api/reference/post-event-seen).
+                          example: true
+                          readOnly: true
+                          type: boolean
+                        status:
+                          description: __Read-only__ The current status of this event, either `scheduled`, `notification`, `started`, `in_progress`, `completed`, `finished`, or `failed`.
+                          enum:
+                          - scheduled
+                          - notification
+                          - started
+                          - in_progress
+                          - completed
+                          - finished
+                          - failed
+                          readOnly: true
+                          type: string
+                          x-linode-cli-color:
+                            completed: green
+                            default_: white
+                            failed: red
+                            finished: green
+                            in_progress: yellow
+                            started: yellow
+                          x-linode-cli-display: 8
+                        time_remaining:
+                          description: __Read-only__ The estimated time remaining until the event completes. This is only returned for some in-progress migration events. Otherwise, `percent_complete` indicates how long until completion.
+                          example: null
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                        username:
+                          description: __Read-only__ The name of the user whose action caused the event.
+                          example: exampleUser
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 2
+                      type: object
+                      x-akamai:
+                        file-path: schemas/event.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/events.yaml
+          description: Returns a paginated list of Event objects from the last 90 days.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - events:read_only
+      summary: List events
+      tags:
+      - Events
+      x-akamai:
+        tabs:
+        - syntax: linode-cli events list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_events
+  /{apiVersion}/account/events/{eventId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Event.
+      example: '{{eventId}}'
+      in: path
+      name: eventId
+      required: true
+      schema:
+        example: 824
+        type: integer
+      x-akamai:
+        file-path: parameters/event-id-path-39255fcf.yaml
+    x-akamai:
+      file-path: paths/event.yaml
+      path-info: /{apiVersion}/account/events/{eventId}
+    x-linode-cli-command: events
+    get:
+      description: 'Returns a single event object.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_event`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `events:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli events view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-event
+      operationId: get-event
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                action: ticket_create
+                created: '2018-01-01T00:01:01'
+                duration: 300.56
+                entity:
+                  id: 11111
+                  label: Problem booting my Linode
+                  type: ticket
+                  url: /v4/support/tickets/11111
+                id: 123
+                message: None
+                percent_complete: null
+                rate: null
+                read: false
+                secondary_entity:
+                  id: linode/debian13
+                  label: linode1234
+                  type: linode
+                  url: /v4/linode/instances/1234
+                seen: true
+                status: failed
+                time_remaining: null
+                username: hgildong
+              schema:
+                additionalProperties: false
+                description: A specific event object. An event is an action taken against an entity related to your account. For example, if you boot a Linode, the system creates an event. The events returned depend on your user grants.
+                properties:
+                  action:
+                    description: __Filterable__, __Read-only__ The action that caused this event. New actions may be added in the future.
+                    enum:
+                    - account_agreement_eu_model
+                    - account_promo_apply
+                    - account_update
+                    - account_settings_update
+                    - backups_enable
+                    - backups_cancel
+                    - backups_restore
+                    - community_question_reply
+                    - community_like
+                    - community_mention
+                    - credit_card_updated
+                    - database_create
+                    - database_delete
+                    - database_update
+                    - database_create_failed
+                    - database_update_failed
+                    - database_backup_create
+                    - database_backup_restore
+                    - database_backup_delete
+                    - database_credentials_reset
+                    - database_low_disk_space
+                    - database_scale
+                    - database_resize
+                    - database_resize_create
+                    - database_migrate
+                    - database_upgrade
+                    - database_suspend
+                    - database_resume
+                    - disk_create
+                    - disk_delete
+                    - disk_update
+                    - disk_duplicate
+                    - disk_imagize
+                    - disk_resize
+                    - dns_record_create
+                    - dns_record_delete
+                    - dns_record_update
+                    - dns_zone_create
+                    - dns_zone_delete
+                    - dns_zone_import
+                    - dns_zone_update
+                    - entity_transfer_accept
+                    - entity_transfer_accept_recipient
+                    - entity_transfer_cancel
+                    - entity_transfer_create
+                    - entity_transfer_fail
+                    - entity_transfer_stale
+                    - firewall_apply
+                    - firewall_create
+                    - firewall_delete
+                    - firewall_disable
+                    - firewall_enable
+                    - firewall_update
+                    - firewall_device_add
+                    - firewall_device_remove
+                    - firewall_rules_update
+                    - firewall_ruleset_create
+                    - firewall_ruleset_firewall_update
+                    - firewall_ruleset_update
+                    - firewall_ruleset_delete
+                    - host_reboot
+                    - image_delete
+                    - image_update
+                    - image_upload
+                    - interface_create
+                    - interface_delete
+                    - interface_update
+                    - ipaddress_update
+                    - ipv6pool_add
+                    - ipv6pool_delete
+                    - lassie_reboot
+                    - lish_boot
+                    - linode_addip
+                    - linode_boot
+                    - linode_clone
+                    - linode_create
+                    - linode_delete
+                    - linode_update
+                    - linode_deleteip
+                    - linode_kvmify
+                    - linode_migrate
+                    - linode_migrate_datacenter
+                    - linode_migrate_datacenter_create
+                    - linode_mutate
+                    - linode_mutate_create
+                    - linode_poweroff_on
+                    - linode_reboot
+                    - linode_rebuild
+                    - linode_resize
+                    - linode_resize_create
+                    - linode_resize_warm_create
+                    - linode_shutdown
+                    - linode_snapshot
+                    - linode_config_create
+                    - linode_config_delete
+                    - linode_config_update
+                    - lke_cluster_create
+                    - lke_cluster_update
+                    - lke_cluster_delete
+                    - lke_cluster_recycle
+                    - lke_cluster_regenerate
+                    - lke_control_plane_acl_create
+                    - lke_control_plane_acl_update
+                    - lke_control_plane_acl_delete
+                    - lke_node_create
+                    - lke_node_delete
+                    - lke_node_recycle
+                    - lke_pool_create
+                    - lke_pool_delete
+                    - lke_pool_recycle
+                    - lke_kubeconfig_regenerate
+                    - lke_token_rotate
+                    - longviewclient_create
+                    - longviewclient_delete
+                    - longviewclient_update
+                    - managed_disabled
+                    - managed_enabled
+                    - managed_service_create
+                    - managed_service_delete
+                    - nodebalancer_create
+                    - nodebalancer_delete
+                    - nodebalancer_update
+                    - nodebalancer_config_create
+                    - nodebalancer_config_delete
+                    - nodebalancer_config_update
+                    - nodebalancer_node_create
+                    - nodebalancer_node_delete
+                    - nodebalancer_node_update
+                    - oauth_client_create
+                    - oauth_client_delete
+                    - oauth_client_secret_reset
+                    - oauth_client_update
+                    - obj_access_key_create
+                    - obj_access_key_delete
+                    - obj_access_key_update
+                    - password_reset
+                    - payment_method_add
+                    - payment_submitted
+                    - placement_group_assign
+                    - placement_group_became_compliant
+                    - placement_group_became_non_compliant
+                    - placement_group_create
+                    - placement_group_delete
+                    - placement_group_unassign
+                    - placement_group_update
+                    - profile_update
+                    - reserved_ip_assign
+                    - reserved_ip_create
+                    - reserved_ip_delete
+                    - reserved_ip_unassign
+                    - reserved_ip_update
+                    - stackscript_create
+                    - stackscript_delete
+                    - stackscript_update
+                    - stackscript_publicize
+                    - stackscript_revise
+                    - subnet_create
+                    - subnet_delete
+                    - subnet_update
+                    - tag_create
+                    - tag_delete
+                    - tag_update
+                    - tax_id_valid
+                    - tax_id_invalid
+                    - tfa_disabled
+                    - tfa_enabled
+                    - ticket_attachment_upload
+                    - ticket_create
+                    - ticket_update
+                    - token_create
+                    - token_delete
+                    - token_update
+                    - user_create
+                    - user_update
+                    - user_delete
+                    - user_ssh_key_add
+                    - user_ssh_key_delete
+                    - user_ssh_key_update
+                    - vlan_attach
+                    - vlan_detach
+                    - volume_attach
+                    - volume_clone
+                    - volume_create
+                    - volume_delete
+                    - volume_update
+                    - volume_detach
+                    - volume_resize
+                    - volume_migrate
+                    - volume_migrate_scheduled
+                    - vpc_create
+                    - vpc_delete
+                    - vpc_update
+                    example: ticket_create
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  created:
+                    description: __Filterable__, __Read-only__ When the system created this event.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 6
+                    x-linode-filterable: true
+                  details:
+                    additionalProperties: false
+                    description: __Beta__, __Read-only__ Maintenance details for this event, if any.
+                    properties:
+                      complete_time:
+                        description: '__Filterable__ The time the maintenance completed. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                          - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                          - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                        example: '2020-07-09T00:01:01'
+                        format: date-time
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      description:
+                        description: __Filterable__ Indicates either `scheduled` maintenance events or `emergency` maintenance.
+                        enum:
+                        - scheduled
+                        - emergency
+                        example: scheduled
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      maintenance_policy_set:
+                        description: __Filterable__ The maintenance policy the user configures for this event.
+                        example: linode/migrate
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      not_before:
+                        description: '__Filterable__ The scheduled start time for the event. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                          - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                          - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                        example: '2020-07-09T00:01:01'
+                        format: date-time
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      source:
+                        description: __Filterable__ The origin of the event. A `platform` source indicates that the event was initiated by Akamai. A `user` source indicates that the event was initiated by the user.
+                        enum:
+                        - platform
+                        - user
+                        example: platform
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      start_time:
+                        description: '__Filterable__ The actual start time for the event. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                          - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                          - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and individual ISO 8601 timestamps. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                        example: '2020-07-09T00:01:01'
+                        format: date-time
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                    readOnly: true
+                    type: object
+                    x-akamai:
+                      status: BETA
+                  duration:
+                    description: __Read-only__ The number of seconds that it takes for the event to complete. Displayed as `null` for an event that doesn't have a duration.
+                    example: 300.56
+                    readOnly: true
+                    type:
+                    - number
+                    - 'null'
+                    x-linode-cli-display: 7
+                  entity:
+                    additionalProperties: false
+                    description: __Read-only__ Detailed information about the entity that triggered this event.
+                    properties:
+                      cpc:
+                        deprecated: true
+                        description: __Deprecated__ This field is deprecated.
+                        example: null
+                        type:
+                        - integer
+                        - 'null'
+                        x-akamai:
+                          status: DEPRECATED
+                      id:
+                        description: '__Filterable__ The unique identifier assigned to the entity.
+
+
+                          > 📘
+
+                          >
+
+                          > Consider these points when filtering by `id`:
+
+                          >
+
+                          > - The `disks` and `backups` entities use the `id` of their parent Linode when filtering for events.
+
+                          >
+
+                          > - The `account` and `profile` entities don''t have an `id`. To filter these entities, use the `type` object instead.
+
+                          >
+
+                          > - The `tag` entity uses the tag''s name as its `id`. Set this value to the tag''s name to filter.'
+                        example: 11111
+                        type: integer
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      label:
+                        description: The name of the entity. The label may reflect changes that occur with this event.
+                        example: Problem booting my Linode
+                        type: string
+                        x-linode-cli-display: 5
+                      node:
+                        description: The ID of the node referenced by the event. This field is only returned for events with an entity type of `lkecluster`.
+                        example: 123456-03aaf8b30000
+                        type:
+                        - string
+                        - 'null'
+                      pool:
+                        description: The ID of the node pool referenced by the event. This field is only returned for events with an entity type of `lkecluster`.
+                        example: 123456
+                        type:
+                        - integer
+                        - 'null'
+                      type:
+                        description: __Filterable__, __Read-only__ The type of entity that is being referenced by the event. Values include `account`, `backups`, `community`, `database`, `disks`, `domain`, `entity_transfer`, `firewall`, `image`, `ipaddress`, `linode`, `lkecluster`, `longview`, `loadbalancer`, `managed_service`, `nodebalancer`, `oauth_client`, `placement_group`, `profile`, `stackscript`, `subnet`, `tag`, `ticket`, `token`, `user`, `user_ssh_key`, `volume`, and `vpc`. New entity types may be added in the future.
+                        enum:
+                        - account
+                        - backups
+                        - community
+                        - database
+                        - disks
+                        - domain
+                        - entity_transfer
+                        - firewall
+                        - image
+                        - ipaddress
+                        - linode
+                        - lkecluster
+                        - longview
+                        - loadbalancer
+                        - managed_service
+                        - nodebalancer
+                        - oauth_client
+                        - placement_group
+                        - profile
+                        - stackscript
+                        - subnet
+                        - tag
+                        - ticket
+                        - token
+                        - user
+                        - user_ssh_key
+                        - volume
+                        - vpc
+                        example: ticket
+                        readOnly: true
+                        type: string
+                        x-akamai:
+                          labels:
+                          - Filterable
+                        x-linode-filterable: true
+                      url:
+                        description: The URL where you can access this event's entity. If it's a relative URL, it's relative to the domain where you retrieved the event.
+                        example: /v4/support/tickets/11111
+                        type: string
+                    readOnly: true
+                    type: object
+                  id:
+                    description: __Filterable__, __Read-only__ The unique ID of this event.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  message:
+                    description: Additional information about the event. This can be a more detailed representation of an event that can help you diagnose non-obvious failures.
+                    example: None
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 9
+                  percent_complete:
+                    description: __Read-only__ A percentage estimating the amount of time remaining for an event. Returned as `null` for notification events.
+                    example: null
+                    readOnly: true
+                    type:
+                    - integer
+                    - 'null'
+                  rate:
+                    description: __Read-only__ The rate of completion of the event. Only some events return a `rate`, such as the `migration` and `resize` events.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  read:
+                    deprecated: true
+                    description: __Deprecated__ The operation that applied to this field has been decommissioned. It's always displayed as `false` in responses.
+                    example: false
+                    type: boolean
+                    x-akamai:
+                      status: DEPRECATED
+                  secondary_entity:
+                    additionalProperties: false
+                    description: __Read-only__ Detailed information about the event's secondary entity, if applicable.
+                    properties:
+                      id:
+                        description: The identifier for the secondary entity object.
+                        example: linode/debian13
+                        type: string
+                      label:
+                        description: The name of the secondary entity object.
+                        example: linode1234
+                        type: string
+                      type:
+                        description: __Read-only__ The type of secondary entity object that's being referenced by the event.
+                        example: linode
+                        readOnly: true
+                        type: string
+                      url:
+                        description: The URL where you can access this event's secondary entity object. If it's a relative URL, it's relative to the domain where you retrieved the event.
+                        example: /v4/linode/instances/1234
+                        type: string
+                    readOnly: true
+                    type: object
+                  seen:
+                    description: __Read-only__ If a user on your account has [marked an event as seen](https://techdocs.akamai.com/linode-api/reference/post-event-seen).
+                    example: true
+                    readOnly: true
+                    type: boolean
+                  status:
+                    description: __Read-only__ The current status of this event, either `scheduled`, `notification`, `started`, `in_progress`, `completed`, `finished`, or `failed`.
+                    enum:
+                    - scheduled
+                    - notification
+                    - started
+                    - in_progress
+                    - completed
+                    - finished
+                    - failed
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      completed: green
+                      default_: white
+                      failed: red
+                      finished: green
+                      in_progress: yellow
+                      started: yellow
+                    x-linode-cli-display: 8
+                  time_remaining:
+                    description: __Read-only__ The estimated time remaining until the event completes. This is only returned for some in-progress migration events. Otherwise, `percent_complete` indicates how long until completion.
+                    example: null
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                  username:
+                    description: __Read-only__ The name of the user whose action caused the event.
+                    example: exampleUser
+                    readOnly: true
+                    type:
+                    - string
+                    - 'null'
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/event.yaml
+          description: An Event object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - events:read_only
+      summary: Get an event
+      tags:
+      - Events
+      x-akamai:
+        tabs:
+        - syntax: linode-cli events view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_event
+  /{apiVersion}/account/events/{eventId}/seen:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Event to designate as seen.
+      example: '{{eventId}}'
+      in: path
+      name: eventId
+      required: true
+      schema:
+        example: 824
+        type: integer
+      x-akamai:
+        file-path: parameters/event-id-path-214cd042.yaml
+    x-akamai:
+      file-path: paths/seen.yaml
+      path-info: /{apiVersion}/account/events/{eventId}/seen
+    x-linode-cli-command: events
+    post:
+      description: 'Acknowledge an event by marking it as seen.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `mark_event_seen`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `events:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli events mark-seen 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-event-seen
+      operationId: post-event-seen
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Event acknowledged and marked as seen.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - events:read_only
+      summary: Mark an event as seen
+      tags:
+      - Events
+      x-akamai:
+        tabs:
+        - syntax: linode-cli events mark-seen 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: mark-seen
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - mark_event_seen
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

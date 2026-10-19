@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Managed service monitors API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,28 +35,22 @@ paths:
       path-info: /{apiVersion}/managed/services
     x-linode-cli-command: managed
     post:
-      description: 'Creates a service monitor. Linode Managed monitors this service and alerts Akamai Support when issues are detected. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+      description: 'Creates a service monitor. Linode Managed monitors this service and alerts Akamai Support when issues are detected.
 
 
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-create \
 
@@ -78,7 +75,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-managed-service
@@ -86,16 +96,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              address: https://example.org
-              body: it worked
-              consultation_group: on-call
-              credentials:
-              - 9991
-              label: prod-1
-              notes: The service name is my-cool-application
-              service_type: url
-              timeout: 30
             schema:
               allOf:
               - additionalProperties: false
@@ -127,6 +127,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -162,7 +163,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -170,7 +171,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -193,38 +194,26 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
-              - required:
-                - label
-                - service_type
-                - address
-                - timeout
-                type: object
+              required:
+              - label
+              - service_type
+              - address
+              - timeout
               x-akamai:
                 file-path: schemas/post-managed-service.yaml
+            x-example:
+              x-ref: ../examples/post-managed-service.json
+        description: Information about the service to monitor.
       responses:
         '200':
           content:
             application/json:
-              example:
-                address: https://example.org
-                body: it worked
-                consultation_group: on-call
-                created: '2018-01-01T00:01:01'
-                credentials:
-                - 9991
-                id: 9944
-                label: prod-1
-                notes: The service name is my-cool-application
-                region: null
-                service_type: url
-                status: ok
-                timeout: 30
-                updated: '2018-03-01T00:01:01'
               schema:
                 additionalProperties: false
                 description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -255,6 +244,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -290,7 +280,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -298,7 +288,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -321,23 +311,22 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
+              x-example:
+                x-ref: ../examples/post-managed-service-200.json
           description: Service created.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -380,29 +369,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed services-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-services
@@ -411,25 +407,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - address: https://example.org
-                  body: it worked
-                  consultation_group: on-call
-                  created: '2018-01-01T00:01:01'
-                  credentials:
-                  - 9991
-                  id: 9944
-                  label: prod-1
-                  notes: The service name is my-cool-application
-                  region: null
-                  service_type: url
-                  status: ok
-                  timeout: 30
-                  updated: '2018-03-01T00:01:01'
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -464,6 +441,7 @@ paths:
                         created:
                           description: __Read-only__ When this Managed Service was created.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                         credentials:
@@ -499,7 +477,7 @@ paths:
                           - string
                           - 'null'
                         service_type:
-                          description: How this Service is monitored, either `url` or `tcp`.
+                          description: How this Service is monitored.
                           enum:
                           - url
                           - tcp
@@ -507,7 +485,7 @@ paths:
                           type: string
                           x-linode-cli-display: 3
                         status:
-                          description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                          description: __Read-only__ The current status of this Service.
                           enum:
                           - disabled
                           - pending
@@ -530,6 +508,7 @@ paths:
                         updated:
                           description: __Read-only__ When this Managed Service was last updated.
                           example: '2018-03-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                       type: object
@@ -554,18 +533,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-managed-services-200.yaml
+              x-example:
+                x-ref: ../examples/get-managed-services-200.json
           description: A paginated list of Managed Services.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -612,7 +589,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -631,35 +607,42 @@ paths:
       path-info: /{apiVersion}/managed/services/{serviceId}
     x-linode-cli-command: managed
     get:
-      description: 'Returns the configuration settings for a single service monitor. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+      description: 'Returns the configuration settings for a single service monitor.
 
 
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-view 9994
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-managed-service
@@ -668,21 +651,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                address: https://example.org
-                body: it worked
-                consultation_group: on-call
-                created: '2018-01-01T00:01:01'
-                credentials:
-                - 9991
-                id: 9944
-                label: prod-1
-                notes: The service name is my-cool-application
-                region: null
-                service_type: url
-                status: ok
-                timeout: 30
-                updated: '2018-03-01T00:01:01'
               schema:
                 additionalProperties: false
                 description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -713,6 +681,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -748,7 +717,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -756,7 +725,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -779,23 +748,22 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
+              x-example:
+                x-ref: ../examples/get-managed-service-200.json
           description: The requested Managed Service.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -838,22 +806,16 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-update 9994 \
 
@@ -876,7 +838,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-managed-service
@@ -884,16 +859,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              address: https://example.org
-              body: it worked
-              consultation_group: on-call
-              credentials:
-              - 9991
-              label: prod-1
-              notes: The service name is my-cool-application
-              service_type: url
-              timeout: 30
             schema:
               additionalProperties: false
               description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -924,6 +889,7 @@ paths:
                 created:
                   description: __Read-only__ When this Managed Service was created.
                   example: '{{created}}'
+                  format: date-time
                   readOnly: true
                   type: string
                 credentials:
@@ -959,7 +925,7 @@ paths:
                   - string
                   - 'null'
                 service_type:
-                  description: How this Service is monitored, either `url` or `tcp`.
+                  description: How this Service is monitored.
                   enum:
                   - url
                   - tcp
@@ -967,7 +933,7 @@ paths:
                   type: string
                   x-linode-cli-display: 3
                 status:
-                  description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                  description: __Read-only__ The current status of this Service.
                   enum:
                   - disabled
                   - pending
@@ -990,31 +956,20 @@ paths:
                 updated:
                   description: __Read-only__ When this Managed Service was last updated.
                   example: '{{updated}}'
+                  format: date-time
                   readOnly: true
                   type: string
               type: object
               x-akamai:
                 file-path: schemas/managed-service.yaml
+            x-example:
+              x-ref: ../examples/put-managed-service.json
+        description: The fields to update.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                address: https://example.org
-                body: it worked
-                consultation_group: on-call
-                created: '2018-01-01T00:01:01'
-                credentials:
-                - 9991
-                id: 9944
-                label: prod-1
-                notes: The service name is my-cool-application
-                region: null
-                service_type: url
-                status: ok
-                timeout: 30
-                updated: '2018-03-01T00:01:01'
               schema:
                 additionalProperties: false
                 description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -1045,6 +1000,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -1080,7 +1036,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -1088,7 +1044,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -1111,23 +1067,22 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
+              x-example:
+                x-ref: ../examples/get-managed-service-200.json
           description: Service updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1170,29 +1125,36 @@ paths:
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-delete 9994
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-managed-service
@@ -1201,25 +1163,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-managed-service-200.json
           description: Service deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1266,7 +1225,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1285,35 +1243,42 @@ paths:
       path-info: /{apiVersion}/managed/services/{serviceId}/disable
     x-linode-cli-command: managed
     post:
-      description: 'Temporarily disables monitoring of a service on a managed Linode. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+      description: 'Temporarily disables monitoring of a service on a managed Linode.
 
 
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-disable 9994
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-disable-managed-service
@@ -1322,21 +1287,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                address: https://example.org
-                body: it worked
-                consultation_group: on-call
-                created: '2018-01-01T00:01:01'
-                credentials:
-                - 9991
-                id: 9944
-                label: prod-1
-                notes: The service name is my-cool-application
-                region: null
-                service_type: url
-                status: ok
-                timeout: 30
-                updated: '2018-03-01T00:01:01'
               schema:
                 additionalProperties: false
                 description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -1367,6 +1317,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -1402,7 +1353,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -1410,7 +1361,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -1433,23 +1384,22 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
+              x-example:
+                x-ref: ../examples/post-disable-managed-service-200.json
           description: Service disabled.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1496,7 +1446,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1515,35 +1464,42 @@ paths:
       path-info: /{apiVersion}/managed/services/{serviceId}/enable
     x-linode-cli-command: managed
     post:
-      description: 'Enables monitoring of a service on a managed Linode. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+      description: 'Enables monitoring of a service on a managed Linode.
 
 
         This operation can only be accessed by the unrestricted users of an account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli managed service-enable 9994
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-enable-managed-service
@@ -1552,21 +1508,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                address: https://example.org
-                body: it worked
-                consultation_group: on-call
-                created: '2018-01-01T00:01:01'
-                credentials:
-                - 9991
-                id: 9944
-                label: prod-1
-                notes: The service name is my-cool-application
-                region: null
-                service_type: url
-                status: ok
-                timeout: 30
-                updated: '2018-03-01T00:01:01'
               schema:
                 additionalProperties: false
                 description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
@@ -1597,6 +1538,7 @@ paths:
                   created:
                     description: __Read-only__ When this Managed Service was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   credentials:
@@ -1632,7 +1574,7 @@ paths:
                     - string
                     - 'null'
                   service_type:
-                    description: How this Service is monitored, either `url` or `tcp`.
+                    description: How this Service is monitored.
                     enum:
                     - url
                     - tcp
@@ -1640,7 +1582,7 @@ paths:
                     type: string
                     x-linode-cli-display: 3
                   status:
-                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    description: __Read-only__ The current status of this Service.
                     enum:
                     - disabled
                     - pending
@@ -1663,23 +1605,22 @@ paths:
                   updated:
                     description: __Read-only__ When this Managed Service was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 type: object
                 x-akamai:
                   file-path: schemas/managed-service.yaml
+              x-example:
+                x-ref: ../examples/post-enable-managed-service-200.json
           description: Service enabled.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1724,10 +1665,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -1744,8 +1681,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -1764,7 +1701,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

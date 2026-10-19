@@ -1,15 +1,19 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Linode types API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
-- description: Use these operations to get information about Linode plan types, including pricing information, hardware resources, and network transfer allotment.
+- description: Use the Linode Types endpoints to retrieve information about Linode plan types, including pricing information, hardware resources, and network transfer allotment.
   name: Linode types
 paths:
   /{apiVersion}/linode/types:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,29 +35,26 @@ paths:
       path-info: /{apiVersion}/linode/types
     x-linode-cli-command: linodes
     get:
-      description: 'Returns Linode types, including pricing and specifications for each. Use these when creating or resizing Linodes.
+      description: 'Returns Linode Types, including pricing and specifications for each Type. Use these when creating or resizing Linodes.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. This operation is internet-facing. No permissions are required.
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli linodes types
 
         ```
 
 
-        Learn more'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-linode-types
@@ -63,45 +63,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - accelerated_devices: 0
-                  addons:
-                    backups:
-                      price:
-                        hourly: 0.008
-                        monthly: 5
-                      region_prices:
-                      - hourly: 0.009
-                        id: id-cgk
-                        monthly: 6
-                      - hourly: 0.01
-                        id: br-gru
-                        monthly: 7
-                  capabilities: []
-                  class: standard
-                  disk: 81920
-                  gpus: 0
-                  id: g6-standard-2
-                  label: Linode 4GB
-                  memory: 4096
-                  network_out: 4000
-                  price:
-                    hourly: 0.036
-                    monthly: 24
-                  region_prices:
-                  - hourly: 0.043
-                    id: id-cgk
-                    monthly: 28.8
-                  - hourly: 0.05
-                    id: br-gru
-                    monthly: 33.6
-                  successor: null
-                  transfer: 4000
-                  vcpus: 2
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -111,16 +72,6 @@ paths:
                       additionalProperties: false
                       description: The available Linode types, including pricing and specifications for each. Use them when [creating](https://techdocs.akamai.com/linode-api/reference/post-linode-instance) or [resizing](https://techdocs.akamai.com/linode-api/reference/post-resize-linode-instance) Linodes.
                       properties:
-                        accelerated_devices:
-                          description: __Filterable__, __Read-only__ The number of video processing units (VPU) this Linode type offers. This applies to a NETINT Quadra T1U VPU-backed [accelerated Linode](https://techdocs.akamai.com/cloud-computing/docs/accelerated-compute-instances). Displayed as `0` if the Linode type doesn't offer VPUs.
-                          example: 1
-                          readOnly: true
-                          type: integer
-                          x-akamai:
-                            labels:
-                            - Filterable
-                          x-linode-cli-display: 6
-                          x-linode-filterable: true
                         addons:
                           additionalProperties: false
                           description: __Read-only__ Optional add-on services for Linodes and their associated cost.
@@ -138,11 +89,9 @@ paths:
                                       example: 0.008
                                       type: number
                                     monthly:
-                                      description: The monthly cost for the Backups service, in U.S. dollars. Appears as `null` if the Backups service has an hourly price only, without a monthly rate.
+                                      description: The monthly cost for the Backups service, in U.S. dollars.
                                       example: 5
-                                      type:
-                                      - number
-                                      - 'null'
+                                      type: number
                                   type: object
                                 region_prices:
                                   items:
@@ -157,11 +106,9 @@ paths:
                                         example: us-east
                                         type: string
                                       monthly:
-                                        description: The monthly cost for the Backups service in this region, in U.S. dollars. Appears as `null` if the Backups service has an hourly price only, without a monthly rate.
+                                        description: The monthly cost for the Backups service in this region, in U.S. dollars.
                                         example: 6
-                                        type:
-                                        - number
-                                        - 'null'
+                                        type: number
                                     type: object
                                   type: array
                               readOnly: true
@@ -229,14 +176,14 @@ paths:
                           x-linode-cli-display: 4
                           x-linode-filterable: true
                         gpus:
-                          description: __Filterable__, __Read-only__ The number of graphical processing units (GPU) this Linode type offers. This applies to a [GPU Linode](https://techdocs.akamai.com/cloud-computing/update/docs/gpu-compute-instances). Displayed as `0` if the Linode type doesn't offer GPUs.
+                          description: __Filterable__, __Read-only__ The number of GPUs this Linode type offers.
                           example: 0
                           readOnly: true
                           type: integer
                           x-akamai:
                             labels:
                             - Filterable
-                          x-linode-cli-display: 7
+                          x-linode-cli-display: 6.5
                           x-linode-filterable: true
                         id:
                           description: __Read-only__ The ID representing the Linode type.
@@ -272,7 +219,7 @@ paths:
                           x-akamai:
                             labels:
                             - Filterable
-                          x-linode-cli-display: 10
+                          x-linode-cli-display: 7
                           x-linode-filterable: true
                         price:
                           additionalProperties: false
@@ -282,14 +229,12 @@ paths:
                               description: The cost per hour in U.S. dollars.
                               example: 0.03
                               type: number
-                              x-linode-cli-display: 11
+                              x-linode-cli-display: 9
                             monthly:
-                              description: 'The cost per month in U.S. dollars. Appears as `null` if a Linode type has an hourly price only, without a monthly rate. '
+                              description: The cost per month in U.S. dollars.
                               example: 20
-                              type:
-                              - number
-                              - 'null'
-                              x-linode-cli-display: 12
+                              type: number
+                              x-linode-cli-display: 10
                           readOnly: true
                           type: object
                         region_prices:
@@ -305,11 +250,9 @@ paths:
                                 example: us-east
                                 type: string
                               monthly:
-                                description: 'The cost per month for this region in U.S. dollars. Appears as `null` if a Linode type has an hourly price only, without a monthly rate. '
+                                description: The cost per month for this region in U.S. dollars.
                                 example: 24
-                                type:
-                                - number
-                                - 'null'
+                                type: number
                             type: object
                           type: array
                         successor:
@@ -327,17 +270,17 @@ paths:
                           x-akamai:
                             labels:
                             - Filterable
-                          x-linode-cli-display: 9
+                          x-linode-cli-display: 8
                           x-linode-filterable: true
                         vcpus:
-                          description: __Filterable__, __Read-only__ The number of VCPU cores this Linode type offers. This applies to a [high memory Linode](https://techdocs.akamai.com/cloud-computing/update/docs/high-memory-compute-instances). Displayed as `0` if the Linode type doesn't offer VCPUs.
+                          description: __Filterable__, __Read-only__ The number of VCPU cores this Linode type offers.
                           example: 2
                           readOnly: true
                           type: integer
                           x-akamai:
                             labels:
                             - Filterable
-                          x-linode-cli-display: 8
+                          x-linode-cli-display: 6
                           x-linode-filterable: true
                       type: object
                       x-akamai:
@@ -361,18 +304,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-linode-types-200.yaml
-          description: A collection of Linode types.
+              x-example:
+                x-ref: ../examples/get-linode-types-200.json
+          description: A collection of Linode Types.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -400,8 +341,6 @@ paths:
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
       x-linode-cli-action: types
-      x-linode-iam:
-      - permissions: []
       x-linode-redoc-load-ids: true
   /{apiVersion}/linode/types/{typeId}:
     parameters:
@@ -414,48 +353,43 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
-    - description: The unique `id` for the Linode type to look up. Run the [List types](https://techdocs.akamai.com/linode-api/reference/get-linode-types) operation to see each Linode type `class` available on your account, and store its associated `id`.
+    - description: The ID of the Linode Type to look up.
       example: '{{typeId}}'
       in: path
       name: typeId
       required: true
       schema:
-        example: g6-standard-2
         type: string
       x-akamai:
-        file-path: parameters/linode-type-id-path.yaml
+        file-path: parameters/type-id-path-ef9c5d29.yaml
     x-akamai:
       file-path: paths/linode-type.yaml
       path-info: /{apiVersion}/linode/types/{typeId}
     x-linode-cli-command: linodes
     get:
-      description: 'Returns information about a specific Linode type, including pricing and specifications. This is used when creating or resizing Linodes.
+      description: 'Returns information about a specific Linode Type, including pricing and specifications. This is used when creating or resizing Linodes.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. This operation is internet-facing. No permissions are required.
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli linodes type-view g6-standard-2
 
         ```
 
 
-        Learn more'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-linode-type
@@ -464,55 +398,10 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                accelerated_devices: 0
-                addons:
-                  backups:
-                    price:
-                      hourly: 0.008
-                      monthly: 5
-                    region_prices:
-                    - hourly: 0.009
-                      id: id-cgk
-                      monthly: 6
-                    - hourly: 0.01
-                      id: br-gru
-                      monthly: 7
-                capabilities: []
-                class: standard
-                disk: 81920
-                gpus: 0
-                id: g6-standard-2
-                label: Linode 4GB
-                memory: 4096
-                network_out: 4000
-                price:
-                  hourly: 0.036
-                  monthly: 24
-                region_prices:
-                - hourly: 0.043
-                  id: id-cgk
-                  monthly: 28.8
-                - hourly: 0.05
-                  id: br-gru
-                  monthly: 33.6
-                successor: null
-                transfer: 4000
-                vcpus: 2
               schema:
                 additionalProperties: false
                 description: The available Linode types, including pricing and specifications for each. Use them when [creating](https://techdocs.akamai.com/linode-api/reference/post-linode-instance) or [resizing](https://techdocs.akamai.com/linode-api/reference/post-resize-linode-instance) Linodes.
                 properties:
-                  accelerated_devices:
-                    description: __Filterable__, __Read-only__ The number of video processing units (VPU) this Linode type offers. This applies to a NETINT Quadra T1U VPU-backed [accelerated Linode](https://techdocs.akamai.com/cloud-computing/docs/accelerated-compute-instances). Displayed as `0` if the Linode type doesn't offer VPUs.
-                    example: 1
-                    readOnly: true
-                    type: integer
-                    x-akamai:
-                      labels:
-                      - Filterable
-                    x-linode-cli-display: 6
-                    x-linode-filterable: true
                   addons:
                     additionalProperties: false
                     description: __Read-only__ Optional add-on services for Linodes and their associated cost.
@@ -530,11 +419,9 @@ paths:
                                 example: 0.008
                                 type: number
                               monthly:
-                                description: The monthly cost for the Backups service, in U.S. dollars. Appears as `null` if the Backups service has an hourly price only, without a monthly rate.
+                                description: The monthly cost for the Backups service, in U.S. dollars.
                                 example: 5
-                                type:
-                                - number
-                                - 'null'
+                                type: number
                             type: object
                           region_prices:
                             items:
@@ -549,11 +436,9 @@ paths:
                                   example: us-east
                                   type: string
                                 monthly:
-                                  description: The monthly cost for the Backups service in this region, in U.S. dollars. Appears as `null` if the Backups service has an hourly price only, without a monthly rate.
+                                  description: The monthly cost for the Backups service in this region, in U.S. dollars.
                                   example: 6
-                                  type:
-                                  - number
-                                  - 'null'
+                                  type: number
                               type: object
                             type: array
                         readOnly: true
@@ -621,14 +506,14 @@ paths:
                     x-linode-cli-display: 4
                     x-linode-filterable: true
                   gpus:
-                    description: __Filterable__, __Read-only__ The number of graphical processing units (GPU) this Linode type offers. This applies to a [GPU Linode](https://techdocs.akamai.com/cloud-computing/update/docs/gpu-compute-instances). Displayed as `0` if the Linode type doesn't offer GPUs.
+                    description: __Filterable__, __Read-only__ The number of GPUs this Linode type offers.
                     example: 0
                     readOnly: true
                     type: integer
                     x-akamai:
                       labels:
                       - Filterable
-                    x-linode-cli-display: 7
+                    x-linode-cli-display: 6.5
                     x-linode-filterable: true
                   id:
                     description: __Read-only__ The ID representing the Linode type.
@@ -664,7 +549,7 @@ paths:
                     x-akamai:
                       labels:
                       - Filterable
-                    x-linode-cli-display: 10
+                    x-linode-cli-display: 7
                     x-linode-filterable: true
                   price:
                     additionalProperties: false
@@ -674,14 +559,12 @@ paths:
                         description: The cost per hour in U.S. dollars.
                         example: 0.03
                         type: number
-                        x-linode-cli-display: 11
+                        x-linode-cli-display: 9
                       monthly:
-                        description: 'The cost per month in U.S. dollars. Appears as `null` if a Linode type has an hourly price only, without a monthly rate. '
+                        description: The cost per month in U.S. dollars.
                         example: 20
-                        type:
-                        - number
-                        - 'null'
-                        x-linode-cli-display: 12
+                        type: number
+                        x-linode-cli-display: 10
                     readOnly: true
                     type: object
                   region_prices:
@@ -697,11 +580,9 @@ paths:
                           example: us-east
                           type: string
                         monthly:
-                          description: 'The cost per month for this region in U.S. dollars. Appears as `null` if a Linode type has an hourly price only, without a monthly rate. '
+                          description: The cost per month for this region in U.S. dollars.
                           example: 24
-                          type:
-                          - number
-                          - 'null'
+                          type: number
                       type: object
                     type: array
                   successor:
@@ -719,35 +600,33 @@ paths:
                     x-akamai:
                       labels:
                       - Filterable
-                    x-linode-cli-display: 9
+                    x-linode-cli-display: 8
                     x-linode-filterable: true
                   vcpus:
-                    description: __Filterable__, __Read-only__ The number of VCPU cores this Linode type offers. This applies to a [high memory Linode](https://techdocs.akamai.com/cloud-computing/update/docs/high-memory-compute-instances). Displayed as `0` if the Linode type doesn't offer VCPUs.
+                    description: __Filterable__, __Read-only__ The number of VCPU cores this Linode type offers.
                     example: 2
                     readOnly: true
                     type: integer
                     x-akamai:
                       labels:
                       - Filterable
-                    x-linode-cli-display: 8
+                    x-linode-cli-display: 6
                     x-linode-filterable: true
                 type: object
                 x-akamai:
                   file-path: schemas/linode-type.yaml
+              x-example:
+                x-ref: ../examples/get-linode-type-200.json
               x-linode-cli-subtables:
               - region_prices
           description: A single Linode Type.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -775,8 +654,6 @@ paths:
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
       x-linode-cli-action: type-view
-      x-linode-iam:
-      - permissions: []
 components:
   securitySchemes:
     oauth:
@@ -786,10 +663,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -806,8 +679,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -826,7 +699,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

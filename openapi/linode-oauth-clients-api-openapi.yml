@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode OAuth clients API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,26 +38,16 @@ paths:
       description: 'Creates an OAuth Client, which can be used to allow users (using their Linode account) to log in to your own application, and optionally grant your application some amount of access to their Linodes or other entities.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_oauth_client`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account client-create \
 
@@ -65,7 +58,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-client
@@ -73,10 +79,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: Test_Client_1
-              public: false
-              redirect_uri: https://example.org/oauth/callback
             schema:
               allOf:
               - additionalProperties: false
@@ -121,7 +123,7 @@ paths:
                     readOnly: true
                     type: string
                   status:
-                    description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                    description: __Read-only__ The status of this application.  `active` by default.
                     enum:
                     - active
                     - disabled
@@ -147,21 +149,15 @@ paths:
               required:
               - label
               - redirect_uri
-              type: object
               x-akamai:
                 file-path: schemas/added-post-client.yaml
+            x-example:
+              x-ref: ../examples/post-client.json
+        description: Information about the OAuth Client to create.
       responses:
         '200':
           content:
             application/json:
-              example:
-                id: 2737bf16b39ab5d7b4a1
-                label: Test_Client_1
-                public: false
-                redirect_uri: https://example.org/oauth/callback
-                secret: <REDACTED>
-                status: active
-                thumbnail_url: https://api.linode.com/v4/account/clients/2737bf16b39ab5d7b4a1/thumbnail
               schema:
                 additionalProperties: false
                 description: A third-party application registered to Linode that users may log into with their Linode account through our authentication server at [login.linode.com](https://login.linode.com).  Using an OAuth Client, a third-party developer may be given access to some, or all, of a User's account for the purposes of their application.
@@ -205,7 +201,7 @@ paths:
                     readOnly: true
                     type: string
                   status:
-                    description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                    description: __Read-only__ The status of this application.  `active` by default.
                     enum:
                     - active
                     - disabled
@@ -228,18 +224,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/oauth-client.yaml
+              x-example:
+                x-ref: ../examples/post-client-200.json
           description: Client created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -270,41 +264,44 @@ paths:
         - syntax: "linode-cli account client-create \\\n  --label Test_Client_1 \\\n  --redirect_uri https://example.org/callback"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: client-create
-      x-linode-iam:
-      - permissions:
-        - create_oauth_client
     get:
       description: 'Returns a paginated list of OAuth Clients registered to your Account. OAuth Clients allow users to log into applications you write or host using their Linode Account, and may allow them to grant some level of access to their Linodes or other entities to your application.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_oauth_clients`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account clients-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-clients
@@ -338,18 +335,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - id: 2737bf16b39ab5d7b4a1
-                  label: Test_Client_1
-                  public: false
-                  redirect_uri: https://example.org/oauth/callback
-                  secret: <REDACTED>
-                  status: active
-                  thumbnail_url: https://api.linode.com/v4/account/clients/2737bf16b39ab5d7b4a1/thumbnail
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -397,7 +382,7 @@ paths:
                           readOnly: true
                           type: string
                         status:
-                          description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                          description: __Read-only__ The status of this application.  `active` by default.
                           enum:
                           - active
                           - disabled
@@ -439,18 +424,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-clients-200.yaml
+              x-example:
+                x-ref: ../examples/get-clients-200.json
           description: A paginated list of OAuth Clients.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -481,11 +464,11 @@ paths:
         - syntax: linode-cli account clients-list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: clients-list
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_oauth_clients
   /{apiVersion}/account/oauth-clients/{clientId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -497,7 +480,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -507,10 +489,9 @@ paths:
       name: clientId
       required: true
       schema:
-        example: 2737bf16b39ab5d7b4a1
         type: string
       x-akamai:
-        file-path: parameters/oauth-client-id-path.yaml
+        file-path: parameters/client-id-path.yaml
     x-akamai:
       file-path: paths/oauth-client.yaml
       path-info: /{apiVersion}/account/oauth-clients/{clientId}
@@ -519,26 +500,16 @@ paths:
       description: 'Returns information about a single OAuth client.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_oauth_client`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account client-view \
 
@@ -547,7 +518,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-client
@@ -556,14 +540,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                id: 2737bf16b39ab5d7b4a1
-                label: Test_Client_1
-                public: false
-                redirect_uri: https://example.org/oauth/callback
-                secret: <REDACTED>
-                status: active
-                thumbnail_url: https://api.linode.com/v4/account/clients/2737bf16b39ab5d7b4a1/thumbnail
               schema:
                 additionalProperties: false
                 description: A third-party application registered to Linode that users may log into with their Linode account through our authentication server at [login.linode.com](https://login.linode.com).  Using an OAuth Client, a third-party developer may be given access to some, or all, of a User's account for the purposes of their application.
@@ -607,7 +583,7 @@ paths:
                     readOnly: true
                     type: string
                   status:
-                    description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                    description: __Read-only__ The status of this application.  `active` by default.
                     enum:
                     - active
                     - disabled
@@ -630,18 +606,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/oauth-client.yaml
+              x-example:
+                x-ref: ../examples/get-client-200.json
           description: Information about the requested client.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -672,34 +646,24 @@ paths:
         - syntax: "linode-cli account client-view \\\n  edc6790ea9db4d224c5c"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: client-view
-      x-linode-iam:
-      - permissions:
-        - view_oauth_client
     put:
       description: 'Update information about an OAuth Client on your Account. This can be especially useful to update the `redirect_uri` of your client in the event that the callback URL changed in your application.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_oauth_client`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account client-update \
 
@@ -710,7 +674,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-client
@@ -718,10 +695,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: Test_Client_1
-              public: false
-              redirect_uri: https://example.org/oauth/callback
             schema:
               additionalProperties: false
               description: A third-party application registered to Linode that users may log into with their Linode account through our authentication server at [login.linode.com](https://login.linode.com).  Using an OAuth Client, a third-party developer may be given access to some, or all, of a User's account for the purposes of their application.
@@ -765,7 +738,7 @@ paths:
                   readOnly: true
                   type: string
                 status:
-                  description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                  description: __Read-only__ The status of this application.  `active` by default.
                   enum:
                   - active
                   - disabled
@@ -788,18 +761,13 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/oauth-client.yaml
+            x-example:
+              x-ref: ../examples/put-client.json
+        description: The fields to update.
       responses:
         '200':
           content:
             application/json:
-              example:
-                id: 2737bf16b39ab5d7b4a1
-                label: Test_Client_1
-                public: false
-                redirect_uri: https://example.org/oauth/callback
-                secret: <REDACTED>
-                status: active
-                thumbnail_url: https://api.linode.com/v4/account/clients/2737bf16b39ab5d7b4a1/thumbnail
               schema:
                 additionalProperties: false
                 description: A third-party application registered to Linode that users may log into with their Linode account through our authentication server at [login.linode.com](https://login.linode.com).  Using an OAuth Client, a third-party developer may be given access to some, or all, of a User's account for the purposes of their application.
@@ -843,7 +811,7 @@ paths:
                     readOnly: true
                     type: string
                   status:
-                    description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                    description: __Read-only__ The status of this application.  `active` by default.
                     enum:
                     - active
                     - disabled
@@ -866,18 +834,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/oauth-client.yaml
+              x-example:
+                x-ref: ../examples/get-client-200.json
           description: Client updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -908,34 +874,24 @@ paths:
         - syntax: "linode-cli account client-update \\\n  edc6790ea9db4d224c5c \\\n  --label Test_Client_1"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: client-update
-      x-linode-iam:
-      - permissions:
-        - update_oauth_client
     delete:
       description: 'Deletes an OAuth Client registered with Linode. The Client ID and Client secret will no longer be accepted by login.linode.com, and all tokens issued to this client will be invalidated (meaning that if your application was using a token, it will no longer work).
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_oauth_client`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account client-delete \
 
@@ -944,7 +900,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-client
@@ -953,25 +922,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-client-200.json
           description: Client deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1002,10 +968,10 @@ paths:
         - syntax: "linode-cli account client-delete \\\n  edc6790ea9db4d224c5c"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: client-delete
-      x-linode-iam:
-      - permissions:
-        - delete_oauth_client
   /{apiVersion}/account/oauth-clients/{clientId}/reset-secret:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -1017,7 +983,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1027,38 +992,27 @@ paths:
       name: clientId
       required: true
       schema:
-        example: 2737bf16b39ab5d7b4a1
         type: string
       x-akamai:
-        file-path: parameters/oauth-client-id-path.yaml
+        file-path: parameters/client-id-path.yaml
     x-akamai:
-      file-path: paths/oauth-client-reset-secret.yaml
+      file-path: paths/reset-secret.yaml
       path-info: /{apiVersion}/account/oauth-clients/{clientId}/reset-secret
     x-linode-cli-command: account
     post:
       description: 'Resets the OAuth Client secret for a client you own, and returns the OAuth Client with the plaintext secret. This secret is not supposed to be publicly known or disclosed anywhere. This can be used to generate a new secret in case the one you have has been leaked, or to get a new secret if you lost the original. The old secret is expired immediately, and logins to your client with the old secret will fail.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `reset_oauth_client_secret`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account client-reset-secret \
 
@@ -1067,7 +1021,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-reset-client-secret
@@ -1076,14 +1043,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                id: 2737bf16b39ab5d7b4a1
-                label: Client
-                public: false
-                redirect_uri: https://example.org/oauth/callback
-                secret: <REDACTED>
-                status: active
-                thumbnail_url: https://api.linode.com/v4/account/clients/2737bf16b39ab5d7b4a1/thumbnail
               schema:
                 additionalProperties: false
                 description: A third-party application registered to Linode that users may log into with their Linode account through our authentication server at [login.linode.com](https://login.linode.com).  Using an OAuth Client, a third-party developer may be given access to some, or all, of a User's account for the purposes of their application.
@@ -1127,7 +1086,7 @@ paths:
                     readOnly: true
                     type: string
                   status:
-                    description: __Read-only__ The status of this application, either `active` (default), `disabled`, or `suspended`.
+                    description: __Read-only__ The status of this application.  `active` by default.
                     enum:
                     - active
                     - disabled
@@ -1150,18 +1109,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/oauth-client.yaml
+              x-example:
+                x-ref: ../examples/post-reset-client-secret-200.json
           description: Client secret reset successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1192,180 +1149,10 @@ paths:
         - syntax: "linode-cli account client-reset-secret \\\n  edc6790ea9db4d224c5c"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: client-reset-secret
-      x-linode-iam:
-      - permissions:
-        - reset_oauth_client_secret
-  /{apiVersion}/account/oauth-clients/{clientId}/thumbnail:
-    parameters:
-    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
-      example: '{{apiVersion}}'
-      in: path
-      name: apiVersion
-      required: true
-      schema:
-        enum:
-        - v4
-        - v4beta
-        example: v4
-        type: string
-      x-akamai:
-        file-path: parameters/api-version-path.yaml
-    - description: The OAuth Client ID to look up.
-      example: '{{clientId}}'
-      in: path
-      name: clientId
-      required: true
-      schema:
-        example: 2737bf16b39ab5d7b4a1
-        type: string
-      x-akamai:
-        file-path: parameters/oauth-client-id-path.yaml
-    x-akamai:
-      file-path: paths/oauth-client-thumbnail.yaml
-      path-info: /{apiVersion}/account/oauth-clients/{clientId}/thumbnail
-    x-linode-cli-command: account
-    get:
-      description: 'Returns the PNG thumbnail for this OAuth client. This is a publicly viewable operation, and you can access it without authentication.
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. This operation is internet-facing. No permissions are required.'
-      externalDocs:
-        description: See documentation for this operation in Akamai's Linode API
-        url: https://techdocs.akamai.com/linode-api/reference/get-client-thumbnail
-      operationId: get-client-thumbnail
-      responses:
-        '200':
-          content:
-            image/png:
-              schema:
-                format: binary
-                type: string
-          description: The client's thumbnail.
-        default:
-          content:
-            application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
-              schema:
-                additionalProperties: false
-                properties:
-                  errors:
-                    description: Any warnings associated with a response.
-                    items:
-                      additionalProperties: false
-                      description: An object for describing a single error that occurred during the processing of a request.
-                      properties:
-                        field:
-                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
-                          example: fieldname
-                          type: string
-                        reason:
-                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
-                          example: fieldname must be a valid value
-                          type: string
-                      type: object
-                      x-akamai:
-                        file-path: schemas/error-object.yaml
-                    type: array
-                type: object
-          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
-      summary: Get an OAuth client's thumbnail
-      tags:
-      - OAuth clients
-      x-linode-cli-action: client-thumbnail
-      x-linode-cli-skip: true
-      x-linode-iam:
-      - permissions: []
-    put:
-      description: 'Upload a thumbnail for a client you own. You need to upload a PNG image file that the Linode API returns when the thumbnail is retrieved. This image is publicly viewable.
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_oauth_client_thumbnail`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`'
-      externalDocs:
-        description: See documentation for this operation in Akamai's Linode API
-        url: https://techdocs.akamai.com/linode-api/reference/put-client-thumbnail
-      operationId: put-client-thumbnail
-      requestBody:
-        content:
-          image/png:
-            schema:
-              format: binary
-              type: string
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              example: {}
-              schema:
-                description: The API responds with an empty object.
-                maxProperties: 0
-                type: object
-                x-akamai:
-                  file-path: schemas/added-empty-obj.yaml
-          description: Thumbnail updated successfully.
-        default:
-          content:
-            application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
-              schema:
-                additionalProperties: false
-                properties:
-                  errors:
-                    description: Any warnings associated with a response.
-                    items:
-                      additionalProperties: false
-                      description: An object for describing a single error that occurred during the processing of a request.
-                      properties:
-                        field:
-                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
-                          example: fieldname
-                          type: string
-                        reason:
-                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
-                          example: fieldname must be a valid value
-                          type: string
-                      type: object
-                      x-akamai:
-                        file-path: schemas/error-object.yaml
-                    type: array
-                type: object
-          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
-      security:
-      - personalAccessToken: []
-      - oauth:
-        - account:read_write
-      summary: Update an OAuth client's thumbnail
-      tags:
-      - OAuth clients
-      x-linode-cli-action: update-client-thumbnail
-      x-linode-cli-skip: true
-      x-linode-iam:
-      - permissions:
-        - update_oauth_client_thumbnail
 components:
   securitySchemes:
     oauth:
@@ -1375,10 +1162,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -1395,8 +1178,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -1415,7 +1198,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

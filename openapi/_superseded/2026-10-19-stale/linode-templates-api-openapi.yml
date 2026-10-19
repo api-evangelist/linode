@@ -1,0 +1,1135 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Templates API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- name: Templates
+paths:
+  /{apiVersion}/networking/firewalls/templates:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/firewall-templates.yaml
+      path-info: /{apiVersion}/networking/firewalls/templates
+    x-linode-cli-command: firewalls
+    get:
+      description: 'Returns a paginated list of a firewall templates. There are firewall templates specifically for VPC interfaces and public interfaces. Firewall templates come with some protection rules already configured.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. This operation is internet-facing. No permissions are required.
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls templates-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-firewall-templates
+      operationId: get-firewall-templates
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - rules:
+                    inbound:
+                    - action: ACCEPT
+                      addresses:
+                        ipv4:
+                        - 0.0.0.0/0
+                        ipv6:
+                        - ::/0
+                      description: Rule to allow inbound SSH traffic.
+                      label: accept-inbound-ssh
+                      ports: '22'
+                      protocol: TCP
+                    - action: ACCEPT
+                      addresses:
+                        ipv4:
+                        - 0.0.0.0/0
+                        ipv6:
+                        - ::/0
+                      description: Rule to allow inbound ICMP traffic.
+                      label: accept-inbound-icmp
+                      protocol: ICMP
+                    - action: ACCEPT
+                      addresses:
+                        ipv4:
+                        - 10.0.0.0/8
+                        - 192.168.0.0/17
+                        - 172.16.0.0/12
+                        ipv6: []
+                      description: Rule to allow inbound for RFC1918 ranges; `10.0.0.0/8`, `192.168.0.0/17`, `172.16.0.0/12`.
+                      label: accept-inbound-rfc1918
+                      ports: 1-65535
+                      protocol: TCP, UDP
+                    inbound_policy: DROP
+                    outbound_policy: ACCEPT
+                  slug: vpc
+                - rules:
+                    inbound:
+                    - action: ACCEPT
+                      addresses:
+                        ipv4:
+                        - 0.0.0.0/0
+                        ipv6:
+                        - ::/0
+                      description: Rule to allow inbound SSH traffic.
+                      label: accept-inbound-ssh
+                      ports: '22'
+                      protocol: TCP
+                    - action: ACCEPT
+                      addresses:
+                        ipv4:
+                        - 0.0.0.0/0
+                        ipv6:
+                        - ::/0
+                      description: Rule to allow inbound ICMP traffic.
+                      label: accept-inbound-icmp
+                      protocol: ICMP
+                    inbound_policy: DROP
+                    outbound_policy: ACCEPT
+                  slug: public
+                page: 1
+                pages: 1
+                results: 2
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    example:
+                    - rules:
+                        inbound:
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Rule to allow inbound SSH traffic.
+                          label: accept-inbound-ssh
+                          ports: '22'
+                          protocol: TCP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Rule to allow inbound ICMP traffic.
+                          label: accept-inbound-icmp
+                          protocol: ICMP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 10.0.0.0/8
+                            - 192.168.0.0/17
+                            - 172.16.0.0/12
+                            ipv6: []
+                          description: Rule to allow inbound for RFC1918 ranges; `10.0.0.0/8`, `192.168.0.0/17`, `172.16.0.0/12`.
+                          label: accept-inbound-rfc1918
+                          ports: 1-65535
+                          protocol: TCP, UDP
+                        inbound_policy: DROP
+                        outbound_policy: ACCEPT
+                      slug: vpc
+                    - rules:
+                        inbound:
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Rule to allow inbound SSH traffic.
+                          label: accept-inbound-ssh
+                          ports: '22'
+                          protocol: TCP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Rule to allow inbound ICMP traffic.
+                          label: accept-inbound-icmp
+                          protocol: ICMP
+                        inbound_policy: DROP
+                        outbound_policy: ACCEPT
+                      slug: public
+                    items:
+                      additionalProperties: false
+                      description: A list of firewall templates and their `rules`.
+                      properties:
+                        rules:
+                          additionalProperties: false
+                          description: 'The inbound and outbound access rules for the VPC firewall template.
+
+
+                            A firewall can have up to 25 rules across its inbound and outbound rule sets. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.'
+                          properties:
+                            inbound:
+                              description: The inbound rules for the firewall.
+                              items:
+                                additionalProperties: false
+                                description: One of a firewall's inbound or outbound access rules. The `ports` field can be used to allow traffic on a comma-separated list of different ports.
+                                properties:
+                                  action:
+                                    description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                                    enum:
+                                    - ACCEPT
+                                    - DROP
+                                    example: ACCEPT
+                                    type: string
+                                    x-linode-cli-display: 2
+                                  addresses:
+                                    additionalProperties: false
+                                    description: 'The explicit IPv4 or IPv6 CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                                      Must contain `ipv4`, `ipv6`, or both.'
+                                    properties:
+                                      ipv4:
+                                        description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                          If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                                        example:
+                                        - 192.0.2.0/24
+                                        - 198.51.100.2/32
+                                        - pl::vpcs:1234
+                                        - pl::vpcs:<current>
+                                        items:
+                                          type: string
+                                        type: array
+                                        x-linode-cli-display: 5
+                                      ipv6:
+                                        description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                          If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                                        example:
+                                        - 2001:DB8::/128
+                                        - pl::vpcs:1234
+                                        - pl::vpcs:<current>
+                                        items:
+                                          type: string
+                                        type: array
+                                        x-linode-cli-display: 6
+                                    type: object
+                                  description:
+                                    description: Used to describe this rule. For display purposes only.
+                                    example: An example firewall rule description.
+                                    maxLength: 100
+                                    minLength: 1
+                                    type: string
+                                    x-linode-cli-display: 7
+                                  label:
+                                    description: Used to identify this rule. For display purposes only.
+                                    example: firewallrule123
+                                    maxLength: 32
+                                    minLength: 3
+                                    type: string
+                                    x-linode-cli-display: 1
+                                  ports:
+                                    description: "A string representing any ports affected by this rule:\n\n- May be a single port, a range of ports, or a comma-separated list of both.\n    - A single space is permitted after each comma.\n    - Ranges are inclusive, for example `22-24`. The end value must be greater than the start value.\n    - Ports must be between `1` and `65535` and can't contain leading zeros, for example, `80` is valid, `080` is not.\n- The string can contain up to 15 \"pieces\". A single port counts as one piece; a range counts as two pieces. for example, `22-24, 80, 443` contains four pieces.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`.\n    - Must be omitted for `ICMP` or `IPENCAP`.\n    - An empty string `\"\"` is only permitted for protocols that support ports.\n- If the `ports` field is omitted for a supported protocol, the rule affects all ports.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`, or their IANA numeric equivalents; `6`, `17`, `132`.\n    - Must be omitted for `ICMP`, `IPENCAP`, `ALL`, or any other numeric protocol.\n    - An empty string `\"\"` is only permitted for protocols that support ports."
+                                    example: 22-24, 80, 443
+                                    type:
+                                    - string
+                                    - 'null'
+                                    x-linode-cli-display: 4
+                                  protocol:
+                                    description: 'The type of network traffic affected by this rule.
+
+
+                                      Accepts a limited set of standard protocol keywords including `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL` or any IANA-assigned protocol number as a decimal string including `"0"` to `"255"`.
+
+
+                                      If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the IANA protocol number option.
+
+
+                                      `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL` or IANA numeric protocols other than `"6"`, `"17"`, or `"132"` must not include a `ports` field.'
+                                    example: TCP
+                                    oneOf:
+                                    - description: 'Use a keyword to specify common protocol.
+
+
+                                        If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the **IANA protocol number** option. `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL`, `ICMP` and `IPENCAP` must not include a `ports` field.'
+                                      enum:
+                                      - TCP
+                                      - UDP
+                                      - ICMP
+                                      - IPENCAP
+                                      - ALL
+                                      example: TCP
+                                      title: Protocol name
+                                      type: string
+                                    - description: A decimal string representation of an IANA-assigned IP protocol number including "0" to "255". For example, use `"50"` for ESP or `"51"` for AH. Numeric protocols other than `"6"` (TCP), `"17"` (UDP), or `"132"` (SCTP) must not include a `ports` field. Leading zeros are not permitted, for example use `"6"`, not `"06"`.
+                                      example: '50'
+                                      pattern: ^(0|[1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+                                      title: IANA protocol number
+                                      type: string
+                                    type: string
+                                    x-linode-cli-display: 3
+                                required:
+                                - action
+                                - addresses
+                                - protocol
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/firewall-rule-config.yaml
+                              type: array
+                              x-linode-cli-format: json
+                            inbound_policy:
+                              description: The default behavior for inbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `inbound` object's `action` field.
+                              enum:
+                              - ACCEPT
+                              - DROP
+                              example: DROP
+                              type: string
+                            outbound:
+                              description: The outbound rules for the firewall.
+                              items:
+                                additionalProperties: false
+                                description: One of a firewall's inbound or outbound access rules. The `ports` field can be used to allow traffic on a comma-separated list of different ports.
+                                properties:
+                                  action:
+                                    description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                                    enum:
+                                    - ACCEPT
+                                    - DROP
+                                    example: ACCEPT
+                                    type: string
+                                    x-linode-cli-display: 2
+                                  addresses:
+                                    additionalProperties: false
+                                    description: 'The explicit IPv4 or IPv6 CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                                      Must contain `ipv4`, `ipv6`, or both.'
+                                    properties:
+                                      ipv4:
+                                        description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                          If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                                        example:
+                                        - 192.0.2.0/24
+                                        - 198.51.100.2/32
+                                        - pl::vpcs:1234
+                                        - pl::vpcs:<current>
+                                        items:
+                                          type: string
+                                        type: array
+                                        x-linode-cli-display: 5
+                                      ipv6:
+                                        description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                          If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                                        example:
+                                        - 2001:DB8::/128
+                                        - pl::vpcs:1234
+                                        - pl::vpcs:<current>
+                                        items:
+                                          type: string
+                                        type: array
+                                        x-linode-cli-display: 6
+                                    type: object
+                                  description:
+                                    description: Used to describe this rule. For display purposes only.
+                                    example: An example firewall rule description.
+                                    maxLength: 100
+                                    minLength: 1
+                                    type: string
+                                    x-linode-cli-display: 7
+                                  label:
+                                    description: Used to identify this rule. For display purposes only.
+                                    example: firewallrule123
+                                    maxLength: 32
+                                    minLength: 3
+                                    type: string
+                                    x-linode-cli-display: 1
+                                  ports:
+                                    description: "A string representing any ports affected by this rule:\n\n- May be a single port, a range of ports, or a comma-separated list of both.\n    - A single space is permitted after each comma.\n    - Ranges are inclusive, for example `22-24`. The end value must be greater than the start value.\n    - Ports must be between `1` and `65535` and can't contain leading zeros, for example, `80` is valid, `080` is not.\n- The string can contain up to 15 \"pieces\". A single port counts as one piece; a range counts as two pieces. for example, `22-24, 80, 443` contains four pieces.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`.\n    - Must be omitted for `ICMP` or `IPENCAP`.\n    - An empty string `\"\"` is only permitted for protocols that support ports.\n- If the `ports` field is omitted for a supported protocol, the rule affects all ports.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`, or their IANA numeric equivalents; `6`, `17`, `132`.\n    - Must be omitted for `ICMP`, `IPENCAP`, `ALL`, or any other numeric protocol.\n    - An empty string `\"\"` is only permitted for protocols that support ports."
+                                    example: 22-24, 80, 443
+                                    type:
+                                    - string
+                                    - 'null'
+                                    x-linode-cli-display: 4
+                                  protocol:
+                                    description: 'The type of network traffic affected by this rule.
+
+
+                                      Accepts a limited set of standard protocol keywords including `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL` or any IANA-assigned protocol number as a decimal string including `"0"` to `"255"`.
+
+
+                                      If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the IANA protocol number option.
+
+
+                                      `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL` or IANA numeric protocols other than `"6"`, `"17"`, or `"132"` must not include a `ports` field.'
+                                    example: TCP
+                                    oneOf:
+                                    - description: 'Use a keyword to specify common protocol.
+
+
+                                        If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the **IANA protocol number** option. `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL`, `ICMP` and `IPENCAP` must not include a `ports` field.'
+                                      enum:
+                                      - TCP
+                                      - UDP
+                                      - ICMP
+                                      - IPENCAP
+                                      - ALL
+                                      example: TCP
+                                      title: Protocol name
+                                      type: string
+                                    - description: A decimal string representation of an IANA-assigned IP protocol number including "0" to "255". For example, use `"50"` for ESP or `"51"` for AH. Numeric protocols other than `"6"` (TCP), `"17"` (UDP), or `"132"` (SCTP) must not include a `ports` field. Leading zeros are not permitted, for example use `"6"`, not `"06"`.
+                                      example: '50'
+                                      pattern: ^(0|[1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+                                      title: IANA protocol number
+                                      type: string
+                                    type: string
+                                    x-linode-cli-display: 3
+                                required:
+                                - action
+                                - addresses
+                                - protocol
+                                type: object
+                                x-akamai:
+                                  file-path: schemas/firewall-rule-config.yaml
+                              type: array
+                              x-linode-cli-format: json
+                            outbound_policy:
+                              description: The default behavior for outbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `outbound` object's `action` fields.
+                              enum:
+                              - ACCEPT
+                              - DROP
+                              example: ACCEPT
+                              type: string
+                          type: object
+                        slug:
+                          description: __Read-only__ The firewall template types available for VPC and public Linode interfaces.
+                          enum:
+                          - vpc
+                          - public
+                          example: vpc
+                          items:
+                            type: string
+                          readOnly: true
+                          type: array
+                          x-linode-cli-display: 1
+                      type: object
+                      x-akamai:
+                        file-path: schemas/firewall-templates.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 2
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-firewall-templates-200.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  rules.inbound:
+                    additionalProperties: true
+                    type: object
+                    x-linode-cli-display: 4
+                    x-linode-cli-format: json
+                  rules.inbound_policy:
+                    type: string
+                    x-linode-cli-display: 2
+                  rules.outbound:
+                    additionalProperties: true
+                    type: object
+                    x-linode-cli-display: 5
+                    x-linode-cli-format: json
+                  rules.outbound_policy:
+                    type: string
+                    x-linode-cli-display: 3
+                  slug:
+                    type: string
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-template-cli.yaml
+          description: Returns a paginated list of firewall templates.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: List firewall templates
+      tags:
+      - Templates
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls templates-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: templates-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions: []
+  /{apiVersion}/networking/firewalls/templates/{slug}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: __Enum__ The firewall template type, available for either `vpc` or `public` interfaces.
+      example: '{{slug}}'
+      in: path
+      name: slug
+      required: true
+      schema:
+        enum:
+        - vpc
+        - public
+        example: public
+        type: string
+      x-akamai:
+        file-path: parameters/firewall-template-path.yaml
+    x-akamai:
+      file-path: paths/firewall-template.yaml
+      path-info: /{apiVersion}/networking/firewalls/templates/{slug}
+    x-linode-cli-command: firewalls
+    get:
+      description: 'Gets a `vpc` or `public` firewall template you can use with Linode VPC and public interfaces. Firewall templates come with some protection rules already configured.
+
+
+        The public interface''s firewall template allows for login with SSH, and regular networking control data. You should further strengthen these rules by limiting the allowed IPv4 and IPv6 ranges.
+
+
+        The VPC interface''s firewall template allows for login with SSH, regular networking control data, and inbound traffic from the VPC address space. You should further strengthen these rules by limiting the allowed IPv4 and IPv6 ranges.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. This operation is internet-facing. No permissions are required.
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `firewall:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli firewalls template-view vpc
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-firewall-template
+      operationId: get-firewall-template
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                ex-public:
+                  summary: Public firewall template
+                  value:
+                    data:
+                    - rules:
+                        inbound:
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Accept inbound SSH
+                          label: accept-inbound-ssh
+                          ports: '22'
+                          protocol: TCP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Accept inbound ICMP
+                          label: accept-inbound-icmp
+                          protocol: ICMP
+                        inbound_policy: DROP
+                        outbound: []
+                        outbound_policy: ACCEPT
+                      slug: public
+                ex-vpc:
+                  summary: VPC firewall template
+                  value:
+                    data:
+                    - rules:
+                        inbound:
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Accept inbound SSH
+                          label: accept-inbound-ssh
+                          ports: '22'
+                          protocol: TCP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 0.0.0.0/0
+                            ipv6:
+                            - ::/0
+                          description: Accept inbound ICMP
+                          label: accept-inbound-icmp
+                          protocol: ICMP
+                        - action: ACCEPT
+                          addresses:
+                            ipv4:
+                            - 1O.0.0.0/8
+                            - 192.168.0.0/17
+                            - 172.16.0.0/12
+                            ipv6: []
+                          description: Rule to allow inbound for RFC1918 ranges; `10.0.0.0/8`, `192.168.0.0/17`, `172.16.0.0/12`.
+                          label: accept-inbound-rfc1918
+                          ports: 1-65535
+                          protocol: TCP, UDP
+                        inbound_policy: DROP
+                        outbound: []
+                        outbound_policy: ACCEPT
+                      slug: vpc
+              schema:
+                additionalProperties: false
+                description: A list of firewall templates and their `rules`.
+                properties:
+                  rules:
+                    additionalProperties: false
+                    description: 'The inbound and outbound access rules for the VPC firewall template.
+
+
+                      A firewall can have up to 25 rules across its inbound and outbound rule sets. Multiple rules are applied in order. If two rules conflict, the first rule takes precedence. For example, if the first rule accepts inbound traffic from an address, and the second rule drops inbound traffic from the same address, the first rule applies, and inbound traffic from that address is accepted.'
+                    properties:
+                      inbound:
+                        description: The inbound rules for the firewall.
+                        items:
+                          additionalProperties: false
+                          description: One of a firewall's inbound or outbound access rules. The `ports` field can be used to allow traffic on a comma-separated list of different ports.
+                          properties:
+                            action:
+                              description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                              enum:
+                              - ACCEPT
+                              - DROP
+                              example: ACCEPT
+                              type: string
+                              x-linode-cli-display: 2
+                            addresses:
+                              additionalProperties: false
+                              description: 'The explicit IPv4 or IPv6 CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                                Must contain `ipv4`, `ipv6`, or both.'
+                              properties:
+                                ipv4:
+                                  description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                    If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                                  example:
+                                  - 192.0.2.0/24
+                                  - 198.51.100.2/32
+                                  - pl::vpcs:1234
+                                  - pl::vpcs:<current>
+                                  items:
+                                    type: string
+                                  type: array
+                                  x-linode-cli-display: 5
+                                ipv6:
+                                  description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                    If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                                  example:
+                                  - 2001:DB8::/128
+                                  - pl::vpcs:1234
+                                  - pl::vpcs:<current>
+                                  items:
+                                    type: string
+                                  type: array
+                                  x-linode-cli-display: 6
+                              type: object
+                            description:
+                              description: Used to describe this rule. For display purposes only.
+                              example: An example firewall rule description.
+                              maxLength: 100
+                              minLength: 1
+                              type: string
+                              x-linode-cli-display: 7
+                            label:
+                              description: Used to identify this rule. For display purposes only.
+                              example: firewallrule123
+                              maxLength: 32
+                              minLength: 3
+                              type: string
+                              x-linode-cli-display: 1
+                            ports:
+                              description: "A string representing any ports affected by this rule:\n\n- May be a single port, a range of ports, or a comma-separated list of both.\n    - A single space is permitted after each comma.\n    - Ranges are inclusive, for example `22-24`. The end value must be greater than the start value.\n    - Ports must be between `1` and `65535` and can't contain leading zeros, for example, `80` is valid, `080` is not.\n- The string can contain up to 15 \"pieces\". A single port counts as one piece; a range counts as two pieces. for example, `22-24, 80, 443` contains four pieces.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`.\n    - Must be omitted for `ICMP` or `IPENCAP`.\n    - An empty string `\"\"` is only permitted for protocols that support ports.\n- If the `ports` field is omitted for a supported protocol, the rule affects all ports.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`, or their IANA numeric equivalents; `6`, `17`, `132`.\n    - Must be omitted for `ICMP`, `IPENCAP`, `ALL`, or any other numeric protocol.\n    - An empty string `\"\"` is only permitted for protocols that support ports."
+                              example: 22-24, 80, 443
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            protocol:
+                              description: 'The type of network traffic affected by this rule.
+
+
+                                Accepts a limited set of standard protocol keywords including `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL` or any IANA-assigned protocol number as a decimal string including `"0"` to `"255"`.
+
+
+                                If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the IANA protocol number option.
+
+
+                                `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL` or IANA numeric protocols other than `"6"`, `"17"`, or `"132"` must not include a `ports` field.'
+                              example: TCP
+                              oneOf:
+                              - description: 'Use a keyword to specify common protocol.
+
+
+                                  If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the **IANA protocol number** option. `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL`, `ICMP` and `IPENCAP` must not include a `ports` field.'
+                                enum:
+                                - TCP
+                                - UDP
+                                - ICMP
+                                - IPENCAP
+                                - ALL
+                                example: TCP
+                                title: Protocol name
+                                type: string
+                              - description: A decimal string representation of an IANA-assigned IP protocol number including "0" to "255". For example, use `"50"` for ESP or `"51"` for AH. Numeric protocols other than `"6"` (TCP), `"17"` (UDP), or `"132"` (SCTP) must not include a `ports` field. Leading zeros are not permitted, for example use `"6"`, not `"06"`.
+                                example: '50'
+                                pattern: ^(0|[1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+                                title: IANA protocol number
+                                type: string
+                              type: string
+                              x-linode-cli-display: 3
+                          required:
+                          - action
+                          - addresses
+                          - protocol
+                          type: object
+                          x-akamai:
+                            file-path: schemas/firewall-rule-config.yaml
+                        type: array
+                        x-linode-cli-format: json
+                      inbound_policy:
+                        description: The default behavior for inbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `inbound` object's `action` field.
+                        enum:
+                        - ACCEPT
+                        - DROP
+                        example: DROP
+                        type: string
+                      outbound:
+                        description: The outbound rules for the firewall.
+                        items:
+                          additionalProperties: false
+                          description: One of a firewall's inbound or outbound access rules. The `ports` field can be used to allow traffic on a comma-separated list of different ports.
+                          properties:
+                            action:
+                              description: Controls whether traffic is accepted or dropped by this rule. Overrides the Firewall's `inbound_policy` if this is an inbound rule, or the `outbound_policy` if this is an outbound rule.
+                              enum:
+                              - ACCEPT
+                              - DROP
+                              example: ACCEPT
+                              type: string
+                              x-linode-cli-display: 2
+                            addresses:
+                              additionalProperties: false
+                              description: 'The explicit IPv4 or IPv6 CIDRs, and referenced Prefix Lists, affected by this rule. Each rule can include up to 255 addresses or networks across its `ipv4` and `ipv6` arrays. Both networks and individual IPs count equally toward this limit.
+
+
+                                Must contain `ipv4`, `ipv6`, or both.'
+                              properties:
+                                ipv4:
+                                  description: 'The names of the Prefix Lists with IPv4 CIDRs referenced in this rule, as well as IPv4 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                    If `0.0.0.0/0` is included in this list, all IPv4 addresses are affected by this rule.'
+                                  example:
+                                  - 192.0.2.0/24
+                                  - 198.51.100.2/32
+                                  - pl::vpcs:1234
+                                  - pl::vpcs:<current>
+                                  items:
+                                    type: string
+                                  type: array
+                                  x-linode-cli-display: 5
+                                ipv6:
+                                  description: 'The names of the Prefix Lists with IPv6 CIDRs referenced in this rule, as well as IPv6 addresses or networks in IP/mask format. The `zone_id` notation described in [RFC 4007](https://www.rfc-editor.org/rfc/rfc4007) is not supported. Must not be an empty list.
+
+
+                                    If `::/0` is included in this list, all IPv6 addresses are affected by this rule.'
+                                  example:
+                                  - 2001:DB8::/128
+                                  - pl::vpcs:1234
+                                  - pl::vpcs:<current>
+                                  items:
+                                    type: string
+                                  type: array
+                                  x-linode-cli-display: 6
+                              type: object
+                            description:
+                              description: Used to describe this rule. For display purposes only.
+                              example: An example firewall rule description.
+                              maxLength: 100
+                              minLength: 1
+                              type: string
+                              x-linode-cli-display: 7
+                            label:
+                              description: Used to identify this rule. For display purposes only.
+                              example: firewallrule123
+                              maxLength: 32
+                              minLength: 3
+                              type: string
+                              x-linode-cli-display: 1
+                            ports:
+                              description: "A string representing any ports affected by this rule:\n\n- May be a single port, a range of ports, or a comma-separated list of both.\n    - A single space is permitted after each comma.\n    - Ranges are inclusive, for example `22-24`. The end value must be greater than the start value.\n    - Ports must be between `1` and `65535` and can't contain leading zeros, for example, `80` is valid, `080` is not.\n- The string can contain up to 15 \"pieces\". A single port counts as one piece; a range counts as two pieces. for example, `22-24, 80, 443` contains four pieces.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`.\n    - Must be omitted for `ICMP` or `IPENCAP`.\n    - An empty string `\"\"` is only permitted for protocols that support ports.\n- If the `ports` field is omitted for a supported protocol, the rule affects all ports.\n- Only allowed when protocol is `TCP`, `UDP`, or `SCTP`, or their IANA numeric equivalents; `6`, `17`, `132`.\n    - Must be omitted for `ICMP`, `IPENCAP`, `ALL`, or any other numeric protocol.\n    - An empty string `\"\"` is only permitted for protocols that support ports."
+                              example: 22-24, 80, 443
+                              type:
+                              - string
+                              - 'null'
+                              x-linode-cli-display: 4
+                            protocol:
+                              description: 'The type of network traffic affected by this rule.
+
+
+                                Accepts a limited set of standard protocol keywords including `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL` or any IANA-assigned protocol number as a decimal string including `"0"` to `"255"`.
+
+
+                                If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the IANA protocol number option.
+
+
+                                `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL` or IANA numeric protocols other than `"6"`, `"17"`, or `"132"` must not include a `ports` field.'
+                              example: TCP
+                              oneOf:
+                              - description: 'Use a keyword to specify common protocol.
+
+
+                                  If the protocol keyword you need is not `TCP` , `UDP`, `ICMP`, `IPENCAP`, or `ALL`, use the **IANA protocol number** option. `ALL` matches all IP protocols and allows a single rule to unconditionally allow or drop traffic. Rules using `ALL`, `ICMP` and `IPENCAP` must not include a `ports` field.'
+                                enum:
+                                - TCP
+                                - UDP
+                                - ICMP
+                                - IPENCAP
+                                - ALL
+                                example: TCP
+                                title: Protocol name
+                                type: string
+                              - description: A decimal string representation of an IANA-assigned IP protocol number including "0" to "255". For example, use `"50"` for ESP or `"51"` for AH. Numeric protocols other than `"6"` (TCP), `"17"` (UDP), or `"132"` (SCTP) must not include a `ports` field. Leading zeros are not permitted, for example use `"6"`, not `"06"`.
+                                example: '50'
+                                pattern: ^(0|[1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+                                title: IANA protocol number
+                                type: string
+                              type: string
+                              x-linode-cli-display: 3
+                          required:
+                          - action
+                          - addresses
+                          - protocol
+                          type: object
+                          x-akamai:
+                            file-path: schemas/firewall-rule-config.yaml
+                        type: array
+                        x-linode-cli-format: json
+                      outbound_policy:
+                        description: The default behavior for outbound traffic. You can override this setting by [updating](https://techdocs.akamai.com/linode-api/reference/put-firewall-rules) the `outbound` object's `action` fields.
+                        enum:
+                        - ACCEPT
+                        - DROP
+                        example: ACCEPT
+                        type: string
+                    type: object
+                  slug:
+                    description: __Read-only__ The firewall template types available for VPC and public Linode interfaces.
+                    enum:
+                    - vpc
+                    - public
+                    example: vpc
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-templates.yaml
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  rules.inbound:
+                    additionalProperties: true
+                    type: object
+                    x-linode-cli-display: 4
+                    x-linode-cli-format: json
+                  rules.inbound_policy:
+                    type: string
+                    x-linode-cli-display: 2
+                  rules.outbound:
+                    additionalProperties: true
+                    type: object
+                    x-linode-cli-display: 5
+                    x-linode-cli-format: json
+                  rules.outbound_policy:
+                    type: string
+                    x-linode-cli-display: 3
+                  slug:
+                    type: string
+                    x-linode-cli-display: 1
+                type: object
+                x-akamai:
+                  file-path: schemas/firewall-template-cli.yaml
+          description: Returns a `vpc` or `public` firewall template for interface firewalls.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - firewall:read_only
+      summary: Get a firewall template
+      tags:
+      - Templates
+      x-akamai:
+        tabs:
+        - syntax: linode-cli firewalls template-view vpc
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: template-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions: []
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

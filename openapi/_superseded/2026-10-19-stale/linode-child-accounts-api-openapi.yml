@@ -1,0 +1,948 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Child accounts API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Child accounts let you, as an Akamai partner (a parent account holder), switch between and manage your end customers' accounts (child accounts). Talk to your account team about setting up a parent-child account relationship. Once in place, you can use these operations to review your child accounts and create tokens for your use as a parent, on a child account.
+  name: Child accounts
+paths:
+  /{apiVersion}/account/child-accounts:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/child-accounts.yaml
+      path-info: /{apiVersion}/account/child-accounts
+    x-linode-cli-command: child-account
+    get:
+      deprecated: true
+      description: '__Deprecated__ Returns a paginated list of child accounts you''re part of the account delegations for.
+
+
+        > 🚧 Parent and child accounts feature in Identity and Access
+
+        >
+
+        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is now deprecated, so use the List child accounts operation instead. To learn more about the changes, see Changes to the parent and child accounts feature for migrated partners.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `child_account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli child-account list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-child-accounts
+      operationId: get-child-accounts
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - active_since: '2018-01-01T00:01:01'
+                  address_1: 123 Main Street
+                  address_2: Suite A
+                  balance: 200
+                  balance_uninvoiced: 145
+                  billing_source: external
+                  capabilities:
+                  - Linodes
+                  - NodeBalancers
+                  - Block Storage
+                  - Object Storage
+                  city: San Diego
+                  company: Acme
+                  country: US
+                  credit_card:
+                    expiry: 11/2024
+                    last_four: 1111
+                  email: asingh@linode.com
+                  euuid: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                  first_name: John
+                  last_name: Smith
+                  phone: 858-555-1212
+                  state: CA
+                  tax_id: ATU99999999
+                  zip: 92111-1234
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Child account object.
+                      properties:
+                        active_since:
+                          description: __Read-only__ The activation date and time for the child account.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        address_1:
+                          description: __Filterable__ First line of this child account's billing address.
+                          example: 123 Main Street
+                          maxLength: 64
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        address_2:
+                          description: __Filterable__ Second line of this child account's billing address, if applicable.
+                          example: Suite A
+                          maxLength: 64
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        balance:
+                          description: __Read-only__ This child account's balance, in US dollars.
+                          example: 200
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 4
+                        balance_uninvoiced:
+                          description: __Read-only__ This child account's current estimated invoice in US dollars. This is not your final invoice balance. Transfer charges are not included in the estimate.
+                          example: 145
+                          readOnly: true
+                          type: number
+                          x-linode-cli-display: 4
+                        billing_source:
+                          description: __Read-only__ The source of service charges for this account, as determined by its relationship with Akamai. The API returns a value of `external` to describe a child account in a parent-child account environment.
+                          enum:
+                          - external
+                          example: external
+                          readOnly: true
+                          type: string
+                        capabilities:
+                          description: __Read-only__ A list of the capabilities the child account supports.
+                          example:
+                          - Linodes
+                          - NodeBalancers
+                          - Block Storage
+                          - Object Storage
+                          items:
+                            type: string
+                          readOnly: true
+                          type: array
+                        city:
+                          description: __Filterable__ The city for this child account's billing address.
+                          example: San Diego
+                          maxLength: 24
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        company:
+                          description: '__Filterable__ The company name for the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`. You can''t change this value yourself. We use it to create the proxy users that a parent account uses to access a child account. Talk to your account team if you need to change this value.'
+                          example: Acme
+                          maxLength: 128
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        country:
+                          description: __Filterable__ The two-letter ISO 3166 country code for this child account's billing address.
+                          example: US
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        credit_card:
+                          additionalProperties: false
+                          description: __Read-only__ Information for the credit card you've assigned to this child account.
+                          properties:
+                            expiry:
+                              description: The expiration month and year of the credit card.
+                              example: 11/2024
+                              type: string
+                            last_four:
+                              description: The last four digits of the credit card.
+                              example: 1111
+                              type: string
+                          readOnly: true
+                          type: object
+                        email:
+                          description: __Filterable__ The email address of the owner of this child account.
+                          example: john.smith@linode.com
+                          maxLength: 128
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        euuid:
+                          description: __Read-only__ An external, unique identifier that Akamai assigned to the child account.
+                          example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                          readOnly: true
+                          type: string
+                        first_name:
+                          description: '__Filterable__ The first name of the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`.'
+                          example: John
+                          maxLength: 50
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 1
+                          x-linode-filterable: true
+                        last_name:
+                          description: '__Filterable__ The last name of the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`.'
+                          example: Smith
+                          maxLength: 50
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        phone:
+                          description: __Filterable__ The phone number for the owner of this child account.
+                          example: 858-555-1212
+                          maxLength: 32
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        state:
+                          description: '__Filterable__ The state or province for the billing address (`address_1` and `address_2, if applicable`). If in the United States (US) or Canada (CA), this is the two-letter ISO 3166 State or Province code.
+
+
+                            > 📘
+
+                            >
+
+                            > If this is a US military address, use state abbreviations (AA, AE, AP).'
+                          example: CA
+                          maxLength: 24
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        tax_id:
+                          description: The tax identification number for this child account. Use this for tax calculations in some countries. If you live in a country that doesn't collect taxes, ensure this is an empty string (`""`).
+                          example: ATU99999999
+                          maxLength: 25
+                          type: string
+                        zip:
+                          description: '__Filterable__ The postal code of this account''s billing address. The following restrictions apply:
+
+
+                            - Can only contain ASCII letters, numbers, and dashes (`-`).
+
+                            - Can''t contain more than 10 letter or number characters.'
+                          example: 92111-1234
+                          maxLength: 10
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/child-account.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-child-accounts-200.yaml
+          description: Returns child-level accounts.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - child_account:read_only
+      summary: List child accounts (Deprecated)
+      tags:
+      - Child accounts
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: linode-cli child-account list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: child_account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: child_account_access
+  /{apiVersion}/account/child-accounts/{euuId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The child account to look up. You can run the [List child accounts](https://techdocs.akamai.com/linode-api/reference/get-child-accounts) operation to find the applicable account and store its `euuid` as your `euuId`.
+      example: '{{euuId}}'
+      in: path
+      name: euuId
+      required: true
+      schema:
+        example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+        type: string
+      x-akamai:
+        file-path: parameters/eeuid.yaml
+    x-akamai:
+      file-path: paths/child-account.yaml
+      path-info: /{apiVersion}/account/child-accounts/{euuId}
+    x-linode-cli-command: child-account
+    get:
+      deprecated: true
+      description: '__Deprecated__ Returns details of a specific child account that you''re part of the account delegation for.
+
+
+        > 🚧 Parent and child accounts feature in Identity and Access
+
+        >
+
+        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is now deprecated, so use the Get a child account operation instead. To learn more about the changes to the parent and child accounts feature, see Changes for migrated partners.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `child_account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli child-account view A1BC2DEF-34GH-567I-J890KLMN12O34P56
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-child-account
+      operationId: get-child-account
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                active_since: '2018-01-01T00:01:01'
+                address_1: 123 Main Street
+                address_2: Suite A
+                balance: 200
+                balance_uninvoiced: 145
+                billing_source: external
+                capabilities:
+                - Linodes
+                - NodeBalancers
+                - Block Storage
+                - Object Storage
+                city: San Diego
+                company: Acme
+                country: US
+                credit_card:
+                  expiry: 11/2024
+                  last_four: 1111
+                email: jkowalski@linode.com
+                euuid: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                first_name: John
+                last_name: Smith
+                phone: 858-555-1212
+                state: CA
+                tax_id: ATU99999999
+                zip: 92111-1234
+              schema:
+                additionalProperties: false
+                description: Child account object.
+                properties:
+                  active_since:
+                    description: __Read-only__ The activation date and time for the child account.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  address_1:
+                    description: __Filterable__ First line of this child account's billing address.
+                    example: 123 Main Street
+                    maxLength: 64
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  address_2:
+                    description: __Filterable__ Second line of this child account's billing address, if applicable.
+                    example: Suite A
+                    maxLength: 64
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  balance:
+                    description: __Read-only__ This child account's balance, in US dollars.
+                    example: 200
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  balance_uninvoiced:
+                    description: __Read-only__ This child account's current estimated invoice in US dollars. This is not your final invoice balance. Transfer charges are not included in the estimate.
+                    example: 145
+                    readOnly: true
+                    type: number
+                    x-linode-cli-display: 4
+                  billing_source:
+                    description: __Read-only__ The source of service charges for this account, as determined by its relationship with Akamai. The API returns a value of `external` to describe a child account in a parent-child account environment.
+                    enum:
+                    - external
+                    example: external
+                    readOnly: true
+                    type: string
+                  capabilities:
+                    description: __Read-only__ A list of the capabilities the child account supports.
+                    example:
+                    - Linodes
+                    - NodeBalancers
+                    - Block Storage
+                    - Object Storage
+                    items:
+                      type: string
+                    readOnly: true
+                    type: array
+                  city:
+                    description: __Filterable__ The city for this child account's billing address.
+                    example: San Diego
+                    maxLength: 24
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  company:
+                    description: '__Filterable__ The company name for the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`. You can''t change this value yourself. We use it to create the proxy users that a parent account uses to access a child account. Talk to your account team if you need to change this value.'
+                    example: Acme
+                    maxLength: 128
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  country:
+                    description: __Filterable__ The two-letter ISO 3166 country code for this child account's billing address.
+                    example: US
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  credit_card:
+                    additionalProperties: false
+                    description: __Read-only__ Information for the credit card you've assigned to this child account.
+                    properties:
+                      expiry:
+                        description: The expiration month and year of the credit card.
+                        example: 11/2024
+                        type: string
+                      last_four:
+                        description: The last four digits of the credit card.
+                        example: 1111
+                        type: string
+                    readOnly: true
+                    type: object
+                  email:
+                    description: __Filterable__ The email address of the owner of this child account.
+                    example: john.smith@linode.com
+                    maxLength: 128
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                  euuid:
+                    description: __Read-only__ An external, unique identifier that Akamai assigned to the child account.
+                    example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+                    readOnly: true
+                    type: string
+                  first_name:
+                    description: '__Filterable__ The first name of the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`.'
+                    example: John
+                    maxLength: 50
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 1
+                    x-linode-filterable: true
+                  last_name:
+                    description: '__Filterable__ The last name of the owner of this child account. It can''t include any of these characters: `<` `>` `(` `)` `"` `=`.'
+                    example: Smith
+                    maxLength: 50
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  phone:
+                    description: __Filterable__ The phone number for the owner of this child account.
+                    example: 858-555-1212
+                    maxLength: 32
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  state:
+                    description: '__Filterable__ The state or province for the billing address (`address_1` and `address_2, if applicable`). If in the United States (US) or Canada (CA), this is the two-letter ISO 3166 State or Province code.
+
+
+                      > 📘
+
+                      >
+
+                      > If this is a US military address, use state abbreviations (AA, AE, AP).'
+                    example: CA
+                    maxLength: 24
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                  tax_id:
+                    description: The tax identification number for this child account. Use this for tax calculations in some countries. If you live in a country that doesn't collect taxes, ensure this is an empty string (`""`).
+                    example: ATU99999999
+                    maxLength: 25
+                    type: string
+                  zip:
+                    description: '__Filterable__ The postal code of this account''s billing address. The following restrictions apply:
+
+
+                      - Can only contain ASCII letters, numbers, and dashes (`-`).
+
+                      - Can''t contain more than 10 letter or number characters.'
+                    example: 92111-1234
+                    maxLength: 10
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/child-account.yaml
+          description: Returns the specified child-level account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - child_account:read_only
+      summary: Get a child account (Deprecated)
+      tags:
+      - Child accounts
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: linode-cli child-account view A1BC2DEF-34GH-567I-J890KLMN12O34P56
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: child_account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - view
+      x-linode-grant: child_account_access
+  /{apiVersion}/account/child-accounts/{euuId}/token:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The child account to look up. You can run the [List child accounts](https://techdocs.akamai.com/linode-api/reference/get-child-accounts) operation to find the applicable account and store its `euuid` as your `euuId`.
+      example: '{{euuId}}'
+      in: path
+      name: euuId
+      required: true
+      schema:
+        example: A1BC2DEF-34GH-567I-J890KLMN12O34P56
+        type: string
+      x-akamai:
+        file-path: parameters/eeuid.yaml
+    x-akamai:
+      file-path: paths/child-account-token.yaml
+      path-info: /{apiVersion}/account/child-accounts/{euuId}/token
+    x-linode-cli-command: child-account
+    post:
+      deprecated: true
+      description: '__Deprecated__ Creates a short-lived bearer token for a parent user on a specific child account.
+
+
+        > 🚧 Parent and child accounts feature in Identity and Access
+
+        >
+
+        > With the introduction of Identity and Access, the parent and child accounts feature has changed. This operation is no longer available. Use the Create a delegate user token operation instead. To learn more about the changes to the parent and child accounts feature, see Changes for migrated partners.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `child_account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli child-account create A1BC2DEF-34GH-567I-J890KLMN12O34P56
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-child-account-token
+      operationId: post-child-account-token
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2024-05-01T00:01:01'
+                expiry: '2024-05-01T00:16:01'
+                id: 918
+                label: parent1_1234_2024-05-01T00:01:01
+                scopes: '*'
+                token: abcdefghijklmnop
+              schema:
+                additionalProperties: false
+                description: The token generated manually for a child account so its proxy user can access the API and CLI without going through an OAuth login.
+                properties:
+                  created:
+                    description: __Filterable__, __Read-only__ The date and time this token was created.
+                    example: '2024-05-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  expiry:
+                    description: __Read-only__ When this token expires, which is 15 minutes from the time of creation. Proxy user tokens can't be renewed. After this time, Akamai revokes the token and you need to generate a new one.
+                    example: '2024-05-01T00:16:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 6
+                  id:
+                    description: __Read-only__ The proxy user token's unique ID, which can be used to revoke it.
+                    example: 918
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Filterable__ The name of the token. The API automatically sets this to `<username>_<uid>_<time>`. It's composed of the `username` for your parent account user, the unique `uid` Akamai assigned to identify your user, and the `time` the API generated the token. This is for display purposes only, but you can use it to help track how you're using each proxy user token.
+                    example: parent1_1234_2024-05-01T00:01:01
+                    maxLength: 100
+                    minLength: 1
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  scopes:
+                    description: __Read-only__ The scopes this token was created with. Defaults to `*`. Proxy user tokens automatically inherit all the permissions of the proxy user.
+                    example: '*'
+                    format: oauth-scopes
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  token:
+                    description: __Read-only__ The proxy user token that can be used to access the API and CLI. After you [create](https://techdocs.akamai.com/linode-api/reference/post-child-account-token) a token, you can see the full token in the response. All other operations that contain this token only show the first 16 characters in their response.
+                    example: abcdefghijklmnop
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/proxy-user-token.yaml
+          description: Token created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - child_account:read_write
+      summary: Create a proxy user token
+      tags:
+      - Child accounts
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: linode-cli child-account create A1BC2DEF-34GH-567I-J890KLMN12O34P56
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: child_account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action:
+      - create
+      x-linode-grant: child_account_access
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

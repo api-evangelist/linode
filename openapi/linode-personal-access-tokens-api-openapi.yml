@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Personal access tokens API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,35 +35,22 @@ paths:
       path-info: /{apiVersion}/profile/tokens
     x-linode-cli-command: profile
     post:
-      description: 'Creates a personal access token for your User. The raw token will be returned in the response, but will never be returned again afterward so be sure to take note of it. You may create a token with _at most_ the scopes of your current token. The created token will be able to access your account until the given expiry, or until it''s revoked.
+      description: 'Creates a Personal Access Token for your User. The raw token will be returned in the response, but will never be returned again afterward so be sure to take note of it. You may create a token with _at most_ the scopes of your current token. The created token will be able to access your Account until the given expiry, or until it is revoked. __Parent and child accounts__ In a parent and child account environment, the following apply:
 
 
-        __Parent and child accounts__
+        - If you''re using a child account parent user (proxy user), you can''t create this form of token. The only token available to a proxy user is one that lets you run operations in a child account. These are created with the Create a proxy user token operation.
 
 
-        In the context of the parent and child accounts feature, delegate users can''t use personal access tokens on child accounts. You need to create a delegate user token instead.
+        >
 
 
-        **Permissions and scopes**
+        ---
 
 
-        To call this operation, you need the following:
+        - __CLI__.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_profile_pat`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile token-create \
 
@@ -73,7 +63,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-personal-access-token
@@ -81,15 +84,13 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: linode-cli
-              scopes: '*'
             schema:
               additionalProperties: false
               properties:
                 expiry:
-                  description: This token's expiration time. If omitted, the new token remains valid until manually revoked.
+                  description: When this token should be valid until.  If omitted, the new token will be valid until it is manually revoked.
                   example: '{{expiry}}'
+                  format: date-time
                   type:
                   - string
                   - 'null'
@@ -121,18 +122,14 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/post-personal-access-token.yaml
+            x-example:
+              x-ref: ../examples/post-personal-access-token.json
+        description: Information about the requested token.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                created: '2018-01-01T00:01:01'
-                expiry: '2018-01-01T13:46:32'
-                id: 123
-                label: linode-cli
-                scopes: '*'
-                token: abcdefghijklmnop
               schema:
                 additionalProperties: false
                 description: A Personal Access Token is a token generated manually to access the API without going through an OAuth login.  Personal Access Tokens can have scopes just like OAuth tokens do, and are commonly used to give access to command-line tools like the Linode CLI, or when writing your own integrations.
@@ -140,6 +137,7 @@ paths:
                   created:
                     description: __Filterable__, __Read-only__ The date and time this token was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -150,6 +148,7 @@ paths:
                   expiry:
                     description: __Read-only__ When this token will expire.  Personal Access Tokens cannot be renewed, so after this time the token will be completely unusable and a new token will need to be generated.  Tokens may be created with `null` as their expiry and will never expire unless revoked.
                     example: '2018-01-01T13:46:32'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-linode-cli-display: 6
@@ -186,18 +185,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/personal-access-token.yaml
+              x-example:
+                x-ref: ../examples/post-personal-access-token-200.json
           description: Token created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -228,41 +225,44 @@ paths:
         - syntax: "linode-cli profile token-create \\\n  --scopes '*' \\\n  --expiry '2018-01-01T13:46:32' \\\n  --label linode-cli"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: token-create
-      x-linode-iam:
-      - permissions:
-        - create_profile_pat
     get:
-      description: 'Returns a paginated list of personal access tokens currently active for your user.
+      description: 'Returns a paginated list of Personal Access Tokens currently active for your User.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_profile_pats`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile tokens-list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-personal-access-tokens
@@ -271,17 +271,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - created: '2018-01-01T00:01:01'
-                  expiry: '2018-01-01T13:46:32'
-                  id: 123
-                  label: linode-cli
-                  scopes: '*'
-                  token: abcdefghijklmnop
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
@@ -293,6 +282,7 @@ paths:
                         created:
                           description: __Filterable__, __Read-only__ The date and time this token was created.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-akamai:
@@ -303,6 +293,7 @@ paths:
                         expiry:
                           description: __Read-only__ When this token will expire.  Personal Access Tokens cannot be renewed, so after this time the token will be completely unusable and a new token will need to be generated.  Tokens may be created with `null` as their expiry and will never expire unless revoked.
                           example: '2018-01-01T13:46:32'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-linode-cli-display: 6
@@ -358,18 +349,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-personal-access-tokens-200.yaml
+              x-example:
+                x-ref: ../examples/get-personal-access-tokens-200.json
           description: A paginated list of active tokens.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -400,10 +389,10 @@ paths:
         - syntax: linode-cli profile tokens-list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: tokens-list
-      x-linode-iam:
-      - permissions:
-        - list_profile_pats
   /{apiVersion}/profile/tokens/{tokenId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -415,7 +404,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -434,36 +422,39 @@ paths:
       path-info: /{apiVersion}/profile/tokens/{tokenId}
     x-linode-cli-command: profile
     get:
-      description: 'Returns a single personal access token.
+      description: 'Returns a single Personal Access Token.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_profile_pat`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile token-view 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-personal-access-token
@@ -472,13 +463,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2018-01-01T00:01:01'
-                expiry: '2018-01-01T13:46:32'
-                id: 123
-                label: linode-cli
-                scopes: '*'
-                token: abcdefghijklmnop
               schema:
                 additionalProperties: false
                 description: A Personal Access Token is a token generated manually to access the API without going through an OAuth login.  Personal Access Tokens can have scopes just like OAuth tokens do, and are commonly used to give access to command-line tools like the Linode CLI, or when writing your own integrations.
@@ -486,6 +470,7 @@ paths:
                   created:
                     description: __Filterable__, __Read-only__ The date and time this token was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -496,6 +481,7 @@ paths:
                   expiry:
                     description: __Read-only__ When this token will expire.  Personal Access Tokens cannot be renewed, so after this time the token will be completely unusable and a new token will need to be generated.  Tokens may be created with `null` as their expiry and will never expire unless revoked.
                     example: '2018-01-01T13:46:32'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-linode-cli-display: 6
@@ -532,18 +518,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/personal-access-token.yaml
+              x-example:
+                x-ref: ../examples/get-personal-access-token-200.json
           description: The requested token.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -574,40 +558,24 @@ paths:
         - syntax: linode-cli profile token-view 123
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: token-view
-      x-linode-iam:
-      - permissions:
-        - view_profile_pat
     put:
       description: 'Updates a Personal Access Token.
 
 
-        __Parent and child accounts__
+        >
 
 
-        In the context of the parent and child accounts feature, delegate users can''t use personal access tokens on child accounts. You need to create a delegate user token instead.
+        ---
 
 
-        **Permissions and scopes**
+        - __CLI__.
 
 
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_profile_pat`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile token-update 123 \
 
@@ -616,7 +584,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-personal-access-token
@@ -624,8 +605,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              label: linode-cli
             schema:
               additionalProperties: false
               description: A Personal Access Token is a token generated manually to access the API without going through an OAuth login.  Personal Access Tokens can have scopes just like OAuth tokens do, and are commonly used to give access to command-line tools like the Linode CLI, or when writing your own integrations.
@@ -633,6 +612,7 @@ paths:
                 created:
                   description: __Filterable__, __Read-only__ The date and time this token was created.
                   example: '{{created}}'
+                  format: date-time
                   readOnly: true
                   type: string
                   x-akamai:
@@ -643,6 +623,7 @@ paths:
                 expiry:
                   description: __Read-only__ When this token will expire.  Personal Access Tokens cannot be renewed, so after this time the token will be completely unusable and a new token will need to be generated.  Tokens may be created with `null` as their expiry and will never expire unless revoked.
                   example: '{{expiry}}'
+                  format: date-time
                   readOnly: true
                   type: string
                   x-linode-cli-display: 6
@@ -679,18 +660,14 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/personal-access-token.yaml
+            x-example:
+              x-ref: ../examples/put-personal-access-token.json
+        description: The fields to update.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                created: '2018-01-01T00:01:01'
-                expiry: '2018-01-01T13:46:32'
-                id: 123
-                label: linode-cli
-                scopes: '*'
-                token: abcdefghijklmnop
               schema:
                 additionalProperties: false
                 description: A Personal Access Token is a token generated manually to access the API without going through an OAuth login.  Personal Access Tokens can have scopes just like OAuth tokens do, and are commonly used to give access to command-line tools like the Linode CLI, or when writing your own integrations.
@@ -698,6 +675,7 @@ paths:
                   created:
                     description: __Filterable__, __Read-only__ The date and time this token was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -708,6 +686,7 @@ paths:
                   expiry:
                     description: __Read-only__ When this token will expire.  Personal Access Tokens cannot be renewed, so after this time the token will be completely unusable and a new token will need to be generated.  Tokens may be created with `null` as their expiry and will never expire unless revoked.
                     example: '2018-01-01T13:46:32'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-linode-cli-display: 6
@@ -744,18 +723,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/personal-access-token.yaml
+              x-example:
+                x-ref: ../examples/get-personal-access-token-200.json
           description: Token updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -786,41 +763,44 @@ paths:
         - syntax: "linode-cli profile token-update 123 \\\n  --label linode-cli"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: token-update
-      x-linode-iam:
-      - permissions:
-        - update_profile_pat
     delete:
-      description: 'Revokes a personal access token. The token will be invalidated immediately, and requests using that token will fail with a 401. It is possible to revoke access to the token making the request to revoke a token, but keep in mind that doing so could lose you access to the api and require you to create a new token through some other means.
+      description: 'Revokes a Personal Access Token. The token will be invalidated immediately, and requests using that token will fail with a 401. It is possible to revoke access to the token making the request to revoke a token, but keep in mind that doing so could lose you access to the api and require you to create a new token through some other means.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_profile_pat`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli profile token-delete 123
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-personal-access-token
@@ -829,25 +809,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-personal-access-token-200.json
           description: Token revoked successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -878,10 +855,10 @@ paths:
         - syntax: linode-cli profile token-delete 123
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: token-delete
-      x-linode-iam:
-      - permissions:
-        - delete_profile_pat
 components:
   securitySchemes:
     oauth:
@@ -891,10 +868,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -911,8 +884,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -931,7 +904,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

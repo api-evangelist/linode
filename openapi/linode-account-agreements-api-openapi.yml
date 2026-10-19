@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Account agreements API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,20 +38,23 @@ paths:
       description: 'Accept required agreements by setting them to `true`. This remains until the content of the agreement changes. If it does, you need to run this operation again to accept it. If you set this to `false`, the API rejects the request and you need to open a support ticket to reset the agreement. Omitted agreements are left unchanged.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `acknowledge_account_agreement`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `account:read_write`'
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-account-agreements
@@ -56,11 +62,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              billing_agreement: true
-              eu_model: true
-              master_service_agreement: true
-              privacy_policy: true
             schema:
               additionalProperties: false
               description: Acknowledgment status for agreements on your account. When acknowledging any agreements, set them to `true` and omit any remainders.
@@ -84,30 +85,29 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/agreements.yaml
+            x-example:
+              x-ref: ../examples/post-agreements.json
         required: true
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-account-agreements-200.json
           description: Agreements updated successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -133,30 +133,35 @@ paths:
       summary: Acknowledge agreements
       tags:
       - Account agreements
+      x-akamai:
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: post-agreements
       x-linode-cli-skip: true
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - acknowledge_account_agreement
     get:
       description: 'Returns all agreements and their acceptance status for your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_account_agreements`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `account:read_only`'
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-account-agreements
@@ -165,11 +170,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                billing_agreement: true
-                eu_model: true
-                master_service_agreement: true
-                privacy_policy: true
               schema:
                 additionalProperties: false
                 description: Acknowledgment status for agreements on your account. When acknowledging any agreements, set them to `true` and omit any remainders.
@@ -192,18 +192,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/agreements.yaml
+              x-example:
+                x-ref: ../examples/get-acceptance-agreement-200.json
           description: The status of each acceptance agreement for your account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -229,12 +227,14 @@ paths:
       summary: List agreements
       tags:
       - Account agreements
+      x-akamai:
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: agreements
       x-linode-cli-skip: true
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - list_account_agreements
 components:
   securitySchemes:
     oauth:
@@ -244,10 +244,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -264,8 +260,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -284,7 +280,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

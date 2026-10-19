@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Maintenances API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -42,28 +45,23 @@ paths:
         > Currently, only Linodes are included as entities for viewing.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_maintenances`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account maintenance-list
 
         ```
 
 
-        Learn more'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-maintenance
@@ -72,36 +70,16 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - complete_time: '2026-04-17T14:11:17'
-                  description: scheduled
-                  entity:
-                    id: 1234
-                    label: demo-linode
-                    type: linode
-                    url: /v4/linode/instances/1234
-                  maintenance_policy_set: linode/power_off_on
-                  reason: This maintenance will allow us to update the BIOS on the host's motherboard.
-                  source: platform
-                  start_time: '2026-04-17T14:10:47'
-                  status: completed
-                  type: auto
-                  when: '2026-04-17T14:08:58'
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: Maintenance events for Linodes on this account.
                     items:
                       additionalProperties: false
                       description: Information about maintenance affecting an entity.
                       properties:
                         complete_time:
-                          description: '__Filterable__ The time the maintenance completed. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+                          description: '__Beta__, __Filterable__ The time the maintenance completed. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
 
 
                             - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
@@ -114,14 +92,17 @@ paths:
                           x-akamai:
                             labels:
                             - Filterable
+                            status: BETA
                           x-linode-filterable: true
                         description:
-                          description: Indicates either `scheduled` maintenance events or `emergency` maintenance.
+                          description: __Beta__ Differentiates between scheduled and emergency maintenance.
                           enum:
-                          - scheduled
-                          - emergency
-                          example: scheduled
+                          - Scheduled Maintenance
+                          - Emergency Maintenance
+                          example: Scheduled Maintenance
                           type: string
+                          x-akamai:
+                            status: BETA
                         entity:
                           additionalProperties: false
                           description: The entity affected by the maintenance.
@@ -144,15 +125,16 @@ paths:
                               type: string
                           type: object
                         maintenance_policy_set:
-                          description: __Filterable__ The maintenance policy configured by the user.
+                          description: __Beta__, __Filterable__ The maintenance policy configured by the user.
                           example: linode/migrate
                           type: string
                           x-akamai:
                             labels:
                             - Filterable
+                            status: BETA
                           x-linode-filterable: true
                         not_before:
-                          description: '__Filterable__ The earliest time when the maintenance can start. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+                          description: '__Beta__, __Filterable__ The earliest time when the maintenance can start. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
 
 
                             - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
@@ -165,20 +147,23 @@ paths:
                           x-akamai:
                             labels:
                             - Filterable
+                            status: BETA
                           x-linode-filterable: true
                         reason:
                           description: The reason maintenance is being performed.
                           example: This maintenance will allow us to update the BIOS on the host's motherboard.
                           type: string
                         source:
-                          description: The origin of the maintenance. A `platform` source indicates that the maintenance was initiated by Akamai. A `user` source indicates that the maintenance was initiated by the user.
+                          description: __Beta__ The origin of the maintenance. A `platform` source indicates that the maintenance was initiated by Akamai. A `user` source indicates that the maintenance was initiated by the user.
                           enum:
                           - platform
                           - user
                           example: platform
                           type: string
+                          x-akamai:
+                            status: BETA
                         start_time:
-                          description: '__Filterable__ The time the maintenance started. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+                          description: '__Beta__, __Filterable__ The time the maintenance started. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
 
 
                             - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
@@ -191,6 +176,7 @@ paths:
                           x-akamai:
                             labels:
                             - Filterable
+                            status: BETA
                           x-linode-filterable: true
                         status:
                           description: __Filterable__ The maintenance status. Maintenance progress follows the sequence `pending`, `scheduled`, `started`, and `completed`. A `scheduled` status is unique to Linodes that require a reboot for [QEMU maintenance](https://techdocs.akamai.com/linode-api/reference/reboot-your-linodes-for-qemu-maintenance).
@@ -208,7 +194,7 @@ paths:
                             - Filterable
                           x-linode-filterable: true
                         type:
-                          description: __Filterable__ The type of maintenance, either `reboot`, `cold_migration`, `live_migration`, `migrate`, or `power_off_on`.
+                          description: __Filterable__ The type of maintenance.
                           enum:
                           - reboot
                           - cold_migration
@@ -258,18 +244,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-maintenance-200.yaml
+              x-example:
+                x-ref: ../examples/get-maintenance-200.json
           description: Returns a paginated list of Maintenance objects.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -301,9 +285,6 @@ paths:
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
       x-linode-cli-action: maintenance-list
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_maintenances
 components:
   securitySchemes:
     oauth:
@@ -313,10 +294,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -333,8 +310,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -353,7 +330,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

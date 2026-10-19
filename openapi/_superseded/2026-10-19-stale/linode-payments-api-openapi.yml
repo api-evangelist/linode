@@ -1,0 +1,1076 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Payments API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to view current payment due information and make a payment.
+  name: Payments
+paths:
+  /{apiVersion}/account/credit-card:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/credit-card.yaml
+      path-info: /{apiVersion}/account/credit-card
+    x-linode-cli-command: account
+    post:
+      deprecated: true
+      description: '__Deprecated__ Please run Add a payment method.
+
+
+        Adds or edits a credit card to your account and sets it as the default payment method.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-credit-card
+      operationId: post-credit-card
+      requestBody:
+        content:
+          application/json:
+            example:
+              card_number: '4111111111111111'
+              cvv: '123'
+              expiry_month: 12
+              expiry_year: 2030
+            schema:
+              additionalProperties: false
+              description: An object representing the credit card information you have on file with Linode to make Payments against your Account.
+              properties:
+                card_number:
+                  description: Your credit card number. No spaces or hyphens (`-`) allowed.
+                  example: '{{card_number}}'
+                  format: digits
+                  maxLength: 24
+                  minLength: 14
+                  type: string
+                cvv:
+                  description: The card verification value (CVV) of the credit card, typically found on the back of the card.
+                  example: '{{cvv}}'
+                  format: digits
+                  maxLength: 4
+                  minLength: 3
+                  type: string
+                expiry_month:
+                  description: A value from 1-12 representing the expiration month of your credit card, for example `1` indicates January, `2` indicates February, and `5` indicates May.
+                  example: '{{expiry_month}}'
+                  maximum: 12
+                  minimum: 1
+                  type: integer
+                expiry_year:
+                  description: A four-digit integer representing the expiration year of your credit card. The combination of `expiry_month` and `expiry_year` must result in a month/year combination of the current month or in the future. An expiration date set in the past is invalid.
+                  example: '{{expiry_year}}'
+                  maximum: 2050
+                  minimum: 2026
+                  type: integer
+              required:
+              - card_number
+              - expiry_month
+              - expiry_year
+              - cvv
+              type: object
+              x-akamai:
+                file-path: schemas/credit-card.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Credit Card updated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Add or edit a credit card
+      tags:
+      - Payments
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: update-card
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+  /{apiVersion}/account/payments:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/payments.yaml
+      path-info: /{apiVersion}/account/payments
+    x-linode-cli-command: account
+    post:
+      description: 'Makes a payment to your account.
+
+
+        - The requested amount is charged to the default payment method if no `payment_method_id` is specified.
+
+
+        - A `payment_submitted` event is generated when a payment is successfully submitted.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, this operation isn''t available for child account users.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `make_billing_payment`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account payment-create \
+
+        --usd 120.50 \
+
+        --payment_method_id 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-payment
+      operationId: post-payment
+      requestBody:
+        content:
+          application/json:
+            example:
+              payment_method_id: 123
+              usd: $120.50
+            schema:
+              additionalProperties: false
+              properties:
+                payment_method_id:
+                  description: The ID of the Payment Method to apply to the Payment.
+                  example: '{{payment_method_id}}'
+                  type: integer
+                usd:
+                  description: 'The amount in US Dollars of the Payment.
+
+
+                    - Can begin with or without `$`.
+
+                    - Commas (`,`) are not accepted.
+
+                    - Must end with a decimal expression, such as `.00` or `.99`.
+
+                    - Minimum: `$5.00` or the Account balance, whichever is lower.
+
+                    - Maximum: `$2000.00` or the Account balance up to `$50000.00`, whichever is greater.'
+                  example: '{{usd}}'
+                  pattern: ^\$?\d+\.\d{2}$
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-payment.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                date: '2018-01-15T00:01:01'
+                id: 123
+                usd: '120.50'
+              schema:
+                additionalProperties: false
+                description: Payment object response.
+                properties:
+                  date:
+                    description: __Filterable__, __Read-only__ When the payment was made.
+                    example: '2018-01-15T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ The unique ID of the payment.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  usd:
+                    description: __Filterable__, __Read-only__ The amount, in US dollars, of the payment.
+                    example: '120.50'
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/payment.yaml
+          description: Payment submitted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Make a payment
+      tags:
+      - Payments
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli account payment-create \\\n  --usd 120.50 \\\n  --payment_method_id 123"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: payment-create
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - make_billing_payment
+    get:
+      description: 'Returns a paginated list of payments made on this Account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_billing_payments`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account payments-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-payments
+      operationId: get-payments
+      parameters:
+      - content:
+          application/json:
+            schema:
+              description: Specifies the `X-Filter` header JSON object's filtering and sort criteria.
+              oneOf:
+              - additionalProperties:
+                  type: string
+                description: Specify the name of the data field and the accompanying value.
+                example:
+                  region: us-east
+                title: Simple filter
+                type: object
+                x-akamai:
+                  file-path: schemas/x-filter-criteria.yaml
+              - example:
+                  +or:
+                  - region: us-east
+                  - label: linode123
+                properties:
+                  +and:
+                    description: All conditions need to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +contains:
+                    description: The provided string needs to be in the value.
+                    type: string
+                  +gt:
+                    description: The value needs to be greater than the provided number.
+                    type: number
+                  +gte:
+                    description: The value needs to be greater than or equal to the provided number.
+                    type: number
+                  +lt:
+                    description: The value needs to be less than the provided number.
+                    type: number
+                  +lte:
+                    description: The value needs to be less than or equal to the provided number.
+                    type: number
+                  +neq:
+                    description: The provided string is left out of the results.
+                    type: string
+                  +or:
+                    description: At least one condition needs to be true.
+                    items:
+                      additionalProperties:
+                        type: string
+                      description: Specify the name of the data field and the accompanying value.
+                      example:
+                        region: us-east
+                      title: Simple filter
+                      type: object
+                      x-akamai:
+                        file-path: schemas/x-filter-criteria.yaml
+                    type: array
+                  +order:
+                    default: asc
+                    description: Sort in ascending (`asc`) or descending (`desc`) order. This defaults to `asc`. Requires `+order_by`.
+                    enum:
+                    - asc
+                    - desc
+                    type: string
+                  +order_by:
+                    description: Order results based on the provided attribute. The attribute needs to be filterable.
+                    type: string
+                title: Filter and sort criteria
+                type: object
+              x-akamai:
+                file-path: schemas/x-filter.yaml
+        description: Specifies a JSON object to filter down the results. See [Filtering and sorting](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) for details.
+        example: '{{X-Filter}}'
+        in: header
+        name: X-Filter
+        required: false
+        x-akamai:
+          file-path: parameters/x-filter-header.yaml
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - date: '2018-01-15T00:01:01'
+                  id: 123
+                  usd: '120.50'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Payments that have been posted to this account.
+                    items:
+                      additionalProperties: false
+                      description: Payment object response.
+                      properties:
+                        date:
+                          description: __Filterable__, __Read-only__ When the payment was made.
+                          example: '2018-01-15T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        id:
+                          description: __Read-only__ The unique ID of the payment.
+                          example: 123
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        usd:
+                          description: __Filterable__, __Read-only__ The amount, in US dollars, of the payment.
+                          example: '120.50'
+                          readOnly: true
+                          type: integer
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/payment.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-payments-200.yaml
+          description: Returns a paginated list of payment objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List payments
+      tags:
+      - Payments
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account payments-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: payments-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_billing_payments
+  /{apiVersion}/account/payments/paypal:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/payment-paypal-stage.yaml
+      path-info: /{apiVersion}/account/payments/paypal
+    x-linode-cli-command: account
+    post:
+      deprecated: true
+      description: '__Deprecated__ This operation is disabled and no longer accessible. PayPal can be designated as a payment method for automated payments using Cloud Manager. See Manage Payment Methods.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-pay-pal-payment
+      operationId: post-pay-pal-payment
+      requestBody:
+        content:
+          application/json:
+            example:
+              cancel_url: https://example.org
+              redirect_url: https://example.org
+              usd: '120.50'
+            schema:
+              additionalProperties: false
+              description: An object representing the staging of a Payment via PayPal.
+              properties:
+                cancel_url:
+                  description: The URL to have PayPal redirect to when Payment is canceled.
+                  example: '{{cancel_url}}'
+                  type: string
+                redirect_url:
+                  description: The URL to have PayPal redirect to when Payment is approved.
+                  example: '{{redirect_url}}'
+                  type: string
+                usd:
+                  description: The payment amount in USD. Minimum accepted value of $5 USD. Maximum accepted value of $500 USD or credit card payment limit; whichever value is highest. PayPal's maximum transaction limit is $10,000 USD.
+                  example: '{{usd}}'
+                  type: string
+              required:
+              - cancel_url
+              - redirect_url
+              - usd
+              type: object
+              x-akamai:
+                file-path: schemas/paypal.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                checkout_token: EC-1A2B3C4D5E6F7G8H9
+                payment_id: PAY-1234567890ABCDEFGHIJKLMN
+              schema:
+                additionalProperties: false
+                properties:
+                  checkout_token:
+                    description: __Read-only__ The checkout token generated for this Payment.
+                    example: EC-1A2B3C4D5E6F7G8H9
+                    readOnly: true
+                    type: string
+                  payment_id:
+                    description: The paypal-generated ID for this Payment. Used when authorizing the Payment in PayPal's interface.
+                    example: PAY-1234567890ABCDEFGHIJKLMN
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/added-post-pay-pal-payment-200.yaml
+          description: PayPal Payment staged.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Stage a PayPal payment
+      tags:
+      - Payments
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: paypal-start
+      x-linode-cli-skip: true
+      x-linode-grant: read_only
+  /{apiVersion}/account/payments/paypal/execute:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/payment-paypal-execute.yaml
+      path-info: /{apiVersion}/account/payments/paypal/execute
+    x-linode-cli-command: account
+    post:
+      deprecated: true
+      description: '__Deprecated__ This operation is disabled and no longer accessible. PayPal can be designated as a payment method for automated payments using Cloud Manager. See Manage Payment Methods.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-execute-pay-pal-payment
+      operationId: post-execute-pay-pal-payment
+      requestBody:
+        content:
+          application/json:
+            example:
+              payer_id: ABCDEFGHIJKLM
+              payment_id: PAY-1234567890ABCDEFGHIJKLMN
+            schema:
+              additionalProperties: false
+              description: An object representing an execution of Payment to PayPal to capture the funds and credit your Linode Account.
+              properties:
+                payer_id:
+                  description: The PayerID returned by PayPal during the transaction authorization process.
+                  example: '{{payer_id}}'
+                  type: string
+                payment_id:
+                  description: The PaymentID returned from [Stage a PayPal payment](https://techdocs.akamai.com/linode-api/reference/post-pay-pal-payment) that has been approved with PayPal.
+                  example: '{{payment_id}}'
+                  type: string
+              required:
+              - payer_id
+              - payment_id
+              type: object
+              x-akamai:
+                file-path: schemas/paypal-execute.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: PayPal Payment executed.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Execute a PayPal payment
+      tags:
+      - Payments
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: paypal-execute
+      x-linode-cli-skip: true
+      x-linode-grant: read_write
+  /{apiVersion}/account/payments/{paymentId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Payment to look up.
+      example: '{{paymentId}}'
+      in: path
+      name: paymentId
+      required: true
+      schema:
+        example: 627
+        type: integer
+      x-akamai:
+        file-path: parameters/payment-id-path.yaml
+    x-akamai:
+      file-path: paths/payment.yaml
+      path-info: /{apiVersion}/account/payments/{paymentId}
+    x-linode-cli-command: account
+    get:
+      description: 'Returns information about a specific Payment.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_billing_payment`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account payment-view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-payment
+      operationId: get-payment
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                date: '2018-01-15T00:01:01'
+                id: 123
+                usd: '120.50'
+              schema:
+                additionalProperties: false
+                description: Payment object response.
+                properties:
+                  date:
+                    description: __Filterable__, __Read-only__ When the payment was made.
+                    example: '2018-01-15T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  id:
+                    description: __Read-only__ The unique ID of the payment.
+                    example: 123
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  usd:
+                    description: __Filterable__, __Read-only__ The amount, in US dollars, of the payment.
+                    example: '120.50'
+                    readOnly: true
+                    type: integer
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 3
+                    x-linode-filterable: true
+                type: object
+                x-akamai:
+                  file-path: schemas/payment.yaml
+          description: A Payment object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get a payment
+      tags:
+      - Payments
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account payment-view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: payment-view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_billing_payment
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

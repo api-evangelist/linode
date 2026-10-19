@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Service transfers API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,87 +35,61 @@ paths:
       path-info: /{apiVersion}/account/service-transfers
     x-linode-cli-command: service-transfers
     post:
-      description: 'Creates a transfer request for one or more services you specify. A request can contain any of the eligible service types and any number of each service type. Currently, you can only transfer your Linode instances.
+      description: 'Creates a transfer request for the specified services. A request can contain any of the specified service types and any number of each service type. At this time, only Linodes can be transferred.
 
 
-        **Create the service transfer**
+        When created successfully, a confirmation email is sent to the account that created this transfer containing a transfer token and instructions on completing the transfer.
 
 
-        DNS records assigned to requested services _aren''t_ transferred or updated. Ensure that you update any applicable DNS records or communicate them to the recipient before transfer.
+        When a transfer is accepted, the requested services are moved to the receiving account. Linode services will not experience interruptions due to the transfer process. Backups for Linodes are transferred as well.
 
 
-        When creating a service transfer, consider these points:
+        DNS records that are associated with requested services will not be transferred or updated. Please ensure that associated DNS records have been updated or communicated to the recipient prior to the transfer.
 
 
-        - Your account can''t have a past due balance or other limitations. It also can''t have any active terms of service violations.
+        A transfer can take up to three hours to complete once accepted. When a transfer is completed, billing for transferred services ends for the sending account and begins for the receiving account.
 
 
-        - On your account, you need to have access to any transferred service.
+        This operation can only be accessed by the unrestricted users of an account.
 
 
-        - The service can''t be assigned to another pending service transfer request or a request that''s been accepted, but is incomplete.
+        There are several conditions that you need to meet to successfully create a transfer request:
 
 
-        - Linodes _can''t_:
+        1. The account creating the transfer can''t have a past due balance or active Terms of Service violation.
 
 
-        - be assigned to a NodeBalancer, Firewall, VLAN, or Managed Service.
+        1. The service needs to be owned by the account that is creating the transfer.
 
 
-        - have a Reserved IPv4 address assigned to them. To transfer a Linode with a reserved IP, you must first convert the address to an ephemeral IP or unassign it.
+        1. The service can''t be assigned to another Service Transfer that is pending or that''s been accepted and is incomplete.
 
 
-        - have any attached Block Storage volumes.
+        1. Linodes can''t:
+
+
+        - be assigned to a NodeBalancer, Firewall, VLAN, VPC, or Managed Service.
+
+
+        - have any attached Block Storage Volumes.
 
 
         - have any shared IP addresses.
 
 
-        - have any assigned `/32`, `/56`, `/64`, or `/116` IPv6 ranges.
+        - have any assigned /32, /56, /64, or /116 IPv6 ranges.
 
-
-        - have a resource lock set. You need to unlock the Linode by deleting the lock.
-
-
-        After you create a service transfer request, the email address assigned to your account will receive a message. The message also contains a transfer token you need to store, and instructions to complete the transfer.
-
-
-        > 📘
 
         >
 
-        > A requested transfer expires 24 hours after creation.
+
+        ---
 
 
-        **Accept a service transfer**
+        - __CLI__.
 
 
-        You accept a transfer using a separate operation. Once you do, the requested services are moved to the target account. Your Akamai Cloud services aren''t interrupted due to a transfer. Backups for Linode instances are transferred as well.
-
-
-        A transfer can take up to three hours to complete once accepted. Once the transfer completes, billing for transferred services ends for your account, and begins for the account that accepted the request.
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_service_transfer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli service-transfers \
 
@@ -125,7 +102,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-service-transfer
@@ -133,10 +123,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              entities:
-                linodes:
-                - 111
             schema:
               additionalProperties: false
               properties:
@@ -159,21 +145,13 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/added-post-service-transfer.yaml
+            x-example:
+              x-ref: ../examples/post-service-transfer.json
+        description: The services to include in this transfer request.
       responses:
         '200':
           content:
             application/json:
-              example:
-                created: '2021-02-11T16:37:03'
-                entities:
-                  linodes:
-                  - 111
-                  - 222
-                expiry: '2025-11-12T16:37:03'
-                is_sender: true
-                status: pending
-                token: 123E4567-E89B-12D3-A456-426614174000
-                updated: '2025-11-11T16:37:03'
               schema:
                 additionalProperties: false
                 description: An object representing a Service Transfer.
@@ -216,22 +194,24 @@ paths:
                     description: '__Filterable__ The status of the transfer request.
 
 
-                      - `accepted`: The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+                      `accepted`: The transfer has been accepted by another user and is currently in progress.
+
+                      Transfers can take up to 3 hours to complete.
 
 
-                      - `canceled`. The transfer has been canceled by the sender.
+                      `canceled`: The transfer has been canceled by the sender.
 
 
-                      - `completed`. The transfer has completed successfully.
+                      `completed`: The transfer has completed successfully.
 
 
-                      - `failed`. The transfer has failed after initiation.
+                      `failed`: The transfer has failed after initiation.
 
 
-                      - `pending`. The transfer is ready to be accepted.
+                      `pending`: The transfer is ready to be accepted.
 
 
-                      - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or
+                      `stale`: The transfer has exceeded its expiration date. It can no longer be accepted or
 
                       canceled.'
                     enum:
@@ -270,18 +250,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/service-transfer.yaml
-          description: Returns a service transfer object for the request.
+              x-example:
+                x-ref: ../examples/post-service-transfer-200.json
+          description: Returns a Service Transfer object for the request.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -312,35 +290,28 @@ paths:
         - syntax: "linode-cli service-transfers \\\n  create \\\n  --entities.linodes 111 \\\n  --entities.linodes 222"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: create
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - create_service_transfer
     get:
-      description: 'Returns all requested and accepted service transfers for this account, regardless of the user who requested or accepted the transfer.
+      description: 'Returns a collection of all created and accepted Service Transfers for this account, regardless of the user that created or accepted the transfer.
 
 
-        **Permissions and scopes**
+        This operation can only be accessed by the unrestricted users of an account.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_service_transfers`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `account:read_only`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli service-transfers \
 
@@ -349,7 +320,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-service-transfers
@@ -383,26 +367,10 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - created: '2025-11-11T16:37:03'
-                  entities:
-                    linodes:
-                    - 111
-                    - 222
-                  expiry: '2025-11-12T16:37:03'
-                  is_sender: true
-                  status: pending
-                  token: 123E4567-E89B-12D3-A456-426614174000
-                  updated: '2025-11-11T16:37:03'
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: A list of objects returned for a response.
                     items:
                       additionalProperties: false
                       description: An object representing a Service Transfer.
@@ -445,22 +413,24 @@ paths:
                           description: '__Filterable__ The status of the transfer request.
 
 
-                            - `accepted`: The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+                            `accepted`: The transfer has been accepted by another user and is currently in progress.
+
+                            Transfers can take up to 3 hours to complete.
 
 
-                            - `canceled`. The transfer has been canceled by the sender.
+                            `canceled`: The transfer has been canceled by the sender.
 
 
-                            - `completed`. The transfer has completed successfully.
+                            `completed`: The transfer has completed successfully.
 
 
-                            - `failed`. The transfer has failed after initiation.
+                            `failed`: The transfer has failed after initiation.
 
 
-                            - `pending`. The transfer is ready to be accepted.
+                            `pending`: The transfer is ready to be accepted.
 
 
-                            - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or
+                            `stale`: The transfer has exceeded its expiration date. It can no longer be accepted or
 
                             canceled.'
                           enum:
@@ -518,18 +488,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-service-transfers-200.yaml
-          description: Returns all service transfers for this account.
+              x-example:
+                x-ref: ../examples/get-service-transfers-200.json
+          description: Returns a paginated list of Service Transfer objects containing the details of all transfers that have been created and accepted by this account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -560,13 +528,13 @@ paths:
         - syntax: "linode-cli service-transfers \\\n  list"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - list
       - ls
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - list_service_transfers
   /{apiVersion}/account/service-transfers/{token}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -578,55 +546,40 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
-    - description: The UUID of the service transfer. This value is sent in an email to the originator of the service transfer request.
+    - description: The UUID of the Service Transfer.
       example: '{{token}}'
       in: path
       name: token
       required: true
       schema:
-        example: 123E4567-E89B-12D3-A456-426614174000
         format: uuid
         type: string
       x-akamai:
-        file-path: parameters/service-transfer-token.yaml
+        file-path: parameters/token-path-f857f5a2.yaml
     x-akamai:
       file-path: paths/service-transfer.yaml
       path-info: /{apiVersion}/account/service-transfers/{token}
     x-linode-cli-command: service-transfers
     get:
-      description: 'Returns details for the service transfer for the provided `token`.
+      description: 'Returns the details of the Service Transfer for the provided token.
 
 
-        - After a transfer has been accepted, it can only be viewed by users on the accounts that requested and accepted the transfer and have the corresponding permissions.
+        While a transfer is pending, any unrestricted user _of any account_ can access this operation. After a transfer has been accepted, it can only be viewed by unrestricted users of the accounts that created and accepted the transfer. If canceled or expired, only unrestricted users of the account that created the transfer can view it.
 
 
-        - If canceled or expired, only users of the account that requested the transfer can view it and have the required permission.
+        >
 
 
-        **Permissions and scopes**
+        ---
 
 
-        To call this operation, you need the following:
+        - __CLI__.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_service_transfer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli service-transfers \
 
@@ -635,7 +588,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-service-transfer
@@ -644,17 +610,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                created: '2021-02-11T16:37:03'
-                entities:
-                  linodes:
-                  - 111
-                  - 222
-                expiry: '2025-11-12T16:37:03'
-                is_sender: true
-                status: pending
-                token: 123E4567-E89B-12D3-A456-426614174000
-                updated: '2025-11-11T16:37:03'
               schema:
                 additionalProperties: false
                 description: An object representing a Service Transfer.
@@ -697,22 +652,24 @@ paths:
                     description: '__Filterable__ The status of the transfer request.
 
 
-                      - `accepted`: The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+                      `accepted`: The transfer has been accepted by another user and is currently in progress.
+
+                      Transfers can take up to 3 hours to complete.
 
 
-                      - `canceled`. The transfer has been canceled by the sender.
+                      `canceled`: The transfer has been canceled by the sender.
 
 
-                      - `completed`. The transfer has completed successfully.
+                      `completed`: The transfer has completed successfully.
 
 
-                      - `failed`. The transfer has failed after initiation.
+                      `failed`: The transfer has failed after initiation.
 
 
-                      - `pending`. The transfer is ready to be accepted.
+                      `pending`: The transfer is ready to be accepted.
 
 
-                      - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or
+                      `stale`: The transfer has exceeded its expiration date. It can no longer be accepted or
 
                       canceled.'
                     enum:
@@ -751,18 +708,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/service-transfer.yaml
-          description: Returns a service transfer object containing the details of the transfer for the specified token.
+              x-example:
+                x-ref: ../examples/get-service-transfer-200.json
+          description: Returns a Service Transfer object containing the details of the transfer for the specified token.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -793,47 +748,31 @@ paths:
         - syntax: "linode-cli service-transfers \\\n  view 123E4567-E89B-12D3-A456-426614174000"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: view
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - view_service_transfer
     delete:
-      description: 'Cancels the service transfer for the provided `token`.
+      description: 'Cancels the Service Transfer for the provided token. Once canceled, a transfer cannot be accepted or otherwise acted on in any way. If canceled in error, the transfer must be created again.
 
 
-        These points apply to canceling a service transfer:
+        When canceled, an email notification for the cancellation is sent to the account that created this transfer. Transfers can not be canceled if they are expired or have been accepted.
 
 
-        - An cancellation notification is sent to the email address that''s assigned to the account that requested the transfer.
+        This operation can only be accessed by the unrestricted users of the account that created this transfer.
 
 
-        - Once canceled, the transfer can''t be accepted or acted on in any way. If you cancel by mistake, you need to create a new service transfer.
+        >
 
 
-        - You can''t cancel a service transfer if it''s expired or it''s been accepted.
+        ---
 
 
-        **Permissions and scopes**
+        - __CLI__.
 
 
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `cancel_service_transfer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli service-transfers \
 
@@ -842,7 +781,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-service-transfer
@@ -851,25 +803,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
-          description: Service transfer canceled.
+              x-example:
+                x-ref: ../examples/delete-service-transfer-200.json
+          description: Service Transfer canceled.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -900,11 +849,11 @@ paths:
         - syntax: "linode-cli service-transfers \\\n  cancel 123E4567-E89B-12D3-A456-426614174000"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: cancel
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - cancel_service_transfer
   /{apiVersion}/account/service-transfers/{token}/accept:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -916,54 +865,55 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
-    - description: The UUID of the service transfer. This value is sent in an email to the originator of the service transfer request.
+    - description: The UUID of the Service Transfer.
       example: '{{token}}'
       in: path
       name: token
       required: true
       schema:
-        example: 123E4567-E89B-12D3-A456-426614174000
         format: uuid
         type: string
       x-akamai:
-        file-path: parameters/service-transfer-token.yaml
+        file-path: parameters/token-path-f857f5a2.yaml
     x-akamai:
       file-path: paths/service-transfer-accept.yaml
       path-info: /{apiVersion}/account/service-transfers/{token}/accept
     x-linode-cli-command: service-transfers
     post:
-      description: 'After you request a service transfer to another account, use this operation along with the `token` from the transfer request email, to accept it for the target account. Currently, you can only transfer your Linode instances.
+      description: 'Accept a Service Transfer for the provided token to receive the services included in the transfer to your account. At this time, only Linodes can be transferred.
 
 
-        After you accept a transfer, the email address assigned to your account will receive a message. The same message is sent to the email address assigned to the account that requested the transfer. Once the transfer completes, billing for transferred services ends for the account that made the request, and begins for your account.
+        When accepted, email confirmations are sent to the accounts that created and accepted the transfer. A transfer can take up to three hours to complete once accepted. Once a transfer is completed, billing for transferred services ends for the sending account and begins for the receiving account.
 
 
-        There are several conditions that need to be met to accept a transfer request:
+        This operation can only be accessed by the unrestricted users of the account that receives the transfer. Users of the same account that created a transfer cannot accept the transfer.
 
 
-        - Only transfers with a `pending` status can be accepted.
+        There are several conditions that must be met in order to accept a transfer request:
 
 
-        - To accept a transfer, your account needs to have a registered payment method, and it can''t have a past due balance or other limitations. It also can''t have any active terms of service violations.
+        1. Only transfers with a `pending` status can be accepted.
 
 
-        - Any transferred service needs to be owned by the account that requested the transfer.
+        1. The account accepting the transfer must have a registered payment method and must not have a past due balance or other account limitations for the services to be transferred.
 
 
-        - Linodes _can''t_:
+        1. Both the account that created the transfer and the account that is accepting the transfer must not have any active Terms of Service violations.
+
+
+        1. The service must still be owned by the account that created the transfer.
+
+
+        1. Linodes must not:
 
 
         - be assigned to a NodeBalancer, Firewall, VLAN, or Managed Service.
 
 
-        - have a Reserved IPv4 address assigned to them. The initiating account must convert the address to an ephemeral IP or unassign it before the transfer can be completed.
-
-
-        - have any attached Block Storage volumes.
+        - have any attached Block Storage Volumes.
 
 
         - have any shared IP addresses.
@@ -972,36 +922,19 @@ paths:
         - have any assigned /56, /64, or /116 IPv6 ranges.
 
 
-        - have a resource lock set. You need to unlock the Linode by deleting the lock.
+        Any and all of the above conditions must be cured and maintained by the relevant account prior to the transfer''s expiration to allow the transfer to be accepted by the receiving account.
 
-
-        > 📘
 
         >
 
-        > A requested transfer expires 24 hours after creation. You need to meet all of these conditions before this expiration to allow the transfer. Otherwise, you need to request a service transfer again.
+
+        ---
 
 
-        **Permissions and scopes**
+        - __CLI__.
 
 
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `accept_service_transfer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli service-transfers \
 
@@ -1010,7 +943,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-accept-service-transfer
@@ -1019,25 +965,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
-          description: Service transfer accepted.
+              x-example:
+                x-ref: ../examples/post-accept-service-transfer-200.json
+          description: Service Transfer accepted.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1068,11 +1011,11 @@ paths:
         - syntax: "linode-cli service-transfers \\\n  accept 123E4567-E89B-12D3-A456-426614174000"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: accept
       x-linode-grant: unrestricted only
-      x-linode-iam:
-      - permissions:
-        - accept_service_transfer
 components:
   securitySchemes:
     oauth:
@@ -1082,10 +1025,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -1102,8 +1041,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -1122,7 +1061,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

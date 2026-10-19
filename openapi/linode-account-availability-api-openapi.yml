@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Account availability API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,36 +35,46 @@ paths:
       path-info: /{apiVersion}/account/availability
     x-linode-cli-command: account
     get:
-      description: 'Returns a paginated list of the services available to you, for all Akamai Cloud Computing regions.
+      description: 'Returns a paginated list of the services available to you, for all Linode regions.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > Only authorized users can run this operation.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_available_services`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `account:read_only`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account get-availability
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-availability
@@ -95,18 +108,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - available:
-                  - Linodes
-                  - NodeBalancers
-                  region: us-east
-                  unavailable:
-                  - Kubernetes
-                  - Block Storage
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 allOf:
                 - additionalProperties: false
@@ -146,7 +147,8 @@ paths:
                           file-path: schemas/account-availability.yaml
                       type: array
                   type: object
-                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                - additionalProperties: false
+                  description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
                   properties:
                     page:
                       description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
@@ -168,18 +170,16 @@ paths:
                     file-path: schemas/pagination-envelope.yaml
                 x-akamai:
                   file-path: schemas/added-get-availability-200.yaml
+              x-example:
+                x-ref: ../examples/get-availability-200.json
           description: List of regions and the services available in each.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -210,11 +210,11 @@ paths:
         - syntax: linode-cli account get-availability
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: get-availability
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_available_services
   /{apiVersion}/account/availability/{regionId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -226,7 +226,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -248,33 +247,43 @@ paths:
       description: 'View the available services for your account, in a specific region.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > Only account users with _unrestricted_ access can run this operation.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_region_available_service`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `account:read_only`
+        - __CLI__.
 
 
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account get-account-availability us-east
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-account-availability
@@ -283,14 +292,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                available:
-                - Linodes
-                - NodeBalancers
-                - Block Storage
-                - Kubernetes
-                region: us-ord
-                unavailable: []
               schema:
                 additionalProperties: false
                 description: Account Service Availability object.
@@ -323,18 +324,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/account-availability.yaml
+              x-example:
+                x-ref: ../examples/get-account-availability-200.json
           description: The services available in the specified region.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -365,11 +364,11 @@ paths:
         - syntax: linode-cli account get-account-availability us-east
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: get-account-availability
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_region_available_service
 components:
   securitySchemes:
     oauth:
@@ -379,10 +378,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -399,8 +394,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -419,7 +414,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Support tickets API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,22 +38,16 @@ paths:
       description: 'Open a support ticket. A ticket can only target a single, specific entity. For example, for an issue with a specific Linode, open a ticket and target it using its `linode_id`. Leave all other entities out of the request or set them to `null`.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli tickets create \
 
@@ -63,7 +60,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-ticket
@@ -71,11 +81,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              description: I'm having trouble setting the root password on my Linode. I tried following the instructions but something isn't working and I'm not sure what I'm doing wrong. Can you please help me figure out how I can reset it?
-              linode_id: 123
-              managed_issue: false
-              summary: Having trouble resetting root password on my Linode.
             schema:
               additionalProperties: false
               description: An object representing a created support ticket that contains a question or issue and request for help from the Linode support team.
@@ -199,41 +204,22 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/support-ticket-request.yaml
+            x-example:
+              x-ref: ../examples/post-ticket.json
       responses:
         '200':
           content:
             application/json:
-              example:
-                attachments:
-                - screenshot.jpg
-                - screenshot.txt
-                closable: false
-                closed: '2025-06-04T16:07:03'
-                description: I'm having trouble setting the root password on my Linode. I tried following the instructions, but something isn't working. Can you please help me figure out how I can reset it?
-                entity:
-                  id: 10400
-                  label: linode123456
-                  type: linode
-                  url: /v4/linode/instances/123456
-                gravatar_id: 474a1c7373ae0be4132649e69c36ce31
-                id: 11223344
-                opened: '2025-06-04T14:16:44'
-                opened_by: some_user
-                severity: low
-                status: open
-                summary: Having trouble resetting Linode root password.
-                updated: '2024-06-04T16:07:03'
-                updated_by: some_other_user
               schema:
                 additionalProperties: false
                 description: A support ticket opened from your account.
                 properties:
                   attachments:
                     description: __Read-only__ A list of filenames representing attached files associated with this ticket.
-                    example:
-                    - screenshot.jpg
-                    - screenshot.txt
                     items:
+                      example:
+                      - screenshot.jpg
+                      - screenshot.txt
                       type: string
                     readOnly: true
                     type: array
@@ -244,6 +230,7 @@ paths:
                   closed:
                     description: __Filterable__, __Read-only__ When this ticket was closed.
                     example: '2024-06-04T16:07:03'
+                    format: date-time
                     readOnly: true
                     type:
                     - string
@@ -275,7 +262,7 @@ paths:
                         readOnly: true
                         type: string
                       type:
-                        description: __Read-only__ The type of entity, either `database`, `domain`, `firewall`, `linode`, `lkecluster`, `managed_service`, `nodebalancer`, `vlan`, `volume`, or `vpc`.
+                        description: __Read-only__ The type of entity.
                         enum:
                         - database
                         - domain
@@ -314,6 +301,7 @@ paths:
                   opened:
                     description: __Filterable__, __Read-only__ When this ticket was created.
                     example: '2024-06-04T14:16:44'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -332,7 +320,7 @@ paths:
                     x-linode-cli-display: 3
                     x-linode-filterable: true
                   severity:
-                    description: __Read-only__ The severity of this ticket, either `low`, `moderate`, or `major`.
+                    description: __Read-only__ The severity of this ticket.
                     enum:
                     - low
                     - moderate
@@ -343,7 +331,7 @@ paths:
                     - string
                     - 'null'
                   status:
-                    description: __Filterable__, __Read-only__ The current status of this ticket, either `new`, `open`, or `closed`.
+                    description: __Filterable__, __Read-only__ The current status of this ticket.
                     enum:
                     - closed
                     - new
@@ -366,6 +354,7 @@ paths:
                   updated:
                     description: __Filterable__, __Read-only__ When this ticket was last updated.
                     example: '2024-06-04T16:07:03'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -382,18 +371,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/support-ticket.yaml
+              x-example:
+                x-ref: ../examples/post-ticket-200.json
           description: Support ticket opened.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -433,29 +420,36 @@ paths:
       description: 'Returns a collection of all support tickets opened from your account. This includes tickets you''ve opened and tickets generated by Linode customer support regarding your account. Open tickets are returned first in the response.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli tickets list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-tickets
@@ -489,46 +483,20 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - attachments:
-                  - screenshot.jpg
-                  - screenshot.txt
-                  closable: false
-                  closed: '2024-06-04T16:07:03'
-                  description: I'm having trouble setting the root password on my Linode. I tried following the instructions, but something isn't working. Can you please help me figure out how I can reset it?
-                  entity:
-                    id: 10400
-                    label: linode123456
-                    type: linode
-                    url: /v4/linode/instances/123456
-                  gravatar_id: 474a1b7373ae0be4132649e69c36ce30
-                  id: 11223344
-                  opened: '2024-06-04T14:16:44'
-                  opened_by: some_user
-                  severity: low
-                  status: open
-                  summary: Having trouble resetting Linode root password.
-                  updated: '2024-06-04T16:07:03'
-                  updated_by: some_other_user
-                page: 1
-                pages: 1
-                results: 1
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: A list of objects returned for a response.
                     items:
                       additionalProperties: false
                       description: A support ticket opened from your account.
                       properties:
                         attachments:
                           description: __Read-only__ A list of filenames representing attached files associated with this ticket.
-                          example:
-                          - screenshot.jpg
-                          - screenshot.txt
                           items:
+                            example:
+                            - screenshot.jpg
+                            - screenshot.txt
                             type: string
                           readOnly: true
                           type: array
@@ -539,6 +507,7 @@ paths:
                         closed:
                           description: __Filterable__, __Read-only__ When this ticket was closed.
                           example: '2024-06-04T16:07:03'
+                          format: date-time
                           readOnly: true
                           type:
                           - string
@@ -570,7 +539,7 @@ paths:
                               readOnly: true
                               type: string
                             type:
-                              description: __Read-only__ The type of entity, either `database`, `domain`, `firewall`, `linode`, `lkecluster`, `managed_service`, `nodebalancer`, `vlan`, `volume`, or `vpc`.
+                              description: __Read-only__ The type of entity.
                               enum:
                               - database
                               - domain
@@ -609,6 +578,7 @@ paths:
                         opened:
                           description: __Filterable__, __Read-only__ When this ticket was created.
                           example: '2024-06-04T14:16:44'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-akamai:
@@ -627,7 +597,7 @@ paths:
                           x-linode-cli-display: 3
                           x-linode-filterable: true
                         severity:
-                          description: __Read-only__ The severity of this ticket, either `low`, `moderate`, or `major`.
+                          description: __Read-only__ The severity of this ticket.
                           enum:
                           - low
                           - moderate
@@ -638,7 +608,7 @@ paths:
                           - string
                           - 'null'
                         status:
-                          description: __Filterable__, __Read-only__ The current status of this ticket, either `new`, `open`, or `closed`.
+                          description: __Filterable__, __Read-only__ The current status of this ticket.
                           enum:
                           - closed
                           - new
@@ -661,6 +631,7 @@ paths:
                         updated:
                           description: __Filterable__, __Read-only__ When this ticket was last updated.
                           example: '2024-06-04T16:07:03'
+                          format: date-time
                           readOnly: true
                           type: string
                           x-akamai:
@@ -696,18 +667,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/added-get-tickets-200.yaml
+              x-example:
+                x-ref: ../examples/get-tickets-200.json
           description: Returns a paginated list of support tickets.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -756,7 +725,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -778,29 +746,36 @@ paths:
       description: 'Returns a specific support ticket under your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli tickets view 11223344
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-ticket
@@ -809,37 +784,16 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                attachments:
-                - screenshot.jpg
-                - screenshot.txt
-                closable: false
-                closed: '2024-06-04T16:07:03'
-                description: I'm having trouble setting the root password on my Linode. I tried following the instructions, but something isn't working. Can you please help me figure out how I can reset it?
-                entity:
-                  id: 10400
-                  label: linode123456
-                  type: linode
-                  url: /v4/linode/instances/123456
-                gravatar_id: 474a1b7373ae0be4132649e69c36ce30
-                id: 11223344
-                opened: '2024-06-04T14:16:44'
-                opened_by: some_user
-                severity: low
-                status: open
-                summary: Having trouble resetting Linode root password.
-                updated: '2024-06-04T16:07:03'
-                updated_by: some_other_user
               schema:
                 additionalProperties: false
                 description: A support ticket opened from your account.
                 properties:
                   attachments:
                     description: __Read-only__ A list of filenames representing attached files associated with this ticket.
-                    example:
-                    - screenshot.jpg
-                    - screenshot.txt
                     items:
+                      example:
+                      - screenshot.jpg
+                      - screenshot.txt
                       type: string
                     readOnly: true
                     type: array
@@ -850,6 +804,7 @@ paths:
                   closed:
                     description: __Filterable__, __Read-only__ When this ticket was closed.
                     example: '2024-06-04T16:07:03'
+                    format: date-time
                     readOnly: true
                     type:
                     - string
@@ -881,7 +836,7 @@ paths:
                         readOnly: true
                         type: string
                       type:
-                        description: __Read-only__ The type of entity, either `database`, `domain`, `firewall`, `linode`, `lkecluster`, `managed_service`, `nodebalancer`, `vlan`, `volume`, or `vpc`.
+                        description: __Read-only__ The type of entity.
                         enum:
                         - database
                         - domain
@@ -920,6 +875,7 @@ paths:
                   opened:
                     description: __Filterable__, __Read-only__ When this ticket was created.
                     example: '2024-06-04T14:16:44'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -938,7 +894,7 @@ paths:
                     x-linode-cli-display: 3
                     x-linode-filterable: true
                   severity:
-                    description: __Read-only__ The severity of this ticket, either `low`, `moderate`, or `major`.
+                    description: __Read-only__ The severity of this ticket.
                     enum:
                     - low
                     - moderate
@@ -949,7 +905,7 @@ paths:
                     - string
                     - 'null'
                   status:
-                    description: __Filterable__, __Read-only__ The current status of this ticket, either `new`, `open`, or `closed`.
+                    description: __Filterable__, __Read-only__ The current status of this ticket.
                     enum:
                     - closed
                     - new
@@ -972,6 +928,7 @@ paths:
                   updated:
                     description: __Filterable__, __Read-only__ When this ticket was last updated.
                     example: '2024-06-04T16:07:03'
+                    format: date-time
                     readOnly: true
                     type: string
                     x-akamai:
@@ -988,18 +945,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/support-ticket.yaml
+              x-example:
+                x-ref: ../examples/get-ticket-200.json
           description: Returns a single support ticket.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1046,7 +1001,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1061,36 +1015,43 @@ paths:
       x-akamai:
         file-path: parameters/ticket-id.yaml
     x-akamai:
-      file-path: paths/ticket-close.yaml
+      file-path: paths/close.yaml
       path-info: /{apiVersion}/support/tickets/{ticketId}/close
     x-linode-cli-command: tickets
     post:
       description: 'Closes a support ticket you have access to modify.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli tickets close 11223344
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-close-ticket
@@ -1099,25 +1060,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-close-ticket-200.json
           description: Support ticket closed successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1162,10 +1120,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -1182,8 +1136,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -1202,7 +1156,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

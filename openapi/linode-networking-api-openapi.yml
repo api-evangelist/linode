@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Linode API v4 Networking API
-  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services.
+  description: The Linode API v4 provides programmatic access to the full range of Akamai Connected Cloud (formerly Linode) products and services. It enables developers to create and manage compute instances, deploy Kubernetes clusters, configure NodeBalancers, manage DNS domains, provision Block Storage volumes, control Object Storage buckets, set up firewalls, and administer account settings. The RESTful API uses OAuth and personal access tokens for authentication and returns JSON responses, with support for filtering and sorting across all resource endpoints.
   version: 4.189.0
   contact:
     name: Linode Support
@@ -186,18 +186,34 @@ paths:
           description: Unauthorized - invalid or missing authentication
 components:
   schemas:
-    Pagination:
+    FirewallUpdateRequest:
       type: object
       properties:
-        page:
-          type: integer
-          description: The current page number.
-        pages:
-          type: integer
-          description: The total number of pages.
-        results:
-          type: integer
-          description: The total number of results.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          description: The status of the firewall.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
+    PaginatedIPAddressList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/IPAddress'
     PaginatedVLANList:
       allOf:
       - $ref: '#/components/schemas/Pagination'
@@ -219,121 +235,18 @@ components:
                 created:
                   type: string
                   format: date-time
-    FirewallUpdateRequest:
+    Pagination:
       type: object
       properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the firewall.
-        status:
-          type: string
-          enum:
-          - enabled
-          - disabled
-          description: The status of the firewall.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the firewall.
-    PaginatedFirewallList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/Firewall'
-    PaginatedIPAddressList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/IPAddress'
-    FirewallRule:
-      type: object
-      properties:
-        ports:
-          type: string
-          description: The ports this rule applies to, such as 22 or 443-445.
-        protocol:
-          type: string
-          enum:
-          - TCP
-          - UDP
-          - ICMP
-          - IPENCAP
-          description: The network protocol.
-        addresses:
-          type: object
-          properties:
-            ipv4:
-              type: array
-              items:
-                type: string
-              description: IPv4 addresses or CIDRs.
-            ipv6:
-              type: array
-              items:
-                type: string
-              description: IPv6 addresses or CIDRs.
-          description: The addresses this rule applies to.
-        action:
-          type: string
-          enum:
-          - ACCEPT
-          - DROP
-          description: The action for matching traffic.
-        label:
-          type: string
-          description: The label for this rule.
-        description:
-          type: string
-          description: A description for this rule.
-    FirewallRequest:
-      type: object
-      required:
-      - label
-      - rules
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the firewall.
-        rules:
-          type: object
-          properties:
-            inbound:
-              type: array
-              items:
-                $ref: '#/components/schemas/FirewallRule'
-            inbound_policy:
-              type: string
-              enum:
-              - ACCEPT
-              - DROP
-            outbound:
-              type: array
-              items:
-                $ref: '#/components/schemas/FirewallRule'
-            outbound_policy:
-              type: string
-              enum:
-              - ACCEPT
-              - DROP
-          description: The firewall rules.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the firewall.
+        page:
+          type: integer
+          description: The current page number.
+        pages:
+          type: integer
+          description: The total number of pages.
+        results:
+          type: integer
+          description: The total number of results.
     IPAddress:
       type: object
       properties:
@@ -367,6 +280,15 @@ components:
         region:
           type: string
           description: The region for this IP address.
+    PaginatedFirewallList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Firewall'
     Firewall:
       type: object
       properties:
@@ -422,7 +344,94 @@ components:
           type: string
           format: date-time
           description: When this firewall was last updated.
+    FirewallRequest:
+      type: object
+      required:
+      - label
+      - rules
+      properties:
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the firewall.
+        rules:
+          type: object
+          properties:
+            inbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            inbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+            outbound:
+              type: array
+              items:
+                $ref: '#/components/schemas/FirewallRule'
+            outbound_policy:
+              type: string
+              enum:
+              - ACCEPT
+              - DROP
+          description: The firewall rules.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the firewall.
+    FirewallRule:
+      type: object
+      properties:
+        ports:
+          type: string
+          description: The ports this rule applies to, such as 22 or 443-445.
+        protocol:
+          type: string
+          enum:
+          - TCP
+          - UDP
+          - ICMP
+          - IPENCAP
+          description: The network protocol.
+        addresses:
+          type: object
+          properties:
+            ipv4:
+              type: array
+              items:
+                type: string
+              description: IPv4 addresses or CIDRs.
+            ipv6:
+              type: array
+              items:
+                type: string
+              description: IPv6 addresses or CIDRs.
+          description: The addresses this rule applies to.
+        action:
+          type: string
+          enum:
+          - ACCEPT
+          - DROP
+          description: The action for matching traffic.
+        label:
+          type: string
+          description: The label for this rule.
+        description:
+          type: string
+          description: A description for this rule.
   parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
     firewallIdParam:
       name: firewallId
       in: path
@@ -438,15 +447,6 @@ components:
         minimum: 1
         default: 1
       description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
   securitySchemes:
     personalAccessToken:
       type: http

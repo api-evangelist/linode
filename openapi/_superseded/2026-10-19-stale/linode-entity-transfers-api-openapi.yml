@@ -1,0 +1,898 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Entity transfers API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: These legacy operations are available to review and manage the transfer of one entity to another. These operations have been deprecated. Use the Service transfers category operations instead.
+  name: Entity transfers
+paths:
+  /{apiVersion}/account/entity-transfers:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/entity-transfers.yaml
+      path-info: /{apiVersion}/account/entity-transfers
+    post:
+      deprecated: true
+      description: '__Deprecated__ Run the Request a service transfer operation instead.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-entity-transfer
+      operationId: post-entity-transfer
+      requestBody:
+        content:
+          application/json:
+            example:
+              entities:
+                linodes:
+                - 111
+            schema:
+              additionalProperties: false
+              properties:
+                entities:
+                  additionalProperties: false
+                  description: A collection of the entities to include in this transfer request, separated by type.
+                  properties:
+                    linodes:
+                      description: An array containing the IDs of each of the Linodes included in this transfer.
+                      example:
+                      - 111
+                      - 222
+                      items:
+                        type: integer
+                      type: array
+                      x-linode-cli-display: 5
+                  type: object
+              required:
+              - entities
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-entity-transfer.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2021-02-11T16:37:03'
+                entities:
+                  linodes:
+                  - 111
+                  - 222
+                expiry: '2021-02-12T16:37:03'
+                is_sender: true
+                status: pending
+                token: 123E4567-E89B-12D3-A456-426614174000
+                updated: '2021-02-11T16:37:03'
+              schema:
+                additionalProperties: false
+                description: An object representing an Entity Transfer.
+                properties:
+                  created:
+                    description: When this transfer was created.
+                    example: '2021-02-11T16:37:03'
+                    format: date-time
+                    type: string
+                  entities:
+                    additionalProperties: false
+                    description: A collection of the entities to include in this transfer request, separated by type.
+                    properties:
+                      linodes:
+                        description: An array containing the IDs of each of the Linodes included in this transfer.
+                        example:
+                        - 111
+                        - 222
+                        items:
+                          type: integer
+                        type: array
+                        x-linode-cli-display: 5
+                    type: object
+                  expiry:
+                    description: When this transfer expires. Transfers will automatically expire 24 hours after creation.
+                    example: '2021-02-12T16:37:03'
+                    format: date-time
+                    type: string
+                    x-linode-cli-display: 3
+                  is_sender:
+                    description: __Filterable__ If the requesting account created this transfer.
+                    example: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__ The status of the transfer request.
+
+
+                      - `accepted`. The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+
+
+                      - `canceled`. The transfer has been canceled by the sender.
+
+
+                      - `completed`. The transfer has completed successfully.
+
+
+                      - `failed`. The transfer has failed after initiation.
+
+
+                      - `pending`. The transfer is ready to be accepted.
+
+
+                      - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or canceled.'
+                    enum:
+                    - accepted
+                    - canceled
+                    - completed
+                    - failed
+                    - pending
+                    - stale
+                    example: pending
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      accepted: yellow
+                      canceled: red
+                      completed: green
+                      default_: white
+                      failed: red
+                      pending: yellow
+                      stale: red
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  token:
+                    description: The token used to identify and accept or cancel this transfer.
+                    example: 123E4567-E89B-12D3-A456-426614174000
+                    format: uuid
+                    type: string
+                    x-linode-cli-display: 1
+                  updated:
+                    description: When this transfer was last updated.
+                    example: '2021-02-11T16:37:03'
+                    format: date-time
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/entity-transfer.yaml
+          description: Returns an Entity Transfer object for the request.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Create an entity transfer
+      tags:
+      - Entity transfers
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-skip: true
+      x-linode-grant: unrestricted only
+    get:
+      deprecated: true
+      description: '__Deprecated__ Run the List service transfers operation instead.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-entity-transfers
+      operationId: get-entity-transfers
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2021-02-11T16:37:03'
+                  entities:
+                    linodes:
+                    - 111
+                    - 222
+                  expiry: '2021-02-12T16:37:03'
+                  is_sender: true
+                  status: pending
+                  token: 123E4567-E89B-12D3-A456-426614174000
+                  updated: '2021-02-11T16:37:03'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                - properties:
+                    data:
+                      items:
+                        additionalProperties: false
+                        description: An object representing an Entity Transfer.
+                        properties:
+                          created:
+                            description: When this transfer was created.
+                            example: '2021-02-11T16:37:03'
+                            format: date-time
+                            type: string
+                          entities:
+                            additionalProperties: false
+                            description: A collection of the entities to include in this transfer request, separated by type.
+                            properties:
+                              linodes:
+                                description: An array containing the IDs of each of the Linodes included in this transfer.
+                                example:
+                                - 111
+                                - 222
+                                items:
+                                  type: integer
+                                type: array
+                                x-linode-cli-display: 5
+                            type: object
+                          expiry:
+                            description: When this transfer expires. Transfers will automatically expire 24 hours after creation.
+                            example: '2021-02-12T16:37:03'
+                            format: date-time
+                            type: string
+                            x-linode-cli-display: 3
+                          is_sender:
+                            description: __Filterable__ If the requesting account created this transfer.
+                            example: true
+                            type: boolean
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-display: 4
+                            x-linode-filterable: true
+                          status:
+                            description: '__Filterable__ The status of the transfer request.
+
+
+                              - `accepted`. The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+
+
+                              - `canceled`. The transfer has been canceled by the sender.
+
+
+                              - `completed`. The transfer has completed successfully.
+
+
+                              - `failed`. The transfer has failed after initiation.
+
+
+                              - `pending`. The transfer is ready to be accepted.
+
+
+                              - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or canceled.'
+                            enum:
+                            - accepted
+                            - canceled
+                            - completed
+                            - failed
+                            - pending
+                            - stale
+                            example: pending
+                            type: string
+                            x-akamai:
+                              labels:
+                              - Filterable
+                            x-linode-cli-color:
+                              accepted: yellow
+                              canceled: red
+                              completed: green
+                              default_: white
+                              failed: red
+                              pending: yellow
+                              stale: red
+                            x-linode-cli-display: 2
+                            x-linode-filterable: true
+                          token:
+                            description: The token used to identify and accept or cancel this transfer.
+                            example: 123E4567-E89B-12D3-A456-426614174000
+                            format: uuid
+                            type: string
+                            x-linode-cli-display: 1
+                          updated:
+                            description: When this transfer was last updated.
+                            example: '2021-02-11T16:37:03'
+                            format: date-time
+                            type: string
+                        type: object
+                        x-akamai:
+                          file-path: schemas/entity-transfer.yaml
+                      type: array
+                x-akamai:
+                  file-path: schemas/added-get-entity-transfers-200.yaml
+          description: Returns details on all entity transfers on your account.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List entity transfers
+      tags:
+      - Entity transfers
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-skip: true
+      x-linode-grant: unrestricted only
+  /{apiVersion}/account/entity-transfers/{token}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The UUID of the Entity Transfer.
+      example: '{{token}}'
+      in: path
+      name: token
+      required: true
+      schema:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/token-path-faf66b58.yaml
+    x-akamai:
+      file-path: paths/entity-transfer.yaml
+      path-info: /{apiVersion}/account/entity-transfers/{token}
+    get:
+      deprecated: true
+      description: '__Deprecated__ Run the Get a service transfer request operation instead.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-entity-transfer
+      operationId: get-entity-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2021-02-11T16:37:03'
+                entities:
+                  linodes:
+                  - 111
+                  - 222
+                expiry: '2021-02-12T16:37:03'
+                is_sender: true
+                status: pending
+                token: 123E4567-E89B-12D3-A456-426614174000
+                updated: '2021-02-11T16:37:03'
+              schema:
+                additionalProperties: false
+                description: An object representing an Entity Transfer.
+                properties:
+                  created:
+                    description: When this transfer was created.
+                    example: '2021-02-11T16:37:03'
+                    format: date-time
+                    type: string
+                  entities:
+                    additionalProperties: false
+                    description: A collection of the entities to include in this transfer request, separated by type.
+                    properties:
+                      linodes:
+                        description: An array containing the IDs of each of the Linodes included in this transfer.
+                        example:
+                        - 111
+                        - 222
+                        items:
+                          type: integer
+                        type: array
+                        x-linode-cli-display: 5
+                    type: object
+                  expiry:
+                    description: When this transfer expires. Transfers will automatically expire 24 hours after creation.
+                    example: '2021-02-12T16:37:03'
+                    format: date-time
+                    type: string
+                    x-linode-cli-display: 3
+                  is_sender:
+                    description: __Filterable__ If the requesting account created this transfer.
+                    example: true
+                    type: boolean
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 4
+                    x-linode-filterable: true
+                  status:
+                    description: '__Filterable__ The status of the transfer request.
+
+
+                      - `accepted`. The transfer has been accepted by another user and is currently in progress. Transfers can take up to 3 hours to complete.
+
+
+                      - `canceled`. The transfer has been canceled by the sender.
+
+
+                      - `completed`. The transfer has completed successfully.
+
+
+                      - `failed`. The transfer has failed after initiation.
+
+
+                      - `pending`. The transfer is ready to be accepted.
+
+
+                      - `stale`. The transfer has exceeded its expiration date. It can no longer be accepted or canceled.'
+                    enum:
+                    - accepted
+                    - canceled
+                    - completed
+                    - failed
+                    - pending
+                    - stale
+                    example: pending
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-color:
+                      accepted: yellow
+                      canceled: red
+                      completed: green
+                      default_: white
+                      failed: red
+                      pending: yellow
+                      stale: red
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  token:
+                    description: The token used to identify and accept or cancel this transfer.
+                    example: 123E4567-E89B-12D3-A456-426614174000
+                    format: uuid
+                    type: string
+                    x-linode-cli-display: 1
+                  updated:
+                    description: When this transfer was last updated.
+                    example: '2021-02-11T16:37:03'
+                    format: date-time
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/entity-transfer.yaml
+          description: Returns details for an entity transfer using the specified token.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get an entity transfer
+      tags:
+      - Entity transfers
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-skip: true
+      x-linode-grant: unrestricted only
+    delete:
+      deprecated: true
+      description: '__Deprecated__ Run the Cancel a service transfer operation instead.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-entity-transfer
+      operationId: delete-entity-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Entity transfer canceled.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Cancel an entity transfer
+      tags:
+      - Entity transfers
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-skip: true
+      x-linode-grant: unrestricted only
+  /{apiVersion}/account/entity-transfers/{token}/accept:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The UUID of the Entity Transfer.
+      example: '{{token}}'
+      in: path
+      name: token
+      required: true
+      schema:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        format: uuid
+        type: string
+      x-akamai:
+        file-path: parameters/token-path-faf66b58.yaml
+    x-akamai:
+      file-path: paths/entity-transfer-accept.yaml
+      path-info: /{apiVersion}/account/entity-transfers/{token}/accept
+    post:
+      deprecated: true
+      description: '__Deprecated__ Run the Accept a service transfer operation instead.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-accept-entity-transfer
+      operationId: post-accept-entity-transfer
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Entity Transfer accepted.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Accept an entity transfer
+      tags:
+      - Entity transfers
+      x-akamai:
+        status: DEPRECATED
+        tabs:
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-skip: true
+      x-linode-grant: unrestricted only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Longview plans API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,39 +35,54 @@ paths:
       path-info: /{apiVersion}/longview/plan
     x-linode-cli-command: longview
     get:
-      description: 'Get the details of your current Longview plan. If your current plan is Longview Free, this operation returns an empty set `{}`.
+      description: 'Get the details of your current Longview plan. This returns a `LongviewSubscription` object for your current Longview Pro plan, or an empty set `{}` if your current plan is Longview Free.
+
+
+        You must have at least one of the following `global` List a user''s grants in order to run this operation:
+
+
+        - `"account_access": read_write`
+
+        - `"account_access": read_only`
+
+        - `"longview_subscription": true`
+
+        - `"add_longview": true`
 
 
         To update your subscription plan, send a request to Update a Longview plan.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
-
-        - Roles: `longview_viewer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `longview:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli longview plan-view
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        longview:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-longview-plan
@@ -73,13 +91,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                clients_included: 10
-                id: longview-10
-                label: Longview Pro 10 pack
-                price:
-                  hourly: 0.06
-                  monthly: 40
               schema:
                 additionalProperties: false
                 description: A Longview Subscription represents a tier of Longview service you can subscribe to.
@@ -91,7 +102,7 @@ paths:
                     type: integer
                     x-linode-cli-display: 3
                   id:
-                    description: __Read-only__ The unique ID of this Subscription tier, either `longview-3`, `longview-10`, `longview-40`, or `longview-100`. To learn more about each subscription tier, see the [Longview](https://techdocs.akamai.com/cloud-computing/docs/longview) product documentation.
+                    description: __Read-only__ The unique ID of this Subscription tier.
                     enum:
                     - longview-3
                     - longview-10
@@ -127,18 +138,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/longview-subscription.yaml
+              x-example:
+                x-ref: ../examples/get-longview-plan-200.json
           description: The Longview plan details for this account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -169,44 +178,50 @@ paths:
         - syntax: linode-cli longview plan-view
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: longview:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: plan-view
-      x-linode-iam:
-      - roles:
-        - longview_viewer
     put:
-      description: 'Update your Longview plan to that of the given subscription ID. If the updated plan is Longview Free, this operation returns an empty set `{}`.
+      description: 'Update your Longview plan to that of the given subscription ID. This returns a `LongviewSubscription` object for the updated Longview Pro plan, or an empty set `{}` if the updated plan is Longview Free.
+
+
+        You must have `"longview_subscription": true` configured as a `global` user grant in order to run this operation.
 
 
         You can send a request to the List Longview subscriptions operation to receive the details, including `id`''s, of each plan.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
-
-        - Roles: `account_longview_subscription_admin`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `longview:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli longview plan-update --longview_subscription longview-10
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        longview:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-longview-plan
@@ -214,8 +229,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              longview_subscription: longview-10
             schema:
               additionalProperties: false
               description: Longview Plan object.
@@ -235,18 +248,14 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/longview-plan.yaml
+            x-example:
+              x-ref: ../examples/put-longview-plan.json
+        description: Update your Longview subscription plan.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                clients_included: 10
-                id: longview-10
-                label: Longview Pro 10 pack
-                price:
-                  hourly: 0.06
-                  monthly: 40
               schema:
                 additionalProperties: false
                 description: A Longview Subscription represents a tier of Longview service you can subscribe to.
@@ -258,7 +267,7 @@ paths:
                     type: integer
                     x-linode-cli-display: 3
                   id:
-                    description: __Read-only__ The unique ID of this Subscription tier, either `longview-3`, `longview-10`, `longview-40`, or `longview-100`. To learn more about each subscription tier, see the [Longview](https://techdocs.akamai.com/cloud-computing/docs/longview) product documentation.
+                    description: __Read-only__ The unique ID of this Subscription tier.
                     enum:
                     - longview-3
                     - longview-10
@@ -294,18 +303,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/longview-subscription.yaml
+              x-example:
+                x-ref: ../examples/get-longview-plan-200.json
           description: The updated Longview plan details for this account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -336,10 +343,10 @@ paths:
         - syntax: linode-cli longview plan-update --longview_subscription longview-10
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: longview:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: plan-update
-      x-linode-iam:
-      - roles:
-        - account_longview_subscription_admin
 components:
   securitySchemes:
     oauth:
@@ -349,10 +356,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -369,8 +372,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -389,7 +392,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

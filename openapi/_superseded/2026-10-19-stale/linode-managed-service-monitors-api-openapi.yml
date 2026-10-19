@@ -1,0 +1,1771 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Managed service monitors API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Create and configure the service monitors that are used to check the health of your managed Linodes.
+  name: Managed service monitors
+paths:
+  /{apiVersion}/managed/services:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/managed-service-monitors.yaml
+      path-info: /{apiVersion}/managed/services
+    x-linode-cli-command: managed
+    post:
+      description: 'Creates a service monitor. Linode Managed monitors this service and alerts Akamai Support when issues are detected. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-create \
+
+        --service_type url \
+
+        --label prod-1 \
+
+        --address "https://example.org" \
+
+        --timeout 30 \
+
+        --body "it worked" \
+
+        --consultation_group on-call \
+
+        --notes "The service name is \
+
+        my-cool-application" \
+
+        --credentials 9991
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-managed-service
+      operationId: post-managed-service
+      requestBody:
+        content:
+          application/json:
+            example:
+              address: https://example.org
+              body: it worked
+              consultation_group: on-call
+              credentials:
+              - 9991
+              label: prod-1
+              notes: The service name is my-cool-application
+              service_type: url
+              timeout: 30
+            schema:
+              allOf:
+              - additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+              - required:
+                - label
+                - service_type
+                - address
+                - timeout
+                type: object
+              x-akamai:
+                file-path: schemas/post-managed-service.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: https://example.org
+                body: it worked
+                consultation_group: on-call
+                created: '2018-01-01T00:01:01'
+                credentials:
+                - 9991
+                id: 9944
+                label: prod-1
+                notes: The service name is my-cool-application
+                region: null
+                service_type: url
+                status: ok
+                timeout: 30
+                updated: '2018-03-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+          description: Service created.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Create a managed service
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli managed service-create \\\n  --service_type url \\\n  --label prod-1 \\\n  --address \"https://example.org\" \\\n  --timeout 30 \\\n  --body \"it worked\" \\\n  --consultation_group on-call \\\n  --notes \"The service name is \\\n    my-cool-application\" \\\n  --credentials 9991"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-create
+      x-linode-grant: unrestricted only
+    get:
+      description: 'Returns a paginated list of service monitors on your account. These are the services on your Linodes monitored by Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed services-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-managed-services
+      operationId: get-managed-services
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - address: https://example.org
+                  body: it worked
+                  consultation_group: on-call
+                  created: '2018-01-01T00:01:01'
+                  credentials:
+                  - 9991
+                  id: 9944
+                  label: prod-1
+                  notes: The service name is my-cool-application
+                  region: null
+                  service_type: url
+                  status: ok
+                  timeout: 30
+                  updated: '2018-03-01T00:01:01'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                      properties:
+                        address:
+                          description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                          example: https://example.org
+                          format: url
+                          maxLength: 100
+                          minLength: 3
+                          type: string
+                          x-linode-cli-display: 5
+                        body:
+                          description: What to expect to find in the response body for the Service to be considered up.
+                          example: it worked
+                          maxLength: 100
+                          minLength: 0
+                          type:
+                          - string
+                          - 'null'
+                        consultation_group:
+                          description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                          example: on-call
+                          maxLength: 50
+                          minLength: 0
+                          type: string
+                          x-linode-cli-display: 6
+                        created:
+                          description: __Read-only__ When this Managed Service was created.
+                          example: '2018-01-01T00:01:01'
+                          readOnly: true
+                          type: string
+                        credentials:
+                          description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                          items:
+                            example: 9991
+                            type: integer
+                          type: array
+                        id:
+                          description: __Read-only__ This Service's unique ID.
+                          example: 9944
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        label:
+                          description: The label for this Service. This is for display purposes only.
+                          example: prod-1
+                          maxLength: 64
+                          minLength: 3
+                          pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                          type: string
+                          x-linode-cli-display: 4
+                        notes:
+                          description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                          example: The service name is my-cool-application
+                          type:
+                          - string
+                          - 'null'
+                        region:
+                          description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                          example: null
+                          type:
+                          - string
+                          - 'null'
+                        service_type:
+                          description: How this Service is monitored, either `url` or `tcp`.
+                          enum:
+                          - url
+                          - tcp
+                          example: url
+                          type: string
+                          x-linode-cli-display: 3
+                        status:
+                          description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                          enum:
+                          - disabled
+                          - pending
+                          - ok
+                          - problem
+                          example: ok
+                          readOnly: true
+                          type: string
+                          x-linode-cli-color:
+                            default_: yellow
+                            disabled: red
+                            ok: green
+                          x-linode-cli-display: 2
+                        timeout:
+                          description: How long to wait, in seconds, for a response before considering the Service to be down.
+                          example: 30
+                          maximum: 255
+                          minimum: 1
+                          type: integer
+                        updated:
+                          description: __Read-only__ When this Managed Service was last updated.
+                          example: '2018-03-01T00:01:01'
+                          readOnly: true
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/managed-service.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-managed-services-200.yaml
+          description: A paginated list of Managed Services.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List managed services
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: linode-cli managed services-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: services-list
+      x-linode-grant: unrestricted only
+  /{apiVersion}/managed/services/{serviceId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Service to access.
+      example: '{{serviceId}}'
+      in: path
+      name: serviceId
+      required: true
+      schema:
+        example: 429
+        type: integer
+      x-akamai:
+        file-path: parameters/service-id-path-d31c71b2.yaml
+    x-akamai:
+      file-path: paths/managed-service-monitor.yaml
+      path-info: /{apiVersion}/managed/services/{serviceId}
+    x-linode-cli-command: managed
+    get:
+      description: 'Returns the configuration settings for a single service monitor. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-view 9994
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-managed-service
+      operationId: get-managed-service
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: https://example.org
+                body: it worked
+                consultation_group: on-call
+                created: '2018-01-01T00:01:01'
+                credentials:
+                - 9991
+                id: 9944
+                label: prod-1
+                notes: The service name is my-cool-application
+                region: null
+                service_type: url
+                status: ok
+                timeout: 30
+                updated: '2018-03-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+          description: The requested Managed Service.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get a managed service monitor
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: linode-cli managed service-view 9994
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-view
+      x-linode-grant: unrestricted only
+    put:
+      description: 'Updates a service monitor''s configuration settings.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-update 9994 \
+
+        --service_type url \
+
+        --label prod-1 \
+
+        --address "https://example.org" \
+
+        --timeout 30 \
+
+        --body "it worked" \
+
+        --consultation_group on-call \
+
+        --notes "The service name is my-cool-application" \
+
+        --credentials 9991
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-managed-service
+      operationId: put-managed-service
+      requestBody:
+        content:
+          application/json:
+            example:
+              address: https://example.org
+              body: it worked
+              consultation_group: on-call
+              credentials:
+              - 9991
+              label: prod-1
+              notes: The service name is my-cool-application
+              service_type: url
+              timeout: 30
+            schema:
+              additionalProperties: false
+              description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+              properties:
+                address:
+                  description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                  example: '{{address}}'
+                  format: url
+                  maxLength: 100
+                  minLength: 3
+                  type: string
+                  x-linode-cli-display: 5
+                body:
+                  description: What to expect to find in the response body for the Service to be considered up.
+                  example: '{{body}}'
+                  maxLength: 100
+                  minLength: 0
+                  type:
+                  - string
+                  - 'null'
+                consultation_group:
+                  description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                  example: '{{consultation_group}}'
+                  maxLength: 50
+                  minLength: 0
+                  type: string
+                  x-linode-cli-display: 6
+                created:
+                  description: __Read-only__ When this Managed Service was created.
+                  example: '{{created}}'
+                  readOnly: true
+                  type: string
+                credentials:
+                  description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                  items:
+                    example: 9991
+                    type: integer
+                  type: array
+                id:
+                  description: __Read-only__ This Service's unique ID.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                label:
+                  description: The label for this Service. This is for display purposes only.
+                  example: '{{label}}'
+                  maxLength: 64
+                  minLength: 3
+                  pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                  type: string
+                  x-linode-cli-display: 4
+                notes:
+                  description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                  example: '{{notes}}'
+                  type:
+                  - string
+                  - 'null'
+                region:
+                  description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                  example: '{{region}}'
+                  type:
+                  - string
+                  - 'null'
+                service_type:
+                  description: How this Service is monitored, either `url` or `tcp`.
+                  enum:
+                  - url
+                  - tcp
+                  example: '{{service_type}}'
+                  type: string
+                  x-linode-cli-display: 3
+                status:
+                  description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                  enum:
+                  - disabled
+                  - pending
+                  - ok
+                  - problem
+                  example: '{{status}}'
+                  readOnly: true
+                  type: string
+                  x-linode-cli-color:
+                    default_: yellow
+                    disabled: red
+                    ok: green
+                  x-linode-cli-display: 2
+                timeout:
+                  description: How long to wait, in seconds, for a response before considering the Service to be down.
+                  example: '{{timeout}}'
+                  maximum: 255
+                  minimum: 1
+                  type: integer
+                updated:
+                  description: __Read-only__ When this Managed Service was last updated.
+                  example: '{{updated}}'
+                  readOnly: true
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/managed-service.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: https://example.org
+                body: it worked
+                consultation_group: on-call
+                created: '2018-01-01T00:01:01'
+                credentials:
+                - 9991
+                id: 9944
+                label: prod-1
+                notes: The service name is my-cool-application
+                region: null
+                service_type: url
+                status: ok
+                timeout: 30
+                updated: '2018-03-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+          description: Service updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Update a managed service monitor
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli managed service-update 9994 \\\n  --service_type url \\\n  --label prod-1 \\\n  --address \"https://example.org\" \\\n  --timeout 30 \\\n  --body \"it worked\" \\\n  --consultation_group on-call \\\n  --notes \"The service name is my-cool-application\" \\\n  --credentials 9991"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-update
+      x-linode-grant: unrestricted only
+    delete:
+      description: 'Deletes a service monitor, so that the service is no longer monitored by Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-delete 9994
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-managed-service
+      operationId: delete-managed-service
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Service deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Delete a managed service monitor
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: linode-cli managed service-delete 9994
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-delete
+      x-linode-grant: unrestricted only
+  /{apiVersion}/managed/services/{serviceId}/disable:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Service to disable.
+      example: '{{serviceId}}'
+      in: path
+      name: serviceId
+      required: true
+      schema:
+        example: 429
+        type: integer
+      x-akamai:
+        file-path: parameters/service-id-path-67e33f47.yaml
+    x-akamai:
+      file-path: paths/managed-service-monitor-disable.yaml
+      path-info: /{apiVersion}/managed/services/{serviceId}/disable
+    x-linode-cli-command: managed
+    post:
+      description: 'Temporarily disables monitoring of a service on a managed Linode. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-disable 9994
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-disable-managed-service
+      operationId: post-disable-managed-service
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: https://example.org
+                body: it worked
+                consultation_group: on-call
+                created: '2018-01-01T00:01:01'
+                credentials:
+                - 9991
+                id: 9944
+                label: prod-1
+                notes: The service name is my-cool-application
+                region: null
+                service_type: url
+                status: ok
+                timeout: 30
+                updated: '2018-03-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+          description: Service disabled.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Disable a managed service monitor
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: linode-cli managed service-disable 9994
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-disable
+      x-linode-grant: unrestricted only
+  /{apiVersion}/managed/services/{serviceId}/enable:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Service to enable.
+      example: '{{serviceId}}'
+      in: path
+      name: serviceId
+      required: true
+      schema:
+        example: 429
+        type: integer
+      x-akamai:
+        file-path: parameters/service-id-path-ea3ecd21.yaml
+    x-akamai:
+      file-path: paths/managed-service-monitor-enable.yaml
+      path-info: /{apiVersion}/managed/services/{serviceId}/enable
+    x-linode-cli-command: managed
+    post:
+      description: 'Enables monitoring of a service on a managed Linode. To learn more about service monitors, see Create and edit service monitors for Linode Managed.
+
+
+        This operation can only be accessed by the unrestricted users of an account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli managed service-enable 9994
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-enable-managed-service
+      operationId: post-enable-managed-service
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                address: https://example.org
+                body: it worked
+                consultation_group: on-call
+                created: '2018-01-01T00:01:01'
+                credentials:
+                - 9991
+                id: 9944
+                label: prod-1
+                notes: The service name is my-cool-application
+                region: null
+                service_type: url
+                status: ok
+                timeout: 30
+                updated: '2018-03-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A service that Linode is monitoring as part of your Managed services. If issues are detected with this service, a ManagedIssue will be opened and, optionally, Linode special forces will attempt to resolve the Issue.
+                properties:
+                  address:
+                    description: The URL at which this Service is monitored. URL parameters such as `?no-cache=1` are preserved. URL fragments/anchors such as `#monitor` are __not__ preserved.
+                    example: https://example.org
+                    format: url
+                    maxLength: 100
+                    minLength: 3
+                    type: string
+                    x-linode-cli-display: 5
+                  body:
+                    description: What to expect to find in the response body for the Service to be considered up.
+                    example: it worked
+                    maxLength: 100
+                    minLength: 0
+                    type:
+                    - string
+                    - 'null'
+                  consultation_group:
+                    description: The group of ManagedContacts who should be notified or consulted with when an Issue is detected.
+                    example: on-call
+                    maxLength: 50
+                    minLength: 0
+                    type: string
+                    x-linode-cli-display: 6
+                  created:
+                    description: __Read-only__ When this Managed Service was created.
+                    example: '2018-01-01T00:01:01'
+                    readOnly: true
+                    type: string
+                  credentials:
+                    description: An array of ManagedCredential IDs that should be used when attempting to resolve issues with this Service.
+                    items:
+                      example: 9991
+                      type: integer
+                    type: array
+                  id:
+                    description: __Read-only__ This Service's unique ID.
+                    example: 9944
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  label:
+                    description: The label for this Service. This is for display purposes only.
+                    example: prod-1
+                    maxLength: 64
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_ \.]{3,64}'
+                    type: string
+                    x-linode-cli-display: 4
+                  notes:
+                    description: Any information relevant to the Service that Linode special forces should know when attempting to resolve Issues.
+                    example: The service name is my-cool-application
+                    type:
+                    - string
+                    - 'null'
+                  region:
+                    description: The Region in which this Service is located. This is required if address is a private IP, and may not be set otherwise.
+                    example: null
+                    type:
+                    - string
+                    - 'null'
+                  service_type:
+                    description: How this Service is monitored, either `url` or `tcp`.
+                    enum:
+                    - url
+                    - tcp
+                    example: url
+                    type: string
+                    x-linode-cli-display: 3
+                  status:
+                    description: __Read-only__ The current status of this Service, either `ok`, `disabled`, `pending`, or `problem`.
+                    enum:
+                    - disabled
+                    - pending
+                    - ok
+                    - problem
+                    example: ok
+                    readOnly: true
+                    type: string
+                    x-linode-cli-color:
+                      default_: yellow
+                      disabled: red
+                      ok: green
+                    x-linode-cli-display: 2
+                  timeout:
+                    description: How long to wait, in seconds, for a response before considering the Service to be down.
+                    example: 30
+                    maximum: 255
+                    minimum: 1
+                    type: integer
+                  updated:
+                    description: __Read-only__ When this Managed Service was last updated.
+                    example: '2018-03-01T00:01:01'
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/managed-service.yaml
+          description: Service enabled.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Enable a managed service monitor
+      tags:
+      - Managed service monitors
+      x-akamai:
+        tabs:
+        - syntax: linode-cli managed service-enable 9994
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: service-enable
+      x-linode-grant: unrestricted only
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

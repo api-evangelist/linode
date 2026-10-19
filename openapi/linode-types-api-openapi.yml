@@ -1,0 +1,642 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Types API'
+  version: 4.215.0
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to view node type details for each of your Managed Databases.
+  name: Types
+paths:
+  /{apiVersion}/databases/types:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/database-types.yaml
+      path-info: /{apiVersion}/databases/types
+    x-linode-cli-command: databases
+    get:
+      description: 'Display all Managed Databases node types. The type and number of nodes determine the resources and price of a Managed Databases instance. Each database can have one node type. With a high availability database, all nodes are deployed according to the chosen type.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli databases types
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-types
+      operationId: get-databases-types
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - class: dedicated
+                  deprecated: false
+                  disk: 25600
+                  engines:
+                    mysql:
+                    - price:
+                        hourly: 0.03
+                        monthly: 20
+                      quantity: 1
+                    postgresql:
+                    - price:
+                        hourly: 0.03
+                        monthly: 20
+                      quantity: 1
+                  id: g6-dedicated-1
+                  label: DBaaS - Dedicated 80GB
+                  memory: 1024
+                  vcpus: 1
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                allOf:
+                - additionalProperties: false
+                  description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
+                - properties:
+                    data:
+                      items:
+                        additionalProperties: false
+                        description: Managed Database plan type object.
+                        properties:
+                          class:
+                            description: 'The Linode class category. This can be [dedicated](https://techdocs.akamai.com/cloud-computing/docs/dedicated-cpu-compute-instances), [shared](https://techdocs.akamai.com/cloud-computing/docs/shared-cpu-compute-instances), or [premium](https://techdocs.akamai.com/cloud-computing/docs/premium-compute-instances).
+
+
+                              > 📘
+
+                              >
+
+                              > Premium plan Linodes are available in limited regions.'
+                            enum:
+                            - dedicated
+                            - shared
+                            - premium
+                            example: dedicated
+                            type: string
+                          disk:
+                            description: The amount of disk space set aside for Databases of this plan type. The value is represented in megabytes.
+                            example: 25600
+                            type: integer
+                            x-linode-cli-display: 4
+                          engines:
+                            additionalProperties: false
+                            description: Information for the supported third-party databases that can be used with Managed Databases.
+                            properties:
+                              mysql:
+                                description: Pricing details for MySQL Managed Databases.
+                                items:
+                                  additionalProperties: false
+                                  properties:
+                                    price:
+                                      additionalProperties: false
+                                      description: Cost in US dollars, broken down into hourly and monthly charges.
+                                      properties:
+                                        hourly:
+                                          description: Cost (in US dollars) per hour for this subscription tier.
+                                          example: 0.03
+                                          type: number
+                                        monthly:
+                                          description: Maximum cost (in US dollars) per month for this subscription tier.
+                                          example: 20
+                                          type: number
+                                      type: object
+                                    quantity:
+                                      description: The number of nodes for the Managed Database cluster for this subscription tier.
+                                      enum:
+                                      - 1
+                                      - 2
+                                      - 3
+                                      example: 1
+                                      type: integer
+                                  type: object
+                                  x-akamai:
+                                    file-path: schemas/database-type-engine.yaml
+                                type: array
+                              postgresql:
+                                description: Pricing details for PostgreSQL Managed Databases.
+                                items:
+                                  additionalProperties: false
+                                  properties:
+                                    price:
+                                      additionalProperties: false
+                                      description: Cost in US dollars, broken down into hourly and monthly charges.
+                                      properties:
+                                        hourly:
+                                          description: Cost (in US dollars) per hour for this subscription tier.
+                                          example: 0.03
+                                          type: number
+                                        monthly:
+                                          description: Maximum cost (in US dollars) per month for this subscription tier.
+                                          example: 20
+                                          type: number
+                                      type: object
+                                    quantity:
+                                      description: The number of nodes for the Managed Database cluster for this subscription tier.
+                                      enum:
+                                      - 1
+                                      - 2
+                                      - 3
+                                      example: 1
+                                      type: integer
+                                  type: object
+                                  x-akamai:
+                                    file-path: schemas/database-type-engine.yaml
+                                type: array
+                            type: object
+                          id:
+                            description: __Read-only__ The ID representing the Managed Database node plan type.
+                            example: g6-nanode-1
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 1
+                          label:
+                            description: __Read-only__ A human-readable string that describes each plan type. For display purposes only.
+                            example: DBaaS - Nanode 1GB
+                            readOnly: true
+                            type: string
+                            x-linode-cli-display: 2
+                          memory:
+                            description: The amount of RAM allocated to Database created of this plan type. The value is represented in megabytes.
+                            example: 1024
+                            type: integer
+                            x-linode-cli-display: 3
+                          vcpus:
+                            description: The number of CPUs allocated to databases of this plan type.
+                            example: 1
+                            type: integer
+                            x-linode-cli-display: 5
+                        type: object
+                        x-akamai:
+                          file-path: schemas/database-type.yaml
+                      type: array
+                  type: object
+                x-akamai:
+                  file-path: schemas/get-databases-types-200.yaml
+              x-linode-cli-nested-list: engines.mysql, engines.postgresql
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  _split:
+                    x-linode-cli-display: 2.5
+                  engines:
+                    additionalProperties: false
+                    properties:
+                      price:
+                        additionalProperties: false
+                        properties:
+                          hourly:
+                            x-linode-cli-display: 4
+                          monthly:
+                            x-linode-cli-display: 5
+                        type: object
+                      quantity:
+                        x-linode-cli-display: 3
+                    type: object
+                  id:
+                    x-linode-cli-display: 1
+                  label:
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type-cli.yaml
+          description: Returns a paginated list of all Managed Databases types.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: List Managed Databases types
+      tags:
+      - Types
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases types
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: types
+  /{apiVersion}/databases/types/{typeId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Managed Database type.
+      example: '{{typeId}}'
+      in: path
+      name: typeId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/database-node-type-id.yaml
+    x-akamai:
+      file-path: paths/database-type.yaml
+      path-info: /{apiVersion}/databases/types/{typeId}
+    x-linode-cli-command: databases
+    get:
+      description: 'Display the details of a single Managed Databases node type. The type and number of nodes determine the resources and price of a Managed Databases instance. Run the List Managed Databases type operation and store the `id` for the applicable database node type.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli databases type-view
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-databases-type
+      operationId: get-databases-type
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                class: dedicated
+                disk: 25600
+                engines:
+                  mysql:
+                  - price:
+                      hourly: 0.03
+                      monthly: 20
+                    quantity: 1
+                  postgresql:
+                  - price:
+                      hourly: 0.03
+                      monthly: 20
+                    quantity: 1
+                id: g6-dedicated-1
+                label: DBaaS - Dedicated 80GB
+                memory: 1024
+                vcpus: 1
+              schema:
+                additionalProperties: false
+                description: Managed Database plan type object.
+                properties:
+                  class:
+                    description: 'The Linode class category. This can be [dedicated](https://techdocs.akamai.com/cloud-computing/docs/dedicated-cpu-compute-instances), [shared](https://techdocs.akamai.com/cloud-computing/docs/shared-cpu-compute-instances), or [premium](https://techdocs.akamai.com/cloud-computing/docs/premium-compute-instances).
+
+
+                      > 📘
+
+                      >
+
+                      > Premium plan Linodes are available in limited regions.'
+                    enum:
+                    - dedicated
+                    - shared
+                    - premium
+                    example: dedicated
+                    type: string
+                  disk:
+                    description: The amount of disk space set aside for Databases of this plan type. The value is represented in megabytes.
+                    example: 25600
+                    type: integer
+                    x-linode-cli-display: 4
+                  engines:
+                    additionalProperties: false
+                    description: Information for the supported third-party databases that can be used with Managed Databases.
+                    properties:
+                      mysql:
+                        description: Pricing details for MySQL Managed Databases.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            price:
+                              additionalProperties: false
+                              description: Cost in US dollars, broken down into hourly and monthly charges.
+                              properties:
+                                hourly:
+                                  description: Cost (in US dollars) per hour for this subscription tier.
+                                  example: 0.03
+                                  type: number
+                                monthly:
+                                  description: Maximum cost (in US dollars) per month for this subscription tier.
+                                  example: 20
+                                  type: number
+                              type: object
+                            quantity:
+                              description: The number of nodes for the Managed Database cluster for this subscription tier.
+                              enum:
+                              - 1
+                              - 2
+                              - 3
+                              example: 1
+                              type: integer
+                          type: object
+                          x-akamai:
+                            file-path: schemas/database-type-engine.yaml
+                        type: array
+                      postgresql:
+                        description: Pricing details for PostgreSQL Managed Databases.
+                        items:
+                          additionalProperties: false
+                          properties:
+                            price:
+                              additionalProperties: false
+                              description: Cost in US dollars, broken down into hourly and monthly charges.
+                              properties:
+                                hourly:
+                                  description: Cost (in US dollars) per hour for this subscription tier.
+                                  example: 0.03
+                                  type: number
+                                monthly:
+                                  description: Maximum cost (in US dollars) per month for this subscription tier.
+                                  example: 20
+                                  type: number
+                              type: object
+                            quantity:
+                              description: The number of nodes for the Managed Database cluster for this subscription tier.
+                              enum:
+                              - 1
+                              - 2
+                              - 3
+                              example: 1
+                              type: integer
+                          type: object
+                          x-akamai:
+                            file-path: schemas/database-type-engine.yaml
+                        type: array
+                    type: object
+                  id:
+                    description: __Read-only__ The ID representing the Managed Database node plan type.
+                    example: g6-nanode-1
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 1
+                  label:
+                    description: __Read-only__ A human-readable string that describes each plan type. For display purposes only.
+                    example: DBaaS - Nanode 1GB
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 2
+                  memory:
+                    description: The amount of RAM allocated to Database created of this plan type. The value is represented in megabytes.
+                    example: 1024
+                    type: integer
+                    x-linode-cli-display: 3
+                  vcpus:
+                    description: The number of CPUs allocated to databases of this plan type.
+                    example: 1
+                    type: integer
+                    x-linode-cli-display: 5
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type.yaml
+              x-linode-cli-nested-list: engines.mysql, engines.postgresql
+              x-linode-cli-use-schema:
+                additionalProperties: false
+                properties:
+                  _split:
+                    x-linode-cli-display: 2.5
+                  engines:
+                    additionalProperties: false
+                    properties:
+                      price:
+                        additionalProperties: false
+                        properties:
+                          hourly:
+                            x-linode-cli-display: 4
+                          monthly:
+                            x-linode-cli-display: 5
+                        type: object
+                      quantity:
+                        x-linode-cli-display: 3
+                    type: object
+                  id:
+                    x-linode-cli-display: 1
+                  label:
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/database-type-cli.yaml
+          description: Returns a single Managed Databases type.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      summary: Get a Managed Databases type
+      tags:
+      - Types
+      x-akamai:
+        tabs:
+        - syntax: linode-cli databases type-view
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: type-view
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node

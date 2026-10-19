@@ -1,16 +1,401 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Nodes API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
-- name: Nodes
+- description: View, recycle, and delete nodes within your LKE clusters. Nodes are the worker machines in your Kubernetes cluster that run your containerized applications.
+  name: Nodes
 paths:
+  /{apiVersion}/lke/clusters/{clusterId}/nodes/{nodeId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Kubernetes cluster containing the Node.
+      example: '{{clusterId}}'
+      in: path
+      name: clusterId
+      required: true
+      schema:
+        type: integer
+      x-akamai:
+        file-path: parameters/cluster-id-path-b0a6717a.yaml
+    - description: The ID of the Node to access.
+      example: '{{nodeId}}'
+      in: path
+      name: nodeId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/node-id.yaml
+    x-akamai:
+      file-path: paths/lke-node.yaml
+      path-info: /{apiVersion}/lke/clusters/{clusterId}/nodes/{nodeId}
+    x-linode-cli-command: lke
+    get:
+      description: 'Returns the values for a specified node object.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli lke node-view 123456 12345-6aa78910bc
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        lke:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-node
+      operationId: get-lke-cluster-node
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                description: __Read-only__ Status information for a Node which is a member of a Kubernetes cluster.
+                properties:
+                  id:
+                    description: The Node's ID.
+                    example: 12345-6aa78910bc
+                    type: string
+                  instance_id:
+                    description: The Linode's ID. When no Linode is currently provisioned for this Node, this will be `null`.
+                    example: 123458
+                    type:
+                    - integer
+                    - 'null'
+                  status:
+                    description: 'The creation status of this Node. This status is distinct from this Node''s readiness as a Kubernetes Node Object as determined by the command `kubectl get nodes`.
+
+
+                      `not_ready` indicates that the Linode is still being created.
+
+
+                      `ready` indicates that the Linode has successfully been created and is running Kubernetes software.'
+                    enum:
+                    - ready
+                    - not_ready
+                    example: ready
+                    type: string
+                readOnly: true
+                type: object
+                x-akamai:
+                  file-path: schemas/lke-node-status.yaml
+              x-example:
+                x-ref: ../examples/get-lke-cluster-node-200.json
+          description: Returns the values of a node object in the form that it appears currently in the node pool array.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_write
+      summary: Get a node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke node-view 123456 12345-6aa78910bc
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: lke:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: node-view
+    delete:
+      description: 'Deletes a specific Node from a Node Pool.
+
+
+        __Deleting a Node is a destructive action and cannot be undone.__
+
+
+        Deleting a Node will reduce the size of the Node Pool it belongs to.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli lke node-delete 12345 12345-6aa78910bc
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        lke:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-lke-cluster-node
+      operationId: delete-lke-cluster-node
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                x-akamai:
+                  file-path: schemas/added-delete-lke-cluster-node-200.yaml
+              x-example:
+                x-ref: ../examples/delete-lke-cluster-node-200.json
+          description: Delete successful.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_write
+      summary: Delete a node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke node-delete 12345 12345-6aa78910bc
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: lke:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: node-delete
+  /{apiVersion}/lke/clusters/{clusterId}/nodes/{nodeId}/recycle:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Kubernetes cluster containing the Node.
+      example: '{{clusterId}}'
+      in: path
+      name: clusterId
+      required: true
+      schema:
+        type: integer
+      x-akamai:
+        file-path: parameters/cluster-id-path-b0a6717a.yaml
+    - description: ID of the Node to be recycled.
+      example: '{{nodeId}}'
+      in: path
+      name: nodeId
+      required: true
+      schema:
+        type: string
+      x-akamai:
+        file-path: parameters/node-id-recycle.yaml
+    x-akamai:
+      file-path: paths/lke-node-recycle.yaml
+      path-info: /{apiVersion}/lke/clusters/{clusterId}/nodes/{nodeId}/recycle
+    x-linode-cli-command: lke
+    post:
+      description: 'Recycles an individual Node in the designated Kubernetes Cluster. The Node will be deleted and replaced with a new Linode, which may take a few minutes. Replacement Nodes are installed with the latest available patch for the Cluster''s Kubernetes Version.
+
+
+        __Any local storage on deleted Linodes (such as `hostPath` and `emptyDir` volumes, or `local` PersistentVolumes) will be erased.__
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli lke node-recycle 12345 12345-6aa78910bc
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        lke:read_write
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-lke-cluster-node-recycle
+      operationId: post-lke-cluster-node-recycle
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-lke-cluster-node-recycle-200.json
+          description: Recycle request succeeded and is in progress.
+        default:
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - lke:read_write
+      summary: Recycle a node
+      tags:
+      - Nodes
+      x-akamai:
+        tabs:
+        - syntax: linode-cli lke node-recycle 12345 12345-6aa78910bc
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: lke:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: node-recycle
   /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -22,7 +407,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,7 +416,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -54,9 +437,6 @@ paths:
       description: 'Creates a backend node that can receive traffic for the NodeBalancer configuration. Requests are routed to backend nodes on the specified port based on their `status`. The configurable fields for the backend node depend on the chosen protocol and whether the node is located within a Linode VPC.
 
 
-        After creating a NodeBalancer backend node, account administrators can add a lock to prevent accidental node deletion by using the Create a resource lock operation.
-
-
         > 🚧
 
         >
@@ -64,29 +444,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_nodebalancer_config_node`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI: TCP, HTTP, HTTPS__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        *TCP, HTTP, HTTPS*
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers node-create \
 
@@ -105,10 +472,13 @@ paths:
         ```
 
 
-        *UDP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: UDP__.
+
+
+        ```
 
         linode-cli nodebalancers node-create \
 
@@ -123,7 +493,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-node-balancer-node
@@ -198,7 +581,7 @@ paths:
                       description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                       example: 1
                       type: integer
-                      x-linode-cli-display: 8
+                      x-linode-cli-display: 4
                     weight:
                       description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                       example: 50
@@ -284,7 +667,7 @@ paths:
                       description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                       example: 1
                       type: integer
-                      x-linode-cli-display: 8
+                      x-linode-cli-display: 4
                     weight:
                       description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                       example: 50
@@ -371,11 +754,6 @@ paths:
                     default_: white
                     unknown: yellow
                   x-linode-cli-display: 4
-                subnet_id:
-                  description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                  example: 1
-                  type: integer
-                  x-linode-cli-display: 8
                 weight:
                   description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                   example: 50
@@ -386,6 +764,7 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/node-balancer-node-cli.yaml
+        description: Information about the node the NodeBalancer configuration will direct traffic to. The fields available for the backend node depend on the configuration's protocol, and if the backend node is in a VPC.
         required: true
       responses:
         '200':
@@ -621,11 +1000,6 @@ paths:
                       default_: white
                       unknown: yellow
                     x-linode-cli-display: 4
-                  subnet_id:
-                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                    example: 1
-                    type: integer
-                    x-linode-cli-display: 8
                   weight:
                     description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                     example: 50
@@ -640,14 +1014,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -681,42 +1051,45 @@ paths:
         - syntax: "linode-cli nodebalancers node-create \\\n  12345 4567 \\\n  --address 192.168.210.120:80 \\\n  --label node54321 \\\n  --weight 50"
           title: 'CLI: UDP'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: node-create
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - create_nodebalancer_config_node
     get:
       description: 'Returns a paginated list of NodeBalancer nodes associated with this Config. These are the backends that will be sent traffic for this port.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `list_nodebalancer_config_nodes`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers nodes-list 12345 4567
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config-nodes
@@ -1024,11 +1397,6 @@ paths:
                       default_: white
                       unknown: yellow
                     x-linode-cli-display: 4
-                  subnet_id:
-                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                    example: 1
-                    type: integer
-                    x-linode-cli-display: 8
                   weight:
                     description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                     example: 50
@@ -1043,14 +1411,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1081,11 +1445,11 @@ paths:
         - syntax: linode-cli nodebalancers nodes-list 12345 4567
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: nodes-list
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - list_nodebalancer_config_nodes
   /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/nodes/{nodeId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -1097,7 +1461,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1107,7 +1470,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -1127,7 +1489,6 @@ paths:
       name: nodeId
       required: true
       schema:
-        example: 12345-6aa78910bc
         type: string
       x-akamai:
         file-path: parameters/node-id.yaml
@@ -1139,33 +1500,36 @@ paths:
       description: 'Returns information about a single Node, a backend for this NodeBalancer''s configured port.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_nodebalancer_config_node`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers node-view 12345 4567 54321
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node
@@ -1174,16 +1538,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                address: 10.0.0.45:80
-                config_id: 6
-                id: 8
-                label: vpc-node
-                mode: accept
-                nodebalancer_id: 10
-                status: UP
-                vpc_config_id: 8
-                weight: 50
               schema:
                 description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
                 oneOf:
@@ -1345,6 +1699,8 @@ paths:
                     status: BETA
                 x-akamai:
                   file-path: schemas/node-balancer-node-response.yaml
+              x-example:
+                x-ref: ../examples/get-node-balancer-node-200.json
               x-linode-cli-use-schema:
                 additionalProperties: false
                 properties:
@@ -1412,11 +1768,6 @@ paths:
                       default_: white
                       unknown: yellow
                     x-linode-cli-display: 4
-                  subnet_id:
-                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                    example: 1
-                    type: integer
-                    x-linode-cli-display: 8
                   weight:
                     description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                     example: 50
@@ -1427,18 +1778,14 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/node-balancer-node-cli.yaml
-          description: A single NodeBalancer node.
+          description: A paginated list of NodeBalancer nodes.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1469,13 +1816,13 @@ paths:
         - syntax: linode-cli nodebalancers node-view 12345 4567 54321
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: node-view
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_nodebalancer_config_node
     put:
-      description: 'Updates information about a node, a backend for this NodeBalancer''s configured port. The fields available for the backend node depend on the configuration''s protocol, and if the backend node is in a VPC.
+      description: 'Updates information about a node, a backend for this NodeBalancer''s configured port.
 
 
         > 🚧
@@ -1485,29 +1832,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_nodebalancer_config_node`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI: TCP, HTTP, HTTPS__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        *TCP, HTTP, HTTPS*
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers node-update \
 
@@ -1524,10 +1858,13 @@ paths:
         ```
 
 
-        *UDP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: UDP__.
+
+
+        ```
 
         linode-cli nodebalancers node-create \
 
@@ -1542,7 +1879,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-node-balancer-node
@@ -1550,11 +1900,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              address: 10.100.5.5:80
-              label: node54321
-              subnet_id: 1
-              weight: 50
             schema:
               description: A NodeBalancer node represents a single backend serving requests for a single port of a NodeBalancer. Nodes are tied to individual NodeBalancer configurations and route traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
               oneOf:
@@ -1621,7 +1966,7 @@ paths:
                     description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                     example: 1
                     type: integer
-                    x-linode-cli-display: 8
+                    x-linode-cli-display: 4
                   weight:
                     description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                     example: 50
@@ -1707,7 +2052,7 @@ paths:
                     description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                     example: 1
                     type: integer
-                    x-linode-cli-display: 8
+                    x-linode-cli-display: 4
                   weight:
                     description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                     example: 50
@@ -1720,6 +2065,8 @@ paths:
                   file-path: schemas/node-balancer-node-tcp-http-https.yaml
               x-akamai:
                 file-path: schemas/node-balancer-node.yaml
+            x-example:
+              x-ref: ../examples/put-node-balancer-node.json
             x-linode-cli-use-schema:
               additionalProperties: false
               properties:
@@ -1787,11 +2134,6 @@ paths:
                     default_: white
                     unknown: yellow
                   x-linode-cli-display: 4
-                subnet_id:
-                  description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                  example: 1
-                  type: integer
-                  x-linode-cli-display: 8
                 weight:
                   description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                   example: 50
@@ -1802,21 +2144,12 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/node-balancer-node-cli.yaml
+        description: The fields to update. The fields available for the backend node depend on the configuration's protocol, and if the backend node is in a VPC.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                address: 10.0.0.45:80
-                config_id: 6
-                id: 8
-                label: vpc-node
-                mode: accept
-                nodebalancer_id: 10
-                status: UP
-                vpc_config_id: 8
-                weight: 50
               schema:
                 description: A NodeBalancer node represents a single backend serving requests for a single port on a NodeBalancer. Nodes are tied to NodeBalancer configurations, and serve traffic over their private IPv4 address, IPv6 address, or VPC IPv4 address. If the same Linode is serving traffic for more than one port on the same NodeBalancer, one NodeBalancer node is required for each config (port) it should serve requests on.  For example, if you have four backends, and each should respond to both HTTP and HTTPS requests, you will need two NodeBalancer configs (port 80 and port 443) and four backends each, one for each of the Linodes serving requests for that port.
                 oneOf:
@@ -1978,6 +2311,8 @@ paths:
                     status: BETA
                 x-akamai:
                   file-path: schemas/node-balancer-node-response.yaml
+              x-example:
+                x-ref: ../examples/get-node-balancer-node-200.json
               x-linode-cli-use-schema:
                 additionalProperties: false
                 properties:
@@ -2045,11 +2380,6 @@ paths:
                       default_: white
                       unknown: yellow
                     x-linode-cli-display: 4
-                  subnet_id:
-                    description: The VPC's subnet, required for VPC backend nodes. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
-                    example: 1
-                    type: integer
-                    x-linode-cli-display: 8
                   weight:
                     description: Used when picking a backend to serve a request and is not yet pinned to a single backend. Nodes with a higher weight receive more traffic.
                     example: 50
@@ -2064,14 +2394,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2105,41 +2431,28 @@ paths:
         - syntax: "linode-cli nodebalancers node-create \\\n  12345 4567 \\\n  --address 192.168.210.120:80 \\\n  --label node54321 \\\n  --weight 50"
           title: 'CLI: UDP'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: node-update
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - update_nodebalancer_config_node
     delete:
-      description: 'Deletes a node from a configuration. This backend will no longer receive traffic for the configured port of this NodeBalancer.
+      description: 'Deletes a Node from this Config. This backend will no longer receive traffic for the configured port of this NodeBalancer.
 
 
-        A NodeBalancer backend node can''t be deleted if it has a `cannot_delete_with_subresources` lock. Only account administrators can remove locks using the Delete a resource lock operation.
+        This does not change or remove the Linode whose address was used in the creation of this Node.
 
 
-        This does not change or remove the Linode whose address was used in the creation of this node.
+        >
 
 
-        **Permissions and scopes**
+        ---
 
 
-        To call this operation, you need the following:
+        - __CLI__.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_nodebalancer_config_node`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers node-delete \
 
@@ -2148,7 +2461,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-node-balancer-config-node
@@ -2157,25 +2483,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-node-balancer-config-node-200.json
           description: Node deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2206,11 +2529,11 @@ paths:
         - syntax: "linode-cli nodebalancers node-delete \\\n  12345 4567 54321"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: node-delete
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - delete_nodebalancer_config_node
 components:
   securitySchemes:
     oauth:
@@ -2220,10 +2543,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -2240,8 +2559,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -2260,7 +2579,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

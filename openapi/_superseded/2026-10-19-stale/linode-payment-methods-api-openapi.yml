@@ -1,0 +1,998 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Payment methods API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Use these operations to review and manage the payment method you've set up to pay your invoices.
+  name: Payment Methods
+paths:
+  /{apiVersion}/account/payment-methods:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/payment-methods.yaml
+      path-info: /{apiVersion}/account/payment-methods
+    x-linode-cli-command: payment-methods
+    post:
+      description: 'Adds a Payment Method to your Account with the option to set it as the default method.
+
+
+        - Adding a default Payment Method removes the default status from any other Payment Method.
+
+
+        - An Account can have up to 6 active Payment Methods.
+
+
+        - Up to 60 Payment Methods can be added each day.
+
+
+        - Prior to adding a Payment Method, ensure that your billing address information is up-to-date with a valid `zip` by running the Update your account operation.
+
+
+        - A `payment_method_add` event is generated when a payment is successfully submitted.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, this operation isn''t available for child account users.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `create_payment_method`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli payment-methods add \
+
+        --type credit_card \
+
+        --is_default true \
+
+        --data.card_number 4111111111111111 \
+
+        --data.expiry_month 11 \
+
+        --data.expiry_year 2020 \
+
+        --data.cvv 111
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-payment-method
+      operationId: post-payment-method
+      requestBody:
+        content:
+          application/json:
+            example:
+              data:
+                card_number: '4111111111111111'
+                cvv: '123'
+                expiry_month: 12
+                expiry_year: 2030
+              is_default: true
+              type: credit_card
+            schema:
+              additionalProperties: false
+              description: Payment Method Request Object.
+              properties:
+                data:
+                  additionalProperties: false
+                  description: An object representing the credit card information you have on file with Linode to make Payments against your Account.
+                  properties:
+                    card_number:
+                      description: Your credit card number. No spaces or hyphens (`-`) allowed.
+                      example: 4111111111111111
+                      format: digits
+                      maxLength: 24
+                      minLength: 14
+                      type: string
+                    cvv:
+                      description: The card verification value (CVV) of the credit card, typically found on the back of the card.
+                      example: '123'
+                      format: digits
+                      maxLength: 4
+                      minLength: 3
+                      type: string
+                    expiry_month:
+                      description: A value from 1-12 representing the expiration month of your credit card, for example `1` indicates January, `2` indicates February, and `5` indicates May.
+                      example: 12
+                      maximum: 12
+                      minimum: 1
+                      type: integer
+                    expiry_year:
+                      description: A four-digit integer representing the expiration year of your credit card. The combination of `expiry_month` and `expiry_year` must result in a month/year combination of the current month or in the future. An expiration date set in the past is invalid.
+                      example: 2020
+                      maximum: 2050
+                      minimum: 2026
+                      type: integer
+                  required:
+                  - card_number
+                  - expiry_month
+                  - expiry_year
+                  - cvv
+                  type: object
+                  x-akamai:
+                    file-path: schemas/credit-card.yaml
+                is_default:
+                  description: Whether this Payment Method is the default method for automatically processing service charges.
+                  example: '{{is_default}}'
+                  type: boolean
+                  x-linode-cli-display: 3
+                type:
+                  description: 'The type of Payment Method.
+
+
+                    Alternative Payment Methods including Google Pay and PayPal can be added using the Cloud Manager. See the [Manage Payment Methods](https://www.linode.com/docs/products/platform/billing/guides/payment-methods/) guide
+
+                    for details and instructions.'
+                  enum:
+                  - credit_card
+                  example: '{{type}}'
+                  type: string
+              required:
+              - type
+              - data
+              - is_default
+              type: object
+              x-akamai:
+                file-path: schemas/added-post-payment-method.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Payment Method added.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Add a payment method
+      tags:
+      - Payment Methods
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli payment-methods add \\\n  --type credit_card \\\n  --is_default true \\\n  --data.card_number 4111111111111111 \\\n  --data.expiry_month 11 \\\n  --data.expiry_year 2020 \\\n  --data.cvv 111"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: add
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - create_payment_method
+    get:
+      description: 'Returns a paginated list of Payment Methods for this Account.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_payment_methods`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli payment-methods list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-payment-methods
+      operationId: get-payment-methods
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - created: '2018-01-15T00:01:01'
+                  data:
+                    card_type: Discover
+                    expiry: 06/2022
+                    last_four: '1234'
+                  id: 123
+                  is_default: true
+                  type: credit_card
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: The payment methods on the account.
+                    items:
+                      additionalProperties: false
+                      description: Payment Method Response Object.
+                      properties:
+                        created:
+                          description: __Read-only__ When the Payment Method was added to the Account.
+                          example: '2018-01-15T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        data:
+                          discriminator:
+                            propertyName: type
+                          oneOf:
+                          - additionalProperties: false
+                            description: Credit card information.
+                            properties:
+                              card_type:
+                                description: __Read-only__ The type of credit card.
+                                example: Discover
+                                readOnly: true
+                                type: string
+                              expiry:
+                                description: __Read-only__ The expiration month and year of the credit card.
+                                example: 06/2022
+                                format: MM/YYYY
+                                readOnly: true
+                                type: string
+                              last_four:
+                                description: __Read-only__ The last four digits of the credit card number.
+                                example: '1234'
+                                readOnly: true
+                                type: string
+                            title: Credit card
+                            type: object
+                            x-akamai:
+                              file-path: schemas/credit-card-data.yaml
+                            x-linode-ref-name: Credit Card
+                          - additionalProperties: false
+                            description: Google Pay information.
+                            properties:
+                              card_type:
+                                description: __Read-only__ The type of credit card.
+                                example: Discover
+                                readOnly: true
+                                type: string
+                              expiry:
+                                description: __Read-only__ The expiration month and year of the credit card.
+                                example: 06/2022
+                                format: MM/YYYY
+                                readOnly: true
+                                type: string
+                              last_four:
+                                description: __Read-only__ The last four digits of the credit card number.
+                                example: '1234'
+                                readOnly: true
+                                type: string
+                            title: Google Pay
+                            type: object
+                            x-akamai:
+                              file-path: schemas/google-pay-data.yaml
+                            x-linode-ref-name: Google Pay
+                          - additionalProperties: false
+                            description: PayPal information.
+                            properties:
+                              email:
+                                description: __Read-only__ The email address associated with your PayPal account.
+                                example: example@linode.com
+                                readOnly: true
+                                type: string
+                              paypal_id:
+                                description: __Read-only__ PayPal Merchant ID associated with your PayPal account.
+                                example: ABC1234567890
+                                readOnly: true
+                                type: string
+                            title: Paypal
+                            type: object
+                            x-akamai:
+                              file-path: schemas/paypal-data.yaml
+                            x-linode-ref-name: Paypal
+                          x-linode-cli-display: 4
+                          x-linode-cli-format: json
+                        id:
+                          description: The unique ID of this Payment Method.
+                          example: 123
+                          type: integer
+                          x-linode-cli-display: 1
+                        is_default:
+                          description: Whether this Payment Method is the default method for automatically processing service charges.
+                          example: true
+                          type: boolean
+                          x-linode-cli-display: 3
+                        type:
+                          description: The type of Payment Method, either `credit_card`, `google_pay`, or `paypal`.
+                          enum:
+                          - credit_card
+                          - google_pay
+                          - paypal
+                          example: credit_card
+                          type: string
+                          x-linode-cli-display: 2
+                      type: object
+                      x-akamai:
+                        file-path: schemas/payment-method.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-payment-methods-200.yaml
+          description: Returns a paginated list of Payment Method objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: List payment methods
+      tags:
+      - Payment Methods
+      x-akamai:
+        tabs:
+        - syntax: linode-cli payment-methods list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_payment_methods
+  /{apiVersion}/account/payment-methods/{paymentMethodId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Payment Method to look up.
+      example: '{{paymentMethodId}}'
+      in: path
+      name: paymentMethodId
+      required: true
+      schema:
+        example: 267
+        type: integer
+      x-akamai:
+        file-path: parameters/payment-method-id-path-6078bc7b.yaml
+    x-akamai:
+      file-path: paths/payment-method.yaml
+      path-info: /{apiVersion}/account/payment-methods/{paymentMethodId}
+    x-linode-cli-command: payment-methods
+    get:
+      description: 'View the details of the specified Payment Method.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `view_payment_method`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli payment-methods view 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-payment-method
+      operationId: get-payment-method
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created: '2018-01-15T00:01:01'
+                data:
+                  card_type: Discover
+                  expiry: 06/2022
+                  last_four: '1234'
+                id: 123
+                is_default: true
+                type: credit_card
+              schema:
+                additionalProperties: false
+                description: Payment Method Response Object.
+                properties:
+                  created:
+                    description: __Read-only__ When the Payment Method was added to the Account.
+                    example: '2018-01-15T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  data:
+                    discriminator:
+                      propertyName: type
+                    oneOf:
+                    - additionalProperties: false
+                      description: Credit card information.
+                      properties:
+                        card_type:
+                          description: __Read-only__ The type of credit card.
+                          example: Discover
+                          readOnly: true
+                          type: string
+                        expiry:
+                          description: __Read-only__ The expiration month and year of the credit card.
+                          example: 06/2022
+                          format: MM/YYYY
+                          readOnly: true
+                          type: string
+                        last_four:
+                          description: __Read-only__ The last four digits of the credit card number.
+                          example: '1234'
+                          readOnly: true
+                          type: string
+                      title: Credit card
+                      type: object
+                      x-akamai:
+                        file-path: schemas/credit-card-data.yaml
+                      x-linode-ref-name: Credit Card
+                    - additionalProperties: false
+                      description: Google Pay information.
+                      properties:
+                        card_type:
+                          description: __Read-only__ The type of credit card.
+                          example: Discover
+                          readOnly: true
+                          type: string
+                        expiry:
+                          description: __Read-only__ The expiration month and year of the credit card.
+                          example: 06/2022
+                          format: MM/YYYY
+                          readOnly: true
+                          type: string
+                        last_four:
+                          description: __Read-only__ The last four digits of the credit card number.
+                          example: '1234'
+                          readOnly: true
+                          type: string
+                      title: Google Pay
+                      type: object
+                      x-akamai:
+                        file-path: schemas/google-pay-data.yaml
+                      x-linode-ref-name: Google Pay
+                    - additionalProperties: false
+                      description: PayPal information.
+                      properties:
+                        email:
+                          description: __Read-only__ The email address associated with your PayPal account.
+                          example: example@linode.com
+                          readOnly: true
+                          type: string
+                        paypal_id:
+                          description: __Read-only__ PayPal Merchant ID associated with your PayPal account.
+                          example: ABC1234567890
+                          readOnly: true
+                          type: string
+                      title: Paypal
+                      type: object
+                      x-akamai:
+                        file-path: schemas/paypal-data.yaml
+                      x-linode-ref-name: Paypal
+                    x-linode-cli-display: 4
+                    x-linode-cli-format: json
+                  id:
+                    description: The unique ID of this Payment Method.
+                    example: 123
+                    type: integer
+                    x-linode-cli-display: 1
+                  is_default:
+                    description: Whether this Payment Method is the default method for automatically processing service charges.
+                    example: true
+                    type: boolean
+                    x-linode-cli-display: 3
+                  type:
+                    description: The type of Payment Method, either `credit_card`, `google_pay`, or `paypal`.
+                    enum:
+                    - credit_card
+                    - google_pay
+                    - paypal
+                    example: credit_card
+                    type: string
+                    x-linode-cli-display: 2
+                type: object
+                x-akamai:
+                  file-path: schemas/payment-method.yaml
+          description: Returns a Payment Method Object.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Get a payment method
+      tags:
+      - Payment Methods
+      x-akamai:
+        tabs:
+        - syntax: linode-cli payment-methods view 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - view_payment_method
+    delete:
+      description: 'Deactivate the specified Payment Method.
+
+
+        The default Payment Method can not be deleted. To add a new default Payment Method, run the Add a payment method operation. To designate an existing Payment Method as the default method, run the Set a default payment method operation.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `delete_payment_method`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli payment-methods delete 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-payment-method
+      operationId: delete-payment-method
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Payment Method deactivated.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_only
+      summary: Delete a payment method
+      tags:
+      - Payment Methods
+      x-akamai:
+        tabs:
+        - syntax: linode-cli payment-methods delete 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - delete
+      - rm
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - delete_payment_method
+  /{apiVersion}/account/payment-methods/{paymentMethodId}/make-default:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The ID of the Payment Method to make default.
+      example: '{{paymentMethodId}}'
+      in: path
+      name: paymentMethodId
+      required: true
+      schema:
+        example: 267
+        type: integer
+      x-akamai:
+        file-path: parameters/payment-method-id-path-fb39a844.yaml
+    x-akamai:
+      file-path: paths/make-default.yaml
+      path-info: /{apiVersion}/account/payment-methods/{paymentMethodId}/make-default
+    x-linode-cli-command: payment-methods
+    post:
+      description: 'Make the specified Payment Method the default method for automatically processing payments. Removes the default status from any other Payment Method.
+
+
+        __Parent and child accounts__
+
+
+        In the context of the parent and child accounts feature, this operation isn''t available for child account users.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `set_default_payment_method`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `account:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli payment-methods default 123
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-make-payment-method-default
+      operationId: post-make-payment-method-default
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Payment Method successfully set as the default method.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - account:read_write
+      summary: Set a default payment method
+      tags:
+      - Payment Methods
+      x-akamai:
+        tabs:
+        - syntax: linode-cli payment-methods default 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: default
+      x-linode-grant: read_write
+      x-linode-iam:
+      - permissions:
+        - set_default_payment_method
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

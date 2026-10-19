@@ -1,0 +1,360 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Maintenances API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Review details on scheduled maintenance for your Akamai Cloud Computing services.
+  name: Maintenances
+paths:
+  /{apiVersion}/account/maintenance:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/maintenance.yaml
+      path-info: /{apiVersion}/account/maintenance
+    x-linode-cli-command: account
+    get:
+      description: 'Returns maintenance information for any entity your user has permissions to view. If a maintenance object has been canceled, it''s not returned.
+
+
+        > 📘
+
+        >
+
+        > Currently, only Linodes are included as entities for viewing.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
+
+        - Permissions: `list_maintenances`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli account maintenance-list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-maintenance
+      operationId: get-maintenance
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - complete_time: '2026-04-17T14:11:17'
+                  description: scheduled
+                  entity:
+                    id: 1234
+                    label: demo-linode
+                    type: linode
+                    url: /v4/linode/instances/1234
+                  maintenance_policy_set: linode/power_off_on
+                  reason: This maintenance will allow us to update the BIOS on the host's motherboard.
+                  source: platform
+                  start_time: '2026-04-17T14:10:47'
+                  status: completed
+                  type: auto
+                  when: '2026-04-17T14:08:58'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Maintenance events for Linodes on this account.
+                    items:
+                      additionalProperties: false
+                      description: Information about maintenance affecting an entity.
+                      properties:
+                        complete_time:
+                          description: '__Filterable__ The time the maintenance completed. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                            - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                            - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and single ISO 8601 timestamp. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                          example: '2020-07-09T00:01:01'
+                          format: date-time
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        description:
+                          description: Indicates either `scheduled` maintenance events or `emergency` maintenance.
+                          enum:
+                          - scheduled
+                          - emergency
+                          example: scheduled
+                          type: string
+                        entity:
+                          additionalProperties: false
+                          description: The entity affected by the maintenance.
+                          properties:
+                            id:
+                              description: The unique identifier of the entity targeted by the maintenance.
+                              example: 1234
+                              type: number
+                            label:
+                              description: The name of the entity targeted by the maintenance.
+                              example: demo-linode
+                              type: string
+                            type:
+                              description: The type of entity.
+                              example: Linode
+                              type: string
+                            url:
+                              description: A combination of the API operation prefix and the entity's `id` that can be used to review the entity.
+                              example: https://api.linode.com/v4/linode/instances/{linodeId}
+                              type: string
+                          type: object
+                        maintenance_policy_set:
+                          description: __Filterable__ The maintenance policy configured by the user.
+                          example: linode/migrate
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        not_before:
+                          description: '__Filterable__ The earliest time when the maintenance can start. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                            - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                            - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and single ISO 8601 timestamp. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                          example: '2020-07-09T00:01:01'
+                          format: date-time
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        reason:
+                          description: The reason maintenance is being performed.
+                          example: This maintenance will allow us to update the BIOS on the host's motherboard.
+                          type: string
+                        source:
+                          description: The origin of the maintenance. A `platform` source indicates that the maintenance was initiated by Akamai. A `user` source indicates that the maintenance was initiated by the user.
+                          enum:
+                          - platform
+                          - user
+                          example: platform
+                          type: string
+                        start_time:
+                          description: '__Filterable__ The time the maintenance started. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                            - A single ISO 8601 timestamp (`yyyy-mm-ddThh:mm:ss`), which returns only matches for that value.
+
+
+                            - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and single ISO 8601 timestamp. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                          example: '2020-07-09T00:01:01'
+                          format: date-time
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        status:
+                          description: __Filterable__ The maintenance status. Maintenance progress follows the sequence `pending`, `scheduled`, `started`, and `completed`. A `scheduled` status is unique to Linodes that require a reboot for [QEMU maintenance](https://techdocs.akamai.com/linode-api/reference/reboot-your-linodes-for-qemu-maintenance).
+                          enum:
+                          - pending
+                          - scheduled
+                          - started
+                          - in-progress
+                          - completed
+                          - canceled
+                          example: started
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        type:
+                          description: __Filterable__ The type of maintenance, either `reboot`, `cold_migration`, `live_migration`, `migrate`, or `power_off_on`.
+                          enum:
+                          - reboot
+                          - cold_migration
+                          - live_migration
+                          - migrate
+                          - power_off_on
+                          example: reboot
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        when:
+                          description: '__Filterable__ The start time for the maintenance. This field is [filterable](https://techdocs.akamai.com/linode-api/reference/filtering-and-sorting) based on these parameters:
+
+
+                            - A single ISO 8601 timestamp (yyyy-mm-ddThh:mm:ss), which returns only matches for that value.
+
+
+                            - Pairs of operator string keys (`+or`, `+gt`, `+gte`, `+lt`, `+lte`, or `+neq`) and single ISO 8601 timestamp. The `+or` operator accepts an array of values that can consist of single date-time strings or dictionaries of inequality operator pairs.'
+                          example: '2020-07-09T00:01:01'
+                          format: date-time
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                      type: object
+                      x-akamai:
+                        file-path: schemas/maintenance.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-maintenance-200.yaml
+          description: Returns a paginated list of Maintenance objects.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth: []
+      summary: List maintenances
+      tags:
+      - Maintenances
+      x-akamai:
+        tabs:
+        - syntax: linode-cli account maintenance-list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: maintenance-list
+      x-linode-grant: read_only
+      x-linode-iam:
+      - permissions:
+        - list_maintenances
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

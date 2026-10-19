@@ -2,15 +2,441 @@ openapi: 3.2.0
 info:
   title: Linode Node Balancers API
   version: '1.0'
-  description: 'Operations tagged NodeBalancers across 2 of this provider''s published API definitions: linode-api-v4-official-openapi.json, linode-api-v4-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged NodeBalancers across 2 of this provider''s published API definitions: linode-api-v4-openapi.yml, linode-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.linode.com
 - url: https://api.linode.com/v4
   description: Production Server
+- url: https://api.linode.com
 tags:
-- description: NodeBalancers is Linode's load balancing service. Use the NodeBalancers endpoints to create and manage NodeBalancers. You can also create and maintain configurations; create and maintain nodes, and view statistics.
-  name: NodeBalancers
+- name: NodeBalancers
+  description: Create and manage NodeBalancer load balancers, their configurations, and backend nodes for distributing traffic across Linode instances.
 paths:
+  /nodebalancers:
+    get:
+      operationId: getNodeBalancers
+      summary: List NodeBalancers
+      description: Returns a paginated list of NodeBalancers on your account.
+      tags:
+      - NodeBalancers
+      parameters:
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: NodeBalancers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNodeBalancerList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    post:
+      operationId: createNodeBalancer
+      summary: Create a NodeBalancer
+      description: Creates a new NodeBalancer in the specified region.
+      tags:
+      - NodeBalancers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeBalancerRequest'
+      responses:
+        '200':
+          description: NodeBalancer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
+  /nodebalancers/{nodeBalancerId}:
+    get:
+      operationId: getNodeBalancer
+      summary: Get a NodeBalancer
+      description: Returns the details for a single NodeBalancer.
+      tags:
+      - NodeBalancers
+      parameters:
+      - $ref: '#/components/parameters/nodeBalancerIdParam'
+      responses:
+        '200':
+          description: NodeBalancer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    put:
+      operationId: updateNodeBalancer
+      summary: Update a NodeBalancer
+      description: Updates the label and other settings for a NodeBalancer.
+      tags:
+      - NodeBalancers
+      parameters:
+      - $ref: '#/components/parameters/nodeBalancerIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeBalancerUpdateRequest'
+      responses:
+        '200':
+          description: NodeBalancer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeBalancer'
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    delete:
+      operationId: deleteNodeBalancer
+      summary: Delete a NodeBalancer
+      description: Deletes a NodeBalancer and all associated configurations and nodes.
+      tags:
+      - NodeBalancers
+      parameters:
+      - $ref: '#/components/parameters/nodeBalancerIdParam'
+      responses:
+        '200':
+          description: NodeBalancer deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
+  /nodebalancers/{nodeBalancerId}/configs:
+    get:
+      operationId: getNodeBalancerConfigs
+      summary: List configs
+      description: Returns a paginated list of configurations for a NodeBalancer.
+      tags:
+      - NodeBalancers
+      parameters:
+      - $ref: '#/components/parameters/nodeBalancerIdParam'
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: NodeBalancer configs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNodeBalancerConfigList'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '404':
+          description: NodeBalancer not found
+      security:
+      - personalAccessToken: []
+      - oauth: []
+    servers:
+    - url: https://api.linode.com/v4
+      description: Production Server
+  /{apiVersion}/linode/instances/{linodeId}/nodebalancers:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: ID of the Linode to look up.
+      example: '{{linodeId}}'
+      in: path
+      name: linodeId
+      required: true
+      schema:
+        example: 234
+        type: integer
+      x-akamai:
+        file-path: parameters/linode-id-path-32b5e821.yaml
+    x-akamai:
+      file-path: paths/linode-node-balancers.yaml
+      path-info: /{apiVersion}/linode/instances/{linodeId}/nodebalancers
+    x-linode-cli-command: linodes
+    get:
+      description: 'Returns a list of NodeBalancers that are assigned to this Linode and readable by the requesting User.
+
+
+        Read permission to a NodeBalancer can be given to a User by accessing the Update a user''s grants operation.
+
+
+        >
+
+
+        ---
+
+
+        - __CLI__.
+
+
+        ```
+
+        linode-cli linodes nodebalancers 123
+
+        ```
+
+
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        linodes:read_only
+
+        ```
+
+
+        Learn more...'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-linode-node-balancers
+      operationId: get-linode-node-balancers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      additionalProperties: false
+                      description: Linode's load balancing solution. Can handle multiple ports, SSL termination, and any number of backends. NodeBalancer ports are configured with NodeBalancer configs, and each config is given one or more NodeBalancer nodes that accepts traffic.  The traffic should be routed to the NodeBalancer's IP address, for the NodeBalancer to handle routing individual requests to backends.
+                      properties:
+                        client_conn_throttle:
+                          description: Throttle TCP connections per second for TCP, HTTP, and HTTPS configurations.  Set to `0` (zero) to disable throttling.
+                          example: 10
+                          maximum: 20
+                          minimum: 0
+                          type: integer
+                          x-linode-cli-display: 9
+                        created:
+                          description: __Read-only__ When this NodeBalancer was created.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                        hostname:
+                          description: __Read-only__ This NodeBalancer's hostname, beginning with its IP address and ending with _.ip.linodeusercontent.com_.
+                          example: 192.0.2.1.ip.linodeusercontent.com
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 5
+                        id:
+                          description: __Read-only__ This NodeBalancer's unique ID.
+                          example: 12345
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        ipv4:
+                          description: __Filterable__, __Read-only__ This NodeBalancer's public IPv4 address.
+                          example: 203.0.113.1
+                          format: ip
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 6
+                          x-linode-filterable: true
+                        ipv6:
+                          description: __Read-only__ This NodeBalancer's public IPv6 address.
+                          example: null
+                          format: ip
+                          readOnly: true
+                          type:
+                          - string
+                          - 'null'
+                          x-linode-cli-display: 7
+                        label:
+                          description: __Filterable__ This NodeBalancer's label. These must be unique on your Account.
+                          example: balancer12345
+                          maxLength: 32
+                          minLength: 3
+                          pattern: '[a-zA-Z0-9-_]{3,32}'
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        lke_cluster:
+                          additionalProperties: false
+                          description: __Read-only__ This NodeBalancer's related LKE cluster, if any. The value is `null` if this NodeBalancer isn't related to an LKE cluster.
+                          properties:
+                            id:
+                              description: The ID of the related LKE cluster.
+                              example: 12345
+                              type: string
+                            label:
+                              description: The label of the related LKE cluster.
+                              example: lkecluster12345
+                              type: string
+                            type:
+                              description: __Read-only__ The type for LKE clusters.
+                              example: lkecluster
+                              readOnly: true
+                              type: string
+                            url:
+                              description: The URL where you can access the related LKE cluster.
+                              example: /v4/lke/clusters/12345
+                              type: string
+                          readOnly: true
+                          type:
+                          - object
+                          - 'null'
+                          x-linode-cli-display: 8
+                        region:
+                          description: __Filterable__, __Read-only__ The Region where this NodeBalancer is located. NodeBalancers only support backends in the same Region.
+                          example: us-east
+                          readOnly: true
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 3
+                          x-linode-filterable: true
+                        tags:
+                          description: __Filterable__ An array of Tags applied to this object.  Tags are for organizational purposes only.
+                          example:
+                          - example tag
+                          - another example
+                          items:
+                            type: string
+                          type: array
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-filterable: true
+                        transfer:
+                          additionalProperties: false
+                          description: __Read-only__ Information about the amount of transfer this NodeBalancer has had so far this month.
+                          properties:
+                            in:
+                              description: __Read-only__ The total outbound transfer, in MB, used for this NodeBalancer this month.
+                              example: 28.91200828552246
+                              readOnly: true
+                              type:
+                              - number
+                              - 'null'
+                            out:
+                              description: __Read-only__ The total inbound transfer, in MB, used for this NodeBalancer this month.
+                              example: 3.5487728118896484
+                              readOnly: true
+                              type:
+                              - number
+                              - 'null'
+                            total:
+                              description: __Read-only__ The total transfer, in MB, used by this NodeBalancer this month.
+                              example: 32.46078109741211
+                              readOnly: true
+                              type:
+                              - number
+                              - 'null'
+                          readOnly: true
+                          type: object
+                        type:
+                          description: __Read-only__ The type of NodeBalancer.
+                          enum:
+                          - common
+                          - premium
+                          example: premium
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 4
+                        updated:
+                          description: __Read-only__ When this NodeBalancer was last updated.
+                          example: '2018-03-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                      title: NodeBalancer
+                      type: object
+                      x-akamai:
+                        file-path: schemas/node-balancer.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/added-get-linode-node-balancers-200.yaml
+              x-example:
+                x-ref: ../examples/get-linode-node-balancers-200.json
+          description: Returns a paginated list of NodeBalancers.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - linodes:read_only
+      summary: List Linode NodeBalancers
+      tags:
+      - NodeBalancers
+      x-akamai:
+        tabs:
+        - syntax: linode-cli linodes nodebalancers 123
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: linodes:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
+      x-linode-cli-action: nodebalancers
+      x-linode-grant: read_only
+    servers:
+    - url: https://api.linode.com
   /{apiVersion}/nodebalancers:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -22,7 +448,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -40,29 +465,16 @@ paths:
         When using the Linode CLI to create a NodeBalancer, first create a NodeBalancer without any configs. Then, create configs and nodes for that NodeBalancer with the respective Create a config and Create a node operations.
 
 
-        After creating a NodeBalancer, account administrators can add a lock to prevent accidental NodeBalancer deletion by using the Create a resource lock operation.
+        >
 
 
-        **Permissions and scopes**
+        ---
 
 
-        To call this operation, you need the following:
+        - __CLI__.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_nodebalancer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers create \
 
@@ -70,14 +482,25 @@ paths:
 
         --label balancer12345 \
 
-        --ipv4 "192.0.2.141" \
-
         --client_conn_throttle 0
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-node-balancer
@@ -257,7 +680,7 @@ paths:
                                 description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                                 example: 1
                                 type: integer
-                                x-linode-cli-display: 8
+                                x-linode-cli-display: 4
                               weight:
                                 description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                                 example: 50
@@ -544,7 +967,7 @@ paths:
                                 description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                                 example: 1
                                 type: integer
-                                x-linode-cli-display: 8
+                                x-linode-cli-display: 4
                               weight:
                                 description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                                 example: 50
@@ -821,7 +1244,7 @@ paths:
                                 description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                                 example: 1
                                 type: integer
-                                x-linode-cli-display: 8
+                                x-linode-cli-display: 4
                               weight:
                                 description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                                 example: 50
@@ -1093,7 +1516,7 @@ paths:
                                 description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                                 example: 1
                                 type: integer
-                                x-linode-cli-display: 8
+                                x-linode-cli-display: 4
                               weight:
                                 description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                                 example: 50
@@ -1235,11 +1658,6 @@ paths:
                     - Firewalls control inbound network traffic to NodeBalancers.'
                   example: '{{firewall_id}}'
                   type: integer
-                ipv4:
-                  description: To ensure your NodeBalancer maintains a consistent public address, you can specify an unassigned reserved IP from your account during creation. If this field is omitted, the NodeBalancer is assigned a standard ephemeral IP by default.
-                  example: '{{ipv4}}'
-                  format: ip
-                  type: string
                 label:
                   description: __Filterable__ This NodeBalancer's label. These must be unique on your Account.
                   example: '{{label}}'
@@ -1276,13 +1694,13 @@ paths:
                         readOnly: true
                         type: integer
                       ipv4_range:
-                        description: A CIDR range for the VPC's IPv4 addresses. The NodeBalancer sources IP addresses from this range when routing traffic to the backend VPC nodes. A `/30` subnet defines a range of four addresses. This range is required for high availability of NodeBalancer instances.
+                        description: A CIDR range for the VPC's IPv4 addresses. The NodeBalancer sources IP addresses from this range when routing traffic to the backend VPC nodes.
                         example: 10.100.5.100/30
                         type: string
                         x-linode-cli-display: 12
                       ipv4_range_auto_assign:
                         default: false
-                        description: '__Write-only__ Enables the use of a larger `ipv4_range` subnet for multiple NodeBalancers within the same VPC by allocating smaller `/30` subnets for each NodeBalancer''s backends.
+                        description: 'Enables the use of a larger `ipv4_range` subnet for multiple NodeBalancers within the same VPC by allocating smaller `/30` subnets for each NodeBalancer''s backends.
 
 
                           - When set to `true`, the system automatically allocates the smallest possible subnet (`/30`) from the provided `ipv4_range` for the NodeBalancer''s backend interface. If the specified range doesn''t have enough available IPs to allocate a `/30` subnet, the creation fails.
@@ -1293,7 +1711,6 @@ paths:
                         type:
                         - boolean
                         - 'null'
-                        writeOnly: true
                         x-linode-cli-display: 14
                       nodebalancer_id:
                         description: __Read-only__ Identifies the NodeBalancer.
@@ -1325,6 +1742,7 @@ paths:
                 file-path: schemas/added-post-node-balancer.yaml
             x-example:
               x-ref: ../examples/post-node-balancer.json
+        description: Information about the NodeBalancer to create.
         required: true
         x-linode-cli-allowed-defaults:
         - region
@@ -1351,7 +1769,7 @@ paths:
                     type: string
                   hostname:
                     description: __Read-only__ This NodeBalancer's hostname, beginning with its IP address and ending with _.ip.linodeusercontent.com_.
-                    example: 192.0.2.141.ip.linodeusercontent.com
+                    example: 192.0.2.1.ip.linodeusercontent.com
                     readOnly: true
                     type: string
                     x-linode-cli-display: 5
@@ -1363,7 +1781,7 @@ paths:
                     x-linode-cli-display: 1
                   ipv4:
                     description: __Filterable__, __Read-only__ This NodeBalancer's public IPv4 address.
-                    example: 192.0.2.141
+                    example: 203.0.113.1
                     format: ip
                     readOnly: true
                     type: string
@@ -1486,21 +1904,17 @@ paths:
                 title: NodeBalancer
                 type: object
                 x-akamai:
-                  file-path: schemas/node-balancer-lock-na.yaml
+                  file-path: schemas/node-balancer.yaml
               x-example:
                 x-ref: ../examples/post-node-balancer-200.json
           description: NodeBalancer created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1528,45 +1942,48 @@ paths:
       - NodeBalancers
       x-akamai:
         tabs:
-        - syntax: "linode-cli nodebalancers create \\\n  --region us-east \\\n  --label balancer12345 \\\n  --ipv4 \"192.0.2.141\" \\\n  --client_conn_throttle 0"
+        - syntax: "linode-cli nodebalancers create \\\n  --region us-east \\\n  --label balancer12345 \\\n  --client_conn_throttle 0"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: create
       x-linode-grant: add_nodebalancers
-      x-linode-iam:
-      - permissions:
-        - create_nodebalancer
     get:
       description: 'Returns a paginated list of NodeBalancers you have access to.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_nodebalancer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers list
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancers
@@ -1618,11 +2035,12 @@ paths:
                         created:
                           description: __Read-only__ When this NodeBalancer was created.
                           example: '2018-01-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                         hostname:
                           description: __Read-only__ This NodeBalancer's hostname, beginning with its IP address and ending with _.ip.linodeusercontent.com_.
-                          example: 192.0.2.141.ip.linodeusercontent.com
+                          example: 192.0.2.1.ip.linodeusercontent.com
                           readOnly: true
                           type: string
                           x-linode-cli-display: 5
@@ -1634,7 +2052,7 @@ paths:
                           x-linode-cli-display: 1
                         ipv4:
                           description: __Filterable__, __Read-only__ This NodeBalancer's public IPv4 address.
-                          example: 192.0.2.141
+                          example: 203.0.113.1
                           format: ip
                           readOnly: true
                           type: string
@@ -1671,7 +2089,7 @@ paths:
                             id:
                               description: The ID of the related LKE cluster.
                               example: 12345
-                              type: integer
+                              type: string
                             label:
                               description: The label of the related LKE cluster.
                               example: lkecluster12345
@@ -1690,25 +2108,6 @@ paths:
                           - object
                           - 'null'
                           x-linode-cli-display: 8
-                        locks:
-                          description: __Beta__, __Filterable__, __Read-only__ Indicates if this NodeBalancer is protected by a lock to prevent accidental deletion. If the NodeBalancer has a `cannot_delete` lock, it can't be deleted, but its configurations and backend nodes can. If the NodeBalancer has a `cannot_delete_with_subresources` lock, both the NodeBalancer and attached resources such as configurations and backend nodes can't be deleted. Only account administrators can remove locks using the [Delete a resource lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) operation.
-                          example:
-                          - cannot_delete
-                          items:
-                            enum:
-                            - cannot_delete_with_subresources
-                            - cannot_delete
-                            type: string
-                          readOnly: true
-                          type:
-                          - array
-                          - 'null'
-                          x-akamai:
-                            labels:
-                            - Filterable
-                            status: BETA
-                          x-linode-cli-display: 11
-                          x-linode-filterable: true
                         region:
                           description: __Filterable__, __Read-only__ The Region where this NodeBalancer is located. NodeBalancers only support backends in the same Region.
                           example: us-east
@@ -1770,6 +2169,7 @@ paths:
                         updated:
                           description: __Read-only__ When this NodeBalancer was last updated.
                           example: '2018-03-01T00:01:01'
+                          format: date-time
                           readOnly: true
                           type: string
                       title: NodeBalancer
@@ -1801,14 +2201,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1839,13 +2235,13 @@ paths:
         - syntax: linode-cli nodebalancers list
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - list
       - ls
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_nodebalancer
     servers:
     - url: https://api.linode.com
   /{apiVersion}/nodebalancers/{nodeBalancerId}:
@@ -1859,7 +2255,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1869,7 +2264,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -1878,36 +2272,39 @@ paths:
       path-info: /{apiVersion}/nodebalancers/{nodeBalancerId}
     x-linode-cli-command: nodebalancers
     get:
-      description: 'Returns a single NodeBalancer you can access. Run the List VPC configurations operation to get the NodeBalancer''s VPC configuration.
+      description: 'Returns a single NodeBalancer you can access.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_nodebalancer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers view 12345
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer
@@ -1930,11 +2327,12 @@ paths:
                   created:
                     description: __Read-only__ When this NodeBalancer was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   hostname:
                     description: __Read-only__ This NodeBalancer's hostname, beginning with its IP address and ending with _.ip.linodeusercontent.com_.
-                    example: 192.0.2.141.ip.linodeusercontent.com
+                    example: 192.0.2.1.ip.linodeusercontent.com
                     readOnly: true
                     type: string
                     x-linode-cli-display: 5
@@ -1946,7 +2344,7 @@ paths:
                     x-linode-cli-display: 1
                   ipv4:
                     description: __Filterable__, __Read-only__ This NodeBalancer's public IPv4 address.
-                    example: 192.0.2.141
+                    example: 203.0.113.1
                     format: ip
                     readOnly: true
                     type: string
@@ -1983,7 +2381,7 @@ paths:
                       id:
                         description: The ID of the related LKE cluster.
                         example: 12345
-                        type: integer
+                        type: string
                       label:
                         description: The label of the related LKE cluster.
                         example: lkecluster12345
@@ -2002,25 +2400,6 @@ paths:
                     - object
                     - 'null'
                     x-linode-cli-display: 8
-                  locks:
-                    description: __Beta__, __Filterable__, __Read-only__ Indicates if this NodeBalancer is protected by a lock to prevent accidental deletion. If the NodeBalancer has a `cannot_delete` lock, it can't be deleted, but its configurations and backend nodes can. If the NodeBalancer has a `cannot_delete_with_subresources` lock, both the NodeBalancer and attached resources such as configurations and backend nodes can't be deleted. Only account administrators can remove locks using the [Delete a resource lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) operation.
-                    example:
-                    - cannot_delete
-                    items:
-                      enum:
-                      - cannot_delete_with_subresources
-                      - cannot_delete
-                      type: string
-                    readOnly: true
-                    type:
-                    - array
-                    - 'null'
-                    x-akamai:
-                      labels:
-                      - Filterable
-                      status: BETA
-                    x-linode-cli-display: 11
-                    x-linode-filterable: true
                   region:
                     description: __Filterable__, __Read-only__ The Region where this NodeBalancer is located. NodeBalancers only support backends in the same Region.
                     example: us-east
@@ -2082,6 +2461,7 @@ paths:
                   updated:
                     description: __Read-only__ When this NodeBalancer was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 title: NodeBalancer
@@ -2094,14 +2474,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2132,11 +2508,11 @@ paths:
         - syntax: linode-cli nodebalancers view 12345
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: view
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_nodebalancer
     put:
       description: 'Updates information about a NodeBalancer you can access.
 
@@ -2148,26 +2524,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_nodebalancer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers update 12345 \
 
@@ -2178,7 +2544,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-node-balancer
@@ -2200,6 +2579,7 @@ paths:
                 created:
                   description: __Read-only__ When this NodeBalancer was created.
                   example: '{{created}}'
+                  format: date-time
                   readOnly: true
                   type: string
                 hostname:
@@ -2253,7 +2633,7 @@ paths:
                     id:
                       description: The ID of the related LKE cluster.
                       example: 12345
-                      type: integer
+                      type: string
                     label:
                       description: The label of the related LKE cluster.
                       example: lkecluster12345
@@ -2272,25 +2652,6 @@ paths:
                   - object
                   - 'null'
                   x-linode-cli-display: 8
-                locks:
-                  description: __Beta__, __Filterable__, __Read-only__ Indicates if this NodeBalancer is protected by a lock to prevent accidental deletion. If the NodeBalancer has a `cannot_delete` lock, it can't be deleted, but its configurations and backend nodes can. If the NodeBalancer has a `cannot_delete_with_subresources` lock, both the NodeBalancer and attached resources such as configurations and backend nodes can't be deleted. Only account administrators can remove locks using the [Delete a resource lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) operation.
-                  example:
-                  - cannot_delete
-                  items:
-                    enum:
-                    - cannot_delete_with_subresources
-                    - cannot_delete
-                    type: string
-                  readOnly: true
-                  type:
-                  - array
-                  - 'null'
-                  x-akamai:
-                    labels:
-                    - Filterable
-                    status: BETA
-                  x-linode-cli-display: 11
-                  x-linode-filterable: true
                 region:
                   description: __Filterable__, __Read-only__ The Region where this NodeBalancer is located. NodeBalancers only support backends in the same Region.
                   example: '{{region}}'
@@ -2352,6 +2713,7 @@ paths:
                 updated:
                   description: __Read-only__ When this NodeBalancer was last updated.
                   example: '{{updated}}'
+                  format: date-time
                   readOnly: true
                   type: string
               title: NodeBalancer
@@ -2360,6 +2722,7 @@ paths:
                 file-path: schemas/node-balancer.yaml
             x-example:
               x-ref: ../examples/put-node-balancer.json
+        description: The information to update.
         required: true
       responses:
         '200':
@@ -2379,11 +2742,12 @@ paths:
                   created:
                     description: __Read-only__ When this NodeBalancer was created.
                     example: '2018-01-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                   hostname:
                     description: __Read-only__ This NodeBalancer's hostname, beginning with its IP address and ending with _.ip.linodeusercontent.com_.
-                    example: 192.0.2.141.ip.linodeusercontent.com
+                    example: 192.0.2.1.ip.linodeusercontent.com
                     readOnly: true
                     type: string
                     x-linode-cli-display: 5
@@ -2395,7 +2759,7 @@ paths:
                     x-linode-cli-display: 1
                   ipv4:
                     description: __Filterable__, __Read-only__ This NodeBalancer's public IPv4 address.
-                    example: 192.0.2.141
+                    example: 203.0.113.1
                     format: ip
                     readOnly: true
                     type: string
@@ -2432,7 +2796,7 @@ paths:
                       id:
                         description: The ID of the related LKE cluster.
                         example: 12345
-                        type: integer
+                        type: string
                       label:
                         description: The label of the related LKE cluster.
                         example: lkecluster12345
@@ -2451,25 +2815,6 @@ paths:
                     - object
                     - 'null'
                     x-linode-cli-display: 8
-                  locks:
-                    description: __Beta__, __Filterable__, __Read-only__ Indicates if this NodeBalancer is protected by a lock to prevent accidental deletion. If the NodeBalancer has a `cannot_delete` lock, it can't be deleted, but its configurations and backend nodes can. If the NodeBalancer has a `cannot_delete_with_subresources` lock, both the NodeBalancer and attached resources such as configurations and backend nodes can't be deleted. Only account administrators can remove locks using the [Delete a resource lock](https://techdocs.akamai.com/linode-api/reference/delete-resource-lock) operation.
-                    example:
-                    - cannot_delete
-                    items:
-                      enum:
-                      - cannot_delete_with_subresources
-                      - cannot_delete
-                      type: string
-                    readOnly: true
-                    type:
-                    - array
-                    - 'null'
-                    x-akamai:
-                      labels:
-                      - Filterable
-                      status: BETA
-                    x-linode-cli-display: 11
-                    x-linode-filterable: true
                   region:
                     description: __Filterable__, __Read-only__ The Region where this NodeBalancer is located. NodeBalancers only support backends in the same Region.
                     example: us-east
@@ -2531,6 +2876,7 @@ paths:
                   updated:
                     description: __Read-only__ When this NodeBalancer was last updated.
                     example: '2018-03-01T00:01:01'
+                    format: date-time
                     readOnly: true
                     type: string
                 title: NodeBalancer
@@ -2543,14 +2889,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2581,11 +2923,11 @@ paths:
         - syntax: "linode-cli nodebalancers update 12345 \\\n  --label balancer12345 \\\n  --client_conn_throttle 0"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: update
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - update_nodebalancer
     delete:
       description: 'Deletes a NodeBalancer.
 
@@ -2593,42 +2935,39 @@ paths:
         __This is a destructive action and cannot be undone.__
 
 
-        A NodeBalancer can''t be deleted if it has a `cannot_delete` or a `cannot_delete_with_subresources` lock. Only account administrators can remove locks using the Delete a resource lock operation.
+        Deleting a NodeBalancer will also delete all associated Configs and Nodes, although the backend servers represented by the Nodes will not be changed or removed. Deleting a NodeBalancer will cause you to lose access to the IP Addresses assigned to this NodeBalancer.
 
 
-        Deleting a NodeBalancer also deletes all associated configurations and nodes. However, the backend servers represented by these nodes are not changed or removed.
+        >
 
 
-        When you delete a NodeBalancer, you lose access to the ephemeral IP addresses assigned to it. When a NodeBalancer is deleted, any assigned reserved IP remains on your account in an unassigned state, preserving the address for future use. Conversely, ephemeral IPs are released and can''t be recovered.
+        ---
 
 
-        **Permissions and scopes**
+        - __CLI__.
 
 
-        To call this operation, you need the following:
-
-
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_nodebalancer`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers delete 12345
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-node-balancer
@@ -2637,25 +2976,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-node-balancer-200.json
           description: NodeBalancer deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2686,170 +3022,96 @@ paths:
         - syntax: linode-cli nodebalancers delete 12345
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action:
       - delete
       - rm
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - delete_nodebalancer
     servers:
     - url: https://api.linode.com
-  /nodebalancers:
-    get:
-      operationId: getNodeBalancers
-      summary: List NodeBalancers
-      description: Returns a paginated list of NodeBalancers on your account.
-      tags:
-      - NodeBalancers
-      parameters:
-      - $ref: '#/components/parameters/pageParam'
-      - $ref: '#/components/parameters/pageSizeParam'
-      responses:
-        '200':
-          description: NodeBalancers retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedNodeBalancerList'
-        '401':
-          description: Unauthorized - invalid or missing authentication
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    post:
-      operationId: createNodeBalancer
-      summary: Create a NodeBalancer
-      description: Creates a new NodeBalancer in the specified region.
-      tags:
-      - NodeBalancers
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NodeBalancerRequest'
-      responses:
-        '200':
-          description: NodeBalancer created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NodeBalancer'
-        '400':
-          description: Bad request - invalid parameters
-        '401':
-          description: Unauthorized - invalid or missing authentication
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    servers:
-    - url: https://api.linode.com/v4
-      description: Production Server
-  /nodebalancers/{nodeBalancerId}:
-    get:
-      operationId: getNodeBalancer
-      summary: Get a NodeBalancer
-      description: Returns the details for a single NodeBalancer.
-      tags:
-      - NodeBalancers
-      parameters:
-      - $ref: '#/components/parameters/nodeBalancerIdParam'
-      responses:
-        '200':
-          description: NodeBalancer retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NodeBalancer'
-        '401':
-          description: Unauthorized - invalid or missing authentication
-        '404':
-          description: NodeBalancer not found
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    put:
-      operationId: updateNodeBalancer
-      summary: Update a NodeBalancer
-      description: Updates the label and other settings for a NodeBalancer.
-      tags:
-      - NodeBalancers
-      parameters:
-      - $ref: '#/components/parameters/nodeBalancerIdParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NodeBalancerUpdateRequest'
-      responses:
-        '200':
-          description: NodeBalancer updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NodeBalancer'
-        '400':
-          description: Bad request - invalid parameters
-        '401':
-          description: Unauthorized - invalid or missing authentication
-        '404':
-          description: NodeBalancer not found
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    delete:
-      operationId: deleteNodeBalancer
-      summary: Delete a NodeBalancer
-      description: Deletes a NodeBalancer and all associated configurations and nodes.
-      tags:
-      - NodeBalancers
-      parameters:
-      - $ref: '#/components/parameters/nodeBalancerIdParam'
-      responses:
-        '200':
-          description: NodeBalancer deleted successfully
-        '401':
-          description: Unauthorized - invalid or missing authentication
-        '404':
-          description: NodeBalancer not found
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    servers:
-    - url: https://api.linode.com/v4
-      description: Production Server
-  /nodebalancers/{nodeBalancerId}/configs:
-    get:
-      operationId: getNodeBalancerConfigs
-      summary: List configs
-      description: Returns a paginated list of configurations for a NodeBalancer.
-      tags:
-      - NodeBalancers
-      parameters:
-      - $ref: '#/components/parameters/nodeBalancerIdParam'
-      - $ref: '#/components/parameters/pageParam'
-      - $ref: '#/components/parameters/pageSizeParam'
-      responses:
-        '200':
-          description: NodeBalancer configs retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedNodeBalancerConfigList'
-        '401':
-          description: Unauthorized - invalid or missing authentication
-        '404':
-          description: NodeBalancer not found
-      security:
-      - personalAccessToken: []
-      - oauth: []
-    servers:
-    - url: https://api.linode.com/v4
-      description: Production Server
 components:
+  parameters:
+    pageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 25
+        maximum: 500
+        default: 100
+      description: The number of items per page.
+    nodeBalancerIdParam:
+      name: nodeBalancerId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The ID of the NodeBalancer.
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: The page number to return.
   schemas:
+    PaginatedNodeBalancerConfigList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                port:
+                  type: integer
+                protocol:
+                  type: string
+                algorithm:
+                  type: string
+                stickiness:
+                  type: string
+                check:
+                  type: string
+    NodeBalancerRequest:
+      type: object
+      required:
+      - region
+      properties:
+        region:
+          type: string
+          description: The region for the new NodeBalancer.
+        label:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: The label for the new NodeBalancer.
+        client_conn_throttle:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: Throttle connections per second.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the new NodeBalancer.
+    PaginatedNodeBalancerList:
+      allOf:
+      - $ref: '#/components/schemas/Pagination'
+      - type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/NodeBalancer'
     Pagination:
       type: object
       properties:
@@ -2862,33 +3124,6 @@ components:
         results:
           type: integer
           description: The total number of results.
-    PaginatedNodeBalancerList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/NodeBalancer'
-    NodeBalancerUpdateRequest:
-      type: object
-      properties:
-        label:
-          type: string
-          minLength: 3
-          maxLength: 32
-          description: The label for the NodeBalancer.
-        client_conn_throttle:
-          type: integer
-          minimum: 0
-          maximum: 20
-          description: Throttle connections per second.
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags for the NodeBalancer.
     NodeBalancer:
       type: object
       properties:
@@ -2942,41 +3177,14 @@ components:
           type: string
           format: date-time
           description: When this NodeBalancer was last updated.
-    PaginatedNodeBalancerConfigList:
-      allOf:
-      - $ref: '#/components/schemas/Pagination'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                port:
-                  type: integer
-                protocol:
-                  type: string
-                algorithm:
-                  type: string
-                stickiness:
-                  type: string
-                check:
-                  type: string
-    NodeBalancerRequest:
+    NodeBalancerUpdateRequest:
       type: object
-      required:
-      - region
       properties:
-        region:
-          type: string
-          description: The region for the new NodeBalancer.
         label:
           type: string
           minLength: 3
           maxLength: 32
-          description: The label for the new NodeBalancer.
+          description: The label for the NodeBalancer.
         client_conn_throttle:
           type: integer
           minimum: 0
@@ -2986,82 +3194,48 @@ components:
           type: array
           items:
             type: string
-          description: Tags for the new NodeBalancer.
-  parameters:
-    nodeBalancerIdParam:
-      name: nodeBalancerId
-      in: path
-      required: true
-      schema:
-        type: integer
-      description: The ID of the NodeBalancer.
-    pageParam:
-      name: page
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-      description: The page number to return.
-    pageSizeParam:
-      name: page_size
-      in: query
-      schema:
-        type: integer
-        minimum: 25
-        maximum: 500
-        default: 100
-      description: The number of items per page.
+          description: Tags for the NodeBalancer.
   securitySchemes:
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: A personal access token generated from the Linode Cloud Manager that grants access to the API based on the token's scopes.
     oauth:
+      type: oauth2
+      description: OAuth 2.0 authentication for third-party applications.
       flows:
         authorizationCode:
           authorizationUrl: https://login.linode.com/oauth/authorize
-          scopes:
-            account:read_only: Allows access to GET information about your account.
-            account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
-            domains:read_only: Allows access to GET Domains on your account.
-            domains:read_write: Allows access to all Domain endpoints.
-            events:read_only: Allows access to GET your Events.
-            events:read_write: Allows access to all endpoints related to your Events.
-            firewall:read_only: Allows access to GET information about your Firewalls.
-            firewall:read_write: Allows access to all Firewall endpoints.
-            images:read_only: Allows access to GET your Images.
-            images:read_write: Allows access to all endpoints related to your Images.
-            ips:read_only: Allows access to GET your ips.
-            ips:read_write: Allows access to all endpoints related to your ips.
-            linodes:read_only: Allows access to GET Linodes on your account.
-            linodes:read_write: Allow access to all endpoints related to your Linodes.
-            lke:read_only: Allows access to GET LKE Clusters on your account.
-            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
-            longview:read_only: Allows access to GET your Longview Clients.
-            longview:read_write: Allows access to all endpoints related to your Longview Clients.
-            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
-            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
-            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
-            object_storage:read_only: Allows access to GET information related to your Object Storage.
-            object_storage:read_write: Allows access to all Object Storage endpoints.
-            stackscripts:read_only: Allows access to GET your StackScripts.
-            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
-            volumes:read_only: Allows access to GET your Volumes.
-            volumes:read_write: Allows access to all endpoints related to your Volumes.
-            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
           tokenUrl: https://login.linode.com/oauth/token
-      type: oauth2
-    personalAccessToken:
-      scheme: bearer
-      type: http
+          scopes:
+            account:read_only: Read access to account information
+            account:read_write: Read and write access to account information
+            domains:read_only: Read access to domains
+            domains:read_write: Read and write access to domains
+            events:read_only: Read access to events
+            events:read_write: Read and write access to events
+            firewall:read_only: Read access to firewalls
+            firewall:read_write: Read and write access to firewalls
+            images:read_only: Read access to images
+            images:read_write: Read and write access to images
+            ips:read_only: Read access to IP addresses
+            ips:read_write: Read and write access to IP addresses
+            linodes:read_only: Read access to Linodes
+            linodes:read_write: Read and write access to Linodes
+            lke:read_only: Read access to LKE
+            lke:read_write: Read and write access to LKE
+            longview:read_only: Read access to Longview
+            longview:read_write: Read and write access to Longview
+            nodebalancers:read_only: Read access to NodeBalancers
+            nodebalancers:read_write: Read and write access to NodeBalancers
+            object_storage:read_only: Read access to Object Storage
+            object_storage:read_write: Read and write access to Object Storage
+            stackscripts:read_only: Read access to StackScripts
+            stackscripts:read_write: Read and write access to StackScripts
+            volumes:read_only: Read access to Volumes
+            volumes:read_write: Read and write access to Volumes
+            vpc:read_only: Read access to VPCs
+            vpc:read_write: Read and write access to VPCs
 x-refined-from:
-- linode-api-v4-official-openapi.json
 - linode-api-v4-openapi.yml
-x-readme:
-  explorer-enabled: false
-  samples-languages:
-  - curl
-  - python
-  - node
+- linode-openapi.json

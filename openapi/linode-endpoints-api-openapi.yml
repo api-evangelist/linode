@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Endpoints API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,29 +38,36 @@ paths:
       description: 'Returns a paginated list of all Object Storage endpoints available in your account.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `object_storage:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli object-storage endpoints
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-endpoints
@@ -69,144 +79,77 @@ paths:
               example:
                 data:
                 - endpoint_type: E1
-                  region: br-gru
-                  s3_endpoint: br-gru-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: in-maa
-                  s3_endpoint: in-maa-1.linodeobjects.com
-                - endpoint_type: E1
                   region: us-iad
                   s3_endpoint: us-iad-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: it-mil
-                  s3_endpoint: it-mil-1.linodeobjects.com
-                - endpoint_type: E0
-                  region: eu-central
-                  s3_endpoint: eu-central-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: id-cgk
-                  s3_endpoint: id-cgk-1.linodeobjects.com
-                - endpoint_type: E0
-                  region: us-east
-                  s3_endpoint: us-east-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: fr-par
-                  s3_endpoint: fr-par-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: us-lax
-                  s3_endpoint: us-lax-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: us-ord
-                  s3_endpoint: us-ord-1.linodeobjects.com
-                - endpoint_type: E3
-                  region: us-ord
-                  s3_endpoint: us-ord-10.linodeobjects.com
-                - endpoint_type: E1
-                  region: se-sto
-                  s3_endpoint: se-sto-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: us-mia
-                  s3_endpoint: us-mia-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: es-mad
-                  s3_endpoint: es-mad-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: us-sea
-                  s3_endpoint: us-sea-1.linodeobjects.com
-                - endpoint_type: E0
-                  region: ap-south
-                  s3_endpoint: ap-south-1.linodeobjects.com
-                - endpoint_type: E0
-                  region: us-southeast
-                  s3_endpoint: us-southeast-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: jp-osa
-                  s3_endpoint: jp-osa-1.linodeobjects.com
-                - endpoint_type: E1
-                  region: nl-ams
-                  s3_endpoint: nl-ams-1.linodeobjects.com
-                - endpoint_type: E3
-                  region: de-fra-2
-                  s3_endpoint: null
-                - endpoint_type: E3
-                  region: jp-tyo-3
-                  s3_endpoint: null
-                - endpoint_type: E3
-                  region: us-lax
-                  s3_endpoint: null
-                - endpoint_type: E3
-                  region: sg-sin-2
-                  s3_endpoint: null
-                - endpoint_type: E3
-                  region: gb-lon
-                  s3_endpoint: null
                 page: 1
                 pages: 1
-                results: 24
+                results: 1
               schema:
-                additionalProperties: false
-                properties:
-                  data:
-                    description: A list of objects returned for a response.
-                    items:
-                      additionalProperties: false
-                      description: Object Storage endpoints object.
-                      properties:
-                        endpoint_type:
-                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
-                          enum:
-                          - E0
-                          - E1
-                          - E2
-                          - E3
-                          example: E1
-                          type: string
-                          x-linode-cli-display: 2
-                        region:
-                          description: The Akamai cloud computing region, represented by its slug value. Run the [List regions](https://techdocs.akamai.com/linode-api/reference/get-regions) operation to view all regions and their slugs.
-                          example: us-iad
-                          type: string
-                        s3_endpoint:
-                          description: Your S3-compatible endpoint URL, based on the `endpoint_type` and `region`. Displayed as `null` if you haven't assigned an endpoint for your user.
-                          example: us-iad-1.linodeobjects.com
-                          type:
-                          - string
-                          - 'null'
-                          x-linode-cli-display: 1
-                      type: object
-                      x-akamai:
-                        file-path: schemas/object-storage-endpoint.yaml
-                    type: array
-                  page:
-                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
-                    example: 1
-                    readOnly: true
-                    type: integer
-                  pages:
-                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
-                    example: 1
-                    readOnly: true
-                    type: integer
-                  results:
-                    description: __Read-only__ The total number of results.
-                    example: 1
-                    readOnly: true
-                    type: integer
-                type: object
+                allOf:
+                - additionalProperties: false
+                  properties:
+                    data:
+                      items:
+                        additionalProperties: false
+                        description: Object Storage endpoints object.
+                        properties:
+                          endpoint_type:
+                            description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
+                            enum:
+                            - E0
+                            - E1
+                            - E2
+                            - E3
+                            example: E1
+                            type: string
+                            x-linode-cli-display: 2
+                          region:
+                            description: The Akamai cloud computing region, represented by its slug value. Run the [List regions](https://techdocs.akamai.com/linode-api/reference/get-regions) operation to view all regions and their slugs.
+                            example: us-iad
+                            type: string
+                          s3_endpoint:
+                            description: Your S3-compatible endpoint URL, based on the `endpoint_type` and `region`. Displayed as `null` if you haven't assigned an endpoint for your user.
+                            example: us-iad-1.linodeobjects.com
+                            type:
+                            - string
+                            - 'null'
+                            x-linode-cli-display: 1
+                        type: object
+                        x-akamai:
+                          file-path: schemas/object-storage-endpoint.yaml
+                      type: array
+                  type: object
+                - additionalProperties: false
+                  description: An envelope for paginated response. When accessing a collection through a GET endpoint, the results are wrapped in this envelope which includes metadata about those results. Results are presented within a `data` array. See [Pagination](https://techdocs.akamai.com/linode-api/reference/pagination) for more information.
+                  properties:
+                    page:
+                      description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    pages:
+                      description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                      example: 1
+                      readOnly: true
+                      type: integer
+                    results:
+                      description: __Read-only__ The total number of results.
+                      example: 1
+                      readOnly: true
+                      type: integer
+                  type: object
+                  x-akamai:
+                    file-path: schemas/pagination-envelope.yaml
                 x-akamai:
                   file-path: schemas/get-object-storage-endpoints-200.yaml
           description: A paginated list of endpoints you can access.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -250,10 +193,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -270,8 +209,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -290,7 +229,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

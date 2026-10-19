@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Buckets API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -48,17 +51,28 @@ paths:
 
         > - This operation has specific rate limits.
 
+        >
 
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
+        > - You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        >
 
 
-        - Scopes: `object_storage:read_write`'
+        ---
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-object-storage-bucket
@@ -66,10 +80,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              endpoint_type: E3
-              label: app-data
-              region: us-ord
             schema:
               additionalProperties: false
               properties:
@@ -84,11 +94,11 @@ paths:
                   example: '{{acl}}'
                   type: string
                 cors_enabled:
-                  description: Whether cross-origin resource sharing (CORS) is enabled for all origins in the bucket. CORS is only supported for legacy, E0 and E1 [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types).
+                  description: If set to `false`, cross-origin resource sharing (CORS) is disabled for all origins in the bucket.
                   example: '{{cors_enabled}}'
                   type: boolean
                 endpoint_type:
-                  description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                  description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
                   enum:
                   - E0
                   - E1
@@ -127,24 +137,16 @@ paths:
                   type: string
               required:
               - label
-              - region
               type: object
               x-akamai:
                 file-path: schemas/post-object-storage-bucket.yaml
+            x-example:
+              x-ref: ../examples/post-object-storage-bucket.json
+        description: Information about the bucket you want to create.
       responses:
         '200':
           content:
             application/json:
-              example:
-                cluster: us-ord-1
-                created: '2026-03-30T19:50:05'
-                endpoint_type: E3
-                hostname: example-bucket.us-ord-10.linodeobjects.com
-                label: example-bucket
-                objects: 0
-                region: us-ord
-                s3_endpoint: us-ord-10.linodeobjects.com
-                size: 0
               schema:
                 additionalProperties: false
                 description: An Object Storage bucket.
@@ -170,9 +172,10 @@ paths:
                   created:
                     description: When this bucket was created.
                     example: '2019-01-01T01:23:45'
+                    format: date-time
                     type: string
                   endpoint_type:
-                    description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                    description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
                     enum:
                     - E0
                     - E1
@@ -207,18 +210,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/object-storage-bucket.yaml
+              x-example:
+                x-ref: ../examples/post-object-storage-bucket-200.json
           description: The bucket created successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -254,16 +255,30 @@ paths:
       description: 'Returns a paginated list of all Object Storage buckets available in your account.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_only`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-buckets
@@ -272,34 +287,10 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - cluster: us-ord-1
-                  created: '2026-03-30T19:50:05'
-                  endpoint_type: E3
-                  hostname: example-bucket.us-ord-10.linodeobjects.com
-                  label: example-bucket
-                  objects: 4
-                  region: us-ord
-                  s3_endpoint: us-ord-10.linodeobjects.com
-                  size: 188318981
-                - cluster: us-southeast-1
-                  created: '2022-02-07T21:32:41'
-                  endpoint_type: E0
-                  hostname: marketing-assets.us-southeast-1.linodeobjects.com
-                  label: marketing-assets
-                  objects: 15
-                  region: us-southeast
-                  s3_endpoint: us-southeast-1.linodeobjects.com
-                  size: 275404
-                page: 1
-                pages: 1
-                results: 2
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: A list of Object Storage buckets on your account.
                     items:
                       additionalProperties: false
                       description: An Object Storage bucket.
@@ -325,9 +316,10 @@ paths:
                         created:
                           description: When this bucket was created.
                           example: '2019-01-01T01:23:45'
+                          format: date-time
                           type: string
                         endpoint_type:
-                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
                           enum:
                           - E0
                           - E1
@@ -381,18 +373,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-object-storage-buckets-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-buckets-200.json
           description: A paginated list of buckets you own.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -435,7 +425,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -463,16 +452,30 @@ paths:
       description: 'Returns a list of buckets on your account, in the specified region.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_only`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-bucketin-cluster
@@ -481,34 +484,10 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - cluster: us-ord-1
-                  created: '2026-03-30T19:50:05'
-                  endpoint_type: E3
-                  hostname: example-bucket.us-ord-10.linodeobjects.com
-                  label: example-bucket
-                  objects: 4
-                  region: us-ord
-                  s3_endpoint: us-ord-10.linodeobjects.com
-                  size: 188318981
-                - cluster: us-ord-1
-                  created: '2026-03-30T23:48:42'
-                  endpoint_type: E3
-                  hostname: app-data.us-ord-1.linodeobjects.com
-                  label: app-data
-                  objects: 0
-                  region: us-ord
-                  s3_endpoint: us-ord-10.linodeobjects.com
-                  size: 0
-                page: 1
-                pages: 1
-                results: 2
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: Object Storage buckets in the cluster.
                     items:
                       additionalProperties: false
                       description: An Object Storage bucket.
@@ -534,9 +513,10 @@ paths:
                         created:
                           description: When this bucket was created.
                           example: '2019-01-01T01:23:45'
+                          format: date-time
                           type: string
                         endpoint_type:
-                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                          description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
                           enum:
                           - E0
                           - E1
@@ -590,18 +570,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-object-storage-bucketin-cluster-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucketin-cluster-200.json
           description: A paginated list of buckets on your account in this region.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -644,7 +622,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -671,7 +648,6 @@ paths:
       name: bucket
       required: true
       schema:
-        example: example-bucket
         type: string
       x-akamai:
         file-path: parameters/bucket.yaml
@@ -682,16 +658,30 @@ paths:
       description: 'Returns a single Object Storage bucket.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_only`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-bucket
@@ -700,16 +690,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                cluster: us-ord-1
-                created: '2026-03-30T19:50:05'
-                endpoint_type: E3
-                hostname: example-bucket.us-ord-10.linodeobjects.com
-                label: example-bucket
-                objects: 4
-                region: us-ord
-                s3_endpoint: us-ord-10.linodeobjects.com
-                size: 188318981
               schema:
                 additionalProperties: false
                 description: An Object Storage bucket.
@@ -735,9 +715,10 @@ paths:
                   created:
                     description: When this bucket was created.
                     example: '2019-01-01T01:23:45'
+                    format: date-time
                     type: string
                   endpoint_type:
-                    description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) for more information.
+                    description: The type of `s3_endpoint` available to the active `user` in this `region`. See [Endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) for more information.
                     enum:
                     - E0
                     - E1
@@ -772,18 +753,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/object-storage-bucket.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucket-200.json
           description: The requested bucket.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -823,19 +802,30 @@ paths:
 
         >
 
-        > - You need to remove all objects from a bucket before you can delete it. While you can delete a bucket using the CLI, this operation fails if the bucket contains too many objects. The best way to empty large buckets is to configure lifecycle policies. Set a policy to remove all objects, wait a day or more for the system to remove all objects, then delete the bucket. For more details, see Lifecycle policies.
+        > - You need to remove all objects from a bucket before you can delete it. While you can delete a bucket using the CLI, this operation fails if the bucket contains too many objects. The best way to empty large buckets is to configure lifecycle policies with an outside API, such as the Ceph Object Gateway S3 API. Set a policy to remove all objects, wait a day or more for the system to remove all objects, then delete the bucket.
+
+        >
+
+        > - You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `object_storage:read_write`'
+        ```
+
+        object_storage:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-object-storage-bucket
@@ -844,25 +834,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-object-storage-bucket-200.json
           description: Bucket deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -905,7 +892,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -932,7 +918,6 @@ paths:
       name: bucket
       required: true
       schema:
-        example: example-bucket
         type: string
       x-akamai:
         file-path: parameters/bucket.yaml
@@ -947,23 +932,26 @@ paths:
 
         >
 
-        > - CORS is only supported with legacy endpoints (E0 and E1).
+        > You can use the S3 API for more fine-grained control of the CORS or S3 canned ACL settings.
+
 
         >
 
-        > - You can use the S3 API for more fine-grained control of the CORS or S3 canned ACL settings.
+
+        ---
 
 
-        **Permissions and scopes**
+        - __OAuth scopes__.
 
 
-        To call this operation, you need the following:
+        ```
+
+        object_storage:read_write
+
+        ```
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `object_storage:read_write`'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-object-storage-bucket-access
@@ -971,9 +959,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              acl: private
-              cors_enabled: false
             schema:
               additionalProperties: false
               properties:
@@ -988,37 +973,34 @@ paths:
                   example: '{{acl}}'
                   type: string
                 cors_enabled:
-                  description: Whether cross-origin resource sharing (CORS) is enabled for all origins in the bucket.
+                  description: If `true`, cross-origin resource sharing (CORS) is enabled for all origins in the bucket.
                   example: '{{cors_enabled}}'
-                  type:
-                  - boolean
-                  - 'null'
+                  type: boolean
               type: object
               x-akamai:
                 file-path: schemas/post-object-storage-bucket-access.yaml
+            x-example:
+              x-ref: ../examples/post-object-storage-bucket-access.json
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-object-storage-bucket-access-200.json
           description: Access controls updated.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1061,16 +1043,23 @@ paths:
         > You can use the S3 API to view more details on CORS or S3 canned ACL settings.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __OAuth scopes__.
 
 
-        - Scopes: `object_storage:read_only`'
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-bucket-access
@@ -1079,11 +1068,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                acl: public-read
-                acl_xml: <AccessControlPolicy>...</AccessControlPolicy>
-                cors_enabled: true
-                cors_xml: <CORSConfiguration>...</CORSConfiguration>
               schema:
                 additionalProperties: false
                 properties:
@@ -1102,13 +1086,13 @@ paths:
                     example: <AccessControlPolicy>...</AccessControlPolicy>
                     type: string
                   cors_enabled:
-                    description: If `true`, cross-origin resource sharing (CORS) is enabled for all origins in the bucket. Returned as `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) because CORS is not supported.
+                    description: If `true`, cross-origin resource sharing (CORS) is enabled for all origins in the bucket. Returned as `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types) because CORS is not supported.
                     example: true
                     type:
                     - boolean
                     - 'null'
                   cors_xml:
-                    description: The full XML of the bucket's CORS policy. Returned as an empty object if `cors_enabled` is `false`, and `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types). CORS is not supported with these endpoint types.
+                    description: The full XML of the bucket's CORS policy. Returned as an empty object if `cors_enabled` is `false`, and `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/object-storage#endpoint-types). CORS is not supported with these endpoint types.
                     example: <CORSConfiguration>...</CORSConfiguration>
                     type:
                     - string
@@ -1116,18 +1100,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-object-storage-bucket-access-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucket-access-200.json
           description: Access settings for the specific bucket.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1167,23 +1149,26 @@ paths:
 
         >
 
-        > - CORS is only supported with legacy endpoints (E0 and E1).
+        > You can use the S3 API for more fine-grained control of the CORS or S3 canned ACL settings.
+
 
         >
 
-        > - You can use the S3 API for more fine-grained control of the CORS or S3 canned ACL settings.
+
+        ---
 
 
-        **Permissions and scopes**
+        - __OAuth scopes__.
 
 
-        To call this operation, you need the following:
+        ```
+
+        object_storage:read_write
+
+        ```
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `object_storage:read_write`'
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-storage-bucket-access
@@ -1191,9 +1176,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              acl: authenticated-read
-              cors_enabled: false
             schema:
               additionalProperties: false
               properties:
@@ -1208,37 +1190,34 @@ paths:
                   example: '{{acl}}'
                   type: string
                 cors_enabled:
-                  description: Whether cross-origin resource sharing (CORS) is enabled for all origins on the bucket.
+                  description: If `true`, the API enables cross-origin resource sharing for all origins on the bucket.
                   example: '{{cors_enabled}}'
-                  type:
-                  - boolean
-                  - 'null'
+                  type: boolean
               type: object
               x-akamai:
                 file-path: schemas/put-storage-bucket-access.yaml
+            x-example:
+              x-ref: ../examples/put-storage-bucket-access.json
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/put-storage-bucket-access-200.json
           description: Access controls updated.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1281,7 +1260,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1308,7 +1286,6 @@ paths:
       name: bucket
       required: true
       schema:
-        example: example-bucket
         type: string
       x-akamai:
         file-path: parameters/bucket.yaml
@@ -1316,19 +1293,33 @@ paths:
       file-path: paths/object-storage-object-acl.yaml
       path-info: /{apiVersion}/object-storage/buckets/{regionId}/{bucket}/object-acl
     get:
-      description: 'View a specific object''s access control list (ACL) settings. ACLs define who can access your buckets and objects and specify the level of access granted to those users. See Define access and permissions using ACLs (Access Control Lists).
+      description: 'View a specific object''s access control list (ACL) settings. ACLs define who can access your buckets and objects and specify the level of access granted to those users.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_only`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-bucket-acl
@@ -1340,7 +1331,6 @@ paths:
         name: name
         required: true
         schema:
-          example: my-object.jpg
           type: string
         x-akamai:
           file-path: parameters/name-query.yaml
@@ -1348,9 +1338,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                acl: public-read
-                acl_xml: <AccessControlPolicy>...</AccessControlPolicy>
               schema:
                 additionalProperties: false
                 properties:
@@ -1371,18 +1358,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-object-storage-bucket-acl-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucket-acl-200.json
           description: The Object's canned ACL and policy.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1415,19 +1400,33 @@ paths:
           url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-skip: true
     put:
-      description: 'Update a specific object''s access control list (ACL) settings. ACLs define who can access your buckets and objects, and specify the level of access granted to those users. See Define access and permissions using ACLs (Access Control Lists).
+      description: 'Update a specific object''s access control list (ACL) settings. ACLs define who can access your buckets and objects, and specify the level of access granted to those users.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_write`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-object-storage-bucket-acl
@@ -1435,9 +1434,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              acl: private
-              name: example-file.txt
             schema:
               additionalProperties: false
               properties:
@@ -1461,29 +1457,28 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/put-object-storage-bucket-acl.yaml
+            x-example:
+              x-ref: ../examples/put-object-storage-bucket-acl.json
       responses:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucket-acl-200.json
           description: The ACL configuration was updated.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1526,7 +1521,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1553,7 +1547,6 @@ paths:
       name: bucket
       required: true
       schema:
-        example: example-bucket
         type: string
       x-akamai:
         file-path: parameters/bucket.yaml
@@ -1564,16 +1557,30 @@ paths:
       description: 'Returns the contents of a bucket. The contents are paginated using a `marker`, that''s the name of the last object on the previous page. Objects can also be filtered by `prefix` and `delimiter`. See Filtering and sorting for more information.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_only`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-bucket-content
@@ -1585,27 +1592,24 @@ paths:
         name: marker
         required: false
         schema:
-          example: bd021c21-e734-4823-97a4-58b41c2cd4c8.892602.184
           type: string
         x-akamai:
           file-path: parameters/marker-query.yaml
-      - description: The delimiter for object names; if given, object names will be returned up to the first occurrence of this character. This is most commonly used with the `/` character to allow bucket transversal in a manner similar to a file system, however any delimiter may be used. Use in conjunction with `prefix` to see object names past the first occurrence of the delimiter.
+      - description: The delimiter for object names; if given, object names will be returned up to the first occurrence of this character. This is most commonly used with the `/` character to allow bucket transversal in a manner similar to a filesystem, however any delimiter may be used. Use in conjunction with `prefix` to see object names past the first occurrence of the delimiter.
         example: '{{delimiter}}'
         in: query
         name: delimiter
         required: false
         schema:
-          example: /
           type: string
         x-akamai:
           file-path: parameters/delimiter-query.yaml
-      - description: Filters objects returned to only those whose name start with the given prefix. Commonly used in conjunction with `delimiter` to allow transversal of bucket contents in a manner similar to a file system.
+      - description: Filters objects returned to only those whose name start with the given prefix. Commonly used in conjunction with `delimiter` to allow transversal of bucket contents in a manner similar to a filesystem.
         example: '{{prefix}}'
         in: query
         name: prefix
         required: false
         schema:
-          example: img/2022/04/
           type: string
         x-akamai:
           file-path: parameters/prefix-query.yaml
@@ -1625,20 +1629,10 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                data:
-                - etag: 9f254c71e28e033bf9e0e5262e3e72ab
-                  last_modified: '2019-01-01T01:23:45'
-                  name: example
-                  owner: bfc70ab2-e3d4-42a4-ad55-83921822270c
-                  size: 123
-                is_truncated: true
-                next_marker: bd021c21-e734-4823-97a4-58b41c2cd4c8.892602.184
               schema:
                 additionalProperties: false
                 properties:
                   data:
-                    description: Objects in the bucket.
                     items:
                       additionalProperties: false
                       description: An Object in Object Storage, or a "prefix" that contains one or more objects when a `delimiter` is used.
@@ -1650,6 +1644,7 @@ paths:
                         last_modified:
                           description: The date and time this object was last modified. `null` if this object represents a prefix.
                           example: '2019-01-01T01:23:45'
+                          format: date-time
                           type: string
                         name:
                           description: The name of this object or prefix.
@@ -1680,18 +1675,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/get-object-storage-bucket-content-200.yaml
+              x-example:
+                x-ref: ../examples/get-object-storage-bucket-content-200.json
           description: One page of the requested bucket's contents.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1734,7 +1727,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -1761,7 +1753,6 @@ paths:
       name: bucket
       required: true
       schema:
-        example: example-bucket
         type: string
       x-akamai:
         file-path: parameters/bucket.yaml
@@ -1772,16 +1763,30 @@ paths:
       description: 'Creates a pre-signed URL to access a single object in a bucket. Use it to share, create, or delete objects by using the appropriate HTTP method in your request body''s `method` parameter.
 
 
-        **Permissions and scopes**
+        > 📘
+
+        >
+
+        > You can use an outside API, such as the Ceph Object Gateway S3 API for more options.
 
 
-        To call this operation, you need the following:
+        >
 
 
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        ---
 
 
-        - Scopes: `object_storage:read_write`'
+        - __OAuth scopes__.
+
+
+        ```
+
+        object_storage:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-object-storage-object-url
@@ -1789,10 +1794,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              expires_in: 3600
-              method: GET
-              name: example-object.txt
             schema:
               additionalProperties: false
               properties:
@@ -1804,9 +1805,9 @@ paths:
                   - 'null'
                 expires_in:
                   default: 3600
-                  description: How long this signed URL is valid, in seconds.
+                  description: How long this signed URL will be valid for, in seconds.  If omitted, the URL will be valid for 3600 seconds (1 hour).
                   example: '{{expires_in}}'
-                  maximum: 3600
+                  maximum: 86400
                   minimum: 360
                   type:
                   - integer
@@ -1826,20 +1827,16 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/post-object-storage-object-url.yaml
+            x-example:
+              x-ref: ../examples/post-object-storage-object-url.json
+        description: Information about the request to sign.
       responses:
         '200':
           content:
             application/json:
-              example:
-                exists: false
-                url: https://us-southeast-1.linodeobjects.com:443/example-bucket/example-object.txt?Signature=2gXppFqncAkKZ3qsm0WHEY%2F9JpE%3D&Expires=1774919632&AWSAccessKeyId=9TQEGXL316IQXK5XHK3F
               schema:
                 additionalProperties: false
                 properties:
-                  exists:
-                    description: Whether an object currently exists at the `url` path.
-                    example: false
-                    type: boolean
                   url:
                     description: The signed URL to perform the request at.
                     example: https://us-east-1.linodeobjects.com/example-bucket/example?Signature=qr98TEucCntPgEG%2BsZQGDsJg93c%3D&Expires=1567609905&AWSAccessKeyId=G4YAF81XWY61DQM94SE0
@@ -1847,18 +1844,16 @@ paths:
                 type: object
                 x-akamai:
                   file-path: schemas/post-object-storage-object-url-200.yaml
+              x-example:
+                x-ref: ../examples/post-object-storage-object-url-200.json
           description: The URL with which to access your object.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -1890,393 +1885,6 @@ paths:
           title: OAuth scopes
           url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-skip: true
-  /{apiVersion}/object-storage/buckets/{regionId}/{bucket}/ssl:
-    parameters:
-    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
-      example: '{{apiVersion}}'
-      in: path
-      name: apiVersion
-      required: true
-      schema:
-        enum:
-        - v4
-        - v4beta
-        example: v4
-        type: string
-      x-akamai:
-        file-path: parameters/api-version-path.yaml
-    - description: 'Identifies a region where this bucket lives.
-
-
-        > 📘
-
-        >
-
-        > You can use a `clusterId` in place of `regionId` in requests for buckets that you created using the legacy version of the API. Run [List clusters](https://techdocs.akamai.com/linode-api/reference/get-object-storage-clusters) to see each cluster `id`.'
-      example: '{{regionId}}'
-      in: path
-      name: regionId
-      required: true
-      schema:
-        example: us-east
-        type: string
-      x-akamai:
-        file-path: parameters/region-id-obj.yaml
-    - description: The bucket name.
-      example: '{{bucket}}'
-      in: path
-      name: bucket
-      required: true
-      schema:
-        example: example-bucket
-        type: string
-      x-akamai:
-        file-path: parameters/bucket.yaml
-    x-akamai:
-      file-path: paths/object-storage-bucket-ssl.yaml
-      path-info: /{apiVersion}/object-storage/buckets/{regionId}/{bucket}/ssl
-    x-linode-cli-command: object-storage
-    post:
-      description: 'Upload a TLS/SSL certificate and private key to be served when you visit your Object Storage bucket via HTTPS. Your TLS/SSL certificate and private key are encrypted and stored at rest.
-
-
-        To replace an expired certificate, delete your current certificates and upload a new one.
-
-
-        > 📘
-
-        >
-
-        > TLS/SSL certificates are only supported with legacy endpoints (E0 and E1).
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `object_storage:read_write`
-
-
-        **CLI**
-
-
-        ```shell
-
-        linode-cli object-storage ssl-upload \
-
-        us-east-1 example-bucket \
-
-        --certificate "-----BEGIN CERTIFICATE-----
-
-        CERTIFICATE_INFORMATION
-
-        -----END CERTIFICATE-----" \
-
-        --private_key "REDACTED_PRIVATE_KEY_EXAMPLE"
-
-        ```
-
-
-        Learn more'
-      externalDocs:
-        description: See documentation for this operation in Akamai's Linode API
-        url: https://techdocs.akamai.com/linode-api/reference/post-object-storage-ssl
-      operationId: post-object-storage-ssl
-      requestBody:
-        content:
-          application/json:
-            example:
-              certificate: '-----BEGIN CERTIFICATE-----
-
-                CERTIFICATE_INFORMATION
-
-                -----END CERTIFICATE-----'
-              private_key: REDACTED_PRIVATE_KEY_EXAMPLE
-            schema:
-              additionalProperties: false
-              description: Upload a TLS/SSL certificate and private key to be served when you visit your Object Storage bucket via HTTPS.
-              properties:
-                certificate:
-                  description: Your Base64-encoded and PEM formatted SSL certificate. Include line breaks as `\n` in the string for requests, but not when using the Linode CLI.
-                  example: '{{certificate}}'
-                  type: string
-                private_key:
-                  description: The private key associated with this TLS/SSL certificate.  Include line breaks as `\n` in the string for requests, but not when using the Linode CLI.
-                  example: '{{private_key}}'
-                  type: string
-              required:
-              - certificate
-              - private_key
-              type: object
-              x-akamai:
-                file-path: schemas/object-storage-ssl.yaml
-      responses:
-        '200':
-          content:
-            application/json:
-              example:
-                ssl: true
-              schema:
-                additionalProperties: false
-                description: If this Object Storage bucket has a corresponding TLS/SSL Certificate.
-                properties:
-                  ssl:
-                    description: __Read-only__ Whether this bucket has a corresponding TLS/SSL certificate. Returned as `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) because TLS/SSL certificates are not supported.
-                    example: true
-                    readOnly: true
-                    type:
-                    - boolean
-                    - 'null'
-                type: object
-                x-akamai:
-                  file-path: schemas/object-storage-ssl-response.yaml
-          description: The response indicates whether this bucket has a corresponding TLS/SSL certificate that was uploaded by a user.
-        default:
-          content:
-            application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
-              schema:
-                additionalProperties: false
-                properties:
-                  errors:
-                    description: Any warnings associated with a response.
-                    items:
-                      additionalProperties: false
-                      description: An object for describing a single error that occurred during the processing of a request.
-                      properties:
-                        field:
-                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
-                          example: fieldname
-                          type: string
-                        reason:
-                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
-                          example: fieldname must be a valid value
-                          type: string
-                      type: object
-                      x-akamai:
-                        file-path: schemas/error-object.yaml
-                    type: array
-                type: object
-          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
-      security:
-      - personalAccessToken: []
-      - oauth:
-        - object_storage:read_write
-      summary: Add a TLS/SSL certificate to a bucket
-      tags:
-      - Buckets
-      x-akamai:
-        tabs:
-        - syntax: "linode-cli object-storage ssl-upload \\\n  us-east-1 example-bucket \\\n  --certificate \"-----BEGIN CERTIFICATE-----\n                 CERTIFICATE_INFORMATION\n                 -----END CERTIFICATE-----\" \\\n  --private_key \"REDACTED_PRIVATE_KEY_EXAMPLE\""
-          title: CLI
-          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
-        - syntax: object_storage:read_write
-          title: OAuth scopes
-          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
-      x-linode-cli-action: ssl-upload
-    get:
-      description: 'Whether this bucket has a corresponding TLS/SSL certificate that was uploaded by a user on your account.
-
-
-        > 📘
-
-        >
-
-        > TLS/SSL certificates are only supported with legacy endpoints (E0 and E1).
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `object_storage:read_only`
-
-
-        **CLI**
-
-
-        ```shell
-
-        linode-cli object-storage ssl-view \
-
-        us-east-1 example-bucket
-
-        ```
-
-
-        Learn more'
-      externalDocs:
-        description: See documentation for this operation in Akamai's Linode API
-        url: https://techdocs.akamai.com/linode-api/reference/get-object-storage-ssl
-      operationId: get-object-storage-ssl
-      responses:
-        '200':
-          content:
-            application/json:
-              example:
-                ssl: true
-              schema:
-                additionalProperties: false
-                description: If this Object Storage bucket has a corresponding TLS/SSL Certificate.
-                properties:
-                  ssl:
-                    description: __Read-only__ Whether this bucket has a corresponding TLS/SSL certificate. Returned as `null` for `E2` and `E3` [endpoint types](https://techdocs.akamai.com/cloud-computing/docs/endpoint-types) because TLS/SSL certificates are not supported.
-                    example: true
-                    readOnly: true
-                    type:
-                    - boolean
-                    - 'null'
-                type: object
-                x-akamai:
-                  file-path: schemas/object-storage-ssl-response.yaml
-          description: Returns a boolean value indicating if this bucket has a corresponding TLS/SSL certificate.
-        default:
-          content:
-            application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
-              schema:
-                additionalProperties: false
-                properties:
-                  errors:
-                    description: Any warnings associated with a response.
-                    items:
-                      additionalProperties: false
-                      description: An object for describing a single error that occurred during the processing of a request.
-                      properties:
-                        field:
-                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
-                          example: fieldname
-                          type: string
-                        reason:
-                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
-                          example: fieldname must be a valid value
-                          type: string
-                      type: object
-                      x-akamai:
-                        file-path: schemas/error-object.yaml
-                    type: array
-                type: object
-          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
-      security:
-      - personalAccessToken: []
-      - oauth:
-        - object_storage:read_only
-      summary: Get a bucket's TLS/SSL certificate
-      tags:
-      - Buckets
-      x-akamai:
-        tabs:
-        - syntax: "linode-cli object-storage ssl-view \\\n  us-east-1 example-bucket"
-          title: CLI
-          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
-        - syntax: object_storage:read_only
-          title: OAuth scopes
-          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
-      x-linode-cli-action: ssl-view
-    delete:
-      description: 'Deletes this Object Storage bucket''s user uploaded TLS/SSL certificate and private key.
-
-
-        **Permissions and scopes**
-
-
-        To call this operation, you need the following:
-
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `object_storage:read_write`
-
-
-        **CLI**
-
-
-        ```shell
-
-        linode-cli object-storage ssl-delete \
-
-        us-east-1 example-bucket
-
-        ```
-
-
-        Learn more'
-      externalDocs:
-        description: See documentation for this operation in Akamai's Linode API
-        url: https://techdocs.akamai.com/linode-api/reference/delete-object-storage-ssl
-      operationId: delete-object-storage-ssl
-      responses:
-        '200':
-          content:
-            application/json:
-              example: {}
-              schema:
-                description: The API responds with an empty object.
-                maxProperties: 0
-                type: object
-                x-akamai:
-                  file-path: schemas/added-empty-obj.yaml
-          description: Deletes this Object Storage bucket's user uploaded TLS/SSL certificate and private key.
-        default:
-          content:
-            application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
-              schema:
-                additionalProperties: false
-                properties:
-                  errors:
-                    description: Any warnings associated with a response.
-                    items:
-                      additionalProperties: false
-                      description: An object for describing a single error that occurred during the processing of a request.
-                      properties:
-                        field:
-                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
-                          example: fieldname
-                          type: string
-                        reason:
-                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
-                          example: fieldname must be a valid value
-                          type: string
-                      type: object
-                      x-akamai:
-                        file-path: schemas/error-object.yaml
-                    type: array
-                type: object
-          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
-      security:
-      - personalAccessToken: []
-      - oauth:
-        - object_storage:read_write
-      summary: Delete a bucket's TLS/SSL certificate
-      tags:
-      - Buckets
-      x-akamai:
-        tabs:
-        - syntax: "linode-cli object-storage ssl-delete \\\n  us-east-1 example-bucket"
-          title: CLI
-          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
-        - syntax: object_storage:read_write
-          title: OAuth scopes
-          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
-      x-linode-cli-action: ssl-delete
 components:
   securitySchemes:
     oauth:
@@ -2286,10 +1894,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -2306,8 +1910,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -2326,7 +1930,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

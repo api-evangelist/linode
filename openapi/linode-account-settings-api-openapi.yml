@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Account settings API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -23,7 +27,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -35,33 +38,36 @@ paths:
       description: 'Returns information related to your Account settings: Managed service subscription, interface settings for new Linodes, Longview subscription, and Network Helper.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_account_settings`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account settings
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-account-settings
@@ -70,15 +76,6 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                backups_enabled: true
-                interfaces_for_new_linodes: linode_only
-                longview_subscription: longview-3
-                maintenance_policy: linode/migrate
-                managed: true
-                network_helper: false
-                object_storage: active
-                tfa_enforced: true
               schema:
                 additionalProperties: false
                 description: Account Settings object.
@@ -89,15 +86,15 @@ paths:
                     type: boolean
                     x-linode-cli-display: 4
                   interfaces_for_new_linodes:
-                    description: 'Defines if new Linodes can use legacy configuration interfaces:
+                    description: '__Beta__ Defines if new Linodes can use legacy configuration interfaces:
 
-                      - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Previously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
+                      - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Prevously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
 
                       - `legacy_config_default_but_linode_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use legacy configuration interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode Interfaces. This is the default setting for existing accounts.
 
                       - `linode_default_but_legacy_config_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use Linode Interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode interfaces. This is the default setting for new accounts.
 
-                      - `linode_only`. All new Linodes need to use Linode Interfaces. Previously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
+                      - `linode_only`. All new Linodes need to use Linode Interfaces. Prevously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
                     enum:
                     - legacy_config_only
                     - legacy_config_default_but_linode_allowed
@@ -105,22 +102,24 @@ paths:
                     - linode_only
                     example: linode_only
                     type: string
+                    x-akamai:
+                      status: BETA
                     x-linode-cli-display: 6
                   longview_subscription:
                     description: __Read-only__ The Longview Pro tier you are currently subscribed to. The value must be a [Longview subscription](https://techdocs.akamai.com/linode-api/reference/get-longview-subscriptions) ID or `null` for Longview Free.
                     example: longview-3
                     readOnly: true
-                    type:
-                    - string
-                    - 'null'
+                    type: string
                     x-linode-cli-display: 2
                   maintenance_policy:
-                    description: Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
+                    description: __Beta__ Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
                     enum:
                     - linode/migrate
                     - linode/power_off_on
                     example: linode/migrate
                     type: string
+                    x-akamai:
+                      status: BETA
                     x-linode-cli-display: 7
                   managed:
                     description: __Read-only__ Our 24/7 incident response service. This robust, multi-homed monitoring system distributes monitoring checks to ensure that your servers remain online and available at all times. Linode Managed can monitor any service or software stack reachable over TCP or HTTP. Once you add a service to Linode Managed, we'll monitor it for connectivity, response, and total request time.
@@ -135,7 +134,7 @@ paths:
                     x-linode-cli-display: 1
                   object_storage:
                     default: disabled
-                    description: __Read-only__ The status of this account's Object Storage service enrollment, either `active`, `disabled`, `suspended`. If the status is `suspended`, contact Support for more information.
+                    description: __Read-only__ A string describing the status of this account's Object Storage service enrollment.
                     enum:
                     - disabled
                     - suspended
@@ -144,26 +143,19 @@ paths:
                     readOnly: true
                     type: string
                     x-linode-cli-display: 5
-                  tfa_enforced:
-                    description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                    example: true
-                    type: boolean
-                    x-linode-cli-display: 8
                 type: object
                 x-akamai:
                   file-path: schemas/account-settings.yaml
+              x-example:
+                x-ref: ../examples/get-account-settings-200.json
           description: Returns a single Account settings object.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -194,35 +186,25 @@ paths:
         - syntax: linode-cli account settings
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: settings
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_account_settings
     put:
       description: 'Updates your account settings. For a Longview subscription plan, see Update a Longview plan.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_account_settings`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account settings-update \
 
@@ -231,7 +213,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-account-settings
@@ -239,15 +234,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              backups_enabled: true
-              interfaces_for_new_linodes: linode_only
-              longview_subscription: longview-3
-              maintenance_policy: linode/migrate
-              managed: true
-              network_helper: false
-              object_storage: active
-              tfa_enforced: true
             schema:
               additionalProperties: false
               description: Account Settings object.
@@ -258,15 +244,15 @@ paths:
                   type: boolean
                   x-linode-cli-display: 4
                 interfaces_for_new_linodes:
-                  description: 'Defines if new Linodes can use legacy configuration interfaces:
+                  description: '__Beta__ Defines if new Linodes can use legacy configuration interfaces:
 
-                    - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Previously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
+                    - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Prevously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
 
                     - `legacy_config_default_but_linode_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use legacy configuration interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode Interfaces. This is the default setting for existing accounts.
 
                     - `linode_default_but_legacy_config_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use Linode Interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode interfaces. This is the default setting for new accounts.
 
-                    - `linode_only`. All new Linodes need to use Linode Interfaces. Previously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
+                    - `linode_only`. All new Linodes need to use Linode Interfaces. Prevously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
                   enum:
                   - legacy_config_only
                   - legacy_config_default_but_linode_allowed
@@ -274,22 +260,24 @@ paths:
                   - linode_only
                   example: '{{interfaces_for_new_linodes}}'
                   type: string
+                  x-akamai:
+                    status: BETA
                   x-linode-cli-display: 6
                 longview_subscription:
                   description: __Read-only__ The Longview Pro tier you are currently subscribed to. The value must be a [Longview subscription](https://techdocs.akamai.com/linode-api/reference/get-longview-subscriptions) ID or `null` for Longview Free.
                   example: '{{longview_subscription}}'
                   readOnly: true
-                  type:
-                  - string
-                  - 'null'
+                  type: string
                   x-linode-cli-display: 2
                 maintenance_policy:
-                  description: Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
+                  description: __Beta__ Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
                   enum:
                   - linode/migrate
                   - linode/power_off_on
                   example: '{{maintenance_policy}}'
                   type: string
+                  x-akamai:
+                    status: BETA
                   x-linode-cli-display: 7
                 managed:
                   description: __Read-only__ Our 24/7 incident response service. This robust, multi-homed monitoring system distributes monitoring checks to ensure that your servers remain online and available at all times. Linode Managed can monitor any service or software stack reachable over TCP or HTTP. Once you add a service to Linode Managed, we'll monitor it for connectivity, response, and total request time.
@@ -304,7 +292,7 @@ paths:
                   x-linode-cli-display: 1
                 object_storage:
                   default: disabled
-                  description: __Read-only__ The status of this account's Object Storage service enrollment, either `active`, `disabled`, `suspended`. If the status is `suspended`, contact Support for more information.
+                  description: __Read-only__ A string describing the status of this account's Object Storage service enrollment.
                   enum:
                   - disabled
                   - suspended
@@ -313,28 +301,17 @@ paths:
                   readOnly: true
                   type: string
                   x-linode-cli-display: 5
-                tfa_enforced:
-                  description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                  example: '{{tfa_enforced}}'
-                  type: boolean
-                  x-linode-cli-display: 8
               type: object
               x-akamai:
                 file-path: schemas/account-settings.yaml
+            x-example:
+              x-ref: ../examples/put-account-settings.json
+        description: Update Account settings information.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                backups_enabled: true
-                interfaces_for_new_linodes: linode_only
-                longview_subscription: longview-3
-                maintenance_policy: linode/migrate
-                managed: true
-                network_helper: false
-                object_storage: active
-                tfa_enforced: true
               schema:
                 additionalProperties: false
                 description: Account Settings object.
@@ -345,15 +322,15 @@ paths:
                     type: boolean
                     x-linode-cli-display: 4
                   interfaces_for_new_linodes:
-                    description: 'Defines if new Linodes can use legacy configuration interfaces:
+                    description: '__Beta__ Defines if new Linodes can use legacy configuration interfaces:
 
-                      - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Previously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
+                      - `legacy_config_only`. All new Linodes need to use legacy configuration interfaces. Prevously created Linodes with Linode Interfaces can still exist. Linodes using legacy configuration interfaces can''t be upgraded to use Linode Interfaces.
 
                       - `legacy_config_default_but_linode_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use legacy configuration interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode Interfaces. This is the default setting for existing accounts.
 
                       - `linode_default_but_legacy_config_allowed`. New Linodes can use legacy configuration interfaces or Linode Interfaces, depending on the `interface_generation` setting specified when creating the Linode. By default, new Linodes use Linode Interfaces unless otherwise specified. Linodes that use legacy configuration interfaces can upgrade to Linode interfaces. This is the default setting for new accounts.
 
-                      - `linode_only`. All new Linodes need to use Linode Interfaces. Previously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
+                      - `linode_only`. All new Linodes need to use Linode Interfaces. Prevously created Linodes with legacy configuration profile interfaces can still exist if they were created under a previous setting. Linodes using legacy configuration interfaces can be upgraded to Linode Interfaces.'
                     enum:
                     - legacy_config_only
                     - legacy_config_default_but_linode_allowed
@@ -361,22 +338,24 @@ paths:
                     - linode_only
                     example: linode_only
                     type: string
+                    x-akamai:
+                      status: BETA
                     x-linode-cli-display: 6
                   longview_subscription:
                     description: __Read-only__ The Longview Pro tier you are currently subscribed to. The value must be a [Longview subscription](https://techdocs.akamai.com/linode-api/reference/get-longview-subscriptions) ID or `null` for Longview Free.
                     example: longview-3
                     readOnly: true
-                    type:
-                    - string
-                    - 'null'
+                    type: string
                     x-linode-cli-display: 2
                   maintenance_policy:
-                    description: Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
+                    description: __Beta__ Defines the default maintenance policy for new Linodes created on this account. Review [maintenance policy](https://techdocs.akamai.com/cloud-computing/docs/host-maintenance-policy) documentation for more details.
                     enum:
                     - linode/migrate
                     - linode/power_off_on
                     example: linode/migrate
                     type: string
+                    x-akamai:
+                      status: BETA
                     x-linode-cli-display: 7
                   managed:
                     description: __Read-only__ Our 24/7 incident response service. This robust, multi-homed monitoring system distributes monitoring checks to ensure that your servers remain online and available at all times. Linode Managed can monitor any service or software stack reachable over TCP or HTTP. Once you add a service to Linode Managed, we'll monitor it for connectivity, response, and total request time.
@@ -391,7 +370,7 @@ paths:
                     x-linode-cli-display: 1
                   object_storage:
                     default: disabled
-                    description: __Read-only__ The status of this account's Object Storage service enrollment, either `active`, `disabled`, `suspended`. If the status is `suspended`, contact Support for more information.
+                    description: __Read-only__ A string describing the status of this account's Object Storage service enrollment.
                     enum:
                     - disabled
                     - suspended
@@ -400,26 +379,19 @@ paths:
                     readOnly: true
                     type: string
                     x-linode-cli-display: 5
-                  tfa_enforced:
-                    description: When `true`, all users on the account must log in with two-factor authentication (2FA), except those exempted in [List 2FA optional users](https://techdocs.akamai.com/linode-api/reference/get-account-tfa-optional-users). When `false`, 2FA is optional for all users. Defaults to `false`.
-                    example: true
-                    type: boolean
-                    x-linode-cli-display: 8
                 type: object
                 x-akamai:
                   file-path: schemas/account-settings.yaml
+              x-example:
+                x-ref: ../examples/get-account-settings-200.json
           description: The updated Account settings.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -450,11 +422,11 @@ paths:
         - syntax: "linode-cli account settings-update \\\n  --network_helper false"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: settings-update
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - update_account_settings
   /{apiVersion}/account/settings/managed-enable:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -466,7 +438,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -478,33 +449,36 @@ paths:
       description: 'Enables Linode Managed for the entire account and sends a welcome email to the account''s associated email address. Linode Managed can monitor any service or software stack reachable over TCP or HTTP. See our Linode Managed guide to learn more.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `enable_managed`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `account:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli account enable-managed
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        account:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-enable-account-managed
@@ -513,25 +487,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/post-enable-account-managed-200.json
           description: Managed services enabled for account.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -562,11 +533,11 @@ paths:
         - syntax: linode-cli account enable-managed
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: account:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: enable-managed
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - enable_managed
 components:
   securitySchemes:
     oauth:
@@ -576,10 +547,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -596,8 +563,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -616,7 +583,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python

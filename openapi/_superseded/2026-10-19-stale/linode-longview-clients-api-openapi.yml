@@ -1,0 +1,1132 @@
+openapi: 3.2.0
+info:
+  description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: 'Akamai: Linode Longview clients API'
+  version: 4.229.1
+servers:
+- url: https://api.linode.com
+tags:
+- description: Create an manage Longview Clients to monitor the performance and health of your Linode instances and other servers.
+  name: Longview clients
+paths:
+  /{apiVersion}/longview/clients:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    x-akamai:
+      file-path: paths/longview-clients.yaml
+      path-info: /{apiVersion}/longview/clients
+    x-linode-cli-command: longview
+    post:
+      description: 'Creates a Longview Client. This Client will not begin monitoring the status of your server until you configure the Longview Client application on your Linode using the returning `install_code` and `api_key`.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `account_longview_creator`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `longview:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli longview create \
+
+        --label client789
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/post-longview-client
+      operationId: post-longview-client
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: client789
+            schema:
+              additionalProperties: false
+              description: A Longview client is a single monitor set up to track statistics for one of your servers.
+              properties:
+                api_key:
+                  description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                    Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                  example: '{{api_key}}'
+                  readOnly: true
+                  type: string
+                apps:
+                  additionalProperties: false
+                  description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                  properties:
+                    apache:
+                      description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                      example: true
+                      readOnly: true
+                      type: boolean
+                    mysql:
+                      description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                      example: true
+                      readOnly: true
+                      type: boolean
+                    nginx:
+                      description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                      example: false
+                      readOnly: true
+                      type: boolean
+                  readOnly: true
+                  type: object
+                created:
+                  description: __Read-only__ When this Longview Client was created.
+                  example: '{{created}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 3
+                id:
+                  description: __Read-only__ This Client's unique ID.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                install_code:
+                  description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                    Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                  example: '{{install_code}}'
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 4
+                label:
+                  description: __Filterable__ This Client's unique label. This is for display purposes only.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 3
+                  pattern: '[a-zA-Z0-9-_]{3,32}'
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+                updated:
+                  description: __Read-only__ When this Longview Client was last updated.
+                  example: '{{updated}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/longview-client.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                api_key: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                apps:
+                  apache: true
+                  mysql: true
+                  nginx: false
+                created: '2018-01-01T00:01:01'
+                id: 789
+                install_code: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                label: client789
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Longview client is a single monitor set up to track statistics for one of your servers.
+                properties:
+                  api_key:
+                    description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                    readOnly: true
+                    type: string
+                  apps:
+                    additionalProperties: false
+                    description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                    properties:
+                      apache:
+                        description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      mysql:
+                        description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      nginx:
+                        description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                        example: false
+                        readOnly: true
+                        type: boolean
+                    readOnly: true
+                    type: object
+                  created:
+                    description: __Read-only__ When this Longview Client was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  id:
+                    description: __Read-only__ This Client's unique ID.
+                    example: 789
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  install_code:
+                    description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  label:
+                    description: __Filterable__ This Client's unique label. This is for display purposes only.
+                    example: client789
+                    maxLength: 32
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_]{3,32}'
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Longview Client was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/longview-client.yaml
+          description: Longview Client created successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - longview:read_write
+      summary: Create a Longview client
+      tags:
+      - Longview clients
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli longview create \\\n  --label client789"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: create
+      x-linode-grant: add_longview
+      x-linode-iam:
+      - roles:
+        - account_longview_creator
+    get:
+      description: 'Returns a paginated list of Longview Clients you have access to. Longview Client is used to monitor stats on your Linode with the help of the Longview Client application.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `longview_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `longview:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli longview list
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-longview-clients
+      operationId: get-longview-clients
+      parameters:
+      - description: The page of a collection to return.
+        example: '{{page}}'
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 6
+          minimum: 1
+          type: integer
+        x-akamai:
+          file-path: parameters/page-offset.yaml
+      - description: The number of items to return per page.
+        example: '{{page_size}}'
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          example: 50
+          maximum: 500
+          minimum: 25
+          type: integer
+        x-akamai:
+          file-path: parameters/page-size.yaml
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                - api_key: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                  apps:
+                    apache: true
+                    mysql: true
+                    nginx: false
+                  created: '2018-01-01T00:01:01'
+                  id: 789
+                  install_code: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                  label: client789
+                  updated: '2018-01-01T00:01:01'
+                page: 1
+                pages: 1
+                results: 1
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    description: Longview clients on your account.
+                    items:
+                      additionalProperties: false
+                      description: A Longview client is a single monitor set up to track statistics for one of your servers.
+                      properties:
+                        api_key:
+                          description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                            Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                          example: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                          readOnly: true
+                          type: string
+                        apps:
+                          additionalProperties: false
+                          description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                          properties:
+                            apache:
+                              description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                            mysql:
+                              description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                              example: true
+                              readOnly: true
+                              type: boolean
+                            nginx:
+                              description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                              example: false
+                              readOnly: true
+                              type: boolean
+                          readOnly: true
+                          type: object
+                        created:
+                          description: __Read-only__ When this Longview Client was created.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 3
+                        id:
+                          description: __Read-only__ This Client's unique ID.
+                          example: 789
+                          readOnly: true
+                          type: integer
+                          x-linode-cli-display: 1
+                        install_code:
+                          description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                            Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                          example: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                          readOnly: true
+                          type: string
+                          x-linode-cli-display: 4
+                        label:
+                          description: __Filterable__ This Client's unique label. This is for display purposes only.
+                          example: client789
+                          maxLength: 32
+                          minLength: 3
+                          pattern: '[a-zA-Z0-9-_]{3,32}'
+                          type: string
+                          x-akamai:
+                            labels:
+                            - Filterable
+                          x-linode-cli-display: 2
+                          x-linode-filterable: true
+                        updated:
+                          description: __Read-only__ When this Longview Client was last updated.
+                          example: '2018-01-01T00:01:01'
+                          format: date-time
+                          readOnly: true
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/longview-client.yaml
+                    type: array
+                  page:
+                    description: __Read-only__ The current [page](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  pages:
+                    description: __Read-only__ The total number of [pages](https://techdocs.akamai.com/linode-api/reference/pagination).
+                    example: 1
+                    readOnly: true
+                    type: integer
+                  results:
+                    description: __Read-only__ The total number of results.
+                    example: 1
+                    readOnly: true
+                    type: integer
+                type: object
+                x-akamai:
+                  file-path: schemas/get-longview-clients-200.yaml
+          description: A paginated list of Longview Clients.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - longview:read_only
+      summary: List Longview clients
+      tags:
+      - Longview clients
+      x-akamai:
+        tabs:
+        - syntax: linode-cli longview list
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - list
+      - ls
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - longview_viewer
+  /{apiVersion}/longview/clients/{clientId}:
+    parameters:
+    - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
+      example: '{{apiVersion}}'
+      in: path
+      name: apiVersion
+      required: true
+      schema:
+        enum:
+        - v4
+        - v4beta
+        example: v4
+        type: string
+      x-akamai:
+        file-path: parameters/api-version-path.yaml
+    - description: The Longview Client ID to access.
+      example: '{{clientId}}'
+      in: path
+      name: clientId
+      required: true
+      schema:
+        example: 789
+        type: integer
+      x-akamai:
+        file-path: parameters/longview-client-id-path.yaml
+    x-akamai:
+      file-path: paths/longview-client.yaml
+      path-info: /{apiVersion}/longview/clients/{clientId}
+    x-linode-cli-command: longview
+    get:
+      description: 'Returns a single Longview Client you can access.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `longview_viewer`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `longview:read_only`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli longview view 789
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/get-longview-client
+      operationId: get-longview-client
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                api_key: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                apps:
+                  apache: true
+                  mysql: true
+                  nginx: false
+                created: '2018-01-01T00:01:01'
+                id: 789
+                install_code: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                label: client789
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Longview client is a single monitor set up to track statistics for one of your servers.
+                properties:
+                  api_key:
+                    description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                    readOnly: true
+                    type: string
+                  apps:
+                    additionalProperties: false
+                    description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                    properties:
+                      apache:
+                        description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      mysql:
+                        description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      nginx:
+                        description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                        example: false
+                        readOnly: true
+                        type: boolean
+                    readOnly: true
+                    type: object
+                  created:
+                    description: __Read-only__ When this Longview Client was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  id:
+                    description: __Read-only__ This Client's unique ID.
+                    example: 789
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  install_code:
+                    description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  label:
+                    description: __Filterable__ This Client's unique label. This is for display purposes only.
+                    example: client789
+                    maxLength: 32
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_]{3,32}'
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Longview Client was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/longview-client.yaml
+          description: The requested Longview Client.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - longview:read_only
+      summary: Get a Longview client
+      tags:
+      - Longview clients
+      x-akamai:
+        tabs:
+        - syntax: linode-cli longview view 789
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: view
+      x-linode-grant: read_only
+      x-linode-iam:
+      - roles:
+        - longview_viewer
+    put:
+      description: 'Updates a Longview Client. This cannot update how it monitors your server; use the Longview Client application on your Linode for monitoring configuration.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `longview_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `longview:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli longview update 789 \
+
+        --label client789
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/put-longview-client
+      operationId: put-longview-client
+      requestBody:
+        content:
+          application/json:
+            example:
+              label: client789
+            schema:
+              additionalProperties: false
+              description: A Longview client is a single monitor set up to track statistics for one of your servers.
+              properties:
+                api_key:
+                  description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                    Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                  example: '{{api_key}}'
+                  readOnly: true
+                  type: string
+                apps:
+                  additionalProperties: false
+                  description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                  properties:
+                    apache:
+                      description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                      example: true
+                      readOnly: true
+                      type: boolean
+                    mysql:
+                      description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                      example: true
+                      readOnly: true
+                      type: boolean
+                    nginx:
+                      description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                      example: false
+                      readOnly: true
+                      type: boolean
+                  readOnly: true
+                  type: object
+                created:
+                  description: __Read-only__ When this Longview Client was created.
+                  example: '{{created}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 3
+                id:
+                  description: __Read-only__ This Client's unique ID.
+                  example: '{{id}}'
+                  readOnly: true
+                  type: integer
+                  x-linode-cli-display: 1
+                install_code:
+                  description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                    Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                  example: '{{install_code}}'
+                  readOnly: true
+                  type: string
+                  x-linode-cli-display: 4
+                label:
+                  description: __Filterable__ This Client's unique label. This is for display purposes only.
+                  example: '{{label}}'
+                  maxLength: 32
+                  minLength: 3
+                  pattern: '[a-zA-Z0-9-_]{3,32}'
+                  type: string
+                  x-akamai:
+                    labels:
+                    - Filterable
+                  x-linode-cli-display: 2
+                  x-linode-filterable: true
+                updated:
+                  description: __Read-only__ When this Longview Client was last updated.
+                  example: '{{updated}}'
+                  format: date-time
+                  readOnly: true
+                  type: string
+              type: object
+              x-akamai:
+                file-path: schemas/longview-client.yaml
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                api_key: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                apps:
+                  apache: true
+                  mysql: true
+                  nginx: false
+                created: '2018-01-01T00:01:01'
+                id: 789
+                install_code: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                label: client789
+                updated: '2018-01-01T00:01:01'
+              schema:
+                additionalProperties: false
+                description: A Longview client is a single monitor set up to track statistics for one of your servers.
+                properties:
+                  api_key:
+                    description: '__Read-only__ The API key for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B4B54-D752-A76D-5A9BD8A17F39DB61
+                    readOnly: true
+                    type: string
+                  apps:
+                    additionalProperties: false
+                    description: __Read-only__ The apps this Client is monitoring on your Linode. This is configured when you install the Longview Client application, and is present here for information purposes only.
+                    properties:
+                      apache:
+                        description: __Read-only__ If `true`, the Apache Longview Client module is monitoring Apache on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      mysql:
+                        description: __Read-only__ If `true`, the MySQL Longview Client modules is monitoring MySQL on your server.
+                        example: true
+                        readOnly: true
+                        type: boolean
+                      nginx:
+                        description: __Read-only__ If `true`, the Nginx Longview Client module is monitoring Nginx on your server.
+                        example: false
+                        readOnly: true
+                        type: boolean
+                    readOnly: true
+                    type: object
+                  created:
+                    description: __Read-only__ When this Longview Client was created.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 3
+                  id:
+                    description: __Read-only__ This Client's unique ID.
+                    example: 789
+                    readOnly: true
+                    type: integer
+                    x-linode-cli-display: 1
+                  install_code:
+                    description: '__Read-only__ The install code for this Client, used when configuring the Longview Client application on your Linode.
+
+
+                      Returns as `[REDACTED]` if you do not have read-write access to this client.'
+                    example: BD1B5605-BF5E-D385-BA07AD518BE7F321
+                    readOnly: true
+                    type: string
+                    x-linode-cli-display: 4
+                  label:
+                    description: __Filterable__ This Client's unique label. This is for display purposes only.
+                    example: client789
+                    maxLength: 32
+                    minLength: 3
+                    pattern: '[a-zA-Z0-9-_]{3,32}'
+                    type: string
+                    x-akamai:
+                      labels:
+                      - Filterable
+                    x-linode-cli-display: 2
+                    x-linode-filterable: true
+                  updated:
+                    description: __Read-only__ When this Longview Client was last updated.
+                    example: '2018-01-01T00:01:01'
+                    format: date-time
+                    readOnly: true
+                    type: string
+                type: object
+                x-akamai:
+                  file-path: schemas/longview-client.yaml
+          description: Longview Client updated successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - longview:read_write
+      summary: Update a Longview client
+      tags:
+      - Longview clients
+      x-akamai:
+        tabs:
+        - syntax: "linode-cli longview update 789 \\\n  --label client789"
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action: update
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - longview_admin
+    delete:
+      description: 'Deletes a Longview Client from your Account.
+
+
+        __All information stored for this client will be lost.__
+
+
+        This _does not_ uninstall the Longview Client application for your Linode - you must do that manually.
+
+
+        **Permissions and scopes**
+
+
+        To call this operation, you need the following:
+
+
+        - **Identity and access permissions**. Your user needs these roles assigned. Learn more.
+
+        - Roles: `longview_admin`
+
+        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+
+
+        - Scopes: `longview:read_write`
+
+
+        **CLI**
+
+
+        ```shell
+
+        linode-cli longview delete 789
+
+        ```
+
+
+        Learn more'
+      externalDocs:
+        description: See documentation for this operation in Akamai's Linode API
+        url: https://techdocs.akamai.com/linode-api/reference/delete-longview-client
+      operationId: delete-longview-client
+      responses:
+        '200':
+          content:
+            application/json:
+              example: {}
+              schema:
+                description: The API responds with an empty object.
+                maxProperties: 0
+                type: object
+                x-akamai:
+                  file-path: schemas/added-empty-obj.yaml
+          description: Longview Client deleted successfully.
+        default:
+          content:
+            application/json:
+              example:
+                errors:
+                - reason: Invalid JSON
+              schema:
+                additionalProperties: false
+                properties:
+                  errors:
+                    description: Any warnings associated with a response.
+                    items:
+                      additionalProperties: false
+                      description: An object for describing a single error that occurred during the processing of a request.
+                      properties:
+                        field:
+                          description: The field in the request that caused this error. This may be a path, separated by periods in the case of nested fields. In some cases this may come back as `null` if the error is not specific to any single element of the request.
+                          example: fieldname
+                          type: string
+                        reason:
+                          description: What happened to cause this error. In most cases, this can be fixed immediately by changing the data you sent in the request, but in some cases you will be instructed to [Open a support ticket](https://techdocs.akamai.com/linode-api/reference/post-ticket) or perform some other action before you can complete the request successfully.
+                          example: fieldname must be a valid value
+                          type: string
+                      type: object
+                      x-akamai:
+                        file-path: schemas/error-object.yaml
+                    type: array
+                type: object
+          description: See [Errors](https://techdocs.akamai.com/linode-api/reference/errors) for the range of possible error response codes.
+      security:
+      - personalAccessToken: []
+      - oauth:
+        - longview:read_write
+      summary: Delete a Longview client
+      tags:
+      - Longview clients
+      x-akamai:
+        tabs:
+        - syntax: linode-cli longview delete 789
+          title: CLI
+          url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+      x-linode-cli-action:
+      - delete
+      - rm
+      x-linode-grant: read_write
+      x-linode-iam:
+      - roles:
+        - longview_admin
+components:
+  securitySchemes:
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.linode.com/oauth/authorize
+          scopes:
+            account:read_only: Allows access to GET information about your account.
+            account:read_write: Allows access to all endpoints related to your account.
+            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
+            child_account:read_write: Allows access to deprecated parent/child operations.
+            databases:read_only: Allows access to GET information about databases.
+            databases:read_write: Allows access to all endpoints related to databases.
+            domains:read_only: Allows access to GET Domains on your account.
+            domains:read_write: Allows access to all Domain endpoints.
+            events:read_only: Allows access to GET your Events.
+            events:read_write: Allows access to all endpoints related to your Events.
+            firewall:read_only: Allows access to GET information about your Firewalls.
+            firewall:read_write: Allows access to all Firewall endpoints.
+            images:read_only: Allows access to GET your Images.
+            images:read_write: Allows access to all endpoints related to your Images.
+            ips:read_only: Allows access to GET your ips.
+            ips:read_write: Allows access to all endpoints related to your ips.
+            linodes:read_only: Allows access to GET Linodes on your account.
+            linodes:read_write: Allow access to all endpoints related to your Linodes.
+            lke:read_only: Allows access to GET LKE Clusters on your account.
+            lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
+            longview:read_only: Allows access to GET your Longview Clients.
+            longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
+            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
+            nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
+            nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
+            object_storage:read_only: Allows access to GET information related to your Object Storage.
+            object_storage:read_write: Allows access to all Object Storage endpoints.
+            stackscripts:read_only: Allows access to GET your StackScripts.
+            stackscripts:read_write: Allows access to all endpoints related to your StackScripts.
+            volumes:read_only: Allows access to GET your Volumes.
+            volumes:read_write: Allows access to all endpoints related to your Volumes.
+            vpc:read_write: Allows access to all endpoints related to VPC and Subnet creation, updating, and deletion.
+          tokenUrl: https://login.linode.com/oauth/token
+      type: oauth2
+    personalAccessToken:
+      scheme: bearer
+      type: http
+externalDocs:
+  description: See documentation for Akamai's Linode API
+  url: https://techdocs.akamai.com/linode-api/reference
+x-readme:
+  explorer-enabled: false
+  samples-languages:
+  - curl
+  - python
+  - node

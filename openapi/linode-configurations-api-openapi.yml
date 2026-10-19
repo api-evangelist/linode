@@ -1,11 +1,15 @@
 openapi: 3.2.0
 info:
+  contact:
+    email: support@linode.com
+    name: Linode
+    url: https://linode.com
   description: Add a Cloud Computing instance so you can build, release, and scale applications faster with virtual machines.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   title: 'Akamai: Linode Configurations API'
-  version: 4.229.1
+  version: 4.215.0
 servers:
 - url: https://api.linode.com
 tags:
@@ -22,7 +26,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -32,7 +35,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -51,32 +53,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        After creating a NodeBalancer configuration, account administrators can run the Create a resource lock operation to prevent accidentally deleting configurations.
+        >
 
 
-        **Permissions and scopes**
+        ---
 
 
-        To call this operation, you need the following:
+        - __CLI: HTTPS__.
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `create_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
-
-
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        *HTTPS*
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers config-create 12345 \
 
@@ -110,17 +96,24 @@ paths:
 
         -----END CERTIFICATE-----" \
 
-        --ssl_key "REDACTED_PRIVATE_KEY_EXAMPLE" \
+        --ssl_key "-----BEGIN PRIVATE KEY-----
+
+        PRIVATE_KEY_INFORMATION
+
+        -----END PRIVATE KEY-----" \
 
         --cipher_suite recommended
 
         ```
 
 
-        *UDP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: UDP__.
+
+
+        ```
 
         linode-cli nodebalancers config-create 12345 \
 
@@ -149,10 +142,13 @@ paths:
         ```
 
 
-        *TCP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: TCP__.
+
+
+        ```
 
         linode-cli nodebalancers config-create 12345 \
 
@@ -181,10 +177,13 @@ paths:
         ```
 
 
-        *HTTP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: HTTP__.
+
+
+        ```
 
         linode-cli nodebalancers config-create 12345 \
 
@@ -211,7 +210,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-node-balancer-config
@@ -381,7 +393,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -668,7 +680,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -945,7 +957,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -1217,7 +1229,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -1402,7 +1414,7 @@ paths:
                           description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                           example: 1
                           type: integer
-                          x-linode-cli-display: 8
+                          x-linode-cli-display: 4
                         weight:
                           description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                           example: 50
@@ -1650,6 +1662,7 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/node-balancer-config-cli.yaml
+        description: NodeBalancer configuration details for the port based on the routing protocol.
       responses:
         '200':
           content:
@@ -1709,8 +1722,9 @@ paths:
                       minimum: 2
                       type: integer
                     check_passive:
-                      description: Must be `false` for UDP.
+                      description: __Read-only__ Must be `false` for UDP.
                       example: false
+                      readOnly: true
                       type: boolean
                       x-linode-cli-display: 7
                     check_path:
@@ -1729,34 +1743,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `udp` configs.
+                      description: __Read-only__ Not applicable for `udp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 7000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -1768,6 +1788,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `udp` in this case. Review our guide on [Available Protocols](https://www.linode.com/docs/products/networking/nodebalancers/guides/protocols/) for information on protocol features.
                       enum:
                       - udp
@@ -1775,28 +1796,33 @@ paths:
                       type: string
                       x-linode-cli-display: 3
                     proxy_protocol:
-                      description: Must be `none` for UDP.
+                      description: __Read-only__ Must be `none` for UDP.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for UPD configs.
+                      description: __Read-only__ Not applicable for UPD configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -1827,12 +1853,15 @@ paths:
                       x-linode-cli-display: 6
                     udp_session_timeout:
                       default: 16
-                      description: The maximum number of seconds a UDP session can be idle before it closes.
+                      description: __Read-only__ The maximum duration in seconds, a UDP session can be idle before it is closed.
                       example: 2
                       maximum: 300
                       minimum: 1
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 11
+                  required:
+                  - nodes
                   title: UDP
                   type: object
                   x-akamai:
@@ -1911,34 +1940,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `tcp` configs.
+                      description: __Read-only__ Not applicable for `tcp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 6000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -1950,6 +1985,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `tcp` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features.
                       enum:
                       - tcp
@@ -1973,30 +2009,34 @@ paths:
                       example: none
                       type: string
                     ssl_cert:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     stickiness:
                       default: none
-                      description: 'Controls how session stickiness is handled on this port.
+                      description: '__Read-only__ Controls how session stickiness is handled on this port.
 
 
                         Not applicable to TCP configurations.'
@@ -2005,8 +2045,11 @@ paths:
                       - table
                       - http_cookie
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: TCP
                   type: object
                   x-akamai:
@@ -2084,34 +2127,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `http` configs.
+                      description: __Read-only__ Not applicable for `http` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 4000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: Identifies the NodeBalancer this config belongs to.
+                      description: __Read-only__ Identifies the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -2132,28 +2181,33 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -2174,6 +2228,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTP
                   type: object
                   x-akamai:
@@ -2263,26 +2319,31 @@ paths:
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 5000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -2294,6 +2355,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `https` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features. The `https` protocol needs to be specified with both `ssl_cert` and `ssl_key`.
                       enum:
                       - https
@@ -2302,8 +2364,9 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTPS configs.
+                      description: __Read-only__ Not applicable for HTTPS configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
                       description: '
@@ -2327,13 +2390,15 @@ paths:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
+                      description: __Read-only__ The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
                       example: www.example.com
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
+                      description: __Read-only__ The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
                       example: 00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F:10:11:12:13
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
@@ -2377,6 +2442,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTPS
                   type: object
                   x-akamai:
@@ -2620,14 +2687,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -2655,7 +2718,7 @@ paths:
       - Configurations
       x-akamai:
         tabs:
-        - syntax: "linode-cli nodebalancers config-create 12345 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"REDACTED_PRIVATE_KEY_EXAMPLE\" \\\n  --cipher_suite recommended"
+        - syntax: "linode-cli nodebalancers config-create 12345 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"-----BEGIN PRIVATE KEY-----\n             PRIVATE_KEY_INFORMATION\n             -----END PRIVATE KEY-----\" \\\n  --cipher_suite recommended"
           title: 'CLI: HTTPS'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
         - syntax: "linode-cli nodebalancers config-create 12345 \\\n  --port 80 \\\n  --protocol udp \\\n  --algorithm ring_hash \\\n  --stickiness session \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --udp_check_port 80"
@@ -2667,11 +2730,11 @@ paths:
         - syntax: "linode-cli nodebalancers config-create 12345 \\\n  --port 440 \\\n  --protocol http \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\""
           title: 'CLI: HTTP'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: config-create
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - create_nodebalancer_config
     get:
       description: 'Returns a paginated list of NodeBalancer Configs associated with this NodeBalancer. NodeBalancer Configs represent individual ports that this NodeBalancer will accept traffic on, one Config per port.
 
@@ -2679,33 +2742,36 @@ paths:
         For example, if you wanted to accept standard HTTP traffic, you would need a Config listening on port 80.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers configs-list 12345
 
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-configs
@@ -2794,8 +2860,9 @@ paths:
                       minimum: 2
                       type: integer
                     check_passive:
-                      description: Must be `false` for UDP.
+                      description: __Read-only__ Must be `false` for UDP.
                       example: false
+                      readOnly: true
                       type: boolean
                       x-linode-cli-display: 7
                     check_path:
@@ -2814,34 +2881,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `udp` configs.
+                      description: __Read-only__ Not applicable for `udp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 7000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -2853,6 +2926,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `udp` in this case. Review our guide on [Available Protocols](https://www.linode.com/docs/products/networking/nodebalancers/guides/protocols/) for information on protocol features.
                       enum:
                       - udp
@@ -2860,28 +2934,33 @@ paths:
                       type: string
                       x-linode-cli-display: 3
                     proxy_protocol:
-                      description: Must be `none` for UDP.
+                      description: __Read-only__ Must be `none` for UDP.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for UPD configs.
+                      description: __Read-only__ Not applicable for UPD configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -2912,12 +2991,15 @@ paths:
                       x-linode-cli-display: 6
                     udp_session_timeout:
                       default: 16
-                      description: The maximum number of seconds a UDP session can be idle before it closes.
+                      description: __Read-only__ The maximum duration in seconds, a UDP session can be idle before it is closed.
                       example: 2
                       maximum: 300
                       minimum: 1
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 11
+                  required:
+                  - nodes
                   title: UDP
                   type: object
                   x-akamai:
@@ -2996,34 +3078,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `tcp` configs.
+                      description: __Read-only__ Not applicable for `tcp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 6000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -3035,6 +3123,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `tcp` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features.
                       enum:
                       - tcp
@@ -3058,30 +3147,34 @@ paths:
                       example: none
                       type: string
                     ssl_cert:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     stickiness:
                       default: none
-                      description: 'Controls how session stickiness is handled on this port.
+                      description: '__Read-only__ Controls how session stickiness is handled on this port.
 
 
                         Not applicable to TCP configurations.'
@@ -3090,8 +3183,11 @@ paths:
                       - table
                       - http_cookie
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: TCP
                   type: object
                   x-akamai:
@@ -3169,34 +3265,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `http` configs.
+                      description: __Read-only__ Not applicable for `http` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 4000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: Identifies the NodeBalancer this config belongs to.
+                      description: __Read-only__ Identifies the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -3217,28 +3319,33 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -3259,6 +3366,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTP
                   type: object
                   x-akamai:
@@ -3348,26 +3457,31 @@ paths:
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 5000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -3379,6 +3493,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `https` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features. The `https` protocol needs to be specified with both `ssl_cert` and `ssl_key`.
                       enum:
                       - https
@@ -3387,8 +3502,9 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTPS configs.
+                      description: __Read-only__ Not applicable for HTTPS configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
                       description: '
@@ -3412,13 +3528,15 @@ paths:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
+                      description: __Read-only__ The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
                       example: www.example.com
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
+                      description: __Read-only__ The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
                       example: 00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F:10:11:12:13
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
@@ -3462,6 +3580,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTPS
                   type: object
                   x-akamai:
@@ -3705,14 +3825,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -3743,11 +3859,11 @@ paths:
         - syntax: linode-cli nodebalancers configs-list 12345
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: configs-list
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_nodebalancer_config
   /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -3759,7 +3875,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -3769,7 +3884,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -3791,26 +3905,16 @@ paths:
       description: 'Returns configuration information for a single port of this NodeBalancer.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `view_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_only`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers config-view \
 
@@ -3819,7 +3923,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_only
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config
@@ -3883,8 +4000,9 @@ paths:
                       minimum: 2
                       type: integer
                     check_passive:
-                      description: Must be `false` for UDP.
+                      description: __Read-only__ Must be `false` for UDP.
                       example: false
+                      readOnly: true
                       type: boolean
                       x-linode-cli-display: 7
                     check_path:
@@ -3903,34 +4021,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `udp` configs.
+                      description: __Read-only__ Not applicable for `udp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 7000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -3942,6 +4066,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `udp` in this case. Review our guide on [Available Protocols](https://www.linode.com/docs/products/networking/nodebalancers/guides/protocols/) for information on protocol features.
                       enum:
                       - udp
@@ -3949,28 +4074,33 @@ paths:
                       type: string
                       x-linode-cli-display: 3
                     proxy_protocol:
-                      description: Must be `none` for UDP.
+                      description: __Read-only__ Must be `none` for UDP.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for UPD configs.
+                      description: __Read-only__ Not applicable for UPD configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -4001,12 +4131,15 @@ paths:
                       x-linode-cli-display: 6
                     udp_session_timeout:
                       default: 16
-                      description: The maximum number of seconds a UDP session can be idle before it closes.
+                      description: __Read-only__ The maximum duration in seconds, a UDP session can be idle before it is closed.
                       example: 2
                       maximum: 300
                       minimum: 1
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 11
+                  required:
+                  - nodes
                   title: UDP
                   type: object
                   x-akamai:
@@ -4085,34 +4218,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `tcp` configs.
+                      description: __Read-only__ Not applicable for `tcp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 6000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -4124,6 +4263,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `tcp` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features.
                       enum:
                       - tcp
@@ -4147,30 +4287,34 @@ paths:
                       example: none
                       type: string
                     ssl_cert:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     stickiness:
                       default: none
-                      description: 'Controls how session stickiness is handled on this port.
+                      description: '__Read-only__ Controls how session stickiness is handled on this port.
 
 
                         Not applicable to TCP configurations.'
@@ -4179,8 +4323,11 @@ paths:
                       - table
                       - http_cookie
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: TCP
                   type: object
                   x-akamai:
@@ -4258,34 +4405,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `http` configs.
+                      description: __Read-only__ Not applicable for `http` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 4000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: Identifies the NodeBalancer this config belongs to.
+                      description: __Read-only__ Identifies the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -4306,28 +4459,33 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -4348,6 +4506,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTP
                   type: object
                   x-akamai:
@@ -4437,26 +4597,31 @@ paths:
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 5000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -4468,6 +4633,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `https` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features. The `https` protocol needs to be specified with both `ssl_cert` and `ssl_key`.
                       enum:
                       - https
@@ -4476,8 +4642,9 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTPS configs.
+                      description: __Read-only__ Not applicable for HTTPS configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
                       description: '
@@ -4501,13 +4668,15 @@ paths:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
+                      description: __Read-only__ The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
                       example: www.example.com
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
+                      description: __Read-only__ The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
                       example: 00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F:10:11:12:13
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
@@ -4551,6 +4720,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTPS
                   type: object
                   x-akamai:
@@ -4794,14 +4965,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -4832,11 +4999,11 @@ paths:
         - syntax: "linode-cli nodebalancers config-view \\\n  12345 4567"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_only
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: config-view
       x-linode-grant: read_only
-      x-linode-iam:
-      - permissions:
-        - view_nodebalancer_config
     put:
       description: 'Updates the configuration for a single port on a NodeBalancer.
 
@@ -4848,29 +5015,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `update_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI: HTTPS__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        *HTTPS*
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers config-update \
 
@@ -4906,17 +5060,24 @@ paths:
 
         -----END CERTIFICATE-----" \
 
-        --ssl_key "REDACTED_PRIVATE_KEY_EXAMPLE" \
+        --ssl_key "-----BEGIN PRIVATE KEY-----
+
+        PRIVATE_KEY_INFORMATION
+
+        -----END PRIVATE KEY-----" \
 
         --cipher_suite recommended
 
         ```
 
 
-        *UDP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: UDP__.
+
+
+        ```
 
         linode-cli nodebalancers config-update \
 
@@ -4947,10 +5108,13 @@ paths:
         ```
 
 
-        *TCP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: TCP__.
+
+
+        ```
 
         linode-cli nodebalancers config-update \
 
@@ -4983,10 +5147,13 @@ paths:
         ```
 
 
-        *HTTP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: HTTP__.
+
+
+        ```
 
         linode-cli nodebalancers config-update \
 
@@ -5015,7 +5182,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/put-node-balancer-config
@@ -6041,6 +6221,7 @@ paths:
               type: object
               x-akamai:
                 file-path: schemas/node-balancer-config-cli.yaml
+        description: The fields to update.
         required: true
       responses:
         '200':
@@ -6101,8 +6282,9 @@ paths:
                       minimum: 2
                       type: integer
                     check_passive:
-                      description: Must be `false` for UDP.
+                      description: __Read-only__ Must be `false` for UDP.
                       example: false
+                      readOnly: true
                       type: boolean
                       x-linode-cli-display: 7
                     check_path:
@@ -6121,34 +6303,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `udp` configs.
+                      description: __Read-only__ Not applicable for `udp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 7000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -6160,6 +6348,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `udp` in this case. Review our guide on [Available Protocols](https://www.linode.com/docs/products/networking/nodebalancers/guides/protocols/) for information on protocol features.
                       enum:
                       - udp
@@ -6167,28 +6356,33 @@ paths:
                       type: string
                       x-linode-cli-display: 3
                     proxy_protocol:
-                      description: Must be `none` for UDP.
+                      description: __Read-only__ Must be `none` for UDP.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for UPD configs.
+                      description: __Read-only__ Not applicable for UPD configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -6219,12 +6413,15 @@ paths:
                       x-linode-cli-display: 6
                     udp_session_timeout:
                       default: 16
-                      description: The maximum number of seconds a UDP session can be idle before it closes.
+                      description: __Read-only__ The maximum duration in seconds, a UDP session can be idle before it is closed.
                       example: 2
                       maximum: 300
                       minimum: 1
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 11
+                  required:
+                  - nodes
                   title: UDP
                   type: object
                   x-akamai:
@@ -6303,34 +6500,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `tcp` configs.
+                      description: __Read-only__ Not applicable for `tcp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 6000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -6342,6 +6545,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `tcp` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features.
                       enum:
                       - tcp
@@ -6365,30 +6569,34 @@ paths:
                       example: none
                       type: string
                     ssl_cert:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     stickiness:
                       default: none
-                      description: 'Controls how session stickiness is handled on this port.
+                      description: '__Read-only__ Controls how session stickiness is handled on this port.
 
 
                         Not applicable to TCP configurations.'
@@ -6397,8 +6605,11 @@ paths:
                       - table
                       - http_cookie
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: TCP
                   type: object
                   x-akamai:
@@ -6476,34 +6687,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `http` configs.
+                      description: __Read-only__ Not applicable for `http` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 4000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: Identifies the NodeBalancer this config belongs to.
+                      description: __Read-only__ Identifies the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -6524,28 +6741,33 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -6566,6 +6788,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTP
                   type: object
                   x-akamai:
@@ -6655,26 +6879,31 @@ paths:
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 5000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -6686,6 +6915,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `https` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features. The `https` protocol needs to be specified with both `ssl_cert` and `ssl_key`.
                       enum:
                       - https
@@ -6694,8 +6924,9 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTPS configs.
+                      description: __Read-only__ Not applicable for HTTPS configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
                       description: '
@@ -6719,13 +6950,15 @@ paths:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
+                      description: __Read-only__ The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
                       example: www.example.com
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
+                      description: __Read-only__ The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
                       example: 00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F:10:11:12:13
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
@@ -6769,6 +7002,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTPS
                   type: object
                   x-akamai:
@@ -7012,14 +7247,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -7047,7 +7278,7 @@ paths:
       - Configurations
       x-akamai:
         tabs:
-        - syntax: "linode-cli nodebalancers config-update \\\n  12345 4567 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"REDACTED_PRIVATE_KEY_EXAMPLE\" \\\n  --cipher_suite recommended"
+        - syntax: "linode-cli nodebalancers config-update \\\n  12345 4567 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"-----BEGIN PRIVATE KEY-----\n             PRIVATE_KEY_INFORMATION\n             -----END PRIVATE KEY-----\" \\\n  --cipher_suite recommended"
           title: 'CLI: HTTPS'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
         - syntax: "linode-cli nodebalancers config-update \\\n  12345 4567 \\\n  --port 80 \\\n  --protocol udp \\\n  --algorithm ring_hash \\\n  --stickiness session \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --udp_check_port 80"
@@ -7059,44 +7290,31 @@ paths:
         - syntax: "linode-cli nodebalancers config-update \\\n  12345 4567 \\\n  --port 440 \\\n  --protocol http \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\""
           title: 'CLI: HTTP'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: config-update
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - update_nodebalancer_config
     delete:
-      description: 'Deletes the configuration for a port of this NodeBalancer.
+      description: 'Deletes the Config for a port of this NodeBalancer.
 
 
-        __This can''t be undone.__
-
-
-        A NodeBalancer configuration can''t be deleted if it has a `cannot_delete_with_subresources` lock. Only account administrators can remove locks using the Delete a resource lock operation.
+        __This cannot be undone.__
 
 
         Once completed, this NodeBalancer will no longer respond to requests on the given port. This also deletes all associated NodeBalancerNodes, but the Linodes they were routing traffic to will be unchanged and will not be removed.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `delete_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers config-delete \
 
@@ -7105,7 +7323,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/delete-node-balancer-config
@@ -7114,25 +7345,22 @@ paths:
         '200':
           content:
             application/json:
-              example: {}
               schema:
                 description: The API responds with an empty object.
                 maxProperties: 0
                 type: object
                 x-akamai:
                   file-path: schemas/added-empty-obj.yaml
+              x-example:
+                x-ref: ../examples/delete-node-balancer-config-200.json
           description: NodeBalancer Config deleted successfully.
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -7163,11 +7391,11 @@ paths:
         - syntax: "linode-cli nodebalancers config-delete \\\n  12345 4567"
           title: CLI
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: config-delete
       x-linode-grant: read_write
-      x-linode-iam:
-      - permissions:
-        - delete_nodebalancer_config
   /{apiVersion}/nodebalancers/{nodeBalancerId}/configs/{configId}/rebuild:
     parameters:
     - description: __Enum__ Call either the `v4` URL, or `v4beta` for operations still in Beta.
@@ -7179,7 +7407,6 @@ paths:
         enum:
         - v4
         - v4beta
-        example: v4
         type: string
       x-akamai:
         file-path: parameters/api-version-path.yaml
@@ -7189,7 +7416,6 @@ paths:
       name: nodeBalancerId
       required: true
       schema:
-        example: 12345
         type: integer
       x-akamai:
         file-path: parameters/node-balancer-id.yaml
@@ -7214,9 +7440,6 @@ paths:
         Use this operation to update a NodeBalancer''s config and nodes with a single request.
 
 
-        You can''t rebuild a NodeBalancer config if it has a `cannot_delete_with_subresources` lock. Only account administrators can remove locks using the Delete a resource lock operation.
-
-
         > 🚧
 
         >
@@ -7224,29 +7447,16 @@ paths:
         > You can configure UDP on the same NodeBalancer that also uses TCP, HTTP, or HTTPS, but only when managing it through the API. If UDP is configured and you make changes to the TCP, HTTP or HTTPS settings in Cloud Manager, the existing UDP configuration will be overwritten. This is because Cloud Manager doesn''t currently support UDP.
 
 
-        **Permissions and scopes**
+        >
 
 
-        To call this operation, you need the following:
+        ---
 
 
-        - **Identity and access permissions**. Your user needs a role with these permissions assigned. Learn more.
-
-        - Permissions: `rebuild_nodebalancer_config`
-
-        - **OAuth scopes**. Your user needs these scopes assigned. Learn more.
+        - __CLI: HTTPS__.
 
 
-        - Scopes: `nodebalancers:read_write`
-
-
-        **CLI**
-
-
-        *HTTPS*
-
-
-        ```shell
+        ```
 
         linode-cli nodebalancers config-rebuild \
 
@@ -7282,7 +7492,11 @@ paths:
 
         -----END CERTIFICATE-----" \
 
-        --ssl_key "REDACTED_PRIVATE_KEY_EXAMPLE" \
+        --ssl_key "-----BEGIN PRIVATE KEY-----
+
+        PRIVATE_KEY_INFORMATION
+
+        -----END PRIVATE KEY-----" \
 
         --cipher_suite recommended \
 
@@ -7295,10 +7509,13 @@ paths:
         ```
 
 
-        *UDP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: UDP__.
+
+
+        ```
 
         linode-cli nodebalancers config-rebuild \
 
@@ -7321,10 +7538,13 @@ paths:
         ```
 
 
-        *TCP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: TCP__.
+
+
+        ```
 
         linode-cli nodebalancers config-rebuild \
 
@@ -7349,10 +7569,13 @@ paths:
         ```
 
 
-        *HTTP*
+        Learn more...
 
 
-        ```shell
+        - __CLI: HTTP__.
+
+
+        ```
 
         linode-cli nodebalancers config-rebuild \
 
@@ -7387,7 +7610,20 @@ paths:
         ```
 
 
-        Learn more'
+        Learn more...
+
+
+        - __OAuth scopes__.
+
+
+        ```
+
+        nodebalancers:read_write
+
+        ```
+
+
+        Learn more...'
       externalDocs:
         description: See documentation for this operation in Akamai's Linode API
         url: https://techdocs.akamai.com/linode-api/reference/post-rebuild-node-balancer-config
@@ -7395,14 +7631,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              algorithm: roundrobin
-              check: connection
-              check_attempts: 3
-              check_interval: 90
-              check_timeout: 10
-              port: 80
-              protocol: udp
             schema:
               allOf:
               - description: NodeBalancer `config` options for each protocol.
@@ -7565,7 +7793,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -7852,7 +8080,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -8129,7 +8357,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -8401,7 +8629,7 @@ paths:
                             description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                             example: 1
                             type: integer
-                            x-linode-cli-display: 8
+                            x-linode-cli-display: 4
                           weight:
                             description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                             example: 50
@@ -8586,7 +8814,7 @@ paths:
                           description: Required for VPC backend nodes only. The VPC's subnet. To display information about your VPCs and their subnets, run the [List VPCs](https://techdocs.akamai.com/linode-api/reference/get-vpcs) operation.
                           example: 1
                           type: integer
-                          x-linode-cli-display: 8
+                          x-linode-cli-display: 4
                         weight:
                           description: Used when picking a backend to serve a request and is not pinned to a single backend yet. Nodes with a higher weight will receive more traffic.
                           example: 50
@@ -8601,6 +8829,8 @@ paths:
                 type: object
               x-akamai:
                 file-path: schemas/added-post-rebuild-node-balancer-config.yaml
+            x-example:
+              x-ref: ../examples/post-rebuild-node-balancer-config.json
             x-linode-cli-use-schema:
               additionalProperties: false
               properties:
@@ -8905,36 +9135,12 @@ paths:
                 file-path: schemas/node-balancer-config-rebuild-cli.yaml
               x-linode-cli-subtables:
               - nodes
+        description: Information about the NodeBalancer configuration to rebuild.
         required: true
       responses:
         '200':
           content:
             application/json:
-              example:
-                algorithm: leastconn
-                check: http_body
-                check_attempts: 3
-                check_body: it works
-                check_interval: 90
-                check_passive: false
-                check_path: /test
-                check_timeout: 10
-                cipher_suite: none
-                id: 7000
-                nodebalancer_id: 12345
-                nodes_status:
-                  down: 0
-                  up: 4
-                port: 5795
-                protocol: udp
-                proxy_protocol: none
-                ssl_cert: null
-                ssl_commonname: ''
-                ssl_fingerprint: ''
-                ssl_key: null
-                stickiness: none
-                udp_check_port: 5795
-                udp_session_timeout: 2
               schema:
                 description: NodeBalancer `config` options for each protocol.
                 oneOf:
@@ -8990,8 +9196,9 @@ paths:
                       minimum: 2
                       type: integer
                     check_passive:
-                      description: Must be `false` for UDP.
+                      description: __Read-only__ Must be `false` for UDP.
                       example: false
+                      readOnly: true
                       type: boolean
                       x-linode-cli-display: 7
                     check_path:
@@ -9010,34 +9217,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `udp` configs.
+                      description: __Read-only__ Not applicable for `udp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 7000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -9049,6 +9262,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `udp` in this case. Review our guide on [Available Protocols](https://www.linode.com/docs/products/networking/nodebalancers/guides/protocols/) for information on protocol features.
                       enum:
                       - udp
@@ -9056,28 +9270,33 @@ paths:
                       type: string
                       x-linode-cli-display: 3
                     proxy_protocol:
-                      description: Must be `none` for UDP.
+                      description: __Read-only__ Must be `none` for UDP.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for UPD configs.
+                      description: __Read-only__ Not applicable for UPD configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for UDP configs.
+                      description: __Read-only__ Not applicable for UDP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -9108,12 +9327,15 @@ paths:
                       x-linode-cli-display: 6
                     udp_session_timeout:
                       default: 16
-                      description: The maximum number of seconds a UDP session can be idle before it closes.
+                      description: __Read-only__ The maximum duration in seconds, a UDP session can be idle before it is closed.
                       example: 2
                       maximum: 300
                       minimum: 1
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 11
+                  required:
+                  - nodes
                   title: UDP
                   type: object
                   x-akamai:
@@ -9192,34 +9414,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `tcp` configs.
+                      description: __Read-only__ Not applicable for `tcp` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 6000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -9231,6 +9459,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `tcp` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features.
                       enum:
                       - tcp
@@ -9254,30 +9483,34 @@ paths:
                       example: none
                       type: string
                     ssl_cert:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for TCP configs.
+                      description: __Read-only__ Not applicable for TCP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     stickiness:
                       default: none
-                      description: 'Controls how session stickiness is handled on this port.
+                      description: '__Read-only__ Controls how session stickiness is handled on this port.
 
 
                         Not applicable to TCP configurations.'
@@ -9286,8 +9519,11 @@ paths:
                       - table
                       - http_cookie
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: TCP
                   type: object
                   x-akamai:
@@ -9365,34 +9601,40 @@ paths:
                       minimum: 1
                       type: integer
                     cipher_suite:
-                      description: Not applicable for `http` configs.
+                      description: __Read-only__ Not applicable for `http` configs.
                       example: none
+                      readOnly: true
                       type: string
                       x-linode-cli-color:
                         default_: white
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 4000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: Identifies the NodeBalancer this config belongs to.
+                      description: __Read-only__ Identifies the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -9413,28 +9655,33 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: ''
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
-                      description: Not applicable for HTTP configs.
+                      description: __Read-only__ Not applicable for HTTP configs.
                       example: null
+                      readOnly: true
                       type:
                       - string
                       - 'null'
@@ -9455,6 +9702,8 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTP
                   type: object
                   x-akamai:
@@ -9544,26 +9793,31 @@ paths:
                         legacy: red
                       x-linode-cli-display: 7
                     id:
-                      description: This config's unique ID.
+                      description: __Read-only__ This config's unique ID.
                       example: 5000
+                      readOnly: true
                       type: integer
                       x-linode-cli-display: 1
                     nodebalancer_id:
-                      description: The ID for the NodeBalancer this config belongs to.
+                      description: __Read-only__ The ID for the NodeBalancer this config belongs to.
                       example: 12345
+                      readOnly: true
                       type: integer
                     nodes_status:
                       additionalProperties: false
-                      description: Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
+                      description: __Read-only__ Describes the health of the backends for this port. This data updates periodically as checks are performed against backends.
                       properties:
                         down:
-                          description: The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
+                          description: __Read-only__ The number of backends considered to be `DOWN` and unhealthy.  These are not in rotation, and not serving requests.
                           example: 0
+                          readOnly: true
                           type: integer
                         up:
-                          description: The number of backends considered to be `UP` and healthy, and that are serving requests.
+                          description: __Read-only__ The number of backends considered to be `UP` and healthy, and that are serving requests.
                           example: 4
+                          readOnly: true
                           type: integer
+                      readOnly: true
                       type: object
                       x-linode-cli-display: 10
                     port:
@@ -9575,6 +9829,7 @@ paths:
                       type: integer
                       x-linode-cli-display: 2
                     protocol:
+                      default: http
                       description: The protocol the port is configured to serve, `https` in this case. Review our guide on [Available protocols](https://techdocs.akamai.com/cloud-computing/docs/available-protocols) for information on protocol features. The `https` protocol needs to be specified with both `ssl_cert` and `ssl_key`.
                       enum:
                       - https
@@ -9583,8 +9838,9 @@ paths:
                       x-linode-cli-display: 3
                     proxy_protocol:
                       default: none
-                      description: Not applicable for HTTPS configs.
+                      description: __Read-only__ Not applicable for HTTPS configs.
                       example: none
+                      readOnly: true
                       type: string
                     ssl_cert:
                       description: '
@@ -9608,13 +9864,15 @@ paths:
                       - string
                       - 'null'
                     ssl_commonname:
-                      description: The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
+                      description: __Read-only__ The read-only common name automatically derived from the SSL certificate assigned to this NodeBalancerConfig. Please refer to this field to verify that the appropriate certificate is assigned to your NodeBalancerConfig.
                       example: www.example.com
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 8
                     ssl_fingerprint:
-                      description: The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
+                      description: __Read-only__ The read-only SHA1-encoded fingerprint automatically derived from the SSL certificate assigned to this NodeBalancer configuration. Please refer to the `ssl_fingerprint` field to verify that the appropriate certificate is assigned to your NodeBalancer configuration.
                       example: 00:01:02:03:04:05:06:07:08:09:0A:0B:0C:0D:0E:0F:10:11:12:13
+                      readOnly: true
                       type: string
                       x-linode-cli-display: 9
                     ssl_key:
@@ -9658,12 +9916,16 @@ paths:
                       example: http_cookie
                       type: string
                       x-linode-cli-display: 5
+                  required:
+                  - nodes
                   title: HTTPS
                   type: object
                   x-akamai:
                     file-path: schemas/node-balancer-config-https-response.yaml
                 x-akamai:
                   file-path: schemas/node-balancer-config-response.yaml
+              x-example:
+                x-ref: ../examples/post-rebuild-node-balancer-config-200.json
               x-linode-cli-use-schema:
                 additionalProperties: false
                 properties:
@@ -9972,14 +10234,10 @@ paths:
         default:
           content:
             application/json:
-              example:
-                errors:
-                - reason: Invalid JSON
               schema:
                 additionalProperties: false
                 properties:
                   errors:
-                    description: Any warnings associated with a response.
                     items:
                       additionalProperties: false
                       description: An object for describing a single error that occurred during the processing of a request.
@@ -10007,7 +10265,7 @@ paths:
       - Configurations
       x-akamai:
         tabs:
-        - syntax: "linode-cli nodebalancers config-rebuild \\\n  12345 4567 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"REDACTED_PRIVATE_KEY_EXAMPLE\" \\\n  --cipher_suite recommended \\\n  --nodes.label \"node1\" --nodes.address \"192.168.210.120:80\" --nodes.mode \"accept\" --nodes.weight 50 \\\n  --nodes '[{\"address\":\"192.168.210.122:80\",\"label\":\"node2\",\"weight\":50,\"mode\":\"accept\"}]' \\\n  --nodes '[{\"address\":\"10.0.0.45:80\",\"label\":\"vpc-node\",\"weight\":10,\"mode\":\"accept\",\"subnet_id:1\"}]'"
+        - syntax: "linode-cli nodebalancers config-rebuild \\\n  12345 4567 \\\n  --port 443 \\\n  --protocol https \\\n  --algorithm roundrobin \\\n  --stickiness http_cookie \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --check_passive true \\\n  --proxy_protocol \"none\" \\\n  --ssl_cert \"-----BEGIN CERTIFICATE-----\n              CERTIFICATE_INFORMATION\n              -----END CERTIFICATE-----\" \\\n  --ssl_key \"-----BEGIN PRIVATE KEY-----\n             PRIVATE_KEY_INFORMATION\n             -----END PRIVATE KEY-----\" \\\n  --cipher_suite recommended \\\n  --nodes.label \"node1\" --nodes.address \"192.168.210.120:80\" --nodes.mode \"accept\" --nodes.weight 50 \\\n  --nodes '[{\"address\":\"192.168.210.122:80\",\"label\":\"node2\",\"weight\":50,\"mode\":\"accept\"}]' \\\n  --nodes '[{\"address\":\"10.0.0.45:80\",\"label\":\"vpc-node\",\"weight\":10,\"mode\":\"accept\",\"subnet_id:1\"}]'"
           title: 'CLI: HTTPS'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
         - syntax: "linode-cli nodebalancers config-rebuild \\\n   12345 4567 \\\n   --port 80 \\\n   --protocol udp \\\n   --algorithm ring_hash \\\n   --udp_check_port 80 \\\n   --nodes.label \"node1\" --nodes.address \"192.168.210.120:80\" --nodes.mode \"accept\" --nodes.weight 50 \\\n   --nodes '[{\"address\":\"192.168.210.122:80\",\"label\":\"node2\",\"weight\":50}]' \\\n   --nodes '[{\"address\":\"10.0.0.45:80\",\"label\":\"vpc-node\",\"weight\":10,\"mode\":\"accept\",\"subnet_id:1\"}]'"
@@ -10019,11 +10277,11 @@ paths:
         - syntax: "linode-cli nodebalancers config-rebuild \\\n  12345 4567 \\\n  --port 440 \\\n  --protocol http \\\n  --algorithm roundrobin \\\n  --stickiness none \\\n  --check http_body \\\n  --check_interval 90 \\\n  --check_timeout 10 \\\n  --check_attempts 3 \\\n  --check_path \"/test\" \\\n  --check_body \"it works\" \\\n  --nodes.label \"node1\" --nodes.address \"192.168.210.120:80\" --nodes.mode \"accept\" --nodes.weight 50 \\\n  --nodes '[{\"address\":\"192.168.210.122:80\",\"label\":\"node2\",\"weight\":50,\"mode\":\"accept\"}]' \\\n  --nodes '[{\"address\":\"10.0.0.45:80\",\"label\":\"vpc-node\",\"weight\":10,\"mode\":\"accept\",\"subnet_id:1\"}]'"
           title: 'CLI: HTTP'
           url: https://techdocs.akamai.com/cloud-computing/docs/getting-started-with-the-linode-cli
+        - syntax: nodebalancers:read_write
+          title: OAuth scopes
+          url: https://techdocs.akamai.com/linode-api/reference/get-started#oauth
       x-linode-cli-action: config-rebuild
       x-linode-grant: add_nodebalancers
-      x-linode-iam:
-      - permissions:
-        - rebuild_nodebalancer_config
 components:
   securitySchemes:
     oauth:
@@ -10033,10 +10291,6 @@ components:
           scopes:
             account:read_only: Allows access to GET information about your account.
             account:read_write: Allows access to all endpoints related to your account.
-            child_account:read_only: Allows access to GET information about deprecated parent/child operations.
-            child_account:read_write: Allows access to deprecated parent/child operations.
-            databases:read_only: Allows access to GET information about databases.
-            databases:read_write: Allows access to all endpoints related to databases.
             domains:read_only: Allows access to GET Domains on your account.
             domains:read_write: Allows access to all Domain endpoints.
             events:read_only: Allows access to GET your Events.
@@ -10053,8 +10307,8 @@ components:
             lke:read_write: Allows access to all endpoints related to LKE Clusters on your account.
             longview:read_only: Allows access to GET your Longview Clients.
             longview:read_write: Allows access to all endpoints related to your Longview Clients.
+            monitor:read-write: Allows access to all Monitor (Akamai Cloud Pulse) endpoints.
             monitor:read_only: Allows access to Monitor (Akamai Cloud Pulse) data.
-            monitor:read_write: Allows access to GET Monitor (Akamai Cloud Pulse) data.
             nodebalancers:read_only: Allows access to GET NodeBalancers on your account.
             nodebalancers:read_write: Allows access to all NodeBalancer endpoints.
             object_storage:read_only: Allows access to GET information related to your Object Storage.
@@ -10073,7 +10327,6 @@ externalDocs:
   description: See documentation for Akamai's Linode API
   url: https://techdocs.akamai.com/linode-api/reference
 x-readme:
-  explorer-enabled: false
   samples-languages:
   - curl
   - python
